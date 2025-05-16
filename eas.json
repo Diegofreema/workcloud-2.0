@@ -1,0 +1,37 @@
+{
+  "cli": {
+    "version": ">= 12.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "development"
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_aHVnZS1nYXplbGxlLTI5LmNsZXJrLmFjY291bnRzLmRldiQ",
+        "EXPO_PUBLIC_CONVEX_URL": "https://kindred-chihuahua-431.convex.cloud",
+        "EXPO_PUBLIC_STREAM_API_KEY": "cnvc46pm8uq9"
+      },
+      "channel": "preview"
+    },
+    "production": {
+      "autoIncrement": true,
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_CONVEX_URL": "https://kindred-chihuahua-431.convex.cloud",
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_aHVnZS1nYXplbGxlLTI5LmNsZXJrLmFjY291bnRzLmRldiQ",
+        "EXPO_PUBLIC_STREAM_API_KEY": "cnvc46pm8uq9"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

@@ -1,21 +1,34 @@
 {
   "expo": {
-    "name": "workcloud-2.0",
-    "slug": "workcloud-2.0",
+    "name": "workcloud",
+    "slug": "workcloud",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/appIcon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bitcode": false,
+      "bundleIdentifier": "com.diegodark.workcloud"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.CAMERA",
+        "android.permission.INTERNET",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.WAKE_LOCK",
+        "android.permission.BLUETOOTH"
+      ],
+      "package": "com.diegodark.workcloud"
     },
     "web": {
       "bundler": "metro",
@@ -27,15 +40,72 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/appIcon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
+        }
+      ],
+      "expo-secure-store",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 24,
+            "extraMavenRepos": [
+              "$rootDir/../../../node_modules/@notifee/react-native/android/libs"
+            ],
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0",
+            "enableProguardInReleaseBuilds": true,
+            "allowBackup": false,
+            "enableShrinkResourcesInReleaseBuilds": true
+          },
+          "ios": {
+            "deploymentTarget": "15.1"
+          }
+        }
+      ],
+      [
+        "@config-plugins/react-native-webrtc",
+        {
+          "cameraPermission": "$(PRODUCT_NAME) requires camera access in order to capture and transmit video",
+          "microphonePermission": "$(PRODUCT_NAME) requires microphone access in order to capture and transmit audio"
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "c6f4d0db-820e-41f4-9840-49346d4a94af"
+      }
+    },
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": [
+          "@likashefqet/react-native-image-zoom",
+          "react-native-incall-manager",
+          " @rneui/base",
+          "@rneui/themed",
+          "react-native-material-menu",
+          "react-native-quick-sqlite",
+          "react-native-responsive-fontsize",
+          "@config-plugins/react-native-webrtc",
+          "@convex-dev/react-query",
+          "@stream-io/react-native-webrtc",
+          "@stream-io/video-react-native-sdk",
+          "conves",
+          "convex",
+          "react-native-dropdown-select-list",
+          "use-debounce"
+        ]
+      }
     }
   }
 }

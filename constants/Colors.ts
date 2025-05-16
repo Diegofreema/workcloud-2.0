@@ -1,26 +1,45 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
-const tintColorLight = '#0a7ea4';
+const tintColorLight = '#2f95dc';
 const tintColorDark = '#fff';
 
-export const Colors = {
+export default {
   light: {
-    text: '#11181C',
+    text: '#000',
     background: '#fff',
     tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
+    tabIconDefault: '#ccc',
     tabIconSelected: tintColorLight,
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
+    text: '#fff',
+    background: '#000',
     tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
+    tabIconDefault: '#ccc',
     tabIconSelected: tintColorDark,
   },
+};
+
+export const colors = {
+  textGray: '#737373',
+  buttonBlue: '#004282',
+  gray: '#eee',
+  lightBlue: '#1A91FF',
+  white: '#fff',
+  black: '#000',
+  phone1: '#6A6A6A',
+  dialPad: '#0047FF',
+  openTextColor: '#CCF2D9',
+  openBackgroundColor: '#00C041',
+  closeTextColor: '#D61B0C',
+  closeBackgroundColor: '#FFD9D9',
+  grayText: '#666666',
+  nine: '#999999',
+  ripple: '#006898',
+  summary: '#929292',
+  cod: '#C0D1FE',
+  gray10: '#A1A1A1',
+  buttonSmall: '#F2F2F2',
+  lightBlueButton: '#DFE8FF',
+  otherChatBubble: '#DAE4FF',
+  time: '#B3B3B3',
+  callButtonBlue: '#8faeff',
 };
