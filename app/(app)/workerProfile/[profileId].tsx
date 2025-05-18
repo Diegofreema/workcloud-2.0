@@ -1,6 +1,11 @@
 import { useUser } from '@clerk/clerk-expo';
 import { convexQuery } from '@convex-dev/react-query';
-import { AntDesign, EvilIcons, MaterialCommunityIcons, SimpleLineIcons } from '@expo/vector-icons';
+import {
+  AntDesign,
+  EvilIcons,
+  MaterialCommunityIcons,
+  SimpleLineIcons,
+} from '@expo/vector-icons';
 import { Button } from '@rneui/themed';
 import { useQuery } from '@tanstack/react-query';
 import { useMutation } from 'convex/react';
@@ -9,7 +14,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { toast } from 'sonner-native';
-import { useChatContext } from 'stream-chat-expo';
+// import { useChatContext } from 'stream-chat-expo';
 
 import { HStack } from '~/components/HStack';
 import { HeaderNav } from '~/components/HeaderNav';
@@ -37,16 +42,15 @@ export const formattedSkills = (text: string) => {
 
 const Profile = () => {
   const { profileId } = useLocalSearchParams<{ profileId: Id<'workers'> }>();
-  const { client } = useChatContext();
+  // const { client } = useChatContext();
   const { user } = useUser();
   const { id } = useGetUserId();
   const { darkMode } = useDarkMode();
   const [cancelling, setCancelling] = useState(false);
 
   const router = useRouter();
-  const { data, isPaused, isPending, isError, refetch, isRefetchError } = useQuery(
-    convexQuery(api.worker.getSingleWorkerProfile, { id: profileId })
-  );
+  const { data, isPaused, isPending, isError, refetch, isRefetchError } =
+    useQuery(convexQuery(api.worker.getSingleWorkerProfile, { id: profileId }));
 
   const {
     data: pendingData,
@@ -55,7 +59,10 @@ const Profile = () => {
     isPaused: isPausedData,
     refetch: refetchData,
   } = useQuery(
-    convexQuery(api.request.getPendingRequestsAsBoolean, { from: id!, to: data?.user?._id! })
+    convexQuery(api.request.getPendingRequestsAsBoolean, {
+      from: id!,
+      to: data?.user?._id!,
+    })
   );
   const cancelPendingRequest = useMutation(api.request.cancelPendingRequests);
   const handleRefetch = async () => {
@@ -73,11 +80,11 @@ const Profile = () => {
   const isInPending = !!pendingData;
 
   const onMessage = async () => {
-    const channel = client.channel('messaging', {
-      members: [id!, data?.user?._id!],
-    });
-    await channel.watch();
-    router.push(`/channel/${channel.cid}`);
+    // const channel = client.channel('messaging', {
+    //   members: [id!, data?.user?._id!],
+    // });
+    // await channel.watch();
+    // router.push(`/channel/${channel.cid}`);
   };
 
   const cancelRequest = async () => {
@@ -102,7 +109,8 @@ const Profile = () => {
 
     await cancelRequest();
   };
-  const showRequestBtn = data?.worker.bossId !== user?.id && !pendingData?.accepted;
+  const showRequestBtn =
+    data?.worker.bossId !== user?.id && !pendingData?.accepted;
   return (
     <Container>
       <ScrollView>
@@ -128,7 +136,8 @@ const Profile = () => {
                 backgroundColor: colors.dialPad,
                 borderRadius: 5,
                 minWidth: 120,
-              }}>
+              }}
+            >
               {isInPending ? 'Cancel Request' : 'Send Request'}
             </Button>
           )}
@@ -145,7 +154,8 @@ const Profile = () => {
               backgroundColor: colors.lightBlueButton,
               borderRadius: 5,
               minWidth: 120,
-            }}>
+            }}
+          >
             Send Message
           </Button>
         </HStack>
@@ -153,13 +163,22 @@ const Profile = () => {
         <VStack mt={20} gap={15}>
           <HStack gap={5} alignItems="center">
             <AntDesign name="calendar" size={24} color={colors.grayText} />
-            <MyText fontSize={12} poppins="Medium" style={{ color: colors.grayText }}>
-              Joined since {format(data?.worker?._creationTime!, 'do MMMM yyyy')}
+            <MyText
+              fontSize={12}
+              poppins="Medium"
+              style={{ color: colors.grayText }}
+            >
+              Joined since{' '}
+              {format(data?.worker?._creationTime!, 'do MMMM yyyy')}
             </MyText>
           </HStack>
           <HStack gap={5} alignItems="center">
             <EvilIcons name="location" size={24} color={colors.grayText} />
-            <MyText fontSize={12} poppins="Medium" style={{ color: colors.grayText }}>
+            <MyText
+              fontSize={12}
+              poppins="Medium"
+              style={{ color: colors.grayText }}
+            >
               {data?.worker?.location}
             </MyText>
           </HStack>
@@ -174,7 +193,8 @@ const Profile = () => {
             gap={10}
             alignItems="center"
             pb={40}
-            style={{ borderBottomColor: colors.gray, borderBottomWidth: 1 }}>
+            style={{ borderBottomColor: colors.gray, borderBottomWidth: 1 }}
+          >
             <SimpleLineIcons
               name="graduation"
               size={24}
@@ -194,7 +214,8 @@ const Profile = () => {
             gap={10}
             alignItems="center"
             pb={40}
-            style={{ borderBottomColor: colors.gray, borderBottomWidth: 1 }}>
+            style={{ borderBottomColor: colors.gray, borderBottomWidth: 1 }}
+          >
             <SimpleLineIcons
               name="graduation"
               size={24}
@@ -211,13 +232,19 @@ const Profile = () => {
             Skills
           </MyText>
 
-          <HStack gap={10} pb={40} style={{ borderBottomColor: colors.gray, borderBottomWidth: 1 }}>
+          <HStack
+            gap={10}
+            pb={40}
+            style={{ borderBottomColor: colors.gray, borderBottomWidth: 1 }}
+          >
             <MaterialCommunityIcons
               name="clipboard-list-outline"
               size={24}
               color={darkMode === 'dark' ? 'white' : 'black'}
             />
-            <VStack gap={5}>{formattedSkills(data?.worker?.skills || '')}</VStack>
+            <VStack gap={5}>
+              {formattedSkills(data?.worker?.skills || '')}
+            </VStack>
           </HStack>
         </VStack>
       </ScrollView>

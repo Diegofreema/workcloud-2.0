@@ -64,7 +64,7 @@ export default function TabOneScreen() {
 
   SecureStore.setItem('loaded', '1');
 
-  if (!data || !connections) {
+  if (data === undefined || connections === undefined) {
     return <LoadingComponent />;
   }
 
@@ -78,7 +78,7 @@ export default function TabOneScreen() {
       <ProfileHeader
         id={data?._id!}
         avatar={data?.imageUrl!}
-        name={data?.name}
+        name={data?.name as string}
       />
 
       <View style={{ marginVertical: 10 }}>

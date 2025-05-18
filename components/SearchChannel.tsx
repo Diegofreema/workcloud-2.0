@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { RFPercentage } from 'react-native-responsive-fontsize';
 import { Channel, ChannelMemberAPIResponse } from 'stream-chat';
-import { Skeleton } from 'stream-chat-expo';
+// import { Skeleton } from 'stream-chat-expo';
 
 import { AvatarPile } from '~/components/AvatarPile';
 import { EmptyText } from '~/components/EmptyText';
@@ -42,7 +42,9 @@ export const SearchChannel = ({
       />
       <FlatList
         data={filterChannels}
-        renderItem={({ item }) => <CustomMessage channel={item} onPress={onPress} />}
+        renderItem={({ item }) => (
+          <CustomMessage channel={item} onPress={onPress} />
+        )}
         style={{ marginTop: 20 }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 10 }}
@@ -82,7 +84,7 @@ const CustomMessage = ({
   const images = (otherMember?.map((i) => i?.user?.image) as string[]) || [];
 
   if (loading || !member) {
-    return <Skeleton />;
+    return null;
   }
   return (
     <TouchableOpacity onPress={() => onPress(channel)} style={styles.container}>

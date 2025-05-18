@@ -46,15 +46,21 @@
           "backgroundColor": "#ffffff"
         }
       ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "darkside-fj",
+          "project": "247inventory",
+          "url": "https://sentry.io/"
+        }
+      ],
       "expo-secure-store",
       [
         "expo-build-properties",
         {
           "android": {
             "minSdkVersion": 24,
-            "extraMavenRepos": [
-              "$rootDir/../../../node_modules/@notifee/react-native/android/libs"
-            ],
+
             "compileSdkVersion": 35,
             "targetSdkVersion": 35,
             "buildToolsVersion": "35.0.0",
@@ -65,13 +71,6 @@
           "ios": {
             "deploymentTarget": "15.1"
           }
-        }
-      ],
-      [
-        "@config-plugins/react-native-webrtc",
-        {
-          "cameraPermission": "$(PRODUCT_NAME) requires camera access in order to capture and transmit video",
-          "microphonePermission": "$(PRODUCT_NAME) requires microphone access in order to capture and transmit audio"
         }
       ]
     ],
@@ -96,10 +95,9 @@
           "react-native-material-menu",
           "react-native-quick-sqlite",
           "react-native-responsive-fontsize",
-          "@config-plugins/react-native-webrtc",
+
           "@convex-dev/react-query",
-          "@stream-io/react-native-webrtc",
-          "@stream-io/video-react-native-sdk",
+
           "conves",
           "convex",
           "react-native-dropdown-select-list",

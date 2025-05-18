@@ -2,15 +2,11 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Text } from '@rneui/themed';
 import { Tabs } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import React from 'react';
 
-import { useChatContext } from 'stream-chat-expo';
-import { UnreadCount } from '~/components/Unread';
 import { fontFamily } from '~/constants';
 import { colors } from '~/constants/Colors';
 import { useDarkMode } from '~/hooks/useDarkMode';
-import { useGetUserId } from '~/hooks/useGetUserId';
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -25,24 +21,6 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const { darkMode } = useDarkMode();
-
-  const { id, isLoading } = useGetUserId();
-  const [unreadCount, setUnreadCount] = useState(0);
-  const { client } = useChatContext();
-  useEffect(() => {
-    if (client || id || !isLoading) {
-      // const getUnreadCount = async () => {
-      //   const response = await client.getUnreadCount(id);
-      //   setUnreadCount(response.total_unread_count);
-      // };
-      // getUnreadCount();
-      client.on((event) => {
-        if (event.total_unread_count !== undefined) {
-          setUnreadCount(event.total_unread_count);
-        }
-      });
-    }
-  }, [client, isLoading, id]);
 
   return (
     <>
@@ -94,19 +72,11 @@ export default function TabLayout() {
           options={{
             title: 'Messages',
             tabBarIcon: ({ focused, size }) => (
-              <View>
-                <TabBarIcon
-                  name="envelope"
-                  color={focused ? colors.buttonBlue : colors.grayText}
-                  size={size}
-                />
-                {unreadCount > 0 ? (
-                  <UnreadCount
-                    unread={unreadCount}
-                    style={{ position: 'absolute', top: -5, right: -8 }}
-                  />
-                ) : null}
-              </View>
+              <TabBarIcon
+                name="envelope"
+                color={focused ? colors.buttonBlue : colors.grayText}
+                size={size}
+              />
             ),
             tabBarLabel: ({ focused }) => (
               <Text

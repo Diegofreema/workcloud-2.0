@@ -1,5 +1,3 @@
-import { MemberRequest } from '@stream-io/video-client';
-import { useStreamVideoClient } from '@stream-io/video-react-bindings';
 import { useMutation, useQuery } from 'convex/react';
 import { format } from 'date-fns';
 import * as Crypto from 'expo-crypto';
@@ -28,7 +26,6 @@ import { useGetCustomerId } from '~/hooks/useCustomerId';
 const today = format(new Date(), 'dd-MM-yyyy');
 
 const Work = () => {
-  const videoClient = useStreamVideoClient();
   const { id } = useLocalSearchParams<{ id: Id<'workspaces'> }>();
   const [showMenu, setShowMenu] = useState(false);
   const { id: loggedInUser } = useGetUserId();
@@ -186,37 +183,7 @@ const Work = () => {
     currentUser: Id<'waitlists'>,
     nextUser: Id<'waitlists'>,
     customerId: Id<'users'>
-  ) => {
-    if (!videoClient || !isWorker || addingToCall) return;
-    setAddingToCall(true);
-    const members = [
-      { user_id: loggedInUser }!,
-      { user_id: customerId },
-    ] as MemberRequest[];
-    try {
-      const call = videoClient.call('default', Crypto.randomUUID());
-      await call.getOrCreate({
-        ring: true,
-        data: {
-          members,
-        },
-      });
-      await updateWaitlistType({
-        waitlistId: currentUser,
-        nextWaitListId: nextUser,
-      });
-      getCustomerId(customerId, id);
-      router.push('/call');
-      setId(currentUser, isWorker);
-    } catch (error) {
-      console.log(error);
-      toast.error('Something went wrong', {
-        description: 'Please try again later',
-      });
-    } finally {
-      setAddingToCall(false);
-    }
-  };
+  ) => {};
   const handleExit = async () => {
     if (customerLeaving) {
       await onLeave();

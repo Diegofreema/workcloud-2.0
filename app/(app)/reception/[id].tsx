@@ -4,7 +4,12 @@ import { Avatar } from '@rneui/themed';
 import { useMutation, useQuery } from 'convex/react';
 import { format } from 'date-fns';
 import { Image } from 'expo-image';
-import { ErrorBoundaryProps, router, useLocalSearchParams, useRouter } from 'expo-router';
+import {
+  ErrorBoundaryProps,
+  router,
+  useLocalSearchParams,
+  useRouter,
+} from 'expo-router';
 import React, { useEffect, useMemo } from 'react';
 import {
   FlatList,
@@ -17,7 +22,7 @@ import {
 } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { toast } from 'sonner-native';
-import { useChatContext } from 'stream-chat-expo';
+// import { useChatContext } from 'stream-chat-expo';
 
 import { EmptyText } from '~/components/EmptyText';
 import { HStack } from '~/components/HStack';
@@ -44,7 +49,9 @@ const Reception = () => {
   const { id } = useLocalSearchParams<{ id: Id<'organizations'> }>();
 
   const { id: from } = useGetUserId();
-  const data = useQuery(api.organisation.getOrganisationsWithPostAndWorkers, { id });
+  const data = useQuery(api.organisation.getOrganisationsWithPostAndWorkers, {
+    id,
+  });
 
   const handleConnection = useMutation(api.connection.handleConnection);
 
@@ -89,7 +96,8 @@ const Reception = () => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20, flexGrow: 1 }}
-        style={{ flex: 1 }}>
+        style={{ flex: 1 }}
+      >
         <HeaderNav
           title={data?.name}
           subTitle={data?.category}
@@ -112,17 +120,24 @@ const Reception = () => {
                     poppins="Bold"
                     style={{
                       color: colors.openBackgroundColor,
-                    }}>
+                    }}
+                  >
                     {data?.start}
                   </MyText>
                 </View>
                 <Text style={{ marginBottom: 5 }}> - </Text>
-                <View style={[styles.subCon, { backgroundColor: colors.closeBackgroundColor }]}>
+                <View
+                  style={[
+                    styles.subCon,
+                    { backgroundColor: colors.closeBackgroundColor },
+                  ]}
+                >
                   <MyText
                     poppins="Bold"
                     style={{
                       color: colors.closeTextColor,
-                    }}>
+                    }}
+                  >
                     {data?.end}
                   </MyText>
                 </View>
@@ -147,7 +162,8 @@ const Reception = () => {
                     height: 150,
                     borderRadius: 5,
                     overflow: 'hidden',
-                  }}>
+                  }}
+                >
                   <Image
                     source={{ uri: item! }}
                     style={styles.image}
@@ -166,7 +182,8 @@ const Reception = () => {
           style={{
             fontSize: 12,
             marginVertical: 20,
-          }}>
+          }}
+        >
           Representatives
         </MyText>
         <Representatives data={data?.workers} />
@@ -216,7 +233,7 @@ const Representatives = ({ data }: { data: WorkerWithWorkspace[] }) => {
 const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
   const router = useRouter();
   const { userId: id } = useAuth();
-  const { client } = useChatContext();
+  // const { client } = useChatContext();
   const { id: customerId } = useGetUserId();
   const handleWaitlist = useMutation(api.workspace.handleWaitlist);
   const { setId } = useWaitlistId();
@@ -252,11 +269,11 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
   };
 
   const onMessage = async () => {
-    const channel = client.channel('messaging', {
-      members: [customerId!, user?._id!],
-    });
-    await channel.watch();
-    router.push(`/channel/${channel.cid}`);
+    // const channel = client.channel('messaging', {
+    //   members: [customerId!, user?._id!],
+    // });
+    // await channel.watch();
+    // router.push(`/channel/${channel.cid}`);
   };
 
   return (
@@ -269,7 +286,8 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
           width: '33%',
         },
       ]}
-      onPress={handlePress}>
+      onPress={handlePress}
+    >
       <VStack alignItems="center" justifyContent="center" gap={2}>
         <Avatar rounded source={{ uri: item?.user?.imageUrl! }} size={50} />
         <MyText poppins="Medium" fontSize={11} style={{ textAlign: 'center' }}>
@@ -284,8 +302,12 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
               alignItems: 'center',
               justifyContent: 'center',
               padding: 3,
-            }}>
-            <MyText poppins="Bold" style={{ color: colors.openBackgroundColor }}>
+            }}
+          >
+            <MyText
+              poppins="Bold"
+              style={{ color: colors.openBackgroundColor }}
+            >
               Active
             </MyText>
           </View>
@@ -299,7 +321,8 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: 3,
-              }}>
+              }}
+            >
               <MyText poppins="Bold" style={{ color: colors.closeTextColor }}>
                 Inactive
               </MyText>
@@ -313,7 +336,8 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
                   padding: 7,
                   marginTop: 5,
                   borderRadius: 5,
-                }}>
+                }}
+              >
                 <MyText poppins="Medium" style={{ color: colors.dialPad }}>
                   Message
                 </MyText>
@@ -332,7 +356,8 @@ const ReceptionRightHeader = () => {
   return (
     <Pressable
       style={({ pressed }) => ({ padding: 5, opacity: pressed ? 0.5 : 1 })}
-      onPress={() => router.push(`/overview/${id}`)}>
+      onPress={() => router.push(`/overview/${id}`)}
+    >
       <FontAwesome6
         name="building-columns"
         size={24}

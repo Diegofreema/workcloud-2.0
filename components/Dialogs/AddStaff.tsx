@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { FlatList, Modal, Pressable, StyleSheet, View } from 'react-native';
 import { toast } from 'sonner-native';
-import { useChatContext } from 'stream-chat-expo';
+// import { useChatContext } from 'stream-chat-expo';
 
 import { HStack } from '../HStack';
 import { MyText } from '../Ui/MyText';
@@ -31,20 +31,32 @@ export const AddStaff = () => {
 
   return (
     <View>
-      <Modal visible={isOpen} onRequestClose={onClose} onDismiss={onClose} animationType="slide">
+      <Modal
+        visible={isOpen}
+        onRequestClose={onClose}
+        onDismiss={onClose}
+        animationType="slide"
+      >
         <View style={styles.centeredView}>
           <MyText poppins="Medium" fontSize={15}>
             Add Staff
           </MyText>
           <Pressable
-            style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }, styles.button]}
-            onPress={onClose}>
+            style={({ pressed }) => [
+              { opacity: pressed ? 0.5 : 1 },
+              styles.button,
+            ]}
+            onPress={onClose}
+          >
             <FontAwesome name="times" size={20} color="black" />
           </Pressable>
           <Divider
             style={[
               styles.divider,
-              { marginBottom: -10, backgroundColor: darkMode === 'dark' ? 'transparent' : '#ccc' },
+              {
+                marginBottom: -10,
+                backgroundColor: darkMode === 'dark' ? 'transparent' : '#ccc',
+              },
             ]}
           />
           <View style={{ marginTop: 20, width: '100%', gap: 14 }}>
@@ -55,7 +67,10 @@ export const AddStaff = () => {
                 <Divider
                   style={[
                     styles.divider,
-                    { backgroundColor: darkMode === 'dark' ? 'transparent' : '#ccc' },
+                    {
+                      backgroundColor:
+                        darkMode === 'dark' ? 'transparent' : '#ccc',
+                    },
                   ]}
                 />
               )}
@@ -63,8 +78,13 @@ export const AddStaff = () => {
               renderItem={({ item }) => (
                 <Pressable
                   onPress={() => onOpenSelectRow()}
-                  style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}>
-                  <HStack justifyContent="space-between" alignItems="center" p={10}>
+                  style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
+                >
+                  <HStack
+                    justifyContent="space-between"
+                    alignItems="center"
+                    p={10}
+                  >
                     <MyText fontSize={13} poppins="Medium">
                       {item.role}
                     </MyText>
@@ -82,16 +102,25 @@ export const AddStaff = () => {
 type Props = {
   isVisible: boolean;
   setIsVisible: (value: boolean) => void;
-  array: ({ icon: React.ComponentProps<typeof FontAwesome>['name']; text: string } | undefined)[];
+  array: (
+    | { icon: React.ComponentProps<typeof FontAwesome>['name']; text: string }
+    | undefined
+  )[];
   onBottomOpen: () => void;
   bossId: Id<'users'>;
 };
 
-export const Menu = ({ isVisible, setIsVisible, array, onBottomOpen, bossId }: Props) => {
+export const Menu = ({
+  isVisible,
+  setIsVisible,
+  array,
+  onBottomOpen,
+  bossId,
+}: Props) => {
   const { onOpen } = useRemoveUser();
   const toggleWorkspace = useMutation(api.workspace.toggleWorkspace);
   const router = useRouter();
-  const { client } = useChatContext();
+  // const { client } = useChatContext();
 
   const { item } = useHandleStaff();
   const { darkMode } = useDarkMode();
@@ -110,11 +139,11 @@ export const Menu = ({ isVisible, setIsVisible, array, onBottomOpen, bossId }: P
 
   const onSendMessage = async () => {
     onClose();
-    const channel = client.channel('messaging', {
-      members: [bossId!, item?.userId!],
-    });
-    await channel.watch();
-    router.push(`/channel/${channel.cid}`);
+    // const channel = client.channel('messaging', {
+    //   members: [bossId!, item?.userId!],
+    // });
+    // await channel.watch();
+    // router.push(`/channel/${channel.cid}`);
   };
 
   const onUnlockWorkspace = async () => {
@@ -123,7 +152,9 @@ export const Menu = ({ isVisible, setIsVisible, array, onBottomOpen, bossId }: P
       toast.success('Success', { description: 'Updated workspace' });
     } catch (e) {
       console.log(e);
-      toast.error('Something went wrong', { description: 'Failed to update workspace' });
+      toast.error('Something went wrong', {
+        description: 'Failed to update workspace',
+      });
     } finally {
       setIsVisible(false);
     }
@@ -158,16 +189,19 @@ export const Menu = ({ isVisible, setIsVisible, array, onBottomOpen, bossId }: P
       animationType="slide"
       visible={isVisible}
       transparent
-      onRequestClose={onClose}>
+      onRequestClose={onClose}
+    >
       <Pressable
         onPress={onClose}
         style={[
           styles.centeredView,
           {
-            backgroundColor: darkMode === 'dark' ? 'black' : 'rgba(255,255,255, 0.3)',
+            backgroundColor:
+              darkMode === 'dark' ? 'black' : 'rgba(255,255,255, 0.3)',
             shadowColor: darkMode === 'dark' ? '#fff' : '#000',
           },
-        ]}>
+        ]}
+      >
         <Pressable
           onPress={(e) => e.stopPropagation()}
           style={[
@@ -176,13 +210,15 @@ export const Menu = ({ isVisible, setIsVisible, array, onBottomOpen, bossId }: P
               backgroundColor: darkMode === 'dark' ? 'black' : 'white',
               shadowColor: darkMode === 'dark' ? '#fff' : '#000',
             },
-          ]}>
+          ]}
+        >
           {array.map((item, index) =>
             item?.text ? (
               <Pressable
                 key={index}
                 style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
-                onPress={() => handlePress(item?.text!)}>
+                onPress={() => handlePress(item?.text!)}
+              >
                 <HStack gap={15} alignItems="center" p={10}>
                   {item?.icon && (
                     <FontAwesome
@@ -208,7 +244,8 @@ export const Menu = ({ isVisible, setIsVisible, array, onBottomOpen, bossId }: P
                             : darkMode === 'dark'
                               ? '#fff'
                               : 'black',
-                      }}>
+                      }}
+                    >
                       {item?.text}
                     </MyText>
                   )}

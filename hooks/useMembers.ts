@@ -1,7 +1,7 @@
 import { ChannelMemberResponse } from 'stream-chat';
-import { DefaultStreamChatGenerics } from 'stream-chat-expo';
+// import { DefaultStreamChatGenerics } from 'stream-chat-expo';
 import { create } from 'zustand';
-export type ChatMember = ChannelMemberResponse<DefaultStreamChatGenerics>;
+export type ChatMember = ChannelMemberResponse<any>;
 type Store = {
   members: ChatMember[];
   getMembers: (members: ChatMember[]) => void;

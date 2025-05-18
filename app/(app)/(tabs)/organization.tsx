@@ -4,7 +4,7 @@ import { Avatar } from '@rneui/themed';
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { Button, Pressable, View } from 'react-native';
 import { toast } from 'sonner-native';
 
 import { EmptyText } from '~/components/EmptyText';

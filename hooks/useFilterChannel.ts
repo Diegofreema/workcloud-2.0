@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AscDesc, Channel } from 'stream-chat';
-import { useChatContext } from 'stream-chat-expo';
+// import { useChatContext } from 'stream-chat-expo';
 
 import { filterChannels as filterChannelsFn } from '~/lib/helper';
 
@@ -19,19 +19,17 @@ export const useFilterChannel = (id: string, query: string) => {
 
   const [filterChannels, setFilterChannels] = useState<Channel[]>([]);
   const [loading, setLoading] = useState(true);
-  const { client } = useChatContext();
+  // const { client } = useChatContext();
   useEffect(() => {
     if (id) {
       const fetchChannels = async () => {
         try {
-          const result = await client.queryChannels(memoizedFilters, sort, {
-            state: true,
-            watch: true,
-          });
-
-          const channelsQueried = await filterChannelsFn(result, query);
-
-          setFilterChannels(channelsQueried);
+          // const result = await client.queryChannels(memoizedFilters, sort, {
+          //   state: true,
+          //   watch: true,
+          // });
+          // const channelsQueried = await filterChannelsFn(result, query);
+          // setFilterChannels(channelsQueried);
         } catch (e) {
           console.log(e);
         } finally {
@@ -41,7 +39,7 @@ export const useFilterChannel = (id: string, query: string) => {
       // eslint-disable-next-line no-void
       void fetchChannels();
     }
-  }, [id, query, client, memoizedFilters]);
+  }, [id, query, memoizedFilters]);
 
   return { filterChannels, loading };
 };
