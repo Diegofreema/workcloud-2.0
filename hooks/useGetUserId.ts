@@ -9,7 +9,6 @@ export const useGetUserId = () => {
   const user = {
     image: data?.imageUrl,
     name: data?.name,
-    streamToken: data?.streamToken,
   };
   const isLoading = data === undefined;
   return {

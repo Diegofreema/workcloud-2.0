@@ -12,7 +12,9 @@ export const getPendingRequestsAsBoolean = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query('requests')
-      .filter((q) => q.and(q.eq(q.field('from'), args.from), q.eq(q.field('to'), args.to)))
+      .filter((q) =>
+        q.and(q.eq(q.field('from'), args.from), q.eq(q.field('to'), args.to))
+      )
       .first();
   },
 });
@@ -24,7 +26,9 @@ export const getPendingStaffsWithoutOrganization = query({
   handler: async (ctx, args) => {
     const res = await ctx.db
       .query('requests')
-      .filter((q) => q.and(q.eq(q.field('from'), args.id), q.eq(q.field('pending'), true)))
+      .filter((q) =>
+        q.and(q.eq(q.field('from'), args.id), q.eq(q.field('pending'), true))
+      )
       .collect();
 
     return await Promise.all(
@@ -42,9 +46,11 @@ export const getPendingStaffsWithoutOrganization = query({
 });
 export const getPendingRequestsWithOrganization = query({
   args: {
-    id: v.id('users'),
+    id: v.optional(v.id('users')),
   },
   handler: async (ctx, args) => {
+    if (!args.id) return [];
+
     const res = await ctx.db
       .query('requests')
       .filter((q) => q.eq(q.field('to'), args.id))
@@ -96,7 +102,9 @@ export const markRequestAsRead = mutation({
     ids: v.array(v.id('requests')),
   },
   handler: async (ctx, args) => {
-    const updatePromises = args.ids.map((id) => ctx.db.patch(id, { unread: false }));
+    const updatePromises = args.ids.map((id) =>
+      ctx.db.patch(id, { unread: false })
+    );
     await Promise.all(updatePromises);
   },
 });

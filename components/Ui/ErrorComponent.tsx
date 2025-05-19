@@ -7,9 +7,10 @@ import { useDarkMode } from '~/hooks/useDarkMode';
 
 type Props = {
   refetch: any;
+  text: string;
 };
 
-export const ErrorComponent = ({ refetch }: Props) => {
+export const ErrorComponent = ({ refetch, text }: Props) => {
   const { darkMode } = useDarkMode();
 
   const handleRefetch = () => {
@@ -24,15 +25,17 @@ export const ErrorComponent = ({ refetch }: Props) => {
         alignItems: 'center',
         gap: 10,
         backgroundColor: darkMode === 'dark' ? 'black' : 'white',
-      }}>
+      }}
+    >
       <Text
         style={{
           color: darkMode === 'dark' ? 'white' : 'black',
           fontFamily: 'PoppinsBold',
           fontSize: 20,
           textAlign: 'center',
-        }}>
-        Something went wrong, please try again
+        }}
+      >
+        {text || 'Something went wrong, please try again'}
       </Text>
       <MyButton onPress={handleRefetch} buttonStyle={{ width: 200 }}>
         Retry

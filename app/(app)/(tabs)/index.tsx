@@ -22,8 +22,8 @@ import { LoadingComponent } from '~/components/Ui/LoadingComponent';
 import { api } from '~/convex/_generated/api';
 import { useOrganizationModal } from '~/hooks/useOrganizationModal';
 
-export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
-  return <ErrorComponent refetch={retry} />;
+export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
+  return <ErrorComponent refetch={retry} text={error.message} />;
 }
 
 export default function TabOneScreen() {

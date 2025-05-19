@@ -4,7 +4,7 @@ import { Avatar } from '@rneui/themed';
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import React from 'react';
-import { Button, Pressable, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { toast } from 'sonner-native';
 
 import { EmptyText } from '~/components/EmptyText';
@@ -44,8 +44,11 @@ const Organization = () => {
   };
 
   console.log({ error, errorWorkspace });
+  const errorMessage = error?.message || errorWorkspace?.message;
   if (isError || isErrorWorkspace) {
-    return <ErrorComponent refetch={handleRefetch} />;
+    return (
+      <ErrorComponent refetch={handleRefetch} text={errorMessage as string} />
+    );
   }
   if (isPending || isPendingWorkspace) {
     return <LoadingComponent />;
