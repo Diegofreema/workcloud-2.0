@@ -7,9 +7,10 @@ import { getUserByUserId, getUserForWorker } from '~/convex/users';
 
 export const getOrganisationsOrNull = query({
   args: {
-    ownerId: v.id('users'),
+    ownerId: v.optional(v.id('users')),
   },
   handler: async (ctx, args) => {
+    if (!args.ownerId) return null;
     const orgs = await ctx.db
       .query('organizations')
       .filter((q) => q.eq(q.field('ownerId'), args.ownerId))
@@ -71,10 +72,15 @@ export const getOrganisationWithServicePoints = query({
     organizationId: v.id('organizations'),
   },
   handler: async (ctx, { organizationId }) => {
-    const organization = await getOrganizationByOrganizationId(ctx, organizationId);
+    const organization = await getOrganizationByOrganizationId(
+      ctx,
+      organizationId
+    );
     const servicePoints = await ctx.db
       .query('servicePoints')
-      .withIndex('by_organisation_id', (q) => q.eq('organizationId', organizationId))
+      .withIndex('by_organisation_id', (q) =>
+        q.eq('organizationId', organizationId)
+      )
       .collect();
     return {
       organization,
@@ -93,7 +99,10 @@ export const getOrganisationById = query({
       return organisation;
     }
 
-    const imageUrl = await getImageUrl(ctx, organisation.avatar as Id<'_storage'>);
+    const imageUrl = await getImageUrl(
+      ctx,
+      organisation.avatar as Id<'_storage'>
+    );
     return {
       ...organisation,
       avatar: imageUrl,
@@ -140,7 +149,9 @@ export const getPostsByOrganizationId = query({
   handler: async (ctx, args) => {
     const res = await ctx.db
       .query('posts')
-      .withIndex('by_org_id', (q) => q.eq('organizationId', args.organizationId))
+      .withIndex('by_org_id', (q) =>
+        q.eq('organizationId', args.organizationId)
+      )
       .collect();
 
     if (!res) return null;
@@ -209,7 +220,10 @@ export const getOrganisationsByServicePointsSearchQuery = query({
     if (!servicePoints) return [];
     const organisation = await Promise.all(
       servicePoints?.map(async (s) => {
-        return await getOrganizationByServicePointOrganizationId(ctx, s.organizationId);
+        return await getOrganizationByServicePointOrganizationId(
+          ctx,
+          s.organizationId
+        );
       })
     );
 
@@ -253,14 +267,23 @@ export const getStaffsByBossId = query({
     const res = await ctx.db
       .query('workers')
       .filter((q) =>
-        q.and(q.eq(q.field('bossId'), args.bossId), q.neq(q.field('userId'), args.bossId))
+        q.and(
+          q.eq(q.field('bossId'), args.bossId),
+          q.neq(q.field('userId'), args.bossId)
+        )
       )
       .collect();
     return await Promise.all(
       res.map(async (worker) => {
         const userProfile = await getUserForWorker(ctx, worker.userId);
-        const organization = await getOrganizationByOrganizationId(ctx, worker.organizationId!);
-        const workspace = await getWorkspaceByWorkerWorkspaceId(ctx, worker.workspaceId!);
+        const organization = await getOrganizationByOrganizationId(
+          ctx,
+          worker.organizationId!
+        );
+        const workspace = await getWorkspaceByWorkerWorkspaceId(
+          ctx,
+          worker.workspaceId!
+        );
         if (userProfile?.imageUrl?.startsWith('https')) {
           return {
             ...worker,
@@ -269,7 +292,10 @@ export const getStaffsByBossId = query({
             workspace,
           };
         }
-        const imageUrl = await getImageUrl(ctx, userProfile?.imageUrl as Id<'_storage'>);
+        const imageUrl = await getImageUrl(
+          ctx,
+          userProfile?.imageUrl as Id<'_storage'>
+        );
         return {
           ...worker,
           user: {
@@ -301,8 +327,14 @@ export const getStaffsByBossIdNotHavingServicePoint = query({
     return await Promise.all(
       res.map(async (worker) => {
         const userProfile = await getUserForWorker(ctx, worker.userId);
-        const organization = await getOrganizationByOrganizationId(ctx, worker.organizationId!);
-        const workspace = await getWorkspaceByWorkerWorkspaceId(ctx, worker.workspaceId!);
+        const organization = await getOrganizationByOrganizationId(
+          ctx,
+          worker.organizationId!
+        );
+        const workspace = await getWorkspaceByWorkerWorkspaceId(
+          ctx,
+          worker.workspaceId!
+        );
         if (userProfile?.imageUrl?.startsWith('https')) {
           return {
             ...worker,
@@ -311,7 +343,10 @@ export const getStaffsByBossIdNotHavingServicePoint = query({
             workspace,
           };
         }
-        const imageUrl = await getImageUrl(ctx, userProfile?.imageUrl as Id<'_storage'>);
+        const imageUrl = await getImageUrl(
+          ctx,
+          userProfile?.imageUrl as Id<'_storage'>
+        );
         return {
           ...worker,
           user: {
@@ -358,7 +393,9 @@ export const updateUserTableWithOrganizationId = mutation({
     organizationId: v.id('organizations'),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.patch(args.userId, { organizationId: args.organizationId });
+    return await ctx.db.patch(args.userId, {
+      organizationId: args.organizationId,
+    });
   },
 });
 
@@ -399,7 +436,10 @@ export const createPosts = mutation({
     storageId: v.id('_storage'),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert('posts', { image: args.storageId, organizationId: args.organizationId });
+    await ctx.db.insert('posts', {
+      image: args.storageId,
+      organizationId: args.organizationId,
+    });
   },
 });
 
@@ -439,7 +479,9 @@ export const getUserByOwnerId = async (ctx: QueryCtx, ownerId: Id<'users'>) => {
   if (!result) return null;
   if (result.imageUrl?.startsWith('http')) return result;
 
-  const userAvatarUrl = await ctx.storage.getUrl(result.imageUrl as Id<'_storage'>);
+  const userAvatarUrl = await ctx.storage.getUrl(
+    result.imageUrl as Id<'_storage'>
+  );
   return {
     ...result,
     imageUrl: userAvatarUrl,
@@ -452,7 +494,9 @@ export const getWorkspacesByOrganizationId = async (
 ) => {
   return await ctx.db
     .query('workspaces')
-    .withIndex('personal', (q) => q.eq('organizationId', organizationId).eq('type', 'personal'))
+    .withIndex('personal', (q) =>
+      q.eq('organizationId', organizationId).eq('type', 'personal')
+    )
     .first();
 };
 
@@ -467,7 +511,9 @@ export const getOrganizationByOrganizationId = async (
   const res = await ctx.db.get(organizationId);
   if (!res) return null;
   if (res.avatar.startsWith('https')) return res;
-  const organizationAvatar = await ctx.storage.getUrl(res.avatar as Id<'_storage'>);
+  const organizationAvatar = await ctx.storage.getUrl(
+    res.avatar as Id<'_storage'>
+  );
   return {
     ...res,
     avatar: organizationAvatar,
@@ -479,7 +525,9 @@ export const getOrganizationByServicePointOrganizationId = async (
 ) => {
   const res = await ctx.db.get(organizationId);
   if (!res) return null;
-  const organizationAvatar = await ctx.storage.getUrl(res.avatar as Id<'_storage'>);
+  const organizationAvatar = await ctx.storage.getUrl(
+    res.avatar as Id<'_storage'>
+  );
   return {
     name: res.name,
     avatar: organizationAvatar,
@@ -489,14 +537,19 @@ export const getOrganizationByServicePointOrganizationId = async (
   };
 };
 
-export const getOrganizationByOwnerId = async (ctx: QueryCtx, id: Id<'users'>) => {
+export const getOrganizationByOwnerId = async (
+  ctx: QueryCtx,
+  id: Id<'users'>
+) => {
   const res = await ctx.db
     .query('organizations')
     .filter((q) => q.eq(q.field('ownerId'), id))
     .first();
   if (!res) return null;
   if (res.avatar.startsWith('https')) return res;
-  const organizationAvatar = await ctx.storage.getUrl(res.avatar as Id<'_storage'>);
+  const organizationAvatar = await ctx.storage.getUrl(
+    res.avatar as Id<'_storage'>
+  );
   return {
     ...res,
     avatar: organizationAvatar,
@@ -537,7 +590,10 @@ export const getWorkspaceWithWorkerAndUserProfile = async (
   return await Promise.all(
     workers.map(async (worker) => {
       const user = await getUserByUserId(ctx, worker?.userId!);
-      const workspace = await getWorkspaceByWorkerWorkspaceId(ctx, worker?.workspaceId!);
+      const workspace = await getWorkspaceByWorkerWorkspaceId(
+        ctx,
+        worker?.workspaceId!
+      );
       return {
         ...worker,
         user,

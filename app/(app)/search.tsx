@@ -7,7 +7,7 @@ import { useDebounce } from 'use-debounce';
 
 import { HStack } from '~/components/HStack';
 import { RecentSearch } from '~/components/RecentSearch';
-import { SearchComponent } from '~/components/SearchComponent';
+import { SearchComponent } from '~/features/common/components/SearchComponent';
 import { TSearch } from '~/components/TopSearch';
 import { Container } from '~/components/Ui/Container';
 import { ErrorComponent } from '~/components/Ui/ErrorComponent';

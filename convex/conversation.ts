@@ -1,73 +1,46 @@
-import { paginationOptsValidator } from 'convex/server';
-import { v } from 'convex/values';
+import { paginationOptsValidator } from "convex/server";
+import { v } from "convex/values";
 
-import { mutation, query, QueryCtx } from './_generated/server';
+import { mutation, query, QueryCtx } from "./_generated/server";
 
-import { Id } from '~/convex/_generated/dataModel';
-import { getImageUrl } from '~/convex/organisation';
-import { getUserByUserId } from '~/convex/users';
+import { Id } from "~/convex/_generated/dataModel";
+import { getImageUrl } from "~/convex/organisation";
+import { getUserByUserId } from "~/convex/users";
+import { filter } from "convex-helpers/server/filter";
 
-export const getConversations = query({
+export const getConversationsSingle = query({
   args: {
-    userId: v.id('users'),
+    userId: v.id("users"),
     paginationOpts: paginationOptsValidator,
-    type: v.union(v.literal('all'), v.literal('processor')),
   },
   handler: async (ctx, args) => {
-    let conversations;
-    if (args.type === 'all') {
-      conversations = await ctx.db
-        .query('conversations')
-        .withIndex('by_id')
-        .filter((q) => q.neq(q.field('lastMessage'), undefined))
-        .order('desc')
-        .paginate(args.paginationOpts);
-    } else {
-      conversations = await ctx.db
-        .query('conversations')
-        .withIndex('by_id')
-        .filter((q) =>
-          q.and(q.neq(q.field('lastMessage'), undefined), q.eq(q.field('type'), args.type))
-        )
-        .order('desc')
-        .paginate(args.paginationOpts);
-    }
-
-    const page = await Promise.all(
-      conversations.page
-        .filter((m) => m.participants.includes(args.userId))
-        .map(async (c) => {
-          const otherUserId = c.participants.find((p) => p !== args.userId);
-          const otherUser = await getUserByUserId(ctx, otherUserId);
-          return {
-            id: c._id,
-            lastMessage: c.lastMessage,
-            name: c.name,
-            lastMessageTime: c.lastMessageTime,
-            otherUser,
-            lastMessageSenderId: c.lastMessageSenderId,
-          };
-        })
-    );
-    return {
-      ...conversations,
-      page,
-    };
+    return filter(
+      ctx.db
+        .query("conversations")
+        .withIndex("by_last_message_last_message_time"),
+      (conversation) => conversation.participants.includes(args.userId),
+    )
+      .order("asc")
+      .paginate(args.paginationOpts);
   },
 });
 
 export const getUnreadMessages = query({
   args: {
-    conversationId: v.id('conversations'),
-    userId: v.id('users'),
+    conversationId: v.id("conversations"),
+    userId: v.id("users"),
   },
   handler: async (ctx, args) => {
     const messages = await ctx.db
-      .query('messages')
-      .withIndex('by_conversationId_recipient', (q) => q.eq('conversationId', args.conversationId))
-      .filter((q) => q.neq(q.field('senderId'), args.userId))
+      .query("messages")
+      .withIndex("by_conversationId_recipient", (q) =>
+        q.eq("conversationId", args.conversationId),
+      )
+      .filter((q) => q.neq(q.field("senderId"), args.userId))
       .collect();
-    const unseenMessages = messages.filter((m) => !m.seenId.includes(args.userId));
+    const unseenMessages = messages.filter(
+      (m) => !m.seenId.includes(args.userId),
+    );
 
     return unseenMessages.length || 0;
   },
@@ -75,36 +48,45 @@ export const getUnreadMessages = query({
 export const getUnreadAllMessages = query({
   args: {
     clerkId: v.string(),
-    type: v.union(v.literal('single'), v.literal('processor'), v.literal('group')),
+    type: v.union(
+      v.literal("single"),
+      v.literal("processor"),
+      v.literal("group"),
+    ),
   },
   handler: async (ctx, args) => {
     const user = await ctx.db
-      .query('users')
-      .filter((q) => q.eq(q.field('clerkId'), args.clerkId))
+      .query("users")
+      .filter((q) => q.eq(q.field("clerkId"), args.clerkId))
       .first();
     if (!user) return 0;
     const workerRole = await ctx.db
-      .query('workers')
-      .filter((q) => q.eq(q.field('userId'), user._id))
+      .query("workers")
+      .filter((q) => q.eq(q.field("userId"), user._id))
       .first();
     let conversations;
-    if (workerRole && workerRole?.role?.toLowerCase() === 'processor') {
-      conversations = await ctx.db.query('conversations').withIndex('by_id').collect();
+    if (workerRole && workerRole?.role?.toLowerCase() === "processor") {
+      conversations = await ctx.db
+        .query("conversations")
+        .withIndex("by_id")
+        .collect();
     } else {
       conversations = await ctx.db
-        .query('conversations')
-        .withIndex('by_id')
-        .filter((q) => q.eq(q.field('type'), args.type))
+        .query("conversations")
+        .withIndex("by_id")
+        .filter((q) => q.eq(q.field("type"), args.type))
         .collect();
     }
 
     if (!conversations) return 0;
     const conversationThatLoggedInUserIsIn = conversations.filter((c) =>
-      c.participants.includes(user?._id)
+      c.participants.includes(user?._id),
     );
-    const messagesThatUserHasNotRead = conversationThatLoggedInUserIsIn.map(async (m) => {
-      return await getMessagesUnreadCount(ctx, m._id, user?._id);
-    });
+    const messagesThatUserHasNotRead = conversationThatLoggedInUserIsIn.map(
+      async (m) => {
+        return await getMessagesUnreadCount(ctx, m._id, user?._id);
+      },
+    );
     const unread = await Promise.all(messagesThatUserHasNotRead);
 
     return unread.reduce((acc, curr) => acc + curr, 0);
@@ -113,18 +95,19 @@ export const getUnreadAllMessages = query({
 
 export const getSingleConversationWithMessages = query({
   args: {
-    loggedInUserId: v.id('users'),
-    otherUserId: v.id('users'),
+    loggedInUserId: v.id("users"),
+    otherUserId: v.id("users"),
   },
   handler: async (ctx, args) => {
-    const conversations = await ctx.db.query('conversations').collect();
+    const conversations = await ctx.db.query("conversations").collect();
     if (!conversations) return null;
     const conversation = conversations.find(
       (c) =>
         (c.participants.length === 2 &&
           c.participants[0] === args.loggedInUserId &&
           c.participants[1] === args.otherUserId) ||
-        (c.participants[1] === args.loggedInUserId && c.participants[0] === args.otherUserId)
+        (c.participants[1] === args.loggedInUserId &&
+          c.participants[0] === args.otherUserId),
     );
 
     if (!conversation) return null;
@@ -134,14 +117,16 @@ export const getSingleConversationWithMessages = query({
 });
 export const getMessages = query({
   args: {
-    conversationId: v.optional(v.id('conversations')),
+    conversationId: v.optional(v.id("conversations")),
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
     const messages = await ctx.db
-      .query('messages')
-      .withIndex('by_conversationId', (q) => q.eq('conversationId', args.conversationId!))
-      .order('desc')
+      .query("messages")
+      .withIndex("by_conversationId", (q) =>
+        q.eq("conversationId", args.conversationId!),
+      )
+      .order("desc")
       .paginate(args.paginationOpts);
     const pagesWithImages = messages.page.map(async (m) => {
       const data = {
@@ -156,8 +141,11 @@ export const getMessages = query({
         seenId: m.seenId,
         recipient: m.recipient,
       };
-      if (m.contentType === 'image') {
-        const imageUrl = (await getImageUrl(ctx, m.content as Id<'_storage'>)) as string;
+      if (m.contentType === "image") {
+        const imageUrl = (await getImageUrl(
+          ctx,
+          m.content as Id<"_storage">,
+        )) as string;
         return {
           ...data,
           content: imageUrl,
@@ -173,38 +161,40 @@ export const getMessages = query({
 });
 export const getMessagesTanstack = query({
   args: {
-    conversationId: v.optional(v.id('conversations')),
+    conversationId: v.optional(v.id("conversations")),
   },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query('messages')
-      .withIndex('by_conversationId', (q) => q.eq('conversationId', args.conversationId!))
+      .query("messages")
+      .withIndex("by_conversationId", (q) =>
+        q.eq("conversationId", args.conversationId!),
+      )
       .collect();
   },
 });
 export const searchConversations = query({
   args: {
     query: v.string(),
-    loggedInUserId: v.id('users'),
+    loggedInUserId: v.id("users"),
   },
   handler: async (ctx, args) => {
     const users = await ctx.db
-      .query('users')
-      .withSearchIndex('name', (q) => q.search('name', args.query))
+      .query("users")
+      .withSearchIndex("name", (q) => q.search("name", args.query))
       .collect();
     const usersConversationsWithLoggedInUsers = users.map(async (user) => {
       const conversation = await getConversationsBetweenTwoUsers(
         ctx,
         args.loggedInUserId,
-        user._id
+        user._id,
       );
 
       if (!conversation) return null;
 
-      if (user?.imageUrl?.startsWith('https')) {
+      if (user?.imageUrl?.startsWith("https")) {
         return user;
       }
-      const avatar = await getImageUrl(ctx, user.imageUrl as Id<'_storage'>);
+      const avatar = await getImageUrl(ctx, user.imageUrl as Id<"_storage">);
       return {
         ...user,
         imageUrl: avatar,
@@ -219,12 +209,16 @@ export const searchConversations = query({
 
 export const createSingleConversation = mutation({
   args: {
-    loggedInUserId: v.id('users'),
-    otherUserId: v.id('users'),
-    type: v.union(v.literal('processor'), v.literal('single'), v.literal('group')),
+    loggedInUserId: v.id("users"),
+    otherUserId: v.id("users"),
+    type: v.union(
+      v.literal("processor"),
+      v.literal("single"),
+      v.literal("group"),
+    ),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert('conversations', {
+    await ctx.db.insert("conversations", {
       participants: [args.loggedInUserId, args.otherUserId],
       type: args.type,
     });
@@ -232,8 +226,8 @@ export const createSingleConversation = mutation({
 });
 export const addSeenId = mutation({
   args: {
-    messages: v.array(v.id('messages')),
-    id: v.id('users'),
+    messages: v.array(v.id("messages")),
+    id: v.id("users"),
   },
   handler: async (ctx, args) => {
     const updatePromises = args.messages.map(async (m) => {
@@ -253,16 +247,16 @@ export const addSeenId = mutation({
 });
 export const createMessages = mutation({
   args: {
-    senderId: v.id('users'),
-    recipient: v.id('users'),
-    conversationId: v.id('conversations'),
+    senderId: v.id("users"),
+    recipient: v.id("users"),
+    conversationId: v.id("conversations"),
     content: v.string(),
-    parentMessageId: v.optional(v.id('messages')),
-    contentType: v.union(v.literal('image'), v.literal('text')),
+    parentMessageId: v.optional(v.id("messages")),
+    contentType: v.union(v.literal("image"), v.literal("text")),
     uploadUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert('messages', {
+    await ctx.db.insert("messages", {
       recipient: args.recipient,
       conversationId: args.conversationId,
       content: args.content,
@@ -271,7 +265,8 @@ export const createMessages = mutation({
       senderId: args.senderId,
       seenId: [args.senderId],
     });
-    const lastMessage = args.contentType === 'image' ? args.uploadUrl : args.content;
+    const lastMessage =
+      args.contentType === "image" ? args.uploadUrl : args.content;
     await ctx.db.patch(args.conversationId, {
       lastMessage,
       lastMessageTime: Date.now(),
@@ -281,18 +276,18 @@ export const createMessages = mutation({
 });
 
 // helpers
-const getParticipants = async (ctx: QueryCtx, userId: Id<'users'>) => {
+const getParticipants = async (ctx: QueryCtx, userId: Id<"users">) => {
   return await ctx.db.get(userId);
 };
 
 const getMessagesUnreadCount = async (
   ctx: QueryCtx,
-  conversationId: Id<'conversations'>,
-  userId: Id<'users'>
+  conversationId: Id<"conversations">,
+  userId: Id<"users">,
 ) => {
   const messages = await ctx.db
-    .query('messages')
-    .filter((q) => q.eq(q.field('conversationId'), conversationId))
+    .query("messages")
+    .filter((q) => q.eq(q.field("conversationId"), conversationId))
     .collect();
   const unreadMessages = messages.filter((m) => !m.seenId.includes(userId));
   return unreadMessages.length || 0;
@@ -300,10 +295,10 @@ const getMessagesUnreadCount = async (
 
 export const getConversationsBetweenTwoUsers = async (
   ctx: QueryCtx,
-  loggedInUserId: Id<'users'>,
-  otherUserId: Id<'users'>
+  loggedInUserId: Id<"users">,
+  otherUserId: Id<"users">,
 ) => {
-  const conversations = await ctx.db.query('conversations').collect();
+  const conversations = await ctx.db.query("conversations").collect();
   if (!conversations) return null;
 
   return conversations.find(
@@ -311,6 +306,7 @@ export const getConversationsBetweenTwoUsers = async (
       (c.participants.length === 2 &&
         c.participants[0] === loggedInUserId &&
         c.participants[1] === otherUserId) ||
-      (c.participants[1] === loggedInUserId && c.participants[0] === otherUserId)
+      (c.participants[1] === loggedInUserId &&
+        c.participants[0] === otherUserId),
   );
 };

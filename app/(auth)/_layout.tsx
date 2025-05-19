@@ -1,11 +1,16 @@
-import { Stack } from 'expo-router';
+import { useUser } from '@clerk/clerk-expo';
+import { Redirect, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import { useDarkMode } from '~/hooks/useDarkMode';
 
 const AuthLayout = () => {
   const { darkMode } = useDarkMode();
+  const { isSignedIn } = useUser();
 
+  if (isSignedIn) {
+    return <Redirect href={'/(app)/(tabs)'} />;
+  }
   return (
     // @ts-ignore
     <>

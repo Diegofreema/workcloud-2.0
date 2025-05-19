@@ -1,31 +1,34 @@
-import { convexQuery } from '@convex-dev/react-query';
-import { EvilIcons, FontAwesome } from '@expo/vector-icons';
-import { Avatar } from '@rneui/themed';
-import { useQuery } from '@tanstack/react-query';
-import { router } from 'expo-router';
-import React from 'react';
-import { Button, Pressable, View } from 'react-native';
-import { toast } from 'sonner-native';
+import { convexQuery } from "@convex-dev/react-query";
+import { EvilIcons, FontAwesome } from "@expo/vector-icons";
+import { Avatar } from "@rneui/themed";
+import { useQuery } from "@tanstack/react-query";
+import { router } from "expo-router";
+import React from "react";
+import { Pressable, View } from "react-native";
+import { toast } from "sonner-native";
 
-import { EmptyText } from '~/components/EmptyText';
-import { HStack } from '~/components/HStack';
-import { Container } from '~/components/Ui/Container';
-import { ErrorComponent } from '~/components/Ui/ErrorComponent';
-import { LoadingComponent } from '~/components/Ui/LoadingComponent';
-import { MyText } from '~/components/Ui/MyText';
-import VStack from '~/components/Ui/VStack';
-import { WorkCloudHeader } from '~/components/WorkCloudHeader';
-import { WorkspaceItem } from '~/components/WorkspaceItem';
-import { colors } from '~/constants/Colors';
-import { WorkSpace } from '~/constants/types';
-import { api } from '~/convex/_generated/api';
-import { useDarkMode } from '~/hooks/useDarkMode';
-import { useGetUserId } from '~/hooks/useGetUserId';
+import { EmptyText } from "~/components/EmptyText";
+import { HStack } from "~/components/HStack";
+import { Container } from "~/components/Ui/Container";
+import { ErrorComponent } from "~/components/Ui/ErrorComponent";
+import { LoadingComponent } from "~/components/Ui/LoadingComponent";
+import { MyText } from "~/components/Ui/MyText";
+import VStack from "~/components/Ui/VStack";
+import { WorkCloudHeader } from "~/components/WorkCloudHeader";
+import { WorkspaceItem } from "~/components/WorkspaceItem";
+import { colors } from "~/constants/Colors";
+import { WorkSpace } from "~/constants/types";
+import { api } from "~/convex/_generated/api";
+import { useDarkMode } from "~/hooks/useDarkMode";
+import { useGetUserId } from "~/hooks/useGetUserId";
+import { WorkspaceComponent } from "~/features/organization/components/workspace";
+import { TabsHeader } from "~/features/common/components/tabs-header";
+import { Title } from "~/features/common/components/title";
 
 const Organization = () => {
   const { id, worker } = useGetUserId();
   const { data, isPending, isError, refetch, error } = useQuery(
-    convexQuery(api.organisation.getOrganisationsOrNull, { ownerId: id! })
+    convexQuery(api.organisation.getOrganisationsOrNull, { ownerId: id! }),
   );
   const { darkMode } = useDarkMode();
   const {
@@ -35,7 +38,7 @@ const Organization = () => {
     refetch: refetchWorkspace,
     error: errorWorkspace,
   } = useQuery(
-    convexQuery(api.workspace.getUserWorkspaceOrNull, { workerId: worker! })
+    convexQuery(api.workspace.getUserWorkspaceOrNull, { workerId: worker! }),
   );
 
   const handleRefetch = async () => {
@@ -44,8 +47,11 @@ const Organization = () => {
   };
 
   console.log({ error, errorWorkspace });
+  const errorMessage = error?.message || errorWorkspace?.message;
   if (isError || isErrorWorkspace) {
-    return <ErrorComponent refetch={handleRefetch} />;
+    return (
+      <ErrorComponent refetch={handleRefetch} text={errorMessage as string} />
+    );
   }
   if (isPending || isPendingWorkspace) {
     return <LoadingComponent />;
@@ -53,21 +59,21 @@ const Organization = () => {
 
   return (
     <Container>
-      <View style={[{ flexDirection: 'row', justifyContent: 'space-between' }]}>
-        <MyText style={{ fontSize: 15 }} poppins="Medium">
-          Organization
-        </MyText>
-        <Pressable
-          onPress={() => router.push('/search')}
-          style={({ pressed }) => pressed && { opacity: 0.5 }}
-        >
-          <EvilIcons
-            name="search"
-            size={30}
-            color={darkMode === 'dark' ? colors.white : colors.black}
-          />
-        </Pressable>
-      </View>
+      <TabsHeader
+        leftContent={<Title title={"Organization"} />}
+        rightContent={
+          <Pressable
+            onPress={() => router.push("/search")}
+            style={({ pressed }) => pressed && { opacity: 0.5 }}
+          >
+            <EvilIcons
+              name="search"
+              size={30}
+              color={darkMode === "dark" ? colors.white : colors.black}
+            />
+          </Pressable>
+        }
+      />
       <View style={{ marginVertical: 14 }}>
         {!data?._id ? (
           <WorkCloudHeader />
@@ -90,7 +96,7 @@ const Organization = () => {
 
         {workspace?._id ? (
           // @ts-ignore
-          <Workspace item={workspace} />
+          <WorkspaceComponent item={workspace} />
         ) : (
           <EmptyText text="No assigned workspace yet" />
         )}
@@ -100,77 +106,3 @@ const Organization = () => {
 };
 
 export default Organization;
-
-const Workspace = ({ item }: { item: WorkSpace }) => {
-  const handlePress = () => {
-    if (item?.locked) {
-      toast('This workspace is locked', {
-        description: 'Please wait till the admin unlocks it',
-      });
-      return;
-    }
-    router.push(`/wk/${item?._id}`);
-  };
-
-  // const imgUrl = item?.personal ? item?.ownerId?.avatar : item?.organizationId?.avatar;
-
-  return (
-    <Pressable
-      onPress={handlePress}
-      style={{
-        width: '100%',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-      }}
-    >
-      <HStack gap={10} alignItems="center">
-        <Avatar
-          rounded
-          source={{ uri: item.organization?.avatar! }}
-          size={50}
-        />
-        <VStack>
-          <MyText poppins="Bold" style={{ fontSize: 13 }}>
-            {item?.role}
-          </MyText>
-          <View
-            style={{
-              backgroundColor: item?.active
-                ? colors.openTextColor
-                : colors.closeBackgroundColor,
-              paddingHorizontal: 2,
-              borderRadius: 3,
-              alignItems: 'center',
-            }}
-          >
-            <MyText
-              poppins="Light"
-              style={{
-                color: item?.active
-                  ? colors.openBackgroundColor
-                  : colors.closeTextColor,
-              }}
-            >
-              {item?.active ? 'Active' : 'Not active'}
-            </MyText>
-          </View>
-        </VStack>
-      </HStack>
-
-      {item?.locked && (
-        <HStack
-          gap={5}
-          alignItems="center"
-          bg={colors.closeBackgroundColor}
-          px={5}
-          rounded={6}
-        >
-          <FontAwesome name="lock" size={20} color={colors.closeTextColor} />
-          <MyText poppins="Bold" style={{ color: colors.closeTextColor }}>
-            Locked
-          </MyText>
-        </HStack>
-      )}
-    </Pressable>
-  );
-};

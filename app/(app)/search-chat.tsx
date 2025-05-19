@@ -2,7 +2,7 @@ import { useQuery } from 'convex/react';
 import { useState } from 'react';
 import { useDebounce } from 'use-debounce';
 
-import { SearchComponent } from '~/components/SearchComponent';
+import { SearchComponent } from '~/features/common/components/SearchComponent';
 import { SearchConversations } from '~/components/SearchConversations';
 import { Container } from '~/components/Ui/Container';
 import { LoadingComponent } from '~/components/Ui/LoadingComponent';

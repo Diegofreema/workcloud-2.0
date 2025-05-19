@@ -1,10 +1,11 @@
-import { Link } from 'expo-router';
-import { Pressable, View } from 'react-native';
+import { Link } from "expo-router";
+import { Pressable, View } from "react-native";
 
-import { MyText } from './Ui/MyText';
+import { MyText } from "~/components/Ui/MyText";
 
-import { Avatar } from '~/components/Ui/Avatar';
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { Avatar } from "~/components/Ui/Avatar";
+import { useDarkMode } from "~/hooks/useDarkMode";
+import { JSX } from "react";
 
 type PartUser = {
   id: string;
@@ -18,8 +19,8 @@ export const ProfileHeader = (user: PartUser): JSX.Element | undefined => {
       <Pressable
         style={{
           marginTop: 10,
-          flexDirection: 'row',
-          alignItems: 'center',
+          flexDirection: "row",
+          alignItems: "center",
           gap: 10,
         }}
       >
@@ -29,9 +30,9 @@ export const ProfileHeader = (user: PartUser): JSX.Element | undefined => {
             poppins="Bold"
             fontSize={17}
             style={{
-              fontFamily: 'PoppinsBold',
+              fontFamily: "PoppinsBold",
               fontSize: 17,
-              color: darkMode === 'dark' ? 'white' : 'black',
+              color: darkMode === "dark" ? "white" : "black",
             }}
           >
             Hi {user?.name}
@@ -40,8 +41,8 @@ export const ProfileHeader = (user: PartUser): JSX.Element | undefined => {
             poppins="Light"
             fontSize={15}
             style={{
-              color: '#666666',
-              fontFamily: 'PoppinsLight',
+              color: "#666666",
+              fontFamily: "PoppinsLight",
             }}
           >
             Good to have you here

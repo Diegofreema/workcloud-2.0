@@ -1,18 +1,18 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Text } from '@rneui/themed';
-import { Tabs } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Text } from "@rneui/themed";
+import { Tabs } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import React from "react";
 
-import { fontFamily } from '~/constants';
-import { colors } from '~/constants/Colors';
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { fontFamily } from "~/constants";
+import { colors } from "~/constants/Colors";
+import { useDarkMode } from "~/hooks/useDarkMode";
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
  */
 function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
+  name: React.ComponentProps<typeof FontAwesome>["name"];
   color: string;
   size?: number;
 }) {
@@ -25,28 +25,27 @@ export default function TabLayout() {
   return (
     <>
       <StatusBar
-        style={darkMode === 'dark' ? 'light' : 'dark'}
-        backgroundColor={darkMode === 'dark' ? 'black' : 'white'}
+        style={darkMode === "dark" ? "light" : "dark"}
+        backgroundColor={darkMode === "dark" ? "black" : "white"}
       />
 
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: darkMode === 'dark' ? '#151718' : 'white',
+          tabBarActiveTintColor: darkMode === "dark" ? "#151718" : "white",
           headerShown: false,
           tabBarStyle: {
             height: 50,
             paddingBottom: 5,
-            backgroundColor: darkMode === 'dark' ? 'black' : 'white',
+            backgroundColor: darkMode === "dark" ? "black" : "white",
           },
           tabBarLabelStyle: {
-            fontWeight: 'bold',
+            fontWeight: "bold",
           },
         }}
       >
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Home',
             tabBarIcon: ({ focused, size }) => (
               <TabBarIcon
                 name="home"
@@ -68,9 +67,8 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="messages"
+          name="message"
           options={{
-            title: 'Messages',
             tabBarIcon: ({ focused, size }) => (
               <TabBarIcon
                 name="envelope"
@@ -94,7 +92,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="organization"
           options={{
-            title: 'Organizations',
+            title: "Organizations",
             tabBarIcon: ({ focused, size }) => (
               <TabBarIcon
                 name="briefcase"
@@ -111,6 +109,29 @@ export default function TabLayout() {
                 }}
               >
                 Organizations
+              </Text>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="calls"
+          options={{
+            tabBarIcon: ({ focused, size }) => (
+              <TabBarIcon
+                name="phone"
+                color={focused ? colors.buttonBlue : colors.grayText}
+                size={size}
+              />
+            ),
+            tabBarLabel: ({ focused }) => (
+              <Text
+                style={{
+                  color: focused ? colors.buttonBlue : colors.grayText,
+                  fontFamily: fontFamily.Bold,
+                  fontSize: 10,
+                }}
+              >
+                Call log
               </Text>
             ),
           }}

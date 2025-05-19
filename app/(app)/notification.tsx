@@ -23,12 +23,23 @@ const Notification = () => {
   const info = useInfos((state) => state.infoIds);
   const [isLoading, setIsLoading] = useState(false);
   const { darkMode } = useDarkMode();
-  const { data, isPaused, isPending, isError, refetch, isRefetching, isRefetchError } = useQuery(
+  const {
+    data,
+    isPaused,
+    isPending,
+    isError,
+    refetch,
+    isRefetching,
+    isRefetchError,
+    error,
+  } = useQuery(
     convexQuery(api.request.getPendingRequestsWithOrganization, { id: id! })
   );
   const markUnread = useMutation(api.request.markRequestAsRead);
   const acceptOffer = useMutation(api.worker.acceptOffer);
-  const unreadRequests = data?.filter((d) => d.request.unread).map((unread) => unread.request._id);
+  const unreadRequests = data
+    ?.filter((d) => d.request.unread)
+    .map((unread) => unread.request._id);
   useEffect(() => {
     if (unreadRequests?.length) {
       const onMark = async () => {
@@ -37,8 +48,8 @@ const Notification = () => {
       onMark().catch(console.log);
     }
   }, [unreadRequests, markUnread]);
-  if (isError || isRefetchError || isPaused) {
-    return <ErrorComponent refetch={refetch} />;
+  if (isError || isRefetchError || isPaused || error) {
+    return <ErrorComponent refetch={refetch} text={error?.message as string} />;
   }
 
   if (isPending) {
@@ -84,7 +95,9 @@ const Notification = () => {
 
         <FlatList
           style={{ marginTop: 10 }}
-          ListEmptyComponent={() => <EmptyText text="No pending notifications" />}
+          ListEmptyComponent={() => (
+            <EmptyText text="No pending notifications" />
+          )}
           ItemSeparatorComponent={() => (
             <Divider
               style={{

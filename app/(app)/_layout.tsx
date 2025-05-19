@@ -6,15 +6,15 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ErrorComponent } from '~/components/Ui/ErrorComponent';
 import { useDarkMode } from '~/hooks/useDarkMode';
 
-export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
-  return <ErrorComponent refetch={retry} />;
+export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
+  return <ErrorComponent refetch={retry} text={error.message} />;
 }
 export default function AppLayout() {
   const { isSignedIn } = useUser();
   const { darkMode } = useDarkMode();
 
   if (!isSignedIn) {
-    return <Redirect href="/(auth)/login" />;
+    return <Redirect href="/login" />;
   }
 
   return (

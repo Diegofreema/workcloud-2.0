@@ -7,7 +7,7 @@ import * as MediaLibrary from 'expo-media-library';
 import { toast } from 'sonner-native';
 
 import { ChatDateGroup, DataType } from '~/constants/types';
-import { Id } from '~/convex/_generated/dataModel';
+import {Doc, Id} from '~/convex/_generated/dataModel';
 import { Channel } from 'stream-chat';
 
 export const downloadAndSaveImage = async (imageUrl: string) => {
@@ -336,3 +336,8 @@ export const filterChannels = async (channels: Channel[], query: string) => {
   // Filter out null values (channels that didn't match the query)
   return filteredChannels.filter((channel) => channel !== null) as Channel[];
 };
+
+
+export const sliceArray = <T>(array: T[], length = 10): T[] => {
+  return array?.slice(0, length)
+}

@@ -2,7 +2,8 @@ import { useAuth } from '@clerk/clerk-expo';
 import { Icon } from '@rneui/themed';
 import { useQuery } from 'convex/react';
 import { useLocalSearchParams } from 'expo-router';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
 import { HStack } from '~/components/HStack';
 import { HeaderNav } from '~/components/HeaderNav';
@@ -20,16 +21,26 @@ import { useDarkMode } from '~/hooks/useDarkMode';
 const ProfileEdit = () => {
   const { signOut } = useAuth();
   const { id } = useLocalSearchParams<{ id: string }>();
+  const [loading, setLoading] = useState(true);
   const user = useQuery(api.users.getUserById, { id: id as Id<'users'> });
-  const connections = useQuery(api.connection.getUserConnections, { ownerId: id as Id<'users'> });
+  const connections = useQuery(api.connection.getUserConnections, {
+    ownerId: id as Id<'users'>,
+  });
   const { darkMode } = useDarkMode();
 
-  if (!user || !connections) {
+  if (user === undefined || connections === undefined) {
     return <LoadingComponent />;
   }
 
   const logout = async () => {
-    await signOut();
+    setLoading(true);
+    try {
+      await signOut();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const isDarkMode = darkMode === 'dark';
@@ -38,8 +49,14 @@ const ProfileEdit = () => {
       style={{
         flex: 1,
         backgroundColor: isDarkMode ? 'black' : 'white',
-      }}>
-      <View style={[styles.container, { backgroundColor: isDarkMode ? 'black' : 'white' }]}>
+      }}
+    >
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: isDarkMode ? 'black' : 'white' },
+        ]}
+      >
         <HeaderNav title="Profile" RightComponent={RightComponent} />
       </View>
       <TopCard id={user?._id} name={user?.name} image={user?.imageUrl!} />
@@ -55,20 +72,27 @@ const ProfileEdit = () => {
           marginBottom: 50,
           opacity: pressed ? 0.5 : 1,
         })}
-        onPress={logout}>
-        <HStack
-          width="100%"
-          alignItems="center"
-          justifyContent="center"
-          bg={isDarkMode ? 'white' : '#F2F2F2'}
-          p={10}
-          rounded={10}
-          gap={5}>
-          <LogOutSvg height={30} width={30} />
-          <MyText poppins="Bold" fontSize={16} style={{ color: 'black' }}>
-            Log Out
-          </MyText>
-        </HStack>
+        onPress={logout}
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator style={{ alignSelf: 'center' }} />
+        ) : (
+          <HStack
+            width="100%"
+            alignItems="center"
+            justifyContent="center"
+            bg={isDarkMode ? 'white' : '#F2F2F2'}
+            p={10}
+            rounded={10}
+            gap={5}
+          >
+            <LogOutSvg height={30} width={30} />
+            <MyText poppins="Bold" fontSize={16} style={{ color: 'black' }}>
+              Log Out
+            </MyText>
+          </HStack>
+        )}
       </Pressable>
     </View>
   );
@@ -91,13 +115,15 @@ const RightComponent = () => {
         padding: 5,
         borderRadius: 5555,
         // backgroundColor: darkMode === 'dark' ? 'white' : 'black',
-      })}>
+      })}
+    >
       <View
         style={{
           backgroundColor: darkMode === 'dark' ? 'white' : 'black',
           padding: 10,
           borderRadius: 5555,
-        }}>
+        }}
+      >
         <Icon
           name={darkMode === 'dark' ? 'sun' : 'moon'}
           size={30}
