@@ -1,34 +1,34 @@
-import { convexQuery } from "@convex-dev/react-query";
-import { EvilIcons, FontAwesome } from "@expo/vector-icons";
-import { Avatar } from "@rneui/themed";
-import { useQuery } from "@tanstack/react-query";
-import { router } from "expo-router";
-import React from "react";
-import { Pressable, View } from "react-native";
-import { toast } from "sonner-native";
+import { convexQuery } from '@convex-dev/react-query';
+import { EvilIcons, FontAwesome } from '@expo/vector-icons';
+import { Avatar } from '@rneui/themed';
+import { useQuery } from '@tanstack/react-query';
+import { router } from 'expo-router';
+import React from 'react';
+import { Pressable, View } from 'react-native';
+import { toast } from 'sonner-native';
 
-import { EmptyText } from "~/components/EmptyText";
-import { HStack } from "~/components/HStack";
-import { Container } from "~/components/Ui/Container";
-import { ErrorComponent } from "~/components/Ui/ErrorComponent";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { MyText } from "~/components/Ui/MyText";
-import VStack from "~/components/Ui/VStack";
-import { WorkCloudHeader } from "~/components/WorkCloudHeader";
-import { WorkspaceItem } from "~/components/WorkspaceItem";
-import { colors } from "~/constants/Colors";
-import { WorkSpace } from "~/constants/types";
-import { api } from "~/convex/_generated/api";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { WorkspaceComponent } from "~/features/organization/components/workspace";
-import { TabsHeader } from "~/features/common/components/tabs-header";
-import { Title } from "~/features/common/components/title";
+import { EmptyText } from '~/components/EmptyText';
+import { HStack } from '~/components/HStack';
+import { Container } from '~/components/Ui/Container';
+import { ErrorComponent } from '~/components/Ui/ErrorComponent';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { MyText } from '~/components/Ui/MyText';
+import VStack from '~/components/Ui/VStack';
+import { WorkCloudHeader } from '~/components/WorkCloudHeader';
+import { WorkspaceItem } from '~/components/WorkspaceItem';
+import { colors } from '~/constants/Colors';
+import { WorkSpace } from '~/constants/types';
+import { api } from '~/convex/_generated/api';
+import { useDarkMode } from '~/hooks/useDarkMode';
+import { useGetUserId } from '~/hooks/useGetUserId';
+import { WorkspaceComponent } from '~/features/organization/components/workspace';
+import { TabsHeader } from '~/features/common/components/tabs-header';
+import { Title } from '~/features/common/components/title';
 
 const Organization = () => {
   const { id, worker } = useGetUserId();
   const { data, isPending, isError, refetch, error } = useQuery(
-    convexQuery(api.organisation.getOrganisationsOrNull, { ownerId: id! }),
+    convexQuery(api.organisation.getOrganisationsOrNull, { ownerId: id! })
   );
   const { darkMode } = useDarkMode();
   const {
@@ -38,7 +38,7 @@ const Organization = () => {
     refetch: refetchWorkspace,
     error: errorWorkspace,
   } = useQuery(
-    convexQuery(api.workspace.getUserWorkspaceOrNull, { workerId: worker! }),
+    convexQuery(api.workspace.getUserWorkspaceOrNull, { workerId: worker! })
   );
 
   const handleRefetch = async () => {
@@ -60,16 +60,16 @@ const Organization = () => {
   return (
     <Container>
       <TabsHeader
-        leftContent={<Title title={"Organization"} />}
+        leftContent={<Title title={'Organization'} />}
         rightContent={
           <Pressable
-            onPress={() => router.push("/search")}
+            onPress={() => router.push('/search')}
             style={({ pressed }) => pressed && { opacity: 0.5 }}
           >
             <EvilIcons
               name="search"
               size={30}
-              color={darkMode === "dark" ? colors.white : colors.black}
+              color={darkMode === 'dark' ? colors.white : colors.black}
             />
           </Pressable>
         }
