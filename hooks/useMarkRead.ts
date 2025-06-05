@@ -1,31 +1,29 @@
-import { convexQuery } from '@convex-dev/react-query';
-import { useQuery } from '@tanstack/react-query';
-import { useMutation } from 'convex/react';
-import { useEffect } from 'react';
-
-import { ConversationAndUserType } from '~/constants/types';
-import { api } from '~/convex/_generated/api';
-import { Id } from '~/convex/_generated/dataModel';
+import { convexQuery } from "@convex-dev/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "convex/react";
+import { useEffect } from "react";
+import { api } from "~/convex/_generated/api";
+import { Doc, Id } from "~/convex/_generated/dataModel";
 
 type Props = {
-  loggedInUserId: Id<'users'>;
-  conversationData: ConversationAndUserType;
+  loggedInUserId: Id<"users">;
+  conversationData: Doc<"conversations">;
 };
 
 export const useMarkRead = ({ loggedInUserId, conversationData }: Props) => {
   const { data } = useQuery(
     convexQuery(api.conversation.getMessagesTanstack, {
-      conversationId: conversationData?.conversation?._id,
-    })
+      conversationId: conversationData?._id,
+    }),
   );
   const markAsRead = useMutation(api.conversation.addSeenId);
   useEffect(() => {
     const onMarkMessagesAsRead = async () => {
       // Early return if no data or no conversation participants
-      if (!data || !conversationData?.conversation.participants?.length) return;
+      if (!data || !conversationData?.participants?.length) return;
 
       // Find messages unseen by ALL participants
-      const messagesThatEveryParticipantHasNotSeen = data.filter((message) => {
+      const messagesThatEveryParticipantHasNotSeen = data?.filter((message) => {
         // Ensure seenId is an array and check against all participants
         return !message.senderId.includes(loggedInUserId);
       });
@@ -38,6 +36,6 @@ export const useMarkRead = ({ loggedInUserId, conversationData }: Props) => {
         });
       }
     };
-    onMarkMessagesAsRead();
-  }, [markAsRead, data, loggedInUserId, conversationData?.conversation.participants]);
+    void onMarkMessagesAsRead();
+  }, [markAsRead, data, loggedInUserId, conversationData?.participants]);
 };

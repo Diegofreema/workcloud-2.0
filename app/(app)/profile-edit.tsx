@@ -21,7 +21,7 @@ import { useDarkMode } from '~/hooks/useDarkMode';
 const ProfileEdit = () => {
   const { signOut } = useAuth();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const user = useQuery(api.users.getUserById, { id: id as Id<'users'> });
   const connections = useQuery(api.connection.getUserConnections, {
     ownerId: id as Id<'users'>,

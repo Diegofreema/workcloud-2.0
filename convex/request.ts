@@ -7,9 +7,10 @@ import { getUserByUserId, getWorkerProfile } from '~/convex/users';
 export const getPendingRequestsAsBoolean = query({
   args: {
     from: v.id('users'),
-    to: v.id('users'),
+    to: v.optional(v.id('users')),
   },
   handler: async (ctx, args) => {
+    if(!args.from || !args.to) return null
     return await ctx.db
       .query('requests')
       .filter((q) =>

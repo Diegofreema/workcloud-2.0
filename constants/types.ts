@@ -1,5 +1,6 @@
 import { Doc, Id } from '~/convex/_generated/dataModel';
-
+import {Infer, v} from "convex/values";
+import {ImagePickerAsset} from "expo-image-picker";
 export type ReviewType = Doc<'reviews'> & {
   user: Doc<'users'> | null;
 };
@@ -462,13 +463,15 @@ export type DataType = {
   _id: Id<'messages'>;
   _creationTime: number;
   isEdited?: boolean | undefined;
-  parentMessageId?: Id<'messages'> | undefined;
   senderId: Id<'users'>;
-  recipient: Id<'users'>;
   conversationId: Id<'conversations'>;
   content: string;
-  contentType: 'image' | 'text';
   seenId: Id<'users'>[];
+  fileType?: FileType;
+  audio?: string;
+  fileUrl?: string;
+  reactions?: MessageReactionsType[];
+  reply?: ReplyType;
 };
 
 export type ChatMessage = {
@@ -501,3 +504,78 @@ export type RatingPercentageType = {
   percentage: number;
   stars: number;
 };
+export type FileType = "pdf" | "image" | "audio";
+export enum Reaction_Enum {
+  LIKE = "LIKE",
+  LOVE = "LOVE",
+  WOW = "WOW",
+  SAD = "SAD",
+  ANGRY = "ANGRY",
+  LAUGH = "LAUGH",
+}
+
+export interface IMessage {
+  _id: Id<"messages">;
+  text: string;
+  createdAt: Date | number;
+  user: {
+    _id: Id<"users">;
+    name: string;
+  };
+  image?: string;
+  fileType?: FileType;
+  audio?: string;
+  fileUrl?: string;
+  reactions?: MessageReactionsType[];
+  reply?: ReplyType;
+  system?: boolean;
+}
+export type ReplyType = {
+  fileType?: FileType;
+  fileUrl?: string;
+  message: string;
+  sender_id: Id<'users'>;
+  user: {
+    name?: string;
+    id?: Id<'users'>;
+  };
+};
+export type EditType2 = {
+  textToEdit: string;
+  messageId: Id<"messages">;
+  senderId: Id<"users">;
+  senderName: string;
+};
+
+export type MessageReactionsType = {
+  message_id: Id<'messages'>;
+  user_id: Id<'users'>;
+  emoji: EmojiType;
+};
+export interface SendIMessage {
+  text: string;
+
+  image?: ImagePickerAsset;
+  fileType?: FileType;
+  audio?: string;
+  fileUrl?: string;
+  fileId?: Id<"_storage">;
+  replyTo?: Id<"messages">;
+}
+
+export const emojiType = v.union(
+    v.literal("LIKE"),
+    v.literal("SAD"),
+    v.literal("LOVE"),
+    v.literal("WOW"),
+    v.literal("ANGRY"),
+    v.literal("LAUGH"),
+);
+export type EmojiType = Infer<typeof emojiType>;
+
+export type SelectedMessage = {
+  messageId: string;
+  senderId: string;
+};
+
+export type EditType = { text: string; senderId: string; senderName: string };

@@ -58,6 +58,7 @@ const Profile = () => {
     isError: isErrorData,
     isPaused: isPausedData,
     refetch: refetchData,
+      error
   } = useQuery(
     convexQuery(api.request.getPendingRequestsAsBoolean, {
       from: id!,
@@ -70,7 +71,7 @@ const Profile = () => {
     await refetchData();
   };
   if (isError || isRefetchError || isErrorData || isPaused || isPausedData) {
-    return <ErrorComponent refetch={handleRefetch} />;
+    return <ErrorComponent text={error?.message!} refetch={handleRefetch} />;
   }
 
   if (isPending || isPendingData) {
@@ -80,11 +81,7 @@ const Profile = () => {
   const isInPending = !!pendingData;
 
   const onMessage = async () => {
-    // const channel = client.channel('messaging', {
-    //   members: [id!, data?.user?._id!],
-    // });
-    // await channel.watch();
-    // router.push(`/channel/${channel.cid}`);
+    router.push(`/chat/${data?.user?._id}`)
   };
 
   const cancelRequest = async () => {

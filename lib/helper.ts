@@ -9,6 +9,7 @@ import { toast } from 'sonner-native';
 import { ChatDateGroup, DataType } from '~/constants/types';
 import {Doc, Id} from '~/convex/_generated/dataModel';
 import { Channel } from 'stream-chat';
+import {ConvexError} from "convex/values";
 
 export const downloadAndSaveImage = async (imageUrl: string) => {
   const fileUri = FileSystem.documentDirectory + `${new Date().getTime()}.jpg`;
@@ -46,7 +47,12 @@ const saveFile = async (fileUri: string) => {
     toast.error('please allow permissions to download');
   }
 };
-
+export const generateErrorMessage = (
+    error: unknown,
+    message: string
+): string => {
+  return error instanceof ConvexError ? (error.data as string) : message;
+};
 // export async function download(imgUrl: string) {
 //   const filename = 'image.png';
 //   const result = await FileSystem.downloadAsync(imgUrl, FileSystem.documentDirectory + filename);
@@ -145,17 +151,19 @@ export const trimText = (text: string, maxLength: number = 20) => {
 };
 
 export const uploadProfilePicture = async (
-  selectedImage: ImagePickerAsset | null,
-  generateUploadUrl: any
-): Promise<{ storageId: Id<'_storage'>; uploadUrl: string }> => {
+    generateUploadUrl: any,
+    selectedImage?: string
+): Promise<{ storageId: Id<'_storage'>; uploadUrl: string } | undefined> => {
+  if (!selectedImage) return;
   const uploadUrl = await generateUploadUrl();
 
-  const response = await fetch(selectedImage?.uri!);
+  const response = await fetch(selectedImage);
   const blob = await response.blob();
+
   const result = await fetch(uploadUrl, {
     method: 'POST',
     body: blob,
-    headers: { 'Content-Type': selectedImage?.mimeType! },
+    headers: { 'Content-Type': 'image/jpeg' },
   });
   const { storageId } = await result.json();
 

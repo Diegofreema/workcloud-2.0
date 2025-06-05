@@ -1,12 +1,13 @@
 import { paginationOptsValidator } from "convex/server";
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 
-import { mutation, query, QueryCtx } from "./_generated/server";
+import { mutation, MutationCtx, query, QueryCtx } from "./_generated/server";
 
 import { Id } from "~/convex/_generated/dataModel";
 import { getImageUrl } from "~/convex/organisation";
-import { getUserByUserId } from "~/convex/users";
 import { filter } from "convex-helpers/server/filter";
+import { messageHelper, messageReactions } from "~/convex/message";
+import { getUserByUserId } from "~/convex/users";
 
 export const getConversationsSingle = query({
   args: {
@@ -18,7 +19,36 @@ export const getConversationsSingle = query({
       ctx.db
         .query("conversations")
         .withIndex("by_last_message_last_message_time"),
-      (conversation) => conversation.participants.includes(args.userId),
+      (conversation) =>
+        conversation.participants.includes(args.userId) &&
+        conversation.lastMessage !== undefined,
+    )
+      .order("asc")
+      .paginate(args.paginationOpts);
+  },
+});
+export const getConversationsSingleSearch = query({
+  args: {
+    userId: v.id("users"),
+    paginationOpts: paginationOptsValidator,
+    query: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const me = await ctx.db.get(args.userId);
+
+    return filter(
+      ctx.db
+        .query("conversations")
+        .withIndex("by_last_message_last_message_time"),
+      (conversation) => {
+        const otherName = conversation.participantNames
+          .find((name) => name !== me?.name)
+          ?.toLowerCase() as string;
+        return (
+          conversation.participants.includes(args.userId) &&
+          otherName.includes(args.query.toLowerCase())
+        );
+      },
     )
       .order("asc")
       .paginate(args.paginationOpts);
@@ -33,7 +63,7 @@ export const getUnreadMessages = query({
   handler: async (ctx, args) => {
     const messages = await ctx.db
       .query("messages")
-      .withIndex("by_conversationId_recipient", (q) =>
+      .withIndex("by_conversationId", (q) =>
         q.eq("conversationId", args.conversationId),
       )
       .filter((q) => q.neq(q.field("senderId"), args.userId))
@@ -99,20 +129,14 @@ export const getSingleConversationWithMessages = query({
     otherUserId: v.id("users"),
   },
   handler: async (ctx, args) => {
-    const conversations = await ctx.db.query("conversations").collect();
-    if (!conversations) return null;
-    const conversation = conversations.find(
+    return filter(
+      ctx.db.query("conversations").withIndex("by_id"),
       (c) =>
-        (c.participants.length === 2 &&
-          c.participants[0] === args.loggedInUserId &&
+        (c.participants[0] === args.loggedInUserId &&
           c.participants[1] === args.otherUserId) ||
         (c.participants[1] === args.loggedInUserId &&
           c.participants[0] === args.otherUserId),
-    );
-
-    if (!conversation) return null;
-    const otherUser = await getParticipants(ctx, args.otherUserId);
-    return { conversation, otherUser };
+    ).first();
   },
 });
 export const getMessages = query({
@@ -128,34 +152,25 @@ export const getMessages = query({
       )
       .order("desc")
       .paginate(args.paginationOpts);
-    const pagesWithImages = messages.page.map(async (m) => {
-      const data = {
-        _id: m._id,
-        _creationTime: m._creationTime,
-        content: m.content,
-        contentType: m.contentType,
-        conversationId: m.conversationId,
-        isEdited: m.isEdited,
-        parentMessageId: m.parentMessageId,
-        senderId: m.senderId,
-        seenId: m.seenId,
-        recipient: m.recipient,
-      };
-      if (m.contentType === "image") {
-        const imageUrl = (await getImageUrl(
-          ctx,
-          m.content as Id<"_storage">,
-        )) as string;
+    const page = await Promise.all(
+      messages.page.map(async (m) => {
+        const sender = await getUserByUserId(ctx, m.senderId);
+        const reactions = await messageReactions(ctx, m._id);
+        let reply;
+        if (m.replyTo) {
+          reply = await messageHelper(ctx, m.replyTo);
+        }
         return {
-          ...data,
-          content: imageUrl,
+          ...m,
+          user: sender,
+          reactions,
+          reply,
         };
-      }
-      return data;
-    });
+      }),
+    );
     return {
       ...messages,
-      page: await Promise.all(pagesWithImages),
+      page,
     };
   },
 });
@@ -211,17 +226,15 @@ export const createSingleConversation = mutation({
   args: {
     loggedInUserId: v.id("users"),
     otherUserId: v.id("users"),
-    type: v.union(
-      v.literal("processor"),
-      v.literal("single"),
-      v.literal("group"),
-    ),
+    type: v.union(v.literal("processor"), v.literal("single")),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert("conversations", {
-      participants: [args.loggedInUserId, args.otherUserId],
-      type: args.type,
-    });
+    await createConversation(
+      ctx,
+      args.loggedInUserId,
+      args.otherUserId,
+      args.type,
+    );
   },
 });
 export const addSeenId = mutation({
@@ -251,22 +264,21 @@ export const createMessages = mutation({
     recipient: v.id("users"),
     conversationId: v.id("conversations"),
     content: v.string(),
-    parentMessageId: v.optional(v.id("messages")),
-    contentType: v.union(v.literal("image"), v.literal("text")),
+    fileType: v.optional(v.union(v.literal("image"), v.literal("pdf"))),
     uploadUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     await ctx.db.insert("messages", {
-      recipient: args.recipient,
       conversationId: args.conversationId,
       content: args.content,
-      parentMessageId: args.parentMessageId,
-      contentType: args.contentType,
+      fileType: args.fileType,
       senderId: args.senderId,
       seenId: [args.senderId],
     });
     const lastMessage =
-      args.contentType === "image" ? args.uploadUrl : args.content;
+      args.fileType === "image" || args.fileType === "pdf"
+        ? args.uploadUrl
+        : args.content;
     await ctx.db.patch(args.conversationId, {
       lastMessage,
       lastMessageTime: Date.now(),
@@ -309,4 +321,22 @@ export const getConversationsBetweenTwoUsers = async (
       (c.participants[1] === loggedInUserId &&
         c.participants[0] === otherUserId),
   );
+};
+
+export const createConversation = async (
+  ctx: MutationCtx,
+  loggedInUserId: Id<"users">,
+  otherUserId: Id<"users">,
+  type: "single" | "processor",
+) => {
+  const me = await ctx.db.get(loggedInUserId);
+  const otherUser = await ctx.db.get(otherUserId);
+  if (!me || !otherUser) {
+    throw new ConvexError("User not found");
+  }
+  await ctx.db.insert("conversations", {
+    participants: [loggedInUserId, otherUserId],
+    participantNames: [me.name, otherUser.name],
+    type: type,
+  });
 };

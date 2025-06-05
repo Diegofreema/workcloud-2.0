@@ -1,13 +1,13 @@
-import { FontAwesome } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { Button } from '@rneui/themed';
-import { useMutation } from 'convex/react';
-import { format } from 'date-fns';
-import { Image } from 'expo-image';
-import * as ImagePicker from 'expo-image-picker';
-import { useRouter } from 'expo-router';
-import { useFormik } from 'formik';
-import React, { useEffect, useState } from 'react';
+import { FontAwesome } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Button } from "@rneui/themed";
+import { useMutation } from "convex/react";
+import { format } from "date-fns";
+import { Image } from "expo-image";
+import * as ImagePicker from "expo-image-picker";
+import { useRouter } from "expo-router";
+import { useFormik } from "formik";
+import React, { useEffect, useState } from "react";
 import {
   Pressable,
   ScrollView,
@@ -15,49 +15,49 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { SelectList } from 'react-native-dropdown-select-list';
-import { toast } from 'sonner-native';
-import * as yup from 'yup';
+} from "react-native";
+import { SelectList } from "react-native-dropdown-select-list";
+import { toast } from "sonner-native";
+import * as yup from "yup";
 
-import { AuthHeader } from '~/components/AuthHeader';
-import { AuthTitle } from '~/components/AuthTitle';
-import { InputComponent } from '~/components/InputComponent';
-import { Subtitle } from '~/components/Subtitle';
-import { Container } from '~/components/Ui/Container';
-import { MyText } from '~/components/Ui/MyText';
-import { days } from '~/constants';
-import { colors } from '~/constants/Colors';
-import { api } from '~/convex/_generated/api';
-import { useDarkMode } from '~/hooks/useDarkMode';
-import { useGetCat } from '~/hooks/useGetCat';
-import { useGetUserId } from '~/hooks/useGetUserId';
-import { uploadProfilePicture } from '~/lib/helper';
+import { AuthHeader } from "~/components/AuthHeader";
+import { AuthTitle } from "~/components/AuthTitle";
+import { InputComponent } from "~/components/InputComponent";
+import { Subtitle } from "~/components/Subtitle";
+import { Container } from "~/components/Ui/Container";
+import { MyText } from "~/components/Ui/MyText";
+import { days } from "~/constants";
+import { colors } from "~/constants/Colors";
+import { api } from "~/convex/_generated/api";
+import { useDarkMode } from "~/hooks/useDarkMode";
+import { useGetCat } from "~/hooks/useGetCat";
+import { useGetUserId } from "~/hooks/useGetUserId";
+import { uploadProfilePicture } from "~/lib/helper";
 
 const validationSchema = yup.object().shape({
-  organizationName: yup.string().required('Name of organization is required'),
-  category: yup.string().required('Category is required'),
-  location: yup.string().required('Location is required'),
-  description: yup.string().required('Description is required'),
+  organizationName: yup.string().required("Name of organization is required"),
+  category: yup.string().required("Category is required"),
+  location: yup.string().required("Location is required"),
+  description: yup.string().required("Description is required"),
   startDay: yup.string(),
   endDay: yup.string(),
-  startTime: yup.string().required('Working time is required'),
-  endTime: yup.string().required('Working time is required'),
-  websiteUrl: yup.string().required('Website link is required'),
-  email: yup.string().email('Invalid email').required('Email is required'),
-  image: yup.string().required('Logo is required'),
+  startTime: yup.string().required("Working time is required"),
+  endTime: yup.string().required("Working time is required"),
+  websiteUrl: yup.string().required("Website link is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
+  image: yup.string().required("Logo is required"),
 });
 
 const CreateWorkSpace = () => {
   const [startTime, setStartTime] = useState(new Date(1598051730000));
-  const cat = useGetCat((state) => state.cat);
+  const { cat } = useGetCat();
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
   const createOrganization = useMutation(api.organisation.createOrganization);
   const updateUserTableWithOrganizationId = useMutation(
-    api.organisation.updateUserTableWithOrganizationId
+    api.organisation.updateUserTableWithOrganizationId,
   );
   const [endTime, setEndTime] = useState(new Date(1598051730000));
-  const [avatar, setAvatar] = useState<string>('https://placehold.co/100x100');
+  const [avatar, setAvatar] = useState<string>("https://placehold.co/100x100");
   const [selectedImage, setSelectedImage] =
     useState<ImagePicker.ImagePickerAsset | null>(null);
 
@@ -76,19 +76,20 @@ const CreateWorkSpace = () => {
     touched,
     resetForm,
     setValues,
+    setFieldValue,
   } = useFormik({
     initialValues: {
-      email: '',
-      organizationName: '',
-      category: '',
-      startDay: 'Monday',
-      endDay: 'Friday',
-      description: '',
-      location: '',
-      websiteUrl: '',
-      startTime: '',
-      endTime: '',
-      image: '',
+      email: "",
+      organizationName: "",
+      category: "",
+      startDay: "Monday",
+      endDay: "Friday",
+      description: "",
+      location: "",
+      websiteUrl: "",
+      startTime: "",
+      endTime: "",
+      image: "",
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -97,7 +98,7 @@ const CreateWorkSpace = () => {
       try {
         const { storageId } = await uploadProfilePicture(
           selectedImage,
-          generateUploadUrl
+          generateUploadUrl,
         );
         const organizationId = await createOrganization({
           ownerId: id,
@@ -106,7 +107,7 @@ const CreateWorkSpace = () => {
           name: values.organizationName,
           start: values.startTime,
           website: values.websiteUrl,
-          workDays: values.startDay + ' - ' + values.endDay,
+          workDays: values.startDay + " - " + values.endDay,
           category: values.category,
           description: values.description,
           email: values.email,
@@ -119,14 +120,14 @@ const CreateWorkSpace = () => {
             organizationId,
           });
           router.replace(`/my-org`);
-          toast.success('Success', {
-            description: 'Organization has been created successfully',
+          toast.success("Success", {
+            description: "Organization has been created successfully",
           });
           resetForm();
         }
       } catch (e) {
         console.log(e);
-        toast.error('Something went wrong', {
+        toast.error("Something went wrong", {
           description: "Couldn't create organization",
         });
       }
@@ -134,7 +135,7 @@ const CreateWorkSpace = () => {
   });
   const onSelectImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [4, 3],
     });
@@ -149,19 +150,19 @@ const CreateWorkSpace = () => {
   };
   useEffect(() => {
     if (cat) {
-      setValues({ ...values, category: cat });
+      setFieldValue("category", cat);
     }
-  }, [cat, setValues, values]);
+  }, [cat, setFieldValue]);
   const onChange = (event: any, selectedDate: any, type: string) => {
     const currentDate = selectedDate;
-    if (type === 'startTime') {
+    if (type === "startTime") {
       setShow(false);
       setStartTime(currentDate);
-      setValues({ ...values, startTime: format(currentDate, 'HH:mm') });
+      setValues({ ...values, startTime: format(currentDate, "HH:mm") });
     } else {
       setShow2(false);
       setEndTime(currentDate);
-      setValues({ ...values, endTime: format(currentDate, 'HH:mm') });
+      setValues({ ...values, endTime: format(currentDate, "HH:mm") });
     }
   };
   const showMode = () => {
@@ -173,8 +174,8 @@ const CreateWorkSpace = () => {
 
   // ! to fix later
   const handleDeleteImage = () => {
-    setValues({ ...values, image: '' });
-    setAvatar('https://placehold.co/100x100');
+    setValues({ ...values, image: "" });
+    setAvatar("https://placehold.co/100x100");
   };
   const {
     email,
@@ -201,13 +202,13 @@ const CreateWorkSpace = () => {
           <View style={{ flex: 0.6, gap: 10 }}>
             <Text
               style={{
-                color: darkMode === 'dark' ? 'white' : 'black',
-                fontFamily: 'PoppinsMedium',
+                color: darkMode === "dark" ? "white" : "black",
+                fontFamily: "PoppinsMedium",
               }}
             >
               Organization logo
             </Text>
-            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ alignItems: "center", justifyContent: "center" }}>
               <View
                 style={{
                   width: 100,
@@ -223,10 +224,10 @@ const CreateWorkSpace = () => {
                 {!values.image && (
                   <TouchableOpacity
                     style={{
-                      position: 'absolute',
+                      position: "absolute",
                       bottom: 0,
                       right: 3,
-                      backgroundColor: darkMode ? 'white' : 'black',
+                      backgroundColor: darkMode ? "white" : "black",
                       padding: 5,
                       borderRadius: 30,
                     }}
@@ -235,17 +236,17 @@ const CreateWorkSpace = () => {
                     <FontAwesome
                       name="plus"
                       size={20}
-                      color={darkMode ? 'black' : 'white'}
+                      color={darkMode ? "black" : "white"}
                     />
                   </TouchableOpacity>
                 )}
                 {values.image && (
                   <TouchableOpacity
                     style={{
-                      position: 'absolute',
+                      position: "absolute",
                       bottom: 0,
                       right: 3,
-                      backgroundColor: darkMode ? 'white' : 'black',
+                      backgroundColor: darkMode ? "white" : "black",
                       padding: 5,
                       borderRadius: 30,
                     }}
@@ -256,7 +257,7 @@ const CreateWorkSpace = () => {
                 )}
               </View>
               {errors.image && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
+                <Text style={{ color: "red", fontWeight: "bold" }}>
                   {errors.image}
                 </Text>
               )}
@@ -266,12 +267,12 @@ const CreateWorkSpace = () => {
               <InputComponent
                 label="Organization Name"
                 value={organizationName}
-                onChangeText={handleChange('organizationName')}
+                onChangeText={handleChange("organizationName")}
                 placeholder="Organization Name"
                 keyboardType="default"
               />
               {touched.organizationName && errors.organizationName && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
+                <Text style={{ color: "red", fontWeight: "bold" }}>
                   {errors.organizationName}
                 </Text>
               )}
@@ -280,49 +281,54 @@ const CreateWorkSpace = () => {
               <InputComponent
                 label="Description"
                 value={description}
-                onChangeText={handleChange('description')}
+                onChangeText={handleChange("description")}
                 placeholder="Description"
                 keyboardType="default"
                 numberOfLines={5}
                 textarea
               />
               {touched.description && errors.description && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
+                <Text style={{ color: "red", fontWeight: "bold" }}>
                   {errors.description}
                 </Text>
               )}
             </>
-            <>
-              <Pressable
-                onPress={() => router.push('/category')}
-                style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+            <View style={{ marginHorizontal: 10, marginBottom: 10 }}>
+              <MyText
+                fontSize={15}
+                poppins="Medium"
+                style={{ fontFamily: "PoppinsMedium" }}
               >
-                <InputComponent
-                  editable={false}
-                  label="Category"
-                  value={category}
-                  onChangeText={handleChange('category')}
-                  placeholder="Category"
-                  keyboardType="default"
-                />
+                Category
+              </MyText>
+              <Pressable
+                onPress={() => router.push("/category")}
+                style={({ pressed }) => [
+                  { opacity: pressed ? 0.5 : 1 },
+                  styles2.border,
+                ]}
+              >
+                <MyText poppins={"Light"} style={{ fontSize: 13 }}>
+                  {category || "Category"}
+                </MyText>
               </Pressable>
 
               {touched.category && errors.category && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
+                <Text style={{ color: "red", fontWeight: "bold" }}>
                   {errors.category}
                 </Text>
               )}
-            </>
+            </View>
             <>
               <InputComponent
                 label="Location"
                 value={location}
-                onChangeText={handleChange('location')}
+                onChangeText={handleChange("location")}
                 placeholder="Location"
                 keyboardType="default"
               />
               {touched.location && errors.location && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
+                <Text style={{ color: "red", fontWeight: "bold" }}>
                   {errors.location}
                 </Text>
               )}
@@ -332,12 +338,12 @@ const CreateWorkSpace = () => {
                 autoCapitalize="none"
                 label="Website Link"
                 value={websiteUrl}
-                onChangeText={handleChange('websiteUrl')}
+                onChangeText={handleChange("websiteUrl")}
                 placeholder="Website link"
                 keyboardType="default"
               />
               {touched.websiteUrl && errors.websiteUrl && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
+                <Text style={{ color: "red", fontWeight: "bold" }}>
                   {errors.websiteUrl}
                 </Text>
               )}
@@ -346,13 +352,13 @@ const CreateWorkSpace = () => {
               <InputComponent
                 label="Email"
                 value={email}
-                onChangeText={handleChange('email')}
+                onChangeText={handleChange("email")}
                 placeholder="Email"
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
               {touched.email && errors.email && (
-                <Text style={{ color: 'red', fontFamily: 'PoppinsMedium' }}>
+                <Text style={{ color: "red", fontFamily: "PoppinsMedium" }}>
                   {errors.email}
                 </Text>
               )}
@@ -361,7 +367,7 @@ const CreateWorkSpace = () => {
               <MyText
                 fontSize={15}
                 poppins="Medium"
-                style={{ fontFamily: 'PoppinsMedium' }}
+                style={{ fontFamily: "PoppinsMedium" }}
               >
                 Work Days
               </MyText>
@@ -370,25 +376,25 @@ const CreateWorkSpace = () => {
                 search={false}
                 boxStyles={{
                   ...styles2.border,
-                  justifyContent: 'flex-start',
-                  width: '100%',
-                  alignItems: 'center',
+                  justifyContent: "flex-start",
+                  width: "100%",
+                  alignItems: "center",
                 }}
                 inputStyles={{
-                  textAlign: 'left',
+                  textAlign: "left",
                   fontSize: 14,
                   borderWidth: 0,
-                  width: '100%',
+                  width: "100%",
                   paddingRight: 10,
                 }}
                 fontFamily="PoppinsMedium"
-                setSelected={handleChange('startDay')}
+                setSelected={handleChange("startDay")}
                 data={days}
-                defaultOption={{ key: 'monday', value: 'Monday' }}
+                defaultOption={{ key: "monday", value: "Monday" }}
                 save="key"
                 placeholder="Select Start Day"
                 dropdownTextStyles={{
-                  color: darkMode === 'dark' ? 'white' : 'black',
+                  color: darkMode === "dark" ? "white" : "black",
                 }}
               />
 
@@ -396,23 +402,23 @@ const CreateWorkSpace = () => {
                 search={false}
                 boxStyles={{
                   ...styles2.border,
-                  justifyContent: 'flex-start',
-                  backgroundColor: '#E9E9E9',
-                  width: '100%',
-                  alignItems: 'center',
+                  justifyContent: "flex-start",
+                  backgroundColor: "#E9E9E9",
+                  width: "100%",
+                  alignItems: "center",
                 }}
                 dropdownTextStyles={{
-                  color: darkMode === 'dark' ? 'white' : 'black',
+                  color: darkMode === "dark" ? "white" : "black",
                 }}
                 inputStyles={{
-                  textAlign: 'left',
+                  textAlign: "left",
                   fontSize: 14,
-                  width: '100%',
+                  width: "100%",
                 }}
                 fontFamily="PoppinsMedium"
-                setSelected={handleChange('endDay')}
+                setSelected={handleChange("endDay")}
                 data={days}
-                defaultOption={{ key: 'friday', value: 'Friday' }}
+                defaultOption={{ key: "friday", value: "Friday" }}
                 save="key"
                 placeholder="Select End day"
               />
@@ -423,7 +429,7 @@ const CreateWorkSpace = () => {
                 fontSize={15}
                 style={{
                   marginVertical: 10,
-                  fontFamily: 'PoppinsMedium',
+                  fontFamily: "PoppinsMedium",
                   marginHorizontal: 10,
                 }}
               >
@@ -433,8 +439,8 @@ const CreateWorkSpace = () => {
                 <>
                   <Pressable onPress={showMode} style={styles2.border}>
                     <Text>
-                      {' '}
-                      {`${format(startTime, 'HH:mm') || ' Opening Time'}`}{' '}
+                      {" "}
+                      {`${format(startTime, "HH:mm") || " Opening Time"}`}{" "}
                     </Text>
                   </Pressable>
 
@@ -448,7 +454,7 @@ const CreateWorkSpace = () => {
                         mode="time"
                         is24Hour
                         onChange={(event, selectedDate) =>
-                          onChange(event, selectedDate, 'startTime')
+                          onChange(event, selectedDate, "startTime")
                         }
                       />
                     </>
@@ -457,8 +463,8 @@ const CreateWorkSpace = () => {
                 <>
                   <Pressable onPress={showMode2} style={styles2.border}>
                     <Text>
-                      {' '}
-                      {`${format(endTime, 'HH:mm') || ' Closing Time'}`}{' '}
+                      {" "}
+                      {`${format(endTime, "HH:mm") || " Closing Time"}`}{" "}
                     </Text>
                   </Pressable>
 
@@ -470,7 +476,7 @@ const CreateWorkSpace = () => {
                       mode="time"
                       is24Hour
                       onChange={(event, selectedDate) =>
-                        onChange(event, selectedDate, 'endTime')
+                        onChange(event, selectedDate, "endTime")
                       }
                     />
                   )}
@@ -487,8 +493,8 @@ const CreateWorkSpace = () => {
                 borderRadius: 10,
                 height: 50,
               }}
-              titleStyle={{ fontFamily: 'PoppinsMedium', color: colors.white }}
-              title={isSubmitting ? 'Creating...' : 'Create'}
+              titleStyle={{ fontFamily: "PoppinsMedium", color: colors.white }}
+              title={isSubmitting ? "Creating..." : "Create"}
             />
           </View>
         </View>
@@ -501,14 +507,14 @@ export default CreateWorkSpace;
 
 const styles2 = StyleSheet.create({
   border: {
-    backgroundColor: '#E9E9E9',
+    backgroundColor: "#E9E9E9",
     minHeight: 52,
     paddingLeft: 15,
-    justifyContent: 'center',
+    justifyContent: "center",
     borderBottomWidth: 0,
-    borderBottomColor: '#DADADA',
+    borderBottomColor: "#DADADA",
     borderRadius: 5,
-    width: '100%',
+    width: "100%",
     height: 60,
   },
 });

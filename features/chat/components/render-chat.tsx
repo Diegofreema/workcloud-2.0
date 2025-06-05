@@ -44,7 +44,7 @@ export const RenderChat = ({ chat }: Props) => {
   const numberOfUnread = unread || 0;
   const isMine = lastMessageSenderId === id;
 
-  const isImage = lastMessage?.startsWith("https");
+  const isImage = lastMessage?.startsWith("https")
   return (
     <CustomPressable onPress={onPress} style={styles.pressable}>
       <HStack justifyContent="space-between" alignItems="flex-start">

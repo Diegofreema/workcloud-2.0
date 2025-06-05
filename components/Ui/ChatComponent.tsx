@@ -1,32 +1,55 @@
-import { useMutation } from 'convex/react';
-import * as DocumentPicker from 'expo-document-picker';
-import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
-import { GiftedChat, IMessage, SystemMessage } from 'react-native-gifted-chat';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useMutation } from "convex/react";
+import * as DocumentPicker from "expo-document-picker";
+import * as ImagePicker from "expo-image-picker";
+import { useCallback, useRef, useState } from "react";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { GiftedChat, SystemMessage } from "react-native-gifted-chat";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { EmptyChat } from '~/components/EmptyChat';
-import { RenderActions } from '~/components/chat/RenderActions';
-import { RenderBubble } from '~/components/chat/RenderBubble';
-import { RenderComposer } from '~/components/chat/RenderComposer';
-import { RenderMessageImage } from '~/components/chat/RenderMessageImage';
-import { RenderSend } from '~/components/chat/RenderSend';
-import { colors } from '~/constants/Colors';
-import { DataType, StatusType } from '~/constants/types';
-import { api } from '~/convex/_generated/api';
-import { Id } from '~/convex/_generated/dataModel';
-import { uploadDoc, uploadProfilePicture } from '~/lib/helper';
+import * as Clipboard from "expo-clipboard";
+import { RenderActions } from "~/components/chat/RenderActions";
+import { RenderBubble } from "~/components/chat/RenderBubble";
+import { RenderComposer } from "~/components/chat/RenderComposer";
+import { RenderMessageImage } from "~/components/chat/RenderMessageImage";
+import { RenderSend } from "~/components/chat/RenderSend";
+import { colors } from "~/constants/Colors";
+import {
+  DataType,
+  EditType,
+  EditType2,
+  FileType,
+  IMessage,
+  ReplyType,
+  SendIMessage,
+  StatusType,
+} from "~/constants/types";
+import { api } from "~/convex/_generated/api";
+import { Id } from "~/convex/_generated/dataModel";
+import {
+  generateErrorMessage,
+  uploadDoc,
+  uploadProfilePicture,
+} from "~/lib/helper";
+import { SwipeableMethods } from "react-native-gesture-handler/ReanimatedSwipeable";
+import { toast } from "sonner-native";
 
 type Props = {
-  loggedInUserId: Id<'users'>;
-  otherUserId: Id<'users'>;
-  conversationId: Id<'conversations'>;
+  loggedInUserId: Id<"users">;
+  otherUserId: Id<"users">;
+  conversationId: Id<"conversations">;
   data: DataType[];
   status: StatusType;
   loadMore: (numItems: number) => void;
   otherUserName: string;
   createdAt: number;
+  isLoading: boolean;
 };
 export const ChatComponent = ({
   loggedInUserId,
@@ -37,100 +60,247 @@ export const ChatComponent = ({
   status,
   createdAt,
   otherUserName,
+  isLoading,
 }: Props) => {
-  const createMessage = useMutation(api.conversation.createMessages);
-
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
+  const [sending, setSending] = useState(false);
 
   const insets = useSafeAreaInsets();
+  const [replyMessage, setReplyMessage] = useState<IMessage | null>(null);
+  const [processing, setProcessing] = useState(false);
+  const sendMessage = useMutation(api.message.sendMessage);
+  const editMessage = useMutation(api.message.editMessage);
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
+  const onSend = useCallback(
+    async (messages: SendIMessage[]) => {
+      try {
+        if (edit) {
+          setProcessing(true);
+          await editMessage({
+            message_id: edit.messageId,
+            sender_id: loggedInUserId,
+            text,
+          });
+          setEdit(null);
+          setEditText(null);
+        } else {
+          if (replyMessage) {
+            setReplyMessage(null);
+          }
+          for (const message of messages) {
+            await sendMessage({
+              content: message.text,
+              conversationId,
+              senderId: loggedInUserId,
+              fileType: message.fileType,
+              fileUrl: message.fileUrl,
+              fileId: message.fileId,
+              replyTo: message.replyTo,
+            });
+          }
+        }
+      } catch (e) {
+        console.log("Error message", e);
+      } finally {
+        setProcessing(false);
+      }
+    },
+    [
+      conversationId,
+      loggedInUserId,
+      sendMessage,
+      replyMessage,
+      editMessage,
+      text,
+    ],
+  );
+  const handleFilePick = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ["application/pdf"],
+        copyToCacheDirectory: true,
+        multiple: true,
+      });
 
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const { assets } = result;
+        setSending(true);
+        const filePromises = assets.map(async (asset) => {
+          const res = await uploadProfilePicture(generateUploadUrl, asset.uri);
+          return {
+            id: res?.storageId as Id<"_storage">,
+          };
+        });
+
+        const fileUrls = await Promise.all(filePromises);
+
+        const messages = fileUrls.map((file) => {
+          return {
+            text: "",
+            user: { _id: loggedInUserId },
+            fileId: file.id,
+            fileType: "pdf" as FileType,
+          };
+        });
+        void onSend(messages);
+      }
+    } catch (error) {
+      console.error("Error picking file:", error);
+    } finally {
+      setSending(false);
+    }
+  };
+  const handleImagePick = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        quality: 0.5,
+        allowsMultipleSelection: true,
+        base64: false,
+      });
+
+      if (!result.canceled) {
+        const { assets } = result;
+
+        setSending(true);
+        const filePromises = assets.map(async (asset) => {
+          const res = await uploadProfilePicture(generateUploadUrl, asset.uri);
+          return {
+            id: res?.storageId as Id<"_storage">,
+          };
+        });
+        const fileUrls = await Promise.all(filePromises);
+
+        const messages = fileUrls.map((file) => {
+          return {
+            text: "",
+            user: { _id: loggedInUserId },
+            fileId: file.id,
+            fileType: "image" as FileType,
+          };
+        });
+        await onSend(messages);
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+      toast.error("Error picking image");
+    } finally {
+      setSending(false);
+    }
+  };
+  const deleteMessage = useMutation(api.message.deleteMessage);
+  const swipeableRowRef = useRef<SwipeableMethods | null>(null);
+  const [editText, setEditText] = useState<EditType | null>(null);
+  const [edit, setEdit] = useState<{
+    messageId: Id<"messages">;
+    senderId: Id<"users">;
+  } | null>(null);
+  const updateRowRef = useCallback(
+    (ref: any) => {
+      if (
+        ref &&
+        replyMessage &&
+        ref.props.children.props.currentMessage?._id === replyMessage?._id
+      ) {
+        swipeableRowRef.current = ref;
+        if (editText) {
+          setEditText(null);
+        }
+      }
+    },
+    [replyMessage, editText, setEditText],
+  );
   const hasItem = data?.length > 0;
-  const messages: IMessage[] = hasItem
+  const messages = hasItem
     ? [
         ...data?.map((message) => {
           return {
-            _id: message?._id,
-            text: message.contentType === 'text' ? message?.content : '',
+            _id: message?._id as Id<"messages">,
+            text: message?.content,
             createdAt: new Date(message?._creationTime),
-            image: message.contentType === 'image' ? message.content : undefined,
             user: {
-              _id: message?.senderId,
-              name: message.senderId === loggedInUserId ? 'You' : otherUserName.split(' ')[0],
+              _id: message?.senderId as Id<"users">,
+              name:
+                message.senderId === loggedInUserId
+                  ? "You"
+                  : otherUserName.split(" ")[0],
             },
+            reactions: message.reactions,
+            fileType: message.fileType,
+            fileUrl: message.fileUrl,
+            reply: message.reply as ReplyType,
           };
         }),
         {
           _id: 0,
           system: true,
-          text: '',
+          text: "",
           createdAt: new Date(createdAt),
           user: {
             _id: 0,
-            name: 'Bot',
+            name: "Bot",
           },
         },
       ]
     : [];
-  const onPickDocument = async () => {
-    const result = await DocumentPicker.getDocumentAsync({
-      multiple: true,
-      type: ['application/*'],
-    });
-    if (!result.canceled) {
-      const { storageId, uploadUrl } = await uploadDoc(result, generateUploadUrl);
-      await createMessage({
-        content: storageId,
-        senderId: loggedInUserId,
-        recipient: otherUserId,
-        conversationId,
-        contentType: 'image',
-        uploadUrl,
-      });
+  const onCopy = useCallback(async (textToCopy: string) => {
+    const copied = await Clipboard.setStringAsync(textToCopy);
+    if (copied) {
+      toast.success("Copied to clipboard");
     }
-  };
-  const onSend = async () => {
-    await createMessage({
-      content: text.trim(),
-      senderId: loggedInUserId,
-      recipient: otherUserId,
-      conversationId,
-      contentType: 'text',
-    });
-  };
-  const onPickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      quality: 0.5,
-    });
+  }, []);
+  const onDelete = useCallback(
+    async (messageId: Id<"messages">) => {
+      Alert.alert("This is irreversible", "Delete this message for everyone?", [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: () => {
+            setProcessing(true);
+            try {
+              deleteMessage({
+                message_id: messageId,
+                sender_id: loggedInUserId,
+              });
+              toast.success("Message deleted");
+            } catch (e) {
+              toast.error(generateErrorMessage(e, "Failed to delete message"));
+            } finally {
+              setProcessing(false);
+            }
+          },
+          style: "destructive",
+        },
+      ]);
+    },
+    [loggedInUserId, deleteMessage],
+  );
+  const onEdit = useCallback(
+    async ({ textToEdit, messageId, senderId, senderName }: EditType2) => {
+      setEditText({ text: textToEdit, senderId, senderName });
+      setEdit({ messageId, senderId });
+      setText(textToEdit);
+    },
+    [],
+  );
 
-    if (!result.canceled) {
-      const { storageId, uploadUrl } = await uploadProfilePicture(
-        result?.assets[0],
-        generateUploadUrl
-      );
-      console.log({ storageId, uploadUrl });
-      if (!storageId) return;
-      await createMessage({
-        content: storageId,
-        senderId: loggedInUserId,
-        recipient: otherUserId,
-        conversationId,
-        contentType: 'image',
-        uploadUrl,
-      });
+  const loadEarlier = status === "CanLoadMore" && !isLoading;
+  const onLoadMore = () => {
+    if (loadEarlier) {
+      loadMore(100);
     }
   };
-  const onLoadMore = () => {
-    loadMore(5);
-  };
-  const loadEarlier = status === 'CanLoadMore';
+
+  const disabled = sending || processing || text.length <= 0;
   return (
     <View style={{ flex: 1 }}>
       <GiftedChat
         messages={messages}
-        alignTop
-        alwaysShowSend={false}
+        alwaysShowSend
         keyboardShouldPersistTaps="always"
         onSend={onSend}
         onInputTextChanged={setText}
@@ -141,23 +311,42 @@ export const ChatComponent = ({
           <SystemMessage {...props} textStyle={{ color: colors.gray }} />
         )}
         renderMessageImage={RenderMessageImage}
-        renderActions={(props) => <RenderActions onPickDocument={onPickDocument} {...props} />}
-        renderComposer={(props) => <RenderComposer onPickImage={onPickImage} {...props} />}
+        renderActions={(props) => (
+          <RenderActions onPickDocument={handleFilePick} {...props} />
+        )}
+        renderComposer={(props) => (
+          <RenderComposer onPickImage={handleImagePick} {...props} />
+        )}
         bottomOffset={insets.bottom}
         renderAvatar={null}
         maxComposerHeight={100}
         textInputProps={styles.input}
-        scrollToBottom
+        isScrollToBottomEnabled
         renderUsernameOnMessage
         infiniteScroll
         loadEarlier={loadEarlier}
-        renderChatEmpty={EmptyChat}
+        // renderChatEmpty={EmptyChat}
         onLoadEarlier={onLoadMore}
-        renderUsername={(user) => <Text style={styles.username}>{user.name}</Text>}
-        renderBubble={RenderBubble}
-        renderSend={RenderSend}
+        renderUsername={(user) => (
+          <Text style={styles.username}>{user.name}</Text>
+        )}
+        renderBubble={(props) => (
+          // @ts-ignore
+          <RenderBubble
+            {...props}
+            onCopy={onCopy}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            loggedInUserId={loggedInUserId}
+            updateRowRef={updateRowRef}
+            setReplyOnSwipeOpen={setReplyMessage}
+          />
+        )}
+        renderSend={(props) => (
+          <RenderSend {...props} sending={sending} disabled={disabled} />
+        )}
       />
-      {Platform.OS === 'android' && <KeyboardAvoidingView behavior="height" />}
+      {Platform.OS === "android" && <KeyboardAvoidingView behavior="height" />}
     </View>
   );
 };
@@ -165,24 +354,24 @@ export const ChatComponent = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: "#F5F5F5",
   },
   messagesContainer: {
     padding: 10,
   },
 
   messageBubble: {
-    maxWidth: '80%',
+    maxWidth: "80%",
     padding: 10,
     marginVertical: 5,
     borderRadius: 10,
   },
 
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 10,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   input: {
     flex: 1,
@@ -191,13 +380,13 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     paddingHorizontal: 15,
     marginRight: 10,
-    backgroundColor: 'transparent',
-    justifyContent: 'center',
-    textAlignVertical: 'center',
-    paddingTop: Platform.OS === 'ios' ? 10 : 0,
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    textAlignVertical: "center",
+    paddingTop: Platform.OS === "ios" ? 10 : 0,
   },
   sendButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: "#007AFF",
     borderRadius: 7777,
     padding: 15,
   },

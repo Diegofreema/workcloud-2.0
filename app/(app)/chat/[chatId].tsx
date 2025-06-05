@@ -28,10 +28,11 @@ const SingleChat = () => {
     status,
     loadMore,
     results: data,
+      isLoading
   } = usePaginatedQuery(
     api.conversation.getMessages,
     {
-      conversationId: conversationData?.conversation?._id!,
+      conversationId: conversationData?._id!,
     },
     { initialNumItems: 100 }
   );
@@ -52,14 +53,15 @@ const SingleChat = () => {
     <Container noPadding>
       <ChatHeader name={otherUser?.name!} imageUrl={otherUser?.imageUrl!} />
       <ChatComponent
-        conversationId={conversationData?.conversation?._id!}
+        conversationId={conversationData?._id!}
         otherUserId={userToChat}
-        otherUserName={conversationData?.otherUser?.name!}
-        createdAt={conversationData?.conversation?._creationTime!}
+        otherUserName={conversationData?.name!}
+        createdAt={conversationData?._creationTime!}
         loggedInUserId={loggedInUserId!}
         data={data || []}
         status={status}
         loadMore={loadMore}
+        isLoading={isLoading}
       />
     </Container>
   );

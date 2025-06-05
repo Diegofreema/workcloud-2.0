@@ -123,26 +123,41 @@ export const Conversation = {
   participants: v.array(v.id("users")),
   lastMessageTime: v.optional(v.number()),
   lastMessageSenderId: v.optional(v.id("users")),
-  type: v.optional(
-    v.union(v.literal("single"), v.literal("processor"), v.literal("group")),
-  ),
+  participantNames: v.array(v.string()),
+  type: v.optional(v.union(v.literal("single"), v.literal("processor"))),
 };
 
 export const Message = {
   senderId: v.id("users"),
-  recipient: v.id("users"),
   conversationId: v.id("conversations"),
   isEdited: v.optional(v.boolean()),
-  content: v.union(v.id("_storage"), v.string()),
-  contentType: v.union(v.literal("image"), v.literal("text")),
+  content: v.string(),
+  fileType: v.optional(v.union(
+    v.literal("image"),
+    v.literal("pdf"),
+    v.literal("audio"),
+  )),
   seenId: v.array(v.id("users")),
-  parentMessageId: v.optional(v.id("messages")),
+  fileId: v.optional(v.id("_storage")),
+  fileUrl: v.optional(v.string()),
+  replyTo: v.optional(v.id("messages")),
 };
 
 export const Suggestion = {
   text: v.string(),
 };
-
+export const Reaction = {
+  user_id: v.id("users"),
+  message_id: v.id("messages"),
+  emoji: v.union(
+    v.literal("LIKE"),
+    v.literal("SAD"),
+    v.literal("LOVE"),
+    v.literal("WOW"),
+    v.literal("ANGRY"),
+    v.literal("LAUGH"),
+  ),
+};
 export const ServicePoints = {
   description: v.string(),
   externalLink: v.optional(v.boolean()),
@@ -168,6 +183,7 @@ export default defineSchema({
   organizations: defineTable(Organization)
     .index("ownerId", ["ownerId"])
     .index("by_search_count", ["searchCount"])
+    .index("by_name", ["name"])
     .searchIndex("name", {
       searchField: "name",
     }),
@@ -195,11 +211,11 @@ export default defineSchema({
   requests: defineTable(Request),
   conversations: defineTable(Conversation).index(
     "by_last_message_last_message_time",
-    ['lastMessageTime'],
+    ["lastMessageTime"],
   ),
   messages: defineTable(Message)
     .index("by_conversationId", ["conversationId"])
-    .index("by_conversationId_recipient", ["conversationId", "recipient"]),
+    .index("by_reply_to", ["replyTo"]),
   attendance: defineTable(Attendance)
     .index("worker_id_date", ["workerId", "date"])
     .index("worker_id", ["workerId"]),
@@ -210,4 +226,8 @@ export default defineSchema({
     .index("by_text", ["text"]),
   reviews: defineTable(Reviews).index("by_organization_id", ["organizationId"]),
   stars: defineTable(Star).index("by_workspace_id", ["workspaceId"]),
+  reactions: defineTable(Reaction)
+    .index("by_message_id", ["message_id"])
+    .index("by_sender_id", ["user_id"])
+    .index("by_sender_message_id", ["message_id", "user_id"]),
 });
