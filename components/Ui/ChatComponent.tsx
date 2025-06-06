@@ -1,18 +1,25 @@
-import {useMutation, useQuery} from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
-import {useCallback, useEffect, useRef, useState} from "react";
-import {Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, View,} from "react-native";
-import {GiftedChat, SystemMessage} from "react-native-gifted-chat";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { GiftedChat, SystemMessage } from "react-native-gifted-chat";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import * as Clipboard from "expo-clipboard";
-import {RenderActions} from "~/components/chat/RenderActions";
-import {RenderBubble} from "~/components/chat/RenderBubble";
-import {RenderComposer} from "~/components/chat/RenderComposer";
-import {RenderMessageImage} from "~/components/chat/RenderMessageImage";
-import {RenderSend} from "~/components/chat/RenderSend";
-import {colors} from "~/constants/Colors";
+import { RenderActions } from "~/components/chat/RenderActions";
+import { RenderBubble } from "~/components/chat/RenderBubble";
+import { RenderComposer } from "~/components/chat/RenderComposer";
+import { RenderMessageImage } from "~/components/chat/RenderMessageImage";
+import { RenderSend } from "~/components/chat/RenderSend";
+import { colors } from "~/constants/Colors";
 import {
   DataType,
   EditType,
@@ -23,12 +30,12 @@ import {
   SendIMessage,
   StatusType,
 } from "~/constants/types";
-import {api} from "~/convex/_generated/api";
-import {Id} from "~/convex/_generated/dataModel";
-import {generateErrorMessage, uploadProfilePicture,} from "~/lib/helper";
-import {SwipeableMethods} from "react-native-gesture-handler/ReanimatedSwipeable";
-import {toast} from "sonner-native";
-import {useDebounce} from "~/features/chat/hook/use-debounce";
+import { api } from "~/convex/_generated/api";
+import { Id } from "~/convex/_generated/dataModel";
+import { generateErrorMessage, uploadProfilePicture } from "~/lib/helper";
+import { SwipeableMethods } from "react-native-gesture-handler/ReanimatedSwipeable";
+import { toast } from "sonner-native";
+import { useDebounce } from "~/features/chat/hook/use-debounce";
 import ReplyMessageBar from "~/features/chat/components/render-message";
 
 type Props = {
@@ -108,7 +115,7 @@ export const ChatComponent = ({
               fileType: message.fileType,
               fileUrl: message.fileUrl,
               fileId: message.fileId,
-              replyTo: message.replyTo,
+              replyTo: replyMessage?._id,
             });
           }
         }
@@ -263,7 +270,7 @@ export const ChatComponent = ({
         },
       ]
     : [];
-  console.log({ replyMessage, message: messages[0], otherUserName });
+
   const onCopy = useCallback(async (textToCopy: string) => {
     const copied = await Clipboard.setStringAsync(textToCopy);
     if (copied) {
@@ -321,10 +328,12 @@ export const ChatComponent = ({
     getTypingUsers !== undefined &&
     getTypingUsers.length > 0 &&
     getTypingUsers.includes(otherUserId);
+  console.log({ replyMessage });
   return (
     <View style={{ flex: 1 }}>
       <GiftedChat
         messages={messages}
+        text={text}
         alwaysShowSend
         keyboardShouldPersistTaps="always"
         onSend={onSend}
@@ -368,7 +377,7 @@ export const ChatComponent = ({
           />
         )}
         renderSend={(props) => (
-          <RenderSend {...props} sending={sending} disabled={disabled} />
+          <RenderSend {...props} sending={processing || sending} disabled={disabled} />
         )}
         renderChatFooter={() => (
           <ReplyMessageBar

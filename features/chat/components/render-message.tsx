@@ -20,7 +20,7 @@ const ReplyMessageBar = ({
   clearEdit,
   editText,
 }: ReplyMessageBarProps) => {
-  console.log({ message });
+
   const { id: loggedInUser } = useGetUserId();
   const renderContent = () => {
     if (message?.fileType === "image" && message.fileUrl) {

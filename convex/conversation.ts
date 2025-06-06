@@ -125,10 +125,11 @@ export const getUnreadAllMessages = query({
 
 export const getSingleConversationWithMessages = query({
   args: {
-    loggedInUserId: v.id("users"),
+    loggedInUserId: v.optional(v.id("users")),
     otherUserId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    if (!args.loggedInUserId) return null;
     return filter(
       ctx.db.query("conversations").withIndex("by_id"),
       (c) =>

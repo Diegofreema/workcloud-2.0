@@ -14,10 +14,10 @@ export const useOrganizationModalHook = ({ data }: Props) => {
   const { onOpen } = useOrganizationModal();
 
   useEffect(() => {
-    if (data === undefined) return;
-
-    if (!data.organizationId && !data?.workerId) {
-      onOpen();
+    if (data !== undefined) {
+      if (data.organizationId === undefined && data?.workerId === undefined) {
+        onOpen();
+      }
     }
   }, [data?.organizationId, data?.workerId, data, onOpen]);
 };

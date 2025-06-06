@@ -19,6 +19,7 @@ import ReanimatedSwipeable, {
 import Animated, {
   SharedValue,
   useAnimatedStyle,
+  withTiming,
 } from "react-native-reanimated";
 import { toast } from "sonner-native";
 import { Id } from "~/convex/_generated/dataModel";
@@ -49,20 +50,20 @@ type Props = BubbleProps<IMessage> & {
   loggedInUserId: Id<"users">;
 };
 
-function LeftAction(
-  prog: SharedValue<number>,
-  drag: SharedValue<number>,
-
-) {
+function LeftAction(prog: SharedValue<number>, dragX: SharedValue<number>) {
   const styleAnimation = useAnimatedStyle(() => {
+    const isSwiped = dragX.value > 20; // Threshold to show the action
     return {
-      transform: [{ translateX: drag.value + 50 }],
+      opacity: withTiming(isSwiped ? 1 : 0, { duration: 500 }),
+      transform: [
+        { translateX: withTiming(isSwiped ? 50 : -50, { duration: 500 }) },
+      ],
     };
   });
 
   return (
     <Animated.View style={styleAnimation}>
-      <Reply color={colors.black} />
+      <Reply color={colors.black} size={24} />
     </Animated.View>
   );
 }
@@ -84,8 +85,6 @@ export const RenderBubble = ({
     (message) => message.messageId === currentMessage._id,
   );
 
-  console.log(currentMessage.user._id);
-
   const selectedIsNotEmpty = selected.length > 0;
 
   const bubbleRef = useRef<View>(null);
@@ -97,17 +96,17 @@ export const RenderBubble = ({
     type: FileType | undefined,
     selectedMessage: SelectedMessage | undefined,
   ) => {
-    if (selectedIsNotEmpty && !messageIsSelected) {
-      setSelected({
-        messageId: currentMessage._id.toString(),
-        senderId: currentMessage.user._id.toString(),
-      });
-      return;
-    }
-    if (selectedIsNotEmpty && selectedMessage) {
-      removeSelected(selectedMessage);
-      return;
-    }
+    // if (selectedIsNotEmpty && !messageIsSelected) {
+    //   setSelected({
+    //     messageId: currentMessage._id.toString(),
+    //     senderId: currentMessage.user._id.toString(),
+    //   });
+    //   return;
+    // }
+    // if (selectedIsNotEmpty && selectedMessage) {
+    //   removeSelected(selectedMessage);
+    //   return;
+    // }
 
     if (!url || !type) return;
     getFile({ type, url });
@@ -116,7 +115,7 @@ export const RenderBubble = ({
   const findEmojiISelected = currentMessage.reactions?.find(
     (reaction) => reaction.user_id === loggedInUserId,
   );
-  console.log({ loggedInUserId });
+
   const isSent = currentMessage.user._id === loggedInUserId;
 
   const handleEmojiSelect = async (emoji: string) => {
@@ -133,13 +132,13 @@ export const RenderBubble = ({
   };
 
   const handleLongPress = () => {
-    if (isSent) {
-      setSelected({
-        messageId: currentMessage._id as string,
-        senderId: currentMessage.user._id,
-      });
-    }
-    if (selected.length > 0) return;
+    // if (isSent) {
+    //   setSelected({
+    //     messageId: currentMessage._id as string,
+    //     senderId: currentMessage.user._id,
+    //   });
+    // }
+    // if (selected.length > 0) return;
     if (bubbleRef.current) {
       bubbleRef.current.measure((x, y, w, h, pageX, pageY) => {
         const bubbleCenter = pageX + width / 2;
@@ -180,7 +179,6 @@ export const RenderBubble = ({
       );
     } else if (currentMessage.fileType === "pdf" && currentMessage.fileUrl) {
       const pdfUrl = currentMessage.fileUrl?.split("&mode=admin")[0];
-      console.log(pdfUrl);
       return (
         <View style={styles.pdfContainer}>
           <Pdf
@@ -213,21 +211,36 @@ export const RenderBubble = ({
   const renderReactions = () => {
     if (!currentMessage.reactions) return null;
     const reactionEmojis = Object.values(currentMessage.reactions);
+
+    // Return null if no reactions
     if (reactionEmojis.length === 0) return null;
+
+    // Aggregate reactions by emoji
+    const groupedReactions = reactionEmojis.reduce(
+      (acc, reaction) => {
+        const emojiKey = reaction.emoji;
+        acc[emojiKey] = (acc[emojiKey] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     return (
       <View style={styles.reactionsContainer}>
-        {reactionEmojis.map((emoji, index) => (
-          <Text key={index} style={styles.reactionEmoji}>
-            {renderEmoji[emoji.emoji]}
-          </Text>
+        {Object.entries(groupedReactions).map(([emoji, count]) => (
+          <View key={emoji} style={styles.reactionGroup}>
+            <Text style={styles.reactionEmoji}>
+              {renderEmoji[emoji as keyof typeof renderEmoji]}
+            </Text>
+            {count > 1 && <Text style={styles.reactionCount}>{count}</Text>}
+          </View>
         ))}
-        <Text>{reactionEmojis.length > 1 && reactionEmojis.length}</Text>
       </View>
     );
   };
 
-  const onSwipeAction = () => {
+  const onSwipeAction = (swipeable: SwipeableMethods) => {
+    swipeable.close();
     if (currentMessage) {
       setReplyOnSwipeOpen({ ...currentMessage });
     }
@@ -270,18 +283,15 @@ export const RenderBubble = ({
   return (
     <>
       <ReanimatedSwipeable
-        renderLeftActions={LeftAction}
+        renderLeftActions={(progress, dragX) => LeftAction(progress, dragX)}
         friction={2}
         enableTrackpadTwoFingerGesture
         leftThreshold={40}
         containerStyle={{
           width: "100%",
-          backgroundColor: messageIsSelected
-            ? "rgba(0,0,0, 0.2)"
-            : "transparent",
         }}
         ref={updateRowRef}
-        onSwipeableOpen={onSwipeAction}
+        onSwipeableOpen={(direction, swipeable) => onSwipeAction(swipeable)}
       >
         <View
           style={[
@@ -330,8 +340,8 @@ export const RenderBubble = ({
                 minute: "2-digit",
               })}
             </Text>
-            {renderReactions()}
           </TouchableOpacity>
+          {renderReactions()}
         </View>
       </ReanimatedSwipeable>
       <EmojiPickerModal
@@ -422,6 +432,22 @@ const styles = StyleSheet.create({
   timeReceived: {
     color: colors.dialPad,
   },
+  // reactionsContainer: {
+  //   flexDirection: "row",
+  //   marginTop: 4,
+  //   backgroundColor: "#F0F0F0",
+  //   borderRadius: 12,
+  //   paddingHorizontal: 6,
+  //   paddingVertical: 2,
+  //   position: "absolute",
+  //   bottom: -5,
+  //   left: 10,
+  //   zIndex: 1000,
+  // },
+  // reactionEmoji: {
+  //   fontSize: 14,
+  //   marginHorizontal: 2,
+  // },
   reactionsContainer: {
     flexDirection: "row",
     marginTop: 4,
@@ -437,6 +463,16 @@ const styles = StyleSheet.create({
   reactionEmoji: {
     fontSize: 14,
     marginHorizontal: 2,
+  },
+  reactionGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 2,
+  },
+  reactionCount: {
+    fontSize: 12,
+    color: "#555",
+    marginLeft: 2,
   },
 });
 
