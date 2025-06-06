@@ -30,28 +30,26 @@ export const getConversationsSingle = query({
 export const getConversationsSingleSearch = query({
   args: {
     userId: v.id("users"),
-    paginationOpts: paginationOptsValidator,
     query: v.string(),
   },
   handler: async (ctx, args) => {
     const me = await ctx.db.get(args.userId);
+    if (!me) {
+      throw new ConvexError("Unable to fetch data");
+    }
 
     return filter(
       ctx.db
         .query("conversations")
         .withIndex("by_last_message_last_message_time"),
-      (conversation) => {
-        const otherName = conversation.participantNames
-          .find((name) => name !== me?.name)
-          ?.toLowerCase() as string;
-        return (
-          conversation.participants.includes(args.userId) &&
-          otherName.includes(args.query.toLowerCase())
-        );
-      },
+      (conversation) => conversation.participants.includes(args.userId) &&  conversation.participantNames.some((p) =>
+          p.toLowerCase().includes(args.query.toLowerCase()),
+      ),
     )
       .order("asc")
-      .paginate(args.paginationOpts);
+        .collect()
+
+
   },
 });
 
