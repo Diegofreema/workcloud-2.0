@@ -27,7 +27,7 @@ export const useMarkRead = ({ loggedInUserId, conversationData }: Props) => {
         // Ensure seenId is an array and check against all participants
         return !message.senderId.includes(loggedInUserId);
       });
-      console.log(messagesThatEveryParticipantHasNotSeen.length);
+
       // Only proceed if there are messages to mark
       if (messagesThatEveryParticipantHasNotSeen.length > 0) {
         await markAsRead({

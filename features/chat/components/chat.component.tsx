@@ -29,12 +29,11 @@ export const ChatComponent = () => {
     }
   }, [status, isLoading, loadMore]);
 
-  console.log({ searchQuery });
   const safeData = searchQuery || [];
 
   const data = query ? safeData : results;
-  const loading = isLoading;
-  console.log({ id });
+  const loading = isLoading && status !== "LoadingFirstPage";
+
   return (
     <View style={{ flex: 1 }}>
       <SearchComponent

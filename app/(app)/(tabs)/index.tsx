@@ -1,17 +1,16 @@
-import { useAuth } from "@clerk/clerk-expo";
-import { ErrorBoundaryProps } from "expo-router";
-import { useMemo } from "react";
-import { Header } from "~/features/home/components/Header";
-import { OrganizationModal } from "~/components/OrganizationModal";
-import { ProfileHeader } from "~/features/home/components/ProfileHeader";
-import { Container } from "~/components/Ui/Container";
-import { ErrorComponent } from "~/components/Ui/ErrorComponent";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { useUserData } from "~/features/home/api/user-data";
-import { useConnections } from "~/features/common/api/use-connection";
-import { useOrganizationModalHook } from "~/features/home/hooks/use-organization-modal";
-import { sliceArray } from "~/lib/helper";
-import { HomeBody } from "~/features/home/components/home-body";
+import {useAuth} from "@clerk/clerk-expo";
+import {ErrorBoundaryProps} from "expo-router";
+import {Header} from "~/features/home/components/Header";
+import {OrganizationModal} from "~/components/OrganizationModal";
+import {ProfileHeader} from "~/features/home/components/ProfileHeader";
+import {Container} from "~/components/Ui/Container";
+import {ErrorComponent} from "~/components/Ui/ErrorComponent";
+import {LoadingComponent} from "~/components/Ui/LoadingComponent";
+import {useUserData} from "~/features/home/api/user-data";
+import {useConnections} from "~/features/common/api/use-connection";
+import {useOrganizationModalHook} from "~/features/home/hooks/use-organization-modal";
+import {sliceArray} from "~/lib/helper";
+import {HomeBody} from "~/features/home/components/home-body";
 
 export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
   return <ErrorComponent refetch={retry} text={error.message} />;

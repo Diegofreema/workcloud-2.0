@@ -7,6 +7,11 @@ import React from "react";
 import { fontFamily } from "~/constants";
 import { colors } from "~/constants/Colors";
 import { useDarkMode } from "~/hooks/useDarkMode";
+import { useQuery } from "convex/react";
+import { api } from "~/convex/_generated/api";
+import { getUnreadAllMessages } from "~/convex/conversation";
+import { useGetUserId } from "~/hooks/useGetUserId";
+import { StyleSheet, View } from "react-native";
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -21,7 +26,13 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const { darkMode } = useDarkMode();
+  const { id } = useGetUserId();
+  const unreadCount = useQuery(
+    api.conversation.getUnreadAllMessages,
+    id ? { userId: id } : "skip",
+  );
 
+  const count = unreadCount || 0;
   return (
     <>
       <StatusBar
@@ -77,15 +88,22 @@ export default function TabLayout() {
               />
             ),
             tabBarLabel: ({ focused }) => (
-              <Text
-                style={{
-                  color: focused ? colors.buttonBlue : colors.grayText,
-                  fontFamily: fontFamily.Bold,
-                  fontSize: 10,
-                }}
-              >
-                Messages
-              </Text>
+              <View>
+                <Text
+                  style={{
+                    color: focused ? colors.buttonBlue : colors.grayText,
+                    fontFamily: fontFamily.Bold,
+                    fontSize: 10,
+                  }}
+                >
+                  Messages
+                </Text>
+                {count > 0 && (
+                  <View style={styles.con}>
+                    <Text style={styles.count}>{count}</Text>
+                  </View>
+                )}
+              </View>
             ),
           }}
         />
@@ -140,3 +158,20 @@ export default function TabLayout() {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  con: {
+    backgroundColor: colors.lightBlue,
+    position: "absolute",
+    top: -30,
+    right: -2,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 30,
+    width: 20,
+    height: 20,
+  },
+  count: {
+    color: colors.white,
+  },
+});

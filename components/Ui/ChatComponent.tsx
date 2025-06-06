@@ -328,7 +328,7 @@ export const ChatComponent = ({
     getTypingUsers !== undefined &&
     getTypingUsers.length > 0 &&
     getTypingUsers.includes(otherUserId);
-  console.log({ replyMessage });
+
   return (
     <View style={{ flex: 1 }}>
       <GiftedChat
@@ -377,7 +377,11 @@ export const ChatComponent = ({
           />
         )}
         renderSend={(props) => (
-          <RenderSend {...props} sending={processing || sending} disabled={disabled} />
+          <RenderSend
+            {...props}
+            sending={processing || sending}
+            disabled={disabled}
+          />
         )}
         renderChatFooter={() => (
           <ReplyMessageBar

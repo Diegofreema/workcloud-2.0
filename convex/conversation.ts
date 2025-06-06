@@ -42,14 +42,14 @@ export const getConversationsSingleSearch = query({
       ctx.db
         .query("conversations")
         .withIndex("by_last_message_last_message_time"),
-      (conversation) => conversation.participants.includes(args.userId) &&  conversation.participantNames.some((p) =>
+      (conversation) =>
+        conversation.participants.includes(args.userId) &&
+        conversation.participantNames.some((p) =>
           p.toLowerCase().includes(args.query.toLowerCase()),
-      ),
+        ),
     )
       .order("asc")
-        .collect()
-
-
+      .collect();
   },
 });
 
@@ -75,49 +75,23 @@ export const getUnreadMessages = query({
 });
 export const getUnreadAllMessages = query({
   args: {
-    clerkId: v.string(),
-    type: v.union(
-      v.literal("single"),
-      v.literal("processor"),
-      v.literal("group"),
-    ),
+    userId: v.id("users"),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), args.clerkId))
-      .first();
-    if (!user) return 0;
-    const workerRole = await ctx.db
-      .query("workers")
-      .filter((q) => q.eq(q.field("userId"), user._id))
-      .first();
-    let conversations;
-    if (workerRole && workerRole?.role?.toLowerCase() === "processor") {
-      conversations = await ctx.db
-        .query("conversations")
-        .withIndex("by_id")
-        .collect();
-    } else {
-      conversations = await ctx.db
-        .query("conversations")
-        .withIndex("by_id")
-        .filter((q) => q.eq(q.field("type"), args.type))
-        .collect();
-    }
+    const conversations = await getConversationIamIn(ctx, args.userId);
 
-    if (!conversations) return 0;
-    const conversationThatLoggedInUserIsIn = conversations.filter((c) =>
-      c.participants.includes(user?._id),
+    const messagesThatIHaveNotRead = await Promise.all(
+      conversations.map(async (conversation) => {
+        return filter(
+          ctx.db.query("messages"),
+          (message) => !message.seenId.includes(args.userId),
+        ).collect();
+      }),
     );
-    const messagesThatUserHasNotRead = conversationThatLoggedInUserIsIn.map(
-      async (m) => {
-        return await getMessagesUnreadCount(ctx, m._id, user?._id);
-      },
-    );
-    const unread = await Promise.all(messagesThatUserHasNotRead);
 
-    return unread.reduce((acc, curr) => acc + curr, 0);
+    return messagesThatIHaveNotRead
+      .map((m) => m.length)
+      .reduce((acc, curr) => acc + curr, 0);
   },
 });
 
@@ -338,4 +312,14 @@ export const createConversation = async (
     participantNames: [me.name, otherUser.name],
     type: type,
   });
+};
+
+export const getConversationIamIn = async (
+  ctx: QueryCtx,
+  userId: Id<"users">,
+) => {
+  return filter(
+    ctx.db.query("conversations").withIndex("by_id"),
+    (conversation) => conversation.participants.includes(userId),
+  ).collect();
 };
