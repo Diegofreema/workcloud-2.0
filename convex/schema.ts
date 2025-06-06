@@ -132,11 +132,9 @@ export const Message = {
   conversationId: v.id("conversations"),
   isEdited: v.optional(v.boolean()),
   content: v.string(),
-  fileType: v.optional(v.union(
-    v.literal("image"),
-    v.literal("pdf"),
-    v.literal("audio"),
-  )),
+  fileType: v.optional(
+    v.union(v.literal("image"), v.literal("pdf"), v.literal("audio")),
+  ),
   seenId: v.array(v.id("users")),
   fileId: v.optional(v.id("_storage")),
   fileUrl: v.optional(v.string()),
@@ -230,4 +228,11 @@ export default defineSchema({
     .index("by_message_id", ["message_id"])
     .index("by_sender_id", ["user_id"])
     .index("by_sender_message_id", ["message_id", "user_id"]),
+  typingStates: defineTable({
+    conversationId: v.id("conversations"),
+    userId: v.id("users"),
+    isTyping: v.boolean(),
+  })
+    .index("by_conversationId_userId", ["conversationId", "userId"])
+    .index("is_typing", ["conversationId", "isTyping"]),
 });

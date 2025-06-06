@@ -1,25 +1,18 @@
-import { useMutation } from "convex/react";
+import {useMutation, useQuery} from "convex/react";
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
-import { useCallback, useRef, useState } from "react";
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { GiftedChat, SystemMessage } from "react-native-gifted-chat";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {useCallback, useEffect, useRef, useState} from "react";
+import {Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, View,} from "react-native";
+import {GiftedChat, SystemMessage} from "react-native-gifted-chat";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 import * as Clipboard from "expo-clipboard";
-import { RenderActions } from "~/components/chat/RenderActions";
-import { RenderBubble } from "~/components/chat/RenderBubble";
-import { RenderComposer } from "~/components/chat/RenderComposer";
-import { RenderMessageImage } from "~/components/chat/RenderMessageImage";
-import { RenderSend } from "~/components/chat/RenderSend";
-import { colors } from "~/constants/Colors";
+import {RenderActions} from "~/components/chat/RenderActions";
+import {RenderBubble} from "~/components/chat/RenderBubble";
+import {RenderComposer} from "~/components/chat/RenderComposer";
+import {RenderMessageImage} from "~/components/chat/RenderMessageImage";
+import {RenderSend} from "~/components/chat/RenderSend";
+import {colors} from "~/constants/Colors";
 import {
   DataType,
   EditType,
@@ -30,15 +23,13 @@ import {
   SendIMessage,
   StatusType,
 } from "~/constants/types";
-import { api } from "~/convex/_generated/api";
-import { Id } from "~/convex/_generated/dataModel";
-import {
-  generateErrorMessage,
-  uploadDoc,
-  uploadProfilePicture,
-} from "~/lib/helper";
-import { SwipeableMethods } from "react-native-gesture-handler/ReanimatedSwipeable";
-import { toast } from "sonner-native";
+import {api} from "~/convex/_generated/api";
+import {Id} from "~/convex/_generated/dataModel";
+import {generateErrorMessage, uploadProfilePicture,} from "~/lib/helper";
+import {SwipeableMethods} from "react-native-gesture-handler/ReanimatedSwipeable";
+import {toast} from "sonner-native";
+import {useDebounce} from "~/features/chat/hook/use-debounce";
+import ReplyMessageBar from "~/features/chat/components/render-message";
 
 type Props = {
   loggedInUserId: Id<"users">;
@@ -64,13 +55,35 @@ export const ChatComponent = ({
 }: Props) => {
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
-
+  // const { darkMode } = useDarkMode();
+  const [isTypingLocally, setIsTypingLocally] = useState(false);
+  const setTypingState = useMutation(api.message.setTypingState);
+  const getTypingUsers = useQuery(api.message.getTypingUsers, {
+    conversationId,
+  });
   const insets = useSafeAreaInsets();
   const [replyMessage, setReplyMessage] = useState<IMessage | null>(null);
   const [processing, setProcessing] = useState(false);
   const sendMessage = useMutation(api.message.sendMessage);
   const editMessage = useMutation(api.message.editMessage);
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
+  const updateTypingState = useDebounce((isTyping: boolean) => {
+    void setTypingState({ conversationId, userId: loggedInUserId, isTyping });
+  }, 300);
+
+  // Handle text input changes
+  const onInputTextChanged = useCallback(
+    (text: string) => {
+      setText(text);
+      const isTyping = text.length > 0;
+      if (isTyping !== isTypingLocally) {
+        setIsTypingLocally(isTyping);
+        updateTypingState(isTyping);
+      }
+    },
+    [isTypingLocally, updateTypingState],
+  );
+
   const onSend = useCallback(
     async (messages: SendIMessage[]) => {
       try {
@@ -210,6 +223,13 @@ export const ChatComponent = ({
     },
     [replyMessage, editText, setEditText],
   );
+  useEffect(() => {
+    if (replyMessage && swipeableRowRef.current) {
+      swipeableRowRef.current.close();
+      swipeableRowRef.current = null;
+    }
+  }, [replyMessage]);
+
   const hasItem = data?.length > 0;
   const messages = hasItem
     ? [
@@ -223,7 +243,7 @@ export const ChatComponent = ({
               name:
                 message.senderId === loggedInUserId
                   ? "You"
-                  : otherUserName.split(" ")[0],
+                  : otherUserName?.split(" ")[0],
             },
             reactions: message.reactions,
             fileType: message.fileType,
@@ -243,6 +263,7 @@ export const ChatComponent = ({
         },
       ]
     : [];
+  console.log({ replyMessage, message: messages[0], otherUserName });
   const onCopy = useCallback(async (textToCopy: string) => {
     const copied = await Clipboard.setStringAsync(textToCopy);
     if (copied) {
@@ -296,6 +317,10 @@ export const ChatComponent = ({
   };
 
   const disabled = sending || processing || text.length <= 0;
+  const isTyping =
+    getTypingUsers !== undefined &&
+    getTypingUsers.length > 0 &&
+    getTypingUsers.includes(otherUserId);
   return (
     <View style={{ flex: 1 }}>
       <GiftedChat
@@ -303,7 +328,7 @@ export const ChatComponent = ({
         alwaysShowSend
         keyboardShouldPersistTaps="always"
         onSend={onSend}
-        onInputTextChanged={setText}
+        onInputTextChanged={onInputTextChanged}
         user={{
           _id: loggedInUserId,
         }}
@@ -345,6 +370,16 @@ export const ChatComponent = ({
         renderSend={(props) => (
           <RenderSend {...props} sending={sending} disabled={disabled} />
         )}
+        renderChatFooter={() => (
+          <ReplyMessageBar
+            clearReply={() => setReplyMessage(null)}
+            message={replyMessage}
+            editText={editText}
+            clearEdit={() => setEditText(null)}
+          />
+        )}
+        // renderFooter={renderFooter}
+        isTyping={isTyping}
       />
       {Platform.OS === "android" && <KeyboardAvoidingView behavior="height" />}
     </View>
@@ -391,4 +426,7 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   username: { fontSize: 10, color: colors.black, paddingLeft: 7 },
+  footer: {
+    padding: 10,
+  },
 });

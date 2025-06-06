@@ -47,7 +47,7 @@ const SingleChat = () => {
     loggedInUserId: loggedInUserId!,
   });
   const otherUser = useQuery(api.users.getUserById, { id: userToChat });
-  if (!otherUser || isPending || loading) return <ChatSkeleton />;
+  if (otherUser === undefined || isPending || loading) return <ChatSkeleton />;
 
   return (
     <Container noPadding>
@@ -55,7 +55,7 @@ const SingleChat = () => {
       <ChatComponent
         conversationId={conversationData?._id!}
         otherUserId={userToChat}
-        otherUserName={conversationData?.name!}
+        otherUserName={otherUser?.name!}
         createdAt={conversationData?._creationTime!}
         loggedInUserId={loggedInUserId!}
         data={data || []}

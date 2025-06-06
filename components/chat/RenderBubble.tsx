@@ -1,26 +1,43 @@
-import React, {useRef, useState} from "react";
-import {BubbleProps} from "react-native-gifted-chat";
+import React, { useRef, useState } from "react";
+import { BubbleProps } from "react-native-gifted-chat";
 
-import {Image} from "expo-image";
-import {useRouter} from "expo-router";
-import {CircleChevronDown, Reply} from "lucide-react-native";
-import {Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View,} from "react-native";
-import ReanimatedSwipeable, {SwipeableMethods,} from "react-native-gesture-handler/ReanimatedSwipeable";
+import { Image } from "expo-image";
+import { useRouter } from "expo-router";
+import { CircleChevronDown, Reply } from "lucide-react-native";
+import {
+  Dimensions,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import ReanimatedSwipeable, {
+  SwipeableMethods,
+} from "react-native-gesture-handler/ReanimatedSwipeable";
 
-import Animated, {SharedValue, useAnimatedStyle,} from "react-native-reanimated";
-import {toast} from "sonner-native";
-import {Id} from "~/convex/_generated/dataModel";
-import {colors} from "~/constants/Colors";
-import {emojis} from "~/constants";
-import {EditType2, FileType, IMessage, SelectedMessage,} from "~/constants/types";
-import {useSelected} from "~/features/chat/hook/use-selected";
-import {useMutation} from "convex/react";
-import {api} from "~/convex/_generated/api";
-import {useFileUrlStore} from "~/features/chat/hook/use-file-url";
+import Animated, {
+  SharedValue,
+  useAnimatedStyle,
+} from "react-native-reanimated";
+import { toast } from "sonner-native";
+import { Id } from "~/convex/_generated/dataModel";
+import { colors } from "~/constants/Colors";
+import { emojis } from "~/constants";
+import {
+  EditType2,
+  FileType,
+  IMessage,
+  SelectedMessage,
+} from "~/constants/types";
+import { useSelected } from "~/features/chat/hook/use-selected";
+import { useMutation } from "convex/react";
+import { api } from "~/convex/_generated/api";
+import { useFileUrlStore } from "~/features/chat/hook/use-file-url";
 import Pdf from "react-native-pdf";
-import {EmojiPickerModal} from "~/features/chat/components/emoji-modal";
-import {RenderReply} from "~/features/chat/components/render-reply";
-import {ChatMenu} from "~/features/chat/components/chat-menu";
+import { EmojiPickerModal } from "~/features/chat/components/emoji-modal";
+import { RenderReply } from "~/features/chat/components/render-reply";
+import { ChatMenu } from "~/features/chat/components/chat-menu";
 
 const { width } = Dimensions.get("window");
 type Props = BubbleProps<IMessage> & {
@@ -35,7 +52,7 @@ type Props = BubbleProps<IMessage> & {
 function LeftAction(
   prog: SharedValue<number>,
   drag: SharedValue<number>,
-  swipeableMethods: SwipeableMethods,
+
 ) {
   const styleAnimation = useAnimatedStyle(() => {
     return {
@@ -67,7 +84,7 @@ export const RenderBubble = ({
     (message) => message.messageId === currentMessage._id,
   );
 
-  console.log(currentMessage.user._id)
+  console.log(currentMessage.user._id);
 
   const selectedIsNotEmpty = selected.length > 0;
 
@@ -325,28 +342,6 @@ export const RenderBubble = ({
         findEmojiISelected={findEmojiISelected}
       />
     </>
-    // <Bubble
-    //   {...props}
-    //   currentMessage={currentMessage}
-    //   onLongPress={onPress}
-    //   textStyle={{
-    //     right: {
-    //       color: '#000',
-    //     },
-
-    //     left: {
-    //       color: '#fff',
-    //     },
-    //   }}
-    //   wrapperStyle={{
-    //     left: {
-    //       backgroundColor: colors.lightblue,
-    //     },
-    //     right: {
-    //       backgroundColor: colors.lightGray,
-    //     },
-    //   }}
-    // />
   );
 };
 
@@ -367,7 +362,7 @@ const styles = StyleSheet.create({
   },
   receivedContainer: {
     alignSelf: "flex-start",
-    backgroundColor: colors.lightBlue,
+    backgroundColor: colors.otherChatBubble,
   },
   text: {
     fontSize: 16,
