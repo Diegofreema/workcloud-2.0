@@ -14,8 +14,8 @@ export const useOrganizationModalHook = ({ data }: Props) => {
   const { onOpen } = useOrganizationModal();
 
   useEffect(() => {
-    if (data !== undefined) {
-      if (data.organizationId === undefined && data?.workerId === undefined) {
+    if (data) {
+      if (!data.organizationId && !data?.workerId) {
         onOpen();
       }
     }

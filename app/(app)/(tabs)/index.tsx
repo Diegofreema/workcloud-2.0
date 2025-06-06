@@ -32,7 +32,7 @@ export default function TabOneScreen() {
   );
   console.log({ data });
   useOrganizationModalHook({ data });
-
+    console.log(typeof data.workerId)
   if (userData === undefined || connections === undefined) {
     return <LoadingComponent />;
   }
