@@ -23,16 +23,11 @@ export default function TabOneScreen() {
   const userData = useUserData({ userId: userId as string });
   const connections = useConnections({ ownerId: userData?._id });
 
-  const data = useMemo(
-    () => ({
-      organizationId: userData?.organizationId,
-      workerId: userData?.workerId,
-    }),
-    [userData],
-  );
-  console.log({ data });
-  useOrganizationModalHook({ data });
-    console.log(typeof data.workerId)
+  const showModal =
+    !!userData && !userData?.organizationId && !userData?.workerId;
+  console.log({ showModal });
+  useOrganizationModalHook({ showModal });
+
   if (userData === undefined || connections === undefined) {
     return <LoadingComponent />;
   }

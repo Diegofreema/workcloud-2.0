@@ -30,14 +30,14 @@ import { Toaster } from "sonner-native";
 import { LoadingComponent } from "~/components/Ui/LoadingComponent";
 import { useDarkMode } from "~/hooks/useDarkMode";
 
-import * as Sentry from "@sentry/react-native";
-import { isRunningInExpoGo } from "expo";
+// import * as Sentry from "@sentry/react-native";
+// import { isRunningInExpoGo } from "expo";
 import { MenuProvider } from "react-native-popup-menu";
 
 // Construct a new integration instance. This is needed to communicate between the integration and React
-const navigationIntegration = Sentry.reactNavigationIntegration({
-  enableTimeToInitialDisplay: !isRunningInExpoGo(),
-});
+// const navigationIntegration = Sentry.reactNavigationIntegration({
+//   enableTimeToInitialDisplay: !isRunningInExpoGo(),
+// });
 
 const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
   unsavedChangesWarning: false,
@@ -54,22 +54,22 @@ const queryClient = new QueryClient({
 });
 convexQueryClient.connect(queryClient);
 
-Sentry.init({
-  dsn: "https://3309f876b2a32501367ff526d4b77ca7@o4506898363318273.ingest.us.sentry.io/4507879223066624",
-  debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
-  tracesSampleRate: 1.0, // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing. Adjusting this value in production.
-  integrations: [
-    // Pass integration
-    navigationIntegration,
-  ],
-  enableNativeFramesTracking: !isRunningInExpoGo(), // Tracks slow and frozen frames in the application
-  _experiments: {
-    profilesSampleRate: 1.0,
-    replaysSessionSampleRate: 1.0,
-    replaysOnErrorSampleRate: 1.0,
-  },
-  attachScreenshot: true,
-});
+// Sentry.init({
+//   dsn: "https://3309f876b2a32501367ff526d4b77ca7@o4506898363318273.ingest.us.sentry.io/4507879223066624",
+//   debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
+//   tracesSampleRate: 1.0, // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing. Adjusting this value in production.
+//   integrations: [
+//     // Pass integration
+//     navigationIntegration,
+//   ],
+//   enableNativeFramesTracking: !isRunningInExpoGo(), // Tracks slow and frozen frames in the application
+//   _experiments: {
+//     profilesSampleRate: 1.0,
+//     replaysSessionSampleRate: 1.0,
+//     replaysOnErrorSampleRate: 1.0,
+//   },
+//   attachScreenshot: true,
+// });
 
 SplashScreen.preventAutoHideAsync();
 
@@ -107,13 +107,13 @@ export function RootLayout() {
     PoppinsLightItalic: require("../assets/fonts/Poppins-BoldItalic.ttf"),
     ...FontAwesome.font,
   });
-  const ref = useNavigationContainerRef();
+  // const ref = useNavigationContainerRef();
 
-  useEffect(() => {
-    if (ref?.current) {
-      navigationIntegration.registerNavigationContainer(ref);
-    }
-  }, [ref]);
+  // useEffect(() => {
+  //   if (ref?.current) {
+  //     navigationIntegration.registerNavigationContainer(ref);
+  //   }
+  // }, [ref]);
 
   useEffect(() => {
     if (error) throw error;
@@ -121,7 +121,7 @@ export function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
+      void SplashScreen.hideAsync();
     }
   }, [loaded]);
   useEffect(() => {
@@ -138,7 +138,7 @@ export function RootLayout() {
         console.log(error);
       }
     }
-    onFetchUpdateAsync();
+    void onFetchUpdateAsync();
   }, []);
   useEffect(() => {
     const run = async () => {
@@ -149,7 +149,7 @@ export function RootLayout() {
         ]);
       }
     };
-    run();
+    void run();
   }, []);
   if (!loaded) {
     return null;
@@ -195,4 +195,4 @@ export function RootLayout() {
   );
 }
 
-export default Sentry.wrap(RootLayout);
+export default RootLayout;

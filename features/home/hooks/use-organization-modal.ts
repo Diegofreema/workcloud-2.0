@@ -1,23 +1,15 @@
-import { useEffect } from "react";
-import { useOrganizationModal } from "~/hooks/useOrganizationModal";
-import { Id } from "~/convex/_generated/dataModel";
+import {useEffect} from "react";
+import {useOrganizationModal} from "~/hooks/useOrganizationModal";
 
 type Props = {
-  data:
-    | {
-        organizationId: Id<"organizations"> | undefined;
-        workerId: Id<"workers"> | undefined;
-      }
-    | undefined;
+  showModal: boolean;
 };
-export const useOrganizationModalHook = ({ data }: Props) => {
+export const useOrganizationModalHook = ({ showModal }: Props) => {
   const { onOpen } = useOrganizationModal();
 
   useEffect(() => {
-    if (data) {
-      if (!data.organizationId && !data?.workerId) {
-        onOpen();
-      }
+    if (showModal) {
+      onOpen();
     }
-  }, [data?.organizationId, data?.workerId, data, onOpen]);
+  }, [showModal, onOpen]);
 };
