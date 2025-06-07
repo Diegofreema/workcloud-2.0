@@ -90,7 +90,7 @@ export const Workspace = {
   type: v.union(
     v.literal("personal"),
     v.literal("processor"),
-    v.literal("normal"),
+    v.literal("front"),
   ),
 };
 export const Connection = {
@@ -178,6 +178,7 @@ export default defineSchema({
     .searchIndex("name", {
       searchField: "name",
     }),
+
   organizations: defineTable(Organization)
     .index("ownerId", ["ownerId"])
     .index("by_search_count", ["searchCount"])

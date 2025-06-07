@@ -24,7 +24,7 @@ export default function TabOneScreen() {
 
   const showModal =
     !!userData && !userData?.organizationId && !userData?.workerId;
-  console.log({ showModal });
+
   useOrganizationModalHook({ showModal });
 
   if (userData === undefined || connections === undefined) {

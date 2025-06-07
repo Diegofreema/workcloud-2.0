@@ -32,7 +32,7 @@ import { api } from "~/convex/_generated/api";
 import { useDarkMode } from "~/hooks/useDarkMode";
 import { useGetCat } from "~/hooks/useGetCat";
 import { useGetUserId } from "~/hooks/useGetUserId";
-import { uploadProfilePicture } from "~/lib/helper";
+import { generateErrorMessage, uploadProfilePicture } from "~/lib/helper";
 
 const validationSchema = yup.object().shape({
   organizationName: yup.string().required("Name of organization is required"),
@@ -53,9 +53,7 @@ const CreateWorkSpace = () => {
   const { cat } = useGetCat();
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
   const createOrganization = useMutation(api.organisation.createOrganization);
-  const updateUserTableWithOrganizationId = useMutation(
-    api.organisation.updateUserTableWithOrganizationId,
-  );
+
   const [endTime, setEndTime] = useState(new Date(1598051730000));
   const [avatar, setAvatar] = useState<string>("https://placehold.co/100x100");
   const [selectedImage, setSelectedImage] =
@@ -96,13 +94,19 @@ const CreateWorkSpace = () => {
       if (!id) return;
 
       try {
-        const { storageId } = await uploadProfilePicture(
-          selectedImage,
+        const res = await uploadProfilePicture(
           generateUploadUrl,
+          selectedImage?.uri,
         );
-        const organizationId = await createOrganization({
+        if (!res?.storageId) {
+          toast.error("Something went wrong", {
+            description: "Couldn't create organization",
+          });
+          return;
+        }
+        await createOrganization({
           ownerId: id,
-          avatar: storageId,
+          avatar: res?.storageId,
           end: values.endTime,
           name: values.organizationName,
           start: values.startTime,
@@ -114,21 +118,18 @@ const CreateWorkSpace = () => {
           location: values.location,
         });
 
-        if (organizationId) {
-          await updateUserTableWithOrganizationId({
-            userId: id,
-            organizationId,
-          });
-          router.replace(`/my-org`);
-          toast.success("Success", {
-            description: "Organization has been created successfully",
-          });
-          resetForm();
-        }
+        router.replace(`/my-org`);
+        toast.success("Success", {
+          description: "Organization has been created successfully",
+        });
+        resetForm();
       } catch (e) {
-        console.log(e);
+        const errorMessage = generateErrorMessage(
+          e,
+          "Failed to create organization",
+        );
         toast.error("Something went wrong", {
-          description: "Couldn't create organization",
+          description: errorMessage,
         });
       }
     },
@@ -142,10 +143,7 @@ const CreateWorkSpace = () => {
     if (!result.canceled) {
       const imgUrl = result.assets[0];
       setSelectedImage(imgUrl);
-      await setValues({
-        ...values,
-        image: imgUrl?.uri,
-      });
+      await setFieldValue("image", imgUrl?.uri);
     }
   };
   useEffect(() => {

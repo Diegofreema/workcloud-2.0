@@ -384,27 +384,23 @@ export const createOrganization = mutation({
     if (organizationExist) {
       throw new ConvexError("Organization with name exists");
     }
-    return await ctx.db.insert("organizations", {
+    const organizationId = await ctx.db.insert("organizations", {
       ...args,
       has_group: false,
       workspaceCount: 0,
       followersCount: 0,
       searchCount: 0,
     });
-  },
-});
-
-export const updateUserTableWithOrganizationId = mutation({
-  args: {
-    userId: v.id("users"),
-    organizationId: v.id("organizations"),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db.patch(args.userId, {
-      organizationId: args.organizationId,
+    if (!organizationId) {
+      throw new ConvexError("Failed to create organization");
+    }
+    await ctx.db.patch(args.ownerId, {
+      organizationId: organizationId,
     });
   },
 });
+
+
 
 export const updateOrganization = mutation({
   args: {
