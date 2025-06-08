@@ -71,7 +71,7 @@ const Notification = () => {
         organizationId: info.organizationId,
       });
       toast.success('You have accepted the offer', {
-        description: `From ${organisation?.name} as an ${info.role}`,
+        description: `From ${organisation?.name}`,
       });
     } catch (error) {
       console.log(error);

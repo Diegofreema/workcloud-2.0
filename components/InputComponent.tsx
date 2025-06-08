@@ -1,8 +1,9 @@
-import { IconNode } from '@rneui/base';
-import { Input } from '@rneui/themed';
-import { KeyboardTypeOptions, TextInputProps, View } from 'react-native';
+import {IconNode} from "@rneui/base";
+import {Input} from "@rneui/themed";
+import {KeyboardTypeOptions, TextInputProps, View} from "react-native";
 
-import { useDarkMode } from '~/hooks/useDarkMode';
+import {useDarkMode} from "~/hooks/useDarkMode";
+import React from "react";
 
 type Props = TextInputProps & {
   placeholder: string;
@@ -35,14 +36,19 @@ export const InputComponent = ({
 }: Props): JSX.Element => {
   const { darkMode } = useDarkMode();
   return (
-    <View style={{ height: 'auto', backgroundColor: darkMode === 'dark' ? 'black' : 'white' }}>
+    <View
+      style={{
+        height: "auto",
+        backgroundColor: darkMode === "dark" ? "black" : "white",
+      }}
+    >
       <Input
         {...props}
         placeholder={placeholder}
         label={label}
         inputContainerStyle={{
-          borderBottomColor: 'transparent',
-          backgroundColor: '#E5E5E5',
+          borderBottomColor: "transparent",
+          backgroundColor: "#E5E5E5",
           borderBottomWidth: 0,
           paddingHorizontal: 8,
           borderRadius: 5,
@@ -50,9 +56,9 @@ export const InputComponent = ({
         }}
         placeholderTextColor="grey"
         inputStyle={{
-          fontFamily: 'PoppinsLight',
+          fontFamily: "PoppinsLight",
           fontSize: 13,
-          textAlignVertical: textarea ? 'top' : 'center',
+          textAlignVertical: textarea ? "top" : "center",
           height: textarea ? 100 : 60,
           paddingVertical: textarea ? 10 : 0,
         }}
@@ -61,7 +67,7 @@ export const InputComponent = ({
         keyboardType={keyboardType}
         secureTextEntry={secureTextEntry}
         labelStyle={{
-          color: darkMode === 'dark' ? 'white' : 'black',
+          color: darkMode === "dark" ? "white" : "black",
           marginBottom: 5,
         }}
         numberOfLines={numberOfLines}

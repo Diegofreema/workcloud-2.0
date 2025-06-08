@@ -17,6 +17,5 @@ export const useCreateStaffState = create<State>((set) => ({
     role: null,
   },
   onClear: () => set({ staffData: { type: "frontier", role: null } }),
-  onGetData: (data) =>
-    set((state) => ({ staffData: { ...state.staffData, data } })),
+  onGetData: (data) => set(() => ({ staffData: data })),
 }));

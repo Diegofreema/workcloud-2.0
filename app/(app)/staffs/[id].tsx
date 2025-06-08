@@ -145,10 +145,10 @@ const Staffs = () => {
   };
   const options = [
     {
-      title: "Frontier Workspace function",
+      title: "Open Workspace",
       onPress: () => handleSelect("frontier"),
     },
-    { title: "Processor", onPress: () => handleSelect("processor") },
+    { title: "Processor workspace", onPress: () => handleSelect("processor") },
   ];
 
   return (
