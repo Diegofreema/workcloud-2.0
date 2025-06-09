@@ -34,3 +34,12 @@ export const getProcessorThroughUser = query({
     return await Promise.all(processorsWithProfile);
   },
 });
+
+export const getProcessorDetail = query({
+  args: {
+    id: v.id("workers"),
+  },
+  handler: async (ctx,args) => {
+    return getUserProfileByWorkerId(ctx, args.id)
+  }
+})
