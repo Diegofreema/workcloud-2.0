@@ -1,37 +1,39 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { BottomSheet, Divider } from "@rneui/themed";
-import { useMutation, useQuery } from "convex/react";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useMemo, useState } from "react";
-import { FlatList, Pressable, StyleSheet, View } from "react-native";
-import { toast } from "sonner-native";
+import {MaterialCommunityIcons} from "@expo/vector-icons";
+import {BottomSheet, Divider} from "@rneui/themed";
+import {useMutation, useQuery} from "convex/react";
+import {useLocalSearchParams, useRouter} from "expo-router";
+import React, {useMemo, useState} from "react";
+import {FlatList, Pressable, StyleSheet, View} from "react-native";
+import {toast} from "sonner-native";
 
-import { AuthHeader } from "~/components/AuthHeader";
-import { AddStaff, Menu } from "~/components/Dialogs/AddStaff";
-import { AddToWorkspace } from "~/components/Dialogs/AddToWorkspace";
-import { RemoveUser } from "~/components/Dialogs/RemoveUser";
-import { SelectNewRow } from "~/components/Dialogs/SelectNewRow";
-import { EmptyText } from "~/components/EmptyText";
-import { HStack } from "~/components/HStack";
-import { Container } from "~/components/Ui/Container";
-import { DottedButton } from "~/components/Ui/DottedButton";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { MyText } from "~/components/Ui/MyText";
-import { UserPreview } from "~/components/Ui/UserPreview";
-import { colors } from "~/constants/Colors";
-import { WorkType } from "~/constants/types";
-import { api } from "~/convex/_generated/api";
-import { Id } from "~/convex/_generated/dataModel";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { useHandleStaff } from "~/hooks/useHandleStaffs";
-import { ActionButton } from "~/components/ActionButton";
-import { CustomPressable } from "~/components/Ui/CustomPressable";
-import { CustomModal } from "~/features/workspace/components/modal/custom-modal";
-import { RFPercentage } from "react-native-responsive-fontsize";
-import { useWorkspaceModal } from "~/features/workspace/hooks/use-workspace-modal";
-import { StaffRoles } from "~/features/staff/components/staff-roles";
-import { useCreateStaffState } from "~/features/staff/hooks/use-create-staff-state";
-import { StaffType } from "~/features/staff/type";
+import {AuthHeader} from "~/components/AuthHeader";
+import {AddStaff, Menu} from "~/components/Dialogs/AddStaff";
+import {AddToWorkspace} from "~/components/Dialogs/AddToWorkspace";
+import {RemoveUser} from "~/components/Dialogs/RemoveUser";
+import {SelectNewRow} from "~/components/Dialogs/SelectNewRow";
+import {EmptyText} from "~/components/EmptyText";
+import {HStack} from "~/components/HStack";
+import {Container} from "~/components/Ui/Container";
+import {DottedButton} from "~/components/Ui/DottedButton";
+import {LoadingComponent} from "~/components/Ui/LoadingComponent";
+import {MyText} from "~/components/Ui/MyText";
+import {UserPreview} from "~/components/Ui/UserPreview";
+import {colors} from "~/constants/Colors";
+import {WorkType} from "~/constants/types";
+import {api} from "~/convex/_generated/api";
+import {Id} from "~/convex/_generated/dataModel";
+import {useDarkMode} from "~/hooks/useDarkMode";
+import {useHandleStaff} from "~/hooks/useHandleStaffs";
+import {ActionButton} from "~/components/ActionButton";
+import {CustomPressable} from "~/components/Ui/CustomPressable";
+import {CustomModal} from "~/features/workspace/components/modal/custom-modal";
+import {RFPercentage} from "react-native-responsive-fontsize";
+import {useWorkspaceModal} from "~/features/workspace/hooks/use-workspace-modal";
+import {StaffRoles} from "~/features/staff/components/staff-roles";
+import {useCreateStaffState} from "~/features/staff/hooks/use-create-staff-state";
+import {StaffType} from "~/features/staff/type";
+import {LoadingModal} from "~/features/common/components/loading-modal";
+import {capitaliseFirstLetter} from "~/lib/helper";
 
 const Staffs = () => {
   const { id } = useLocalSearchParams<{ id: Id<"users"> }>();
@@ -41,7 +43,7 @@ const Staffs = () => {
   const [loading, setLoading] = useState(false);
   const [workspaceId, setWorkspaceId] = useState<Id<"workspaces"> | null>(null);
   const [isVisible, setIsVisible] = useState(false);
-
+  const [assigning, setAssigning] = useState(false);
   const { getItem, item: staff } = useHandleStaff();
   const { onClose, isOpen, onOpen } = useWorkspaceModal();
 
@@ -53,6 +55,8 @@ const Staffs = () => {
   const { darkMode } = useDarkMode();
   const { onGetData } = useCreateStaffState();
   const addToWorkspace = useMutation(api.workspace.addStaffToWorkspace);
+  const createWorkspace = useMutation(api.workspace.createAndAssignWorkspace);
+
   const workers = useMemo(() => {
     if (!data) return [];
     if (role === "All") {
@@ -77,9 +81,27 @@ const Staffs = () => {
     setIsVisible(true);
     getItem(item);
   };
-  const onCreate = () => {
-    onHideBottom();
-    router.push("/role");
+  const onCreate = async () => {
+    if (!staff) return;
+    setAssigning(true);
+    try {
+      await createWorkspace({
+        organizationId: staff?.organizationId!,
+        ownerId: id,
+        type: "front",
+        role: staff?.role!,
+        workerId: staff?._id!,
+      });
+      onHideBottom();
+      toast.success("Workspace created and assigned to staff");
+    } catch (error) {
+      console.log(error);
+      toast.error("Error", {
+        description: "Something went wrong",
+      });
+    } finally {
+      setAssigning(false);
+    }
   };
 
   const array = [
@@ -153,6 +175,7 @@ const Staffs = () => {
 
   return (
     <Container>
+      <LoadingModal isOpen={assigning} />
       <CustomModal
         isOpen={isOpen}
         onClose={onClose}
@@ -209,7 +232,7 @@ const Staffs = () => {
               id={item?.userId}
               imageUrl={item?.user?.imageUrl!}
               name={item?.user?.name}
-              subText={item?.role}
+              subText={capitaliseFirstLetter(item?.role)}
             />
             <Pressable
               // @ts-ignore

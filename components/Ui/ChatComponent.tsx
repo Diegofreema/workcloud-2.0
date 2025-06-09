@@ -65,9 +65,14 @@ export const ChatComponent = ({
   // const { darkMode } = useDarkMode();
   const [isTypingLocally, setIsTypingLocally] = useState(false);
   const setTypingState = useMutation(api.message.setTypingState);
-  const getTypingUsers = useQuery(api.message.getTypingUsers, {
-    conversationId,
-  });
+  const getTypingUsers = useQuery(
+    api.message.getTypingUsers,
+    conversationId
+      ? {
+          conversationId,
+        }
+      : "skip",
+  );
   const insets = useSafeAreaInsets();
   const [replyMessage, setReplyMessage] = useState<IMessage | null>(null);
   const [processing, setProcessing] = useState(false);

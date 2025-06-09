@@ -3,6 +3,7 @@ import {MyText} from "~/components/Ui/MyText";
 import React from "react";
 import {colors} from "~/constants/Colors";
 import {CustomPressable} from "~/components/Ui/CustomPressable";
+import {capitaliseFirstLetter} from "~/lib/helper";
 
 type Props = {
   roles: string[];
@@ -27,7 +28,7 @@ export const StaffRoles = ({ roles, setRole, role }: Props) => {
             poppins="Medium"
             fontSize={13}
           >
-            {item}
+            {capitaliseFirstLetter(item)}
           </MyText>
         </CustomPressable>
       )}

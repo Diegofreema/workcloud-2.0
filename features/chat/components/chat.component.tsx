@@ -14,7 +14,10 @@ export const ChatComponent = () => {
 
   const [query] = useDebounce(value, 500);
   const { id } = useGetUserId();
-  const paginatedQuery = useGetConversationType({ userId: id! });
+  const paginatedQuery = useGetConversationType({
+    userId: id!,
+    type: "single",
+  });
   const searchQuery = useQuery(
     api.conversation.getConversationsSingleSearch,
     id ? { userId: id!, query } : "skip",

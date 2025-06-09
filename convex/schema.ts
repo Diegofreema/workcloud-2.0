@@ -55,7 +55,7 @@ export const Worker = {
   bossId: v.optional(v.id("users")),
   gender: v.string(),
   email: v.string(),
-  type: v.optional(v.string()),
+  type: v.optional(v.union(v.literal('processor'), v.literal('front'), v.literal('personal'))),
 };
 export const Post = {
   image: v.union(v.id("_storage"), v.string()),

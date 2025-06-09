@@ -1,16 +1,16 @@
-import { usePaginatedQuery, useQuery } from "convex/react";
-import { api } from "~/convex/_generated/api";
-import { Id } from "~/convex/_generated/dataModel";
-import { getUserById } from "~/convex/users";
+import {usePaginatedQuery} from "convex/react";
+import {api} from "~/convex/_generated/api";
+import {Id} from "~/convex/_generated/dataModel";
 
 type ConversationProps = {
   userId: Id<"users">;
+  type: "processor" | "single";
 };
 
-export const useGetConversationType = ({ userId }: ConversationProps) => {
+export const useGetConversationType = ({ userId, type }: ConversationProps) => {
   return usePaginatedQuery(
-    api.conversation.getConversationsSingle,
-    { userId },
+    api.conversation.getConversations,
+    { userId, type },
     { initialNumItems: 20 },
   );
 };

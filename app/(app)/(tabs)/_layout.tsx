@@ -1,17 +1,16 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Text } from "@rneui/themed";
-import { Tabs } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+import {Text} from "@rneui/themed";
+import {Tabs} from "expo-router";
+import {StatusBar} from "expo-status-bar";
 import React from "react";
 
-import { fontFamily } from "~/constants";
-import { colors } from "~/constants/Colors";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { useQuery } from "convex/react";
-import { api } from "~/convex/_generated/api";
-import { getUnreadAllMessages } from "~/convex/conversation";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { StyleSheet, View } from "react-native";
+import {fontFamily} from "~/constants";
+import {colors} from "~/constants/Colors";
+import {useDarkMode} from "~/hooks/useDarkMode";
+import {useQuery} from "convex/react";
+import {api} from "~/convex/_generated/api";
+import {useGetUserId} from "~/hooks/useGetUserId";
+import {StyleSheet, View} from "react-native";
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -33,6 +32,7 @@ export default function TabLayout() {
   );
 
   const count = unreadCount || 0;
+
   return (
     <>
       <StatusBar

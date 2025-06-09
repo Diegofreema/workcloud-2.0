@@ -19,6 +19,7 @@ import type * as conversation from "../conversation.js";
 import type * as http from "../http.js";
 import type * as message from "../message.js";
 import type * as organisation from "../organisation.js";
+import type * as processors from "../processors.js";
 import type * as request from "../request.js";
 import type * as reviews from "../reviews.js";
 import type * as servicePoints from "../servicePoints.js";
@@ -43,6 +44,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   message: typeof message;
   organisation: typeof organisation;
+  processors: typeof processors;
   request: typeof request;
   reviews: typeof reviews;
   servicePoints: typeof servicePoints;

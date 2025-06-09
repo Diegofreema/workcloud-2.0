@@ -1,11 +1,10 @@
-import { View, Text } from "react-native";
-import { Doc } from "~/convex/_generated/dataModel";
-import { LegendList } from "@legendapp/list";
-import { constantStyles } from "~/constants/styles";
-import { CustomPressable } from "~/components/Ui/CustomPressable";
-import { EmptyText } from "~/components/EmptyText";
-import { RenderChat } from "~/features/chat/components/render-chat";
-import { SmallLoader } from "~/features/common/components/small-loader";
+import {View} from "react-native";
+import {Doc} from "~/convex/_generated/dataModel";
+import {LegendList} from "@legendapp/list";
+import {constantStyles} from "~/constants/styles";
+import {EmptyText} from "~/components/EmptyText";
+import {RenderChat} from "~/features/chat/components/render-chat";
+import {SmallLoader} from "~/features/common/components/small-loader";
 
 type Props = {
   chats: Doc<"conversations">[];

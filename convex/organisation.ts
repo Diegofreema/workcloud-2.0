@@ -5,6 +5,7 @@ import { Id } from "~/convex/_generated/dataModel";
 import { mutation, query, QueryCtx } from "~/convex/_generated/server";
 import { getUserByUserId, getUserForWorker } from "~/convex/users";
 
+
 export const getOrganisationsOrNull = query({
   args: {
     ownerId: v.optional(v.id("users")),
@@ -399,8 +400,6 @@ export const createOrganization = mutation({
     });
   },
 });
-
-
 
 export const updateOrganization = mutation({
   args: {

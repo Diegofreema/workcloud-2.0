@@ -1,15 +1,23 @@
 import axios from "axios";
-import {format, formatDistanceToNow, isWithinInterval, parse} from "date-fns";
-import {DocumentPickerResult} from "expo-document-picker";
+import {
+  format,
+  formatDistanceToNow,
+  isToday,
+  isWithinInterval,
+  isYesterday,
+  parse,
+  parseISO,
+} from "date-fns";
+import { DocumentPickerResult } from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
 
-import {ChatDateGroup, DataType} from "~/constants/types";
-import {Id} from "~/convex/_generated/dataModel";
-import {Channel} from "stream-chat";
-import {ConvexError} from "convex/values";
+import { ChatDateGroup, DataType } from "~/constants/types";
+import { Id } from "~/convex/_generated/dataModel";
+import { Channel } from "stream-chat";
+import { ConvexError } from "convex/values";
 import * as Sharing from "expo-sharing";
-import {Platform} from "react-native";
+import { Platform } from "react-native";
 
 export const generateErrorMessage = (
   error: unknown,
@@ -538,4 +546,28 @@ const save = async (uri: string, filename: string, mimeType: string) => {
   }
 };
 
+export const capitaliseFirstLetter = (string?: string) => {
+  return string ? string.charAt(0).toUpperCase() + string.slice(1) : "";
+};
 
+export const formatMessageTime = (timestamp: string | Date): string => {
+  try {
+    // Parse timestamp if it's a string
+    const date =
+      typeof timestamp === "string" ? parseISO(timestamp) : timestamp;
+
+    if (isToday(date)) {
+      // Today: Show time like "12:34 PM"
+      return format(date, "h:mm a");
+    } else if (isYesterday(date)) {
+      // Yesterday: Show "Yesterday"
+      return "Yesterday";
+    } else {
+      // Older: Show date like "MM/DD/YY"
+      return format(date, "MM/dd/yy");
+    }
+  } catch (error) {
+    console.error("Error formatting timestamp:", error);
+    return "Invalid date";
+  }
+};

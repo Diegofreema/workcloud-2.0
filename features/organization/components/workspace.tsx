@@ -1,16 +1,22 @@
-import { View, Text, Pressable } from "react-native";
-import { WorkSpace } from "~/constants/types";
-import { toast } from "sonner-native";
-import { router } from "expo-router";
-import { HStack } from "~/components/HStack";
-import { Avatar } from "@rneui/themed";
+import {Pressable, View} from "react-native";
+import {WorkSpace} from "~/constants/types";
+import {toast} from "sonner-native";
+import {Href, router} from "expo-router";
+import {HStack} from "~/components/HStack";
+import {Avatar} from "@rneui/themed";
 import VStack from "~/components/Ui/VStack";
-import { MyText } from "~/components/Ui/MyText";
-import { colors } from "~/constants/Colors";
-import { FontAwesome } from "@expo/vector-icons";
+import {MyText} from "~/components/Ui/MyText";
+import {colors} from "~/constants/Colors";
+import {FontAwesome} from "@expo/vector-icons";
 import React from "react";
+import {capitaliseFirstLetter} from "~/lib/helper";
 
 export const WorkspaceComponent = ({ item }: { item: WorkSpace }) => {
+  const path: Href =
+    item.role === "processor"
+      ? `/processors/workspace/${item.workerId}`
+      : `/wk/${item?._id}`;
+
   const handlePress = () => {
     if (item?.locked) {
       toast("This workspace is locked", {
@@ -18,7 +24,7 @@ export const WorkspaceComponent = ({ item }: { item: WorkSpace }) => {
       });
       return;
     }
-    router.push(`/wk/${item?._id}`);
+    router.push(path);
   };
 
   return (
@@ -38,7 +44,7 @@ export const WorkspaceComponent = ({ item }: { item: WorkSpace }) => {
         />
         <VStack>
           <MyText poppins="Bold" style={{ fontSize: 13 }}>
-            {item?.role}
+            {capitaliseFirstLetter(item?.role)}
           </MyText>
           <View
             style={{

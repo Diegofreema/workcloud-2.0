@@ -9,10 +9,11 @@ import { filter } from "convex-helpers/server/filter";
 import { messageHelper, messageReactions } from "~/convex/message";
 import { getUserByUserId } from "~/convex/users";
 
-export const getConversationsSingle = query({
+export const getConversations = query({
   args: {
     userId: v.id("users"),
     paginationOpts: paginationOptsValidator,
+    type: v.union(v.literal("single"), v.literal("processor")),
   },
   handler: async (ctx, args) => {
     return filter(
@@ -21,6 +22,7 @@ export const getConversationsSingle = query({
         .withIndex("by_last_message_last_message_time"),
       (conversation) =>
         conversation.participants.includes(args.userId) &&
+        conversation.type === args.type &&
         conversation.lastMessage !== undefined,
     )
       .order("asc")
@@ -82,16 +84,21 @@ export const getUnreadAllMessages = query({
 
     const messagesThatIHaveNotRead = await Promise.all(
       conversations.map(async (conversation) => {
-        return filter(
-          ctx.db.query("messages"),
-          (message) => !message.seenId.includes(args.userId),
-        ).collect();
+        const messages = await ctx.db
+          .query("messages")
+          .withIndex("by_conversationId", (q) =>
+            q.eq("conversationId", conversation._id),
+          )
+          .collect();
+        const messagesThatIHaveNotSeen = messages.filter(
+          (m) => !m.seenId.includes(args.userId),
+        );
+
+        return messagesThatIHaveNotSeen.length;
       }),
     );
 
-    return messagesThatIHaveNotRead
-      .map((m) => m.length)
-      .reduce((acc, curr) => acc + curr, 0);
+    return messagesThatIHaveNotRead.reduce((acc, curr) => acc + curr, 0);
   },
 });
 
@@ -99,6 +106,7 @@ export const getSingleConversationWithMessages = query({
   args: {
     loggedInUserId: v.optional(v.id("users")),
     otherUserId: v.id("users"),
+    type: v.union(v.literal("single"), v.literal("processor")),
   },
   handler: async (ctx, args) => {
     if (!args.loggedInUserId) return null;
@@ -108,7 +116,8 @@ export const getSingleConversationWithMessages = query({
         (c.participants[0] === args.loggedInUserId &&
           c.participants[1] === args.otherUserId) ||
         (c.participants[1] === args.loggedInUserId &&
-          c.participants[0] === args.otherUserId),
+          c.participants[0] === args.otherUserId &&
+          c.type === args.type),
     ).first();
   },
 });
@@ -261,11 +270,11 @@ export const createMessages = mutation({
 });
 
 // helpers
-const getParticipants = async (ctx: QueryCtx, userId: Id<"users">) => {
+export const getParticipants = async (ctx: QueryCtx, userId: Id<"users">) => {
   return await ctx.db.get(userId);
 };
 
-const getMessagesUnreadCount = async (
+export const getMessagesUnreadCount = async (
   ctx: QueryCtx,
   conversationId: Id<"conversations">,
   userId: Id<"users">,

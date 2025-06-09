@@ -1,20 +1,19 @@
-import { CustomPressable } from "~/components/Ui/CustomPressable";
-import { useQuery } from "convex/react";
-import { api } from "~/convex/_generated/api";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { Doc } from "~/convex/_generated/dataModel";
-import { StyleSheet } from "react-native";
-import { HStack } from "~/components/HStack";
-import { Avatar } from "~/features/common/components/avatar";
-import { ChatPreviewSkeleton } from "~/components/ChatPreviewSkeleton";
-import { router } from "expo-router";
+import {CustomPressable} from "~/components/Ui/CustomPressable";
+import {useQuery} from "convex/react";
+import {api} from "~/convex/_generated/api";
+import {useGetUserId} from "~/hooks/useGetUserId";
+import {Doc} from "~/convex/_generated/dataModel";
+import {StyleSheet} from "react-native";
+import {HStack} from "~/components/HStack";
+import {Avatar} from "~/features/common/components/avatar";
+import {ChatPreviewSkeleton} from "~/components/ChatPreviewSkeleton";
+import {router} from "expo-router";
 import VStack from "~/components/Ui/VStack";
-import { MyText } from "~/components/Ui/MyText";
-import { CheckCheck, File } from "lucide-react-native";
-import { colors } from "~/constants/Colors";
-import { trimText } from "~/lib/helper";
-import { formatDistanceToNow } from "date-fns";
-import { UnreadCount } from "~/components/Unread";
+import {MyText} from "~/components/Ui/MyText";
+import {CheckCheck, File} from "lucide-react-native";
+import {colors} from "~/constants/Colors";
+import {formatMessageTime, trimText} from "~/lib/helper";
+import {UnreadCount} from "~/components/Unread";
 
 type Props = {
   chat: Doc<"conversations">;
@@ -89,10 +88,7 @@ export const RenderChat = ({ chat }: Props) => {
               fontSize={10}
               style={{ color: colors.time }}
             >
-              {formatDistanceToNow(lastMessageTime!, {
-                includeSeconds: true,
-              })}{" "}
-              ago
+              {formatMessageTime(new Date(lastMessageTime))}
             </MyText>
           )}
           {numberOfUnread > 0 && <UnreadCount unread={numberOfUnread} />}

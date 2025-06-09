@@ -119,7 +119,7 @@ export const acceptOffer = mutation({
         bossId: args.from,
         organizationId: args.organizationId,
         workspaceId: undefined,
-        type: args.role,
+        type: args.role === "processor" ? "processor" : "front",
       }),
       ctx.db.patch(args._id, {
         pending: false,

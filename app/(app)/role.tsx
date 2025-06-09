@@ -23,7 +23,7 @@ const Role = () => {
   const [value, setValue] = useState('');
 
   const { organizationId, id, worker } = useGetUserId();
-  const { data, isPending, isError, refetch } = useQuery(convexQuery(api.workspace.getRoles, {}));
+  const { data, isPending, isError, refetch, error } = useQuery(convexQuery(api.workspace.getRoles, {}));
   const createWorkspace = useMutation(api.workspace.createWorkspace);
 
   const filteredData = useMemo(() => {
@@ -35,7 +35,7 @@ const Role = () => {
   const router = useRouter();
 
   if (isError) {
-    return <ErrorComponent refetch={refetch} />;
+    return <ErrorComponent refetch={refetch} text={error.message!} />;
   }
 
   if (isPending) {
