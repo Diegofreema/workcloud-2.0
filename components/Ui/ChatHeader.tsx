@@ -19,7 +19,11 @@ export const ChatHeader = ({ imageUrl, name, rightContent }: Props) => {
     router.back();
   };
   return (
-    <HStack alignItems={"center"} justifyContent={"space-between"}>
+    <HStack
+      alignItems={"center"}
+      justifyContent={"space-between"}
+      style={{ paddingRight: 10 }}
+    >
       <HStack alignItems="center" gap={10} bg="transparent" py={15} px={2}>
         <TouchableOpacity onPress={onPress} activeOpacity={0.6}>
           <ChevronLeft

@@ -1,16 +1,15 @@
 import { Container } from "~/components/Ui/Container";
 import { ChatHeader } from "~/components/Ui/ChatHeader";
 import React from "react";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Id } from "~/convex/_generated/dataModel";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import { api } from "~/convex/_generated/api";
 import ChatSkeleton from "~/components/Ui/ChatSkeleton";
-import { CustomPressable } from "~/components/Ui/CustomPressable";
-import { EllipsisVertical } from "lucide-react-native";
 import { ChatGroupComponent } from "~/features/chat/components/group-gifted-chat";
 import { useGetUserId } from "~/hooks/useGetUserId";
 import { useMarkRead } from "~/hooks/useMarkRead";
+import { ChatMenu } from "~/features/chat/components/chat-menu";
 
 const GroupChatScreen = () => {
   const { groupId } = useLocalSearchParams<{ groupId: Id<"conversations"> }>();
@@ -41,9 +40,15 @@ const GroupChatScreen = () => {
         name={group?.name || "Group"}
         imageUrl={group?.imageUrl || ""}
         rightContent={
-          <CustomPressable onPress={() => {}}>
-            <EllipsisVertical color={"black"} size={25} />
-          </CustomPressable>
+          <ChatMenu
+            menuItems={[
+              {
+                text: "Group info",
+                onSelect: () =>
+                  router.push(`/group-info?groupId=${group?._id}`),
+              },
+            ]}
+          />
         }
       />
       <ChatGroupComponent

@@ -32,7 +32,6 @@ export const UserPreviewWithBio = ({
   name,
   skills,
   onPress,
-
   workerId,
 }: Props) => {
   const { id: loggedInUser } = useGetUserId();

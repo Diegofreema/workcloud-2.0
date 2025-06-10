@@ -1,13 +1,13 @@
-import { paginationOptsValidator } from "convex/server";
-import { ConvexError, v } from "convex/values";
+import {paginationOptsValidator} from "convex/server";
+import {ConvexError, v} from "convex/values";
 
-import { mutation, MutationCtx, query, QueryCtx } from "./_generated/server";
+import {mutation, MutationCtx, query, QueryCtx} from "./_generated/server";
 
-import { Id } from "~/convex/_generated/dataModel";
-import { getImageUrl } from "~/convex/organisation";
-import { filter } from "convex-helpers/server/filter";
-import { messageHelper, messageReactions } from "~/convex/message";
-import { getUserByUserId } from "~/convex/users";
+import {Id} from "~/convex/_generated/dataModel";
+import {getImageUrl} from "~/convex/organisation";
+import {filter} from "convex-helpers/server/filter";
+import {messageHelper, messageReactions} from "~/convex/message";
+import {getUserByUserId, getWorkerProfile,} from "~/convex/users";
 
 export const getConversations = query({
   args: {
@@ -146,6 +146,22 @@ export const getGroup = query({
   args: { groupId: v.id("conversations") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.groupId);
+  },
+});
+
+export const getGroupMember = query({
+  args: { memberIds: v.array(v.id("users")) },
+  handler: async (ctx, args) => {
+    const members = args.memberIds.map(async (id) => {
+      const user = await getUserByUserId(ctx, id);
+      const worker = await getWorkerProfile(ctx, id);
+
+      return {
+        ...user,
+        role: worker?.role,
+      };
+    });
+    return await Promise.all(members);
   },
 });
 
