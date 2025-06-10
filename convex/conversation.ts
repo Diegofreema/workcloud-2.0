@@ -1,13 +1,13 @@
-import {paginationOptsValidator} from "convex/server";
-import {ConvexError, v} from "convex/values";
+import { paginationOptsValidator } from "convex/server";
+import { ConvexError, v } from "convex/values";
 
-import {mutation, MutationCtx, query, QueryCtx} from "./_generated/server";
+import { mutation, MutationCtx, query, QueryCtx } from "./_generated/server";
 
-import {Id} from "~/convex/_generated/dataModel";
-import {getImageUrl} from "~/convex/organisation";
-import {filter} from "convex-helpers/server/filter";
-import {messageHelper, messageReactions} from "~/convex/message";
-import {getUserByUserId, getWorkerProfile,} from "~/convex/users";
+import { Id } from "~/convex/_generated/dataModel";
+import { getImageUrl } from "~/convex/organisation";
+import { filter } from "convex-helpers/server/filter";
+import { messageHelper, messageReactions } from "~/convex/message";
+import { getUserByUserId, getWorkerProfile } from "~/convex/users";
 
 export const getConversations = query({
   args: {
@@ -357,6 +357,26 @@ export const createMessages = mutation({
   },
 });
 
+export const removeStaffsFromConversation = mutation({
+  args: {
+    loggedInUserId: v.id("users"),
+    userToRemoveId: v.id("users"),
+    conversationId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => {
+    const group = await ctx.db.get(args.conversationId);
+    if (!group) {
+      throw new ConvexError("Failed to remove user");
+    }
+    if (group.creatorId !== args.loggedInUserId) {
+      throw new ConvexError("You are not authorized");
+    }
+
+    await ctx.db.patch(group._id, {
+      participants: group.participants.filter((p) => p !== args.userToRemoveId),
+    });
+  },
+});
 // helpers
 export const getParticipants = async (ctx: QueryCtx, userId: Id<"users">) => {
   return await ctx.db.get(userId);

@@ -1,7 +1,7 @@
 import { Container } from "~/components/Ui/Container";
 import { ChatHeader } from "~/components/Ui/ChatHeader";
 import React from "react";
-import { router, useLocalSearchParams } from "expo-router";
+import { Redirect, router, useLocalSearchParams } from "expo-router";
 import { Id } from "~/convex/_generated/dataModel";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import { api } from "~/convex/_generated/api";
@@ -10,6 +10,7 @@ import { ChatGroupComponent } from "~/features/chat/components/group-gifted-chat
 import { useGetUserId } from "~/hooks/useGetUserId";
 import { useMarkRead } from "~/hooks/useMarkRead";
 import { ChatMenu } from "~/features/chat/components/chat-menu";
+import { toast } from "sonner-native";
 
 const GroupChatScreen = () => {
   const { groupId } = useLocalSearchParams<{ groupId: Id<"conversations"> }>();
@@ -34,21 +35,29 @@ const GroupChatScreen = () => {
   if (group === undefined) {
     return <ChatSkeleton />;
   }
+  const isInGroup = !!group?.participants.includes(loggedInUserId!);
+  if (!isInGroup) {
+    toast.error("You are not in this group");
+    return <Redirect href={"/message"} />;
+  }
+  const isCreator = group?.creatorId === loggedInUserId;
   return (
     <Container noPadding>
       <ChatHeader
         name={group?.name || "Group"}
         imageUrl={group?.imageUrl || ""}
         rightContent={
-          <ChatMenu
-            menuItems={[
-              {
-                text: "Group info",
-                onSelect: () =>
-                  router.push(`/group-info?groupId=${group?._id}`),
-              },
-            ]}
-          />
+          isCreator ? (
+            <ChatMenu
+              menuItems={[
+                {
+                  text: "Group info",
+                  onSelect: () =>
+                    router.push(`/group-info?groupId=${group?._id}`),
+                },
+              ]}
+            />
+          ) : null
         }
       />
       <ChatGroupComponent
