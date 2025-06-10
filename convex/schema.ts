@@ -150,6 +150,11 @@ export const Message = {
   senderName: v.optional(v.string()),
 };
 
+export const Members = {
+  conversationId: v.id("conversations"),
+  memberId: v.id("users"),
+};
+
 export const Suggestion = {
   text: v.string(),
 };
@@ -247,4 +252,5 @@ export default defineSchema({
   })
     .index("by_conversationId_userId", ["conversationId", "userId"])
     .index("is_typing", ["conversationId", "isTyping"]),
+  members: defineTable(Members).index("by_conversation_id", ["memberId"]),
 });

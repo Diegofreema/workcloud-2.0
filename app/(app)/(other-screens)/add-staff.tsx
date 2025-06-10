@@ -1,14 +1,12 @@
-import {useLocalSearchParams} from "expo-router";
-import {Id} from "~/convex/_generated/dataModel";
-import {Container} from "~/components/Ui/Container";
-import {HeaderNav} from "~/components/HeaderNav";
-
+import { Container } from "~/components/Ui/Container";
+import { HeaderNav } from "~/components/HeaderNav";
+import { FetchStaffToAdd } from "~/features/chat/components/fetch-staff-to-add";
 
 const AddStaffScreen = () => {
-  const { groupId } = useLocalSearchParams<{ groupId: Id<"conversations"> }>();
   return (
     <Container>
-     <HeaderNav title={'Add staff'} />
+      <HeaderNav title={"Add staff"} />
+      <FetchStaffToAdd />
     </Container>
   );
 };

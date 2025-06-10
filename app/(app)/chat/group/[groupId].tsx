@@ -35,6 +35,10 @@ const GroupChatScreen = () => {
   if (group === undefined) {
     return <ChatSkeleton />;
   }
+
+  if (group === null) {
+    return <Redirect href={"/message"} />;
+  }
   const isInGroup = !!group?.participants.includes(loggedInUserId!);
   if (!isInGroup) {
     toast.error("You are not in this group");

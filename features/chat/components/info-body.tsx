@@ -15,7 +15,7 @@ import { CustomModal } from "~/components/Dialogs/CustomModal";
 import { useMutation } from "convex/react";
 import { api } from "~/convex/_generated/api";
 import { useGetUserId } from "~/hooks/useGetUserId";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { toast } from "sonner-native";
 import { useCloseGroup } from "~/features/chat/hook/use-close-group";
 
@@ -26,13 +26,14 @@ type Props = {
 export const RenderInfoStaffs = ({ data }: Props) => {
   const [userId, setUserId] = useState<Id<"users"> | null>(null);
   const [loading, setLoading] = useState(false);
-    const setOpen = useCloseGroup((state) => state.setIsOpen);
-    const open = useCloseGroup((state) => state.isOpen);
+  const setOpen = useCloseGroup((state) => state.setIsOpen);
+  const open = useCloseGroup((state) => state.isOpen);
   const { groupId } = useLocalSearchParams<{ groupId: Id<"conversations"> }>();
   const { id } = useGetUserId();
   const removeStaffsFromConversation = useMutation(
     api.conversation.removeStaffsFromConversation,
   );
+  const closeGroup = useMutation(api.conversation.closeGroup);
   const onPress = async () => {
     if (!id || !userId) return;
     setLoading(true);
@@ -54,15 +55,23 @@ export const RenderInfoStaffs = ({ data }: Props) => {
       setLoading(false);
     }
   };
-const onDelete = async () => {
+  const onCloseGroup = async () => {
+    setLoading(true);
     try {
-
-    }catch(e) {
-        
-    }finally {
-        setOpen(false);
+      await closeGroup({
+        groupId,
+        loggedInUser: id!,
+      });
+      toast.success("Group has been closed");
+      router.replace("/message");
+    } catch (e) {
+      const errorMessage = generateErrorMessage(e, "Failed to close group");
+      toast.error(errorMessage);
+    } finally {
+      setOpen(false);
+      setLoading(false);
     }
-}
+  };
   return (
     <View style={{ flex: 1, marginTop: 20 }}>
       <CustomModal
@@ -72,11 +81,11 @@ const onDelete = async () => {
         onPress={onPress}
         isLoading={loading}
       />
-        <CustomModal
+      <CustomModal
         title={"Close group"}
         onClose={() => setOpen(false)}
         isOpen={open}
-        onPress={onPress}
+        onPress={onCloseGroup}
         isLoading={loading}
       />
       <LegendList

@@ -293,7 +293,7 @@ export const createGroupConversation = mutation({
     if (args.imageId) {
       imageUrl = (await ctx.storage.getUrl(args.imageId)) as string;
     }
-    return await ctx.db.insert("conversations", {
+    const id = await ctx.db.insert("conversations", {
       name: args.name,
       type: "group",
       participants: [args.loggedInUserId, ...args.otherUsers],
@@ -305,6 +305,15 @@ export const createGroupConversation = mutation({
       imageUrl,
       creatorId: args.loggedInUserId,
     });
+    const members = [args.loggedInUserId, ...args.otherUsers];
+    for (const member of members) {
+      await ctx.db.insert("members", {
+        conversationId: id,
+        memberId: member,
+      });
+    }
+
+    return id;
   },
 });
 export const addSeenId = mutation({
@@ -378,7 +387,35 @@ export const addMembers = mutation({
     });
   },
 });
+export const fetchWorkersThatAreNotInGroup = query({
+  args: {
+    groupId: v.id("conversations"),
+    loggedInUserId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const workers = await ctx.db
+      .query("workers")
+      .withIndex("boss_Id", (q) => q.eq("bossId", args.loggedInUserId))
+      .collect();
+    if (!workers) return [];
+    const group = await ctx.db.get(args.groupId);
+    if (!group) return [];
 
+    const workersNotInGroup = workers.filter((worker) => {
+      return !group.participants.includes(worker.userId);
+    });
+
+    return await Promise.all(
+      workersNotInGroup.map(async (worker) => {
+        const user = await getUserByUserId(ctx, worker.userId);
+        return {
+          ...user,
+          role: worker.role,
+        };
+      }),
+    );
+  },
+});
 export const closeGroup = mutation({
   args: {
     loggedInUser: v.id("users"),
@@ -402,6 +439,9 @@ export const closeGroup = mutation({
 
     for (const message of messages) {
       await ctx.db.delete(message._id);
+    }
+    if (group.imageId) {
+      await ctx.storage.delete(group.imageId);
     }
     await ctx.db.delete(group._id);
   },
