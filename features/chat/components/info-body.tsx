@@ -1,6 +1,6 @@
 import { ProcessorType } from "~/features/staff/type";
 
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { LegendList } from "@legendapp/list";
 import { HStack } from "~/components/HStack";
 import { UserPreview } from "~/components/Ui/UserPreview";
@@ -63,7 +63,7 @@ export const RenderInfoStaffs = ({ data }: Props) => {
       />
       <LegendList
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 15 }}
+        contentContainerStyle={{ gap: 15, flexGrow: 1 }}
         data={data}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
@@ -78,13 +78,16 @@ export const RenderInfoStaffs = ({ data }: Props) => {
           </HStack>
         )}
         ListEmptyComponent={() => <EmptyText text="No members found" />}
+        ListFooterComponent={FooterButtons}
+        ListFooterComponentStyle={{ marginTop: "auto" }}
+        style={{ flex: 1 }}
         recycleItems
       />
     </View>
   );
 };
 
-export const ActionButton = ({ onPress }: { onPress: () => void }) => {
+const ActionButton = ({ onPress }: { onPress: () => void }) => {
   return (
     <CustomPressable onPress={onPress}>
       <MyText poppins={"Medium"} style={{ color: colors.closeTextColor }}>
@@ -93,3 +96,40 @@ export const ActionButton = ({ onPress }: { onPress: () => void }) => {
     </CustomPressable>
   );
 };
+
+const FooterButtons = () => {
+  return (
+    <HStack mt={"auto"} gap={5}>
+      <CustomPressable onPress={() => {}} style={[styles.btn, styles.add]}>
+        <MyText poppins={"Medium"} fontSize={15} style={{ color: colors.white }}>
+          Add Staff
+        </MyText>
+      </CustomPressable>
+      <CustomPressable onPress={() => {}} style={[styles.btn, styles.close]}>
+        <MyText
+          poppins={"Medium"}
+          fontSize={15}
+          style={{ color: colors.white }}
+        >
+          Close group
+        </MyText>
+      </CustomPressable>
+    </HStack>
+  );
+};
+
+const styles = StyleSheet.create({
+  btn: {
+    flex: 1,
+    borderRadius: 5,
+    height: 45,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  close: {
+    backgroundColor: colors.closeTextColor,
+  },
+  add: {
+    backgroundColor: colors.dialPad,
+  },
+});
