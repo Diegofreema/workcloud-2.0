@@ -17,7 +17,7 @@ export const CustomPressable = ({
     <TouchableOpacity
       onPress={onPress}
       disabled={disable}
-      style={[{ padding: 5 }, style]}
+      style={[{ padding: 5, opacity: disable ? 0.5 : 1 }, style]}
       hitSlop={15}
       activeOpacity={0.5}
     >

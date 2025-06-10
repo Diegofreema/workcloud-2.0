@@ -10,4 +10,7 @@ export const constantStyles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  full: {
+    flex: 1,
+  },
 });

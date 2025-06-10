@@ -208,7 +208,7 @@ export type Wks = {
   workerId?: Id<"workers">;
   servicePointId?: Id<"servicePoints">;
   locked: boolean;
-  type: "personal" | "processor" | "normal";
+  type: "personal" | "processor" | "front";
 };
 
 export type Workers = {

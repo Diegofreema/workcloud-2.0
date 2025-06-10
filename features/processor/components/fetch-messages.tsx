@@ -1,9 +1,9 @@
-import { View, Text } from "react-native";
-import { Title } from "~/features/common/components/title";
-import { useGetConversationType } from "~/features/chat/api/use-get-conversation-type";
-import { useCallback } from "react";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { RenderChats } from "~/features/chat/components/render-single-chats";
+import {View} from "react-native";
+import {Title} from "~/features/common/components/title";
+import {useGetConversationType} from "~/features/chat/api/use-get-conversation-type";
+import {useCallback} from "react";
+import {useGetUserId} from "~/hooks/useGetUserId";
+import {RenderChats} from "~/features/chat/components/render-single-chats";
 
 export const FetchMessages = () => {
   const { id } = useGetUserId();

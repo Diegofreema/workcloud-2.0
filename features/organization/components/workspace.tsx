@@ -1,21 +1,21 @@
-import {Pressable, View} from "react-native";
-import {WorkSpace} from "~/constants/types";
-import {toast} from "sonner-native";
-import {Href, router} from "expo-router";
-import {HStack} from "~/components/HStack";
-import {Avatar} from "@rneui/themed";
+import { Pressable, View } from "react-native";
+import { WorkSpace } from "~/constants/types";
+import { toast } from "sonner-native";
+import { Href, router } from "expo-router";
+import { HStack } from "~/components/HStack";
+import { Avatar } from "@rneui/themed";
 import VStack from "~/components/Ui/VStack";
-import {MyText} from "~/components/Ui/MyText";
-import {colors} from "~/constants/Colors";
-import {FontAwesome} from "@expo/vector-icons";
+import { MyText } from "~/components/Ui/MyText";
+import { colors } from "~/constants/Colors";
+import { FontAwesome } from "@expo/vector-icons";
 import React from "react";
-import {capitaliseFirstLetter} from "~/lib/helper";
+import { capitaliseFirstLetter } from "~/lib/helper";
 
 export const WorkspaceComponent = ({ item }: { item: WorkSpace }) => {
-  const path: Href =
-    item.role === "processor"
-      ? `/processors/workspace/${item.workerId}`
-      : `/wk/${item?._id}`;
+  const isProcessor = item.role === "processor";
+  const path: Href = isProcessor
+    ? `/processors/workspace/${item.workerId}`
+    : `/wk/${item?._id}`;
 
   const handlePress = () => {
     if (item?.locked) {
@@ -46,27 +46,29 @@ export const WorkspaceComponent = ({ item }: { item: WorkSpace }) => {
           <MyText poppins="Bold" style={{ fontSize: 13 }}>
             {capitaliseFirstLetter(item?.role)}
           </MyText>
-          <View
-            style={{
-              backgroundColor: item?.active
-                ? colors.openTextColor
-                : colors.closeBackgroundColor,
-              paddingHorizontal: 2,
-              borderRadius: 3,
-              alignItems: "center",
-            }}
-          >
-            <MyText
-              poppins="Light"
+          {!isProcessor && (
+            <View
               style={{
-                color: item?.active
-                  ? colors.openBackgroundColor
-                  : colors.closeTextColor,
+                backgroundColor: item?.active
+                  ? colors.openTextColor
+                  : colors.closeBackgroundColor,
+                paddingHorizontal: 2,
+                borderRadius: 3,
+                alignItems: "center",
               }}
             >
-              {item?.active ? "Active" : "Not active"}
-            </MyText>
-          </View>
+              <MyText
+                poppins="Light"
+                style={{
+                  color: item?.active
+                    ? colors.openBackgroundColor
+                    : colors.closeTextColor,
+                }}
+              >
+                {item?.active ? "Active" : "Not active"}
+              </MyText>
+            </View>
+          )}
         </VStack>
       </HStack>
 

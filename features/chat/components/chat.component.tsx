@@ -46,7 +46,7 @@ export const ChatComponent = () => {
         setValue={setValue}
       />
       {query && searchQuery === undefined ? (
-        [1, 2, 3, 4].map((num) => <ChatPreviewSkeleton key={num} />)
+        <ChatPreviewSkeleton length={4} />
       ) : (
         <RenderChats chats={data} loadMore={handleMore} isLoading={loading} />
       )}

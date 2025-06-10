@@ -55,7 +55,9 @@ export const Worker = {
   bossId: v.optional(v.id("users")),
   gender: v.string(),
   email: v.string(),
-  type: v.optional(v.union(v.literal('processor'), v.literal('front'), v.literal('personal'))),
+  type: v.optional(
+    v.union(v.literal("processor"), v.literal("front"), v.literal("personal")),
+  ),
 };
 export const Post = {
   image: v.union(v.id("_storage"), v.string()),
@@ -124,7 +126,13 @@ export const Conversation = {
   lastMessageTime: v.optional(v.number()),
   lastMessageSenderId: v.optional(v.id("users")),
   participantNames: v.array(v.string()),
-  type: v.optional(v.union(v.literal("single"), v.literal("processor"))),
+  type: v.optional(
+    v.union(v.literal("single"), v.literal("processor"), v.literal("group")),
+  ),
+  description: v.optional(v.string()),
+  imageUrl: v.optional(v.string()),
+  imageId: v.optional(v.id("_storage")),
+  creatorId: v.optional(v.id("users")),
 };
 
 export const Message = {
@@ -208,10 +216,12 @@ export default defineSchema({
   roles: defineTable(Role),
   posts: defineTable(Post).index("by_org_id", ["organizationId"]),
   requests: defineTable(Request),
-  conversations: defineTable(Conversation).index(
-    "by_last_message_last_message_time",
-    ["lastMessageTime"],
-  ),
+  conversations: defineTable(Conversation)
+    .index("by_last_message_last_message_time", ["lastMessageTime"])
+    .index("type", ["type"])
+    .searchIndex("by_name", {
+      searchField: "name",
+    }),
   messages: defineTable(Message)
     .index("by_conversationId", ["conversationId"])
     .index("by_reply_to", ["replyTo"]),

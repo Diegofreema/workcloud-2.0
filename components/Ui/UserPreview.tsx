@@ -22,7 +22,7 @@ import { useDecline } from "~/hooks/useDecline";
 import { useOpen } from "~/hooks/useOpen";
 
 type PreviewWorker = {
-  name: any;
+  name?: string;
   imageUrl?: string;
 
   subText?: string | boolean;
@@ -72,9 +72,11 @@ export const UserPreview = ({
           />
         )}
         <VStack>
-          <MyText poppins="Bold" fontSize={16}>
-            {name}
-          </MyText>
+          {name && (
+            <MyText poppins="Bold" fontSize={16}>
+              {name}
+            </MyText>
+          )}
           {subText && (
             <MyText poppins="Medium" fontSize={14}>
               {subText === true ? "pending" : subText}

@@ -17,7 +17,6 @@ import {Container} from "~/components/Ui/Container";
 import {DottedButton} from "~/components/Ui/DottedButton";
 import {LoadingComponent} from "~/components/Ui/LoadingComponent";
 import {MyText} from "~/components/Ui/MyText";
-import {UserPreview} from "~/components/Ui/UserPreview";
 import {colors} from "~/constants/Colors";
 import {WorkType} from "~/constants/types";
 import {api} from "~/convex/_generated/api";
@@ -33,7 +32,7 @@ import {StaffRoles} from "~/features/staff/components/staff-roles";
 import {useCreateStaffState} from "~/features/staff/hooks/use-create-staff-state";
 import {StaffType} from "~/features/staff/type";
 import {LoadingModal} from "~/features/common/components/loading-modal";
-import {capitaliseFirstLetter} from "~/lib/helper";
+import {StaffLists} from "~/features/staff/components/staff-lists";
 
 const Staffs = () => {
   const { id } = useLocalSearchParams<{ id: Id<"users"> }>();
@@ -172,7 +171,12 @@ const Staffs = () => {
     },
     { title: "Processor workspace", onPress: () => handleSelect("processor") },
   ];
-
+  const workersData = workers.map(({ user, role }) => ({
+    id: user._id!,
+    name: user.name!,
+    image: user.imageUrl!,
+    role: role!,
+  }));
   return (
     <Container>
       <LoadingModal isOpen={assigning} />
@@ -222,32 +226,21 @@ const Staffs = () => {
           />
         </HStack>
       </View>
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-        data={workers}
-        renderItem={({ item }) => (
-          <HStack justifyContent="space-between" alignItems="center">
-            <UserPreview
-              id={item?.userId}
-              imageUrl={item?.user?.imageUrl!}
-              name={item?.user?.name}
-              subText={capitaliseFirstLetter(item?.role)}
+      <StaffLists
+        data={workersData}
+        rightContent={
+          <Pressable
+            // @ts-ignore
+            onPress={() => showMenu(item)}
+            style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+          >
+            <MaterialCommunityIcons
+              name="dots-vertical"
+              size={24}
+              color={darkMode === "dark" ? "white" : "black"}
             />
-            <Pressable
-              // @ts-ignore
-              onPress={() => showMenu(item)}
-              style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-            >
-              <MaterialCommunityIcons
-                name="dots-vertical"
-                size={24}
-                color={darkMode === "dark" ? "white" : "black"}
-              />
-            </Pressable>
-          </HStack>
-        )}
-        ListEmptyComponent={() => <EmptyText text="No staffs found" />}
+          </Pressable>
+        }
       />
       <BottomSheet
         modalProps={{}}

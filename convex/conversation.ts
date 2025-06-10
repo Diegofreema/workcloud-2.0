@@ -55,6 +55,26 @@ export const getConversationsSingleSearch = query({
   },
 });
 
+export const getConversationsGroupSearch = query({
+  args: {
+    userId: v.id("users"),
+    query: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const me = await ctx.db.get(args.userId);
+    if (!me) {
+      throw new ConvexError("Unable to fetch data");
+    }
+
+    return filter(
+      ctx.db
+        .query("conversations")
+        .withSearchIndex("by_name", (q) => q.search("name", args.query)),
+      (conversation) => conversation.participants.includes(args.userId),
+    ).collect();
+  },
+});
+
 export const getUnreadMessages = query({
   args: {
     conversationId: v.id("conversations"),
@@ -121,6 +141,31 @@ export const getSingleConversationWithMessages = query({
     ).first();
   },
 });
+
+export const getGroup = query({
+  args: { groupId: v.id("conversations") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.groupId);
+  },
+});
+
+export const getGroupConversationThatIAmIn = query({
+  args: {
+    loggedInUserId: v.id("users"),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    return filter(
+      ctx.db
+        .query("conversations")
+        .withIndex("by_last_message_last_message_time"),
+      (conversation) =>
+        conversation.participants.includes(args.loggedInUserId) &&
+        conversation.type === "group",
+    ).paginate(args.paginationOpts);
+  },
+});
+
 export const getMessages = query({
   args: {
     conversationId: v.optional(v.id("conversations")),
@@ -217,6 +262,33 @@ export const createSingleConversation = mutation({
       args.otherUserId,
       args.type,
     );
+  },
+});
+export const createGroupConversation = mutation({
+  args: {
+    loggedInUserId: v.id("users"),
+    otherUsers: v.array(v.id("users")),
+    name: v.string(),
+    description: v.optional(v.string()),
+    imageId: v.optional(v.id("_storage")),
+  },
+  handler: async (ctx, args) => {
+    let imageUrl = "";
+    if (args.imageId) {
+      imageUrl = (await ctx.storage.getUrl(args.imageId)) as string;
+    }
+    return await ctx.db.insert("conversations", {
+      name: args.name,
+      type: "group",
+      participants: [args.loggedInUserId, ...args.otherUsers],
+      description: args.description,
+      lastMessage: `${args.name} was created by`,
+      participantNames: [],
+      lastMessageTime: new Date().getTime(),
+      imageId: args.imageId,
+      imageUrl,
+      creatorId: args.loggedInUserId,
+    });
   },
 });
 export const addSeenId = mutation({

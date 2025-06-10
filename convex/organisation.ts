@@ -5,7 +5,6 @@ import { Id } from "~/convex/_generated/dataModel";
 import { mutation, query, QueryCtx } from "~/convex/_generated/server";
 import { getUserByUserId, getUserForWorker } from "~/convex/users";
 
-
 export const getOrganisationsOrNull = query({
   args: {
     ownerId: v.optional(v.id("users")),
@@ -64,7 +63,7 @@ export const getOrganisationsWithPostAndWorkers = query({
       ...orgs,
       avatar,
       posts,
-      workers,
+      workers: workers.filter((m) => m.type !== "processor"),
     };
   },
 });
@@ -267,12 +266,8 @@ export const getStaffsByBossId = query({
   handler: async (ctx, args) => {
     const res = await ctx.db
       .query("workers")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("bossId"), args.bossId),
-          q.neq(q.field("userId"), args.bossId),
-        ),
-      )
+      .withIndex("boss_Id", (q) => q.eq("bossId", args.bossId))
+      .filter((q) => q.neq(q.field("userId"), args.bossId))
       .collect();
     return await Promise.all(
       res.map(async (worker) => {
