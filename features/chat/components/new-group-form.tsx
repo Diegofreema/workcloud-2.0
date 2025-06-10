@@ -109,7 +109,7 @@ export const NewGroupForm = () => {
               onChangeText={onChange}
               value={value}
               placeholder="Group Name"
-              placeholderTextColor={colors.gray}
+              placeholderTextColor={colors.grayText}
             />
           )}
           name="groupName"
@@ -127,7 +127,7 @@ export const NewGroupForm = () => {
               onChangeText={onChange}
               value={value}
               placeholder="Description (Optional)"
-              placeholderTextColor={colors.gray}
+              placeholderTextColor={colors.grayText}
               multiline
               numberOfLines={4}
             />
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     backgroundColor: colors.white,
     fontSize: 16,
-    color: colors.gray10,
+    color: colors.black,
   },
   imagePicker: {
     height: 150,
