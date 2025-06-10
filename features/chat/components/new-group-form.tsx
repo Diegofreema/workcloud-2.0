@@ -12,7 +12,7 @@ import {toast} from "sonner-native";
 import {useMutation} from "convex/react";
 import {api} from "~/convex/_generated/api";
 import {useGetUserId} from "~/hooks/useGetUserId";
-import {uploadProfilePicture} from "~/lib/helper";
+import {capitaliseFirstLetter, uploadProfilePicture} from "~/lib/helper";
 
 type FormData = {
   groupName: string;
@@ -46,7 +46,7 @@ export const NewGroupForm = () => {
     try {
       const res = await uploadProfilePicture(generateUploadUrl, data.image);
       const groupId = await createGroup({
-        name: data.groupName,
+        name: capitaliseFirstLetter(data.groupName),
         loggedInUserId: id!,
         imageId: res?.storageId,
         otherUsers: staffs.map((s) => s.id),

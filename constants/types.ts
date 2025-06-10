@@ -473,6 +473,7 @@ export type DataType = {
   fileUrl?: string;
   reactions?: MessageReactionsType[];
   reply?: ReplyType;
+  senderName?: string;
 };
 
 export type ChatMessage = {

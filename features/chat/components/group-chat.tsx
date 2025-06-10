@@ -1,19 +1,19 @@
-import {CustomPressable} from "~/components/Ui/CustomPressable";
-import {useQuery} from "convex/react";
-import {api} from "~/convex/_generated/api";
-import {useGetUserId} from "~/hooks/useGetUserId";
-import {StyleSheet} from "react-native";
-import {HStack} from "~/components/HStack";
-import {Avatar} from "~/features/common/components/avatar";
-import {ChatPreviewSkeleton} from "~/components/ChatPreviewSkeleton";
-import {router} from "expo-router";
+import { CustomPressable } from "~/components/Ui/CustomPressable";
+import { useQuery } from "convex/react";
+import { api } from "~/convex/_generated/api";
+import { useGetUserId } from "~/hooks/useGetUserId";
+import { StyleSheet } from "react-native";
+import { HStack } from "~/components/HStack";
+import { Avatar } from "~/features/common/components/avatar";
+import { ChatPreviewSkeleton } from "~/components/ChatPreviewSkeleton";
+import { router } from "expo-router";
 import VStack from "~/components/Ui/VStack";
-import {MyText} from "~/components/Ui/MyText";
-import {CheckCheck, File} from "lucide-react-native";
-import {colors} from "~/constants/Colors";
-import {formatMessageTime, trimText} from "~/lib/helper";
-import {UnreadCount} from "~/components/Unread";
-import {GroupType} from "~/features/chat/type";
+import { MyText } from "~/components/Ui/MyText";
+import { CheckCheck, File } from "lucide-react-native";
+import { colors } from "~/constants/Colors";
+import { formatMessageTime, trimText } from "~/lib/helper";
+import { UnreadCount } from "~/components/Unread";
+import { GroupType } from "~/features/chat/type";
 
 type Props = {
   chat: GroupType;
@@ -31,8 +31,6 @@ export const RenderGroupChat = ({ chat }: Props) => {
     conversationId: _id,
     userId: id!,
   });
-
-
 
   if (
     id === undefined ||

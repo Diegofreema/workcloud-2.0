@@ -152,6 +152,7 @@ export const sendMessage = mutation({
     fileUrl: v.optional(v.string()),
     fileId: v.optional(v.id("_storage")),
     replyTo: v.optional(v.id("messages")),
+    senderName: v.optional(v.string())
   },
   handler: async (ctx, args) => {
     const room = await ctx.db.get(args.conversationId);

@@ -39,6 +39,7 @@ import Pdf from "react-native-pdf";
 import { EmojiPickerModal } from "~/features/chat/components/emoji-modal";
 import { RenderReply } from "~/features/chat/components/render-reply";
 import { ChatMenu } from "~/features/chat/components/chat-menu";
+import { HStack } from "~/components/HStack";
 
 const { width } = Dimensions.get("window");
 type Props = BubbleProps<IMessage> & {
@@ -329,17 +330,27 @@ export const RenderBubble = ({
             )}
             {renderContent()}
 
-            <Text
-              style={[
-                styles.time,
-                isSent ? styles.timeSent : styles.timeReceived,
-              ]}
-            >
-              {new Date(currentMessage.createdAt).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </Text>
+            <HStack justifyContent={"space-between"}>
+              <Text
+                style={[
+                  styles.time,
+                  isSent ? styles.timeSent : styles.timeReceived,
+                ]}
+              >
+                {currentMessage.user.name}
+              </Text>
+              <Text
+                style={[
+                  styles.time,
+                  isSent ? styles.timeSent : styles.timeReceived,
+                ]}
+              >
+                {new Date(currentMessage.createdAt).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </Text>
+            </HStack>
           </TouchableOpacity>
           {renderReactions()}
         </View>

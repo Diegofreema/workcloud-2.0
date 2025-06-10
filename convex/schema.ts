@@ -147,6 +147,7 @@ export const Message = {
   fileId: v.optional(v.id("_storage")),
   fileUrl: v.optional(v.string()),
   replyTo: v.optional(v.id("messages")),
+  senderName: v.optional(v.string()),
 };
 
 export const Suggestion = {
