@@ -356,7 +356,56 @@ export const createMessages = mutation({
     });
   },
 });
+export const addMembers = mutation({
+  args: {
+    members: v.array(v.id("users")),
+    loggedInUserId: v.id("users"),
+    groupId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => {
+    const group = await ctx.db.get(args.groupId);
 
+    if (!group) {
+      throw new ConvexError("Group not found");
+    }
+
+    if (group.creatorId !== args.loggedInUserId) {
+      throw new ConvexError("You are not authorized");
+    }
+
+    await ctx.db.patch(group._id, {
+      participants: [...group.participants, ...args.members],
+    });
+  },
+});
+
+export const closeGroup = mutation({
+  args: {
+    loggedInUser: v.id("users"),
+    groupId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => {
+    const group = await ctx.db.get(args.groupId);
+    if (!group) {
+      throw new ConvexError("Group not found");
+    }
+    if (group.creatorId !== args.loggedInUser) {
+      throw new ConvexError("You are not authorized");
+    }
+
+    const messages = await ctx.db
+      .query("messages")
+      .withIndex("by_conversationId", (q) =>
+        q.eq("conversationId", args.groupId),
+      )
+      .collect();
+
+    for (const message of messages) {
+      await ctx.db.delete(message._id);
+    }
+    await ctx.db.delete(group._id);
+  },
+});
 export const removeStaffsFromConversation = mutation({
   args: {
     loggedInUserId: v.id("users"),

@@ -15,8 +15,9 @@ import { CustomModal } from "~/components/Dialogs/CustomModal";
 import { useMutation } from "convex/react";
 import { api } from "~/convex/_generated/api";
 import { useGetUserId } from "~/hooks/useGetUserId";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { toast } from "sonner-native";
+import { useCloseGroup } from "~/features/chat/hook/use-close-group";
 
 type Props = {
   data: ProcessorType[];
@@ -25,6 +26,8 @@ type Props = {
 export const RenderInfoStaffs = ({ data }: Props) => {
   const [userId, setUserId] = useState<Id<"users"> | null>(null);
   const [loading, setLoading] = useState(false);
+    const setOpen = useCloseGroup((state) => state.setIsOpen);
+    const open = useCloseGroup((state) => state.isOpen);
   const { groupId } = useLocalSearchParams<{ groupId: Id<"conversations"> }>();
   const { id } = useGetUserId();
   const removeStaffsFromConversation = useMutation(
@@ -51,13 +54,28 @@ export const RenderInfoStaffs = ({ data }: Props) => {
       setLoading(false);
     }
   };
+const onDelete = async () => {
+    try {
 
+    }catch(e) {
+        
+    }finally {
+        setOpen(false);
+    }
+}
   return (
     <View style={{ flex: 1, marginTop: 20 }}>
       <CustomModal
-        title={"Remove Staff"}
+        title={"Remove staff"}
         onClose={() => setUserId(null)}
         isOpen={!!userId}
+        onPress={onPress}
+        isLoading={loading}
+      />
+        <CustomModal
+        title={"Close group"}
+        onClose={() => setOpen(false)}
+        isOpen={open}
         onPress={onPress}
         isLoading={loading}
       />
@@ -98,14 +116,28 @@ const ActionButton = ({ onPress }: { onPress: () => void }) => {
 };
 
 const FooterButtons = () => {
+  const { groupId } = useLocalSearchParams<{ groupId: Id<"conversations"> }>();
+  const setOpen = useCloseGroup((state) => state.setIsOpen);
+  const router = useRouter();
+  const onAdd = () => {
+    router.push(`/add-staff?groupId=${groupId}`);
+  };
+
   return (
     <HStack mt={"auto"} gap={5}>
-      <CustomPressable onPress={() => {}} style={[styles.btn, styles.add]}>
-        <MyText poppins={"Medium"} fontSize={15} style={{ color: colors.white }}>
+      <CustomPressable onPress={onAdd} style={[styles.btn, styles.add]}>
+        <MyText
+          poppins={"Medium"}
+          fontSize={15}
+          style={{ color: colors.white }}
+        >
           Add Staff
         </MyText>
       </CustomPressable>
-      <CustomPressable onPress={() => {}} style={[styles.btn, styles.close]}>
+      <CustomPressable
+        onPress={() => setOpen(true)}
+        style={[styles.btn, styles.close]}
+      >
         <MyText
           poppins={"Medium"}
           fontSize={15}
