@@ -1,4 +1,4 @@
-import { useAuth } from "@clerk/clerk-expo";
+
 import { FontAwesome6 } from "@expo/vector-icons";
 import { Avatar } from "@rneui/themed";
 import { useMutation, useQuery } from "convex/react";
@@ -39,6 +39,7 @@ import { Id } from "~/convex/_generated/dataModel";
 import { useDarkMode } from "~/hooks/useDarkMode";
 import { useGetUserId } from "~/hooks/useGetUserId";
 import { useWaitlistId } from "~/hooks/useWaitlistId";
+import {useAuth} from "~/context/auth";
 
 export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
   return <ErrorComponent refetch={retry} text={error.message} />;
@@ -100,7 +101,7 @@ const Reception = () => {
         <HeaderNav
           title={data?.name}
           subTitle={data?.category}
-          RightComponent={ReceptionRightHeader}
+          rightComponent={<ReceptionRightHeader />}
         />
         <HStack gap={10} alignItems="center" my={10}>
           <Avatar rounded source={{ uri: data?.avatar! }} size={50} />
@@ -231,14 +232,14 @@ const Representatives = ({ data }: { data: WorkerWithWorkspace[] }) => {
 
 const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
   const router = useRouter();
-  const { userId: id } = useAuth();
+  const { user:storedUser } = useAuth();
   // const { client } = useChatContext();
   const { id: customerId } = useGetUserId();
   const handleWaitlist = useMutation(api.workspace.handleWaitlist);
   const { setId } = useWaitlistId();
   const { workspace, user } = item;
   const handlePress = async () => {
-    if (id === user?.clerkId) return;
+    if (storedUser?.id === user?.clerkId) return;
     if (!workspace?.active || workspace?.leisure) {
       toast.info("This workspace is currently inactive", {
         description: "Please try joining another workspace",
@@ -327,7 +328,7 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
               </MyText>
             </View>
 
-            {item?.user?.clerkId !== id && (
+            {item?.user?.clerkId !== storedUser?.id && (
               <Pressable
                 onPress={onMessage}
                 style={{

@@ -1,4 +1,3 @@
-import { useAuth } from "@clerk/clerk-expo";
 import { Icon } from "@rneui/themed";
 import { useQuery } from "convex/react";
 import { useLocalSearchParams } from "expo-router";
@@ -17,6 +16,7 @@ import { defaultStyle } from "~/constants";
 import { api } from "~/convex/_generated/api";
 import { Id } from "~/convex/_generated/dataModel";
 import { useDarkMode } from "~/hooks/useDarkMode";
+import { useAuth } from "~/context/auth";
 
 const ProfileEdit = () => {
   const { signOut } = useAuth();
@@ -35,7 +35,7 @@ const ProfileEdit = () => {
   const logout = async () => {
     setLoading(true);
     try {
-      await signOut();
+      signOut();
     } catch (error) {
       console.log(error);
     } finally {

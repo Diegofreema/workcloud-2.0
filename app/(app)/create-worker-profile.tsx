@@ -1,62 +1,62 @@
-import { useUser } from '@clerk/clerk-expo';
-import { Text } from '@rneui/themed';
-import { useMutation } from 'convex/react';
-import { useRouter } from 'expo-router';
-import { useFormik } from 'formik';
-import React, { useEffect } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { SelectList } from 'react-native-dropdown-select-list';
-import { toast } from 'sonner-native';
-import * as yup from 'yup';
+import { Text } from "@rneui/themed";
+import { useMutation } from "convex/react";
+import { useRouter } from "expo-router";
+import { useFormik } from "formik";
+import React, { useEffect } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { SelectList } from "react-native-dropdown-select-list";
+import { toast } from "sonner-native";
+import * as yup from "yup";
 
-import { AuthHeader } from '~/components/AuthHeader';
-import { AuthTitle } from '~/components/AuthTitle';
-import { InputComponent } from '~/components/InputComponent';
-import { Container } from '~/components/Ui/Container';
-import { MyButton } from '~/components/Ui/MyButton';
-import { MyText } from '~/components/Ui/MyText';
-import { fontFamily } from '~/constants';
-import { colors } from '~/constants/Colors';
-import { api } from '~/convex/_generated/api';
-import { Id } from '~/convex/_generated/dataModel';
-import { useDarkMode } from '~/hooks/useDarkMode';
-import { useGetUserId } from '~/hooks/useGetUserId';
+import { AuthHeader } from "~/components/AuthHeader";
+import { AuthTitle } from "~/components/AuthTitle";
+import { InputComponent } from "~/components/InputComponent";
+import { Container } from "~/components/Ui/Container";
+import { MyButton } from "~/components/Ui/MyButton";
+import { MyText } from "~/components/Ui/MyText";
+import { fontFamily } from "~/constants";
+import { colors } from "~/constants/Colors";
+import { api } from "~/convex/_generated/api";
+import { Id } from "~/convex/_generated/dataModel";
+import { useDarkMode } from "~/hooks/useDarkMode";
+import { useGetUserId } from "~/hooks/useGetUserId";
+import { useAuth } from "~/context/auth";
 
 const validationSchema = yup.object().shape({
-  email: yup.string().email('Invalid email').required('Email is required'),
+  email: yup.string().email("Invalid email").required("Email is required"),
 
-  gender: yup.string().required('Gender is required'),
-  location: yup.string().required('Location is required'),
+  gender: yup.string().required("Gender is required"),
+  location: yup.string().required("Location is required"),
   experience: yup
     .string()
-    .required('Experience is required')
-    .max(100, 'Maximum 100 characters'),
+    .required("Experience is required")
+    .max(100, "Maximum 100 characters"),
   skills: yup
     .string()
-    .required('Skills are required')
-    .min(1, 'Minimum of 1 skill is required'),
-  qualifications: yup.string().required('Qualifications are required'),
+    .required("Skills are required")
+    .min(1, "Minimum of 1 skill is required"),
+  qualifications: yup.string().required("Qualifications are required"),
 });
 
 const max = 150;
 const genders = [
   {
-    key: 'Male',
-    value: 'Male',
+    key: "Male",
+    value: "Male",
   },
   {
-    key: 'Female',
-    value: 'Female',
+    key: "Female",
+    value: "Female",
   },
 ];
 const CreateProfile = () => {
   const { darkMode } = useDarkMode();
-  const { user } = useUser();
+  const { user } = useAuth();
   const { id } = useGetUserId();
   const router = useRouter();
   const createWorkerProfile = useMutation(api.users.createWorkerProfile);
   const updateWorkerIdOnUserTable = useMutation(
-    api.users.updateWorkerIdOnUserTable
+    api.users.updateWorkerIdOnUserTable,
   );
   const {
     values,
@@ -69,36 +69,36 @@ const CreateProfile = () => {
     resetForm,
   } = useFormik({
     initialValues: {
-      email: user?.emailAddresses[0].emailAddress as string,
-      location: '',
-      gender: '',
-      skills: '',
-      experience: '',
-      userId: id as Id<'users'>,
-      qualifications: '',
+      email: user?.email as string,
+      location: "",
+      gender: "",
+      skills: "",
+      experience: "",
+      userId: id as Id<"users">,
+      qualifications: "",
     },
     validationSchema,
     onSubmit: async (values) => {
       if (!values.userId)
-        return toast.error('Something went wrong', {
-          description: 'User ID is required',
+        return toast.error("Something went wrong", {
+          description: "User ID is required",
         });
       try {
         const workerId = await createWorkerProfile(values);
         if (workerId && id) {
           await updateWorkerIdOnUserTable({ workerId, _id: id });
         }
-        toast.success('Welcome  onboard', {
-          description: `${user?.firstName} your work profile was created`,
+        toast.success("Welcome  onboard", {
+          description: `${user?.name.split(" ")[0]} your work profile was created`,
         });
 
         router.replace(`/myWorkerProfile/${id}`);
         resetForm();
       } catch (error: any) {
-        toast.error('Something went wrong', {
-          description: 'Please try again',
+        toast.error("Something went wrong", {
+          description: "Please try again",
         });
-        console.log(error, 'Error');
+        console.log(error, "Error");
       }
     },
   });
@@ -132,7 +132,7 @@ const CreateProfile = () => {
               <InputComponent
                 label="Experience"
                 value={experience}
-                onChangeText={handleChange('experience')}
+                onChangeText={handleChange("experience")}
                 placeholder="Write about your past work experience..."
                 keyboardType="default"
                 numberOfLines={5}
@@ -143,7 +143,7 @@ const CreateProfile = () => {
                 {experience.length}/{max}
               </MyText>
               {touched.experience && errors.experience && (
-                <MyText poppins="Bold" style={{ color: 'red' }}>
+                <MyText poppins="Bold" style={{ color: "red" }}>
                   {errors.experience}
                 </MyText>
               )}
@@ -152,7 +152,7 @@ const CreateProfile = () => {
               <InputComponent
                 label="Qualifications"
                 value={qualifications}
-                onChangeText={handleChange('qualifications')}
+                onChangeText={handleChange("qualifications")}
                 placeholder="Bsc. Computer Science, Msc. Computer Science"
                 keyboardType="default"
                 numberOfLines={5}
@@ -160,7 +160,7 @@ const CreateProfile = () => {
               />
 
               {touched.qualifications && errors.qualifications && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
+                <Text style={{ color: "red", fontWeight: "bold" }}>
                   {errors.qualifications}
                 </Text>
               )}
@@ -169,14 +169,14 @@ const CreateProfile = () => {
               <InputComponent
                 label="Skills"
                 value={skills}
-                onChangeText={handleChange('skills')}
+                onChangeText={handleChange("skills")}
                 placeholder="e.g Customer service, marketing, sales"
                 keyboardType="default"
                 numberOfLines={5}
                 multiline
               />
               {touched.skills && errors.skills && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
+                <Text style={{ color: "red", fontWeight: "bold" }}>
                   {errors.skills}
                 </Text>
               )}
@@ -185,14 +185,14 @@ const CreateProfile = () => {
               <InputComponent
                 label="Location"
                 value={location}
-                onChangeText={handleChange('location')}
+                onChangeText={handleChange("location")}
                 placeholder="Where do you reside?"
                 keyboardType="default"
                 numberOfLines={5}
                 multiline
               />
               {touched.location && errors.location && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
+                <Text style={{ color: "red", fontWeight: "bold" }}>
                   {errors.location}
                 </Text>
               )}
@@ -200,8 +200,8 @@ const CreateProfile = () => {
             <View style={{ marginHorizontal: 10 }}>
               <Text
                 style={{
-                  color: darkMode === 'dark' ? colors.white : colors.black,
-                  fontWeight: 'bold',
+                  color: darkMode === "dark" ? colors.white : colors.black,
+                  fontWeight: "bold",
                   fontSize: 15,
                   marginBottom: 10,
                 }}
@@ -213,29 +213,29 @@ const CreateProfile = () => {
                 search={false}
                 boxStyles={{
                   ...styles2.border,
-                  justifyContent: 'flex-start',
+                  justifyContent: "flex-start",
                   borderWidth: 0,
                   height: 60,
                 }}
                 dropdownTextStyles={{
-                  color: darkMode === 'dark' ? colors.white : colors.black,
+                  color: darkMode === "dark" ? colors.white : colors.black,
                 }}
                 inputStyles={{
-                  textAlign: 'left',
+                  textAlign: "left",
                   borderWidth: 0,
-                  color: 'gray',
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  color: "gray",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
                 fontFamily="PoppinsMedium"
-                setSelected={handleChange('gender')}
+                setSelected={handleChange("gender")}
                 data={genders}
                 save="value"
                 placeholder="Select your a gender"
               />
 
               {touched.gender && errors.gender && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
+                <Text style={{ color: "red", fontWeight: "bold" }}>
                   {errors.gender}
                 </Text>
               )}
@@ -250,7 +250,7 @@ const CreateProfile = () => {
               buttonStyle={{ height: 60, width: 200, borderRadius: 5 }}
               labelStyle={{ fontFamily: fontFamily.Medium, fontSize: 14 }}
             >
-              {isSubmitting ? 'Submitting...' : 'Submit'}
+              {isSubmitting ? "Submitting..." : "Submit"}
             </MyButton>
           </View>
         </View>
@@ -263,10 +263,10 @@ export default CreateProfile;
 
 const styles2 = StyleSheet.create({
   border: {
-    backgroundColor: '#E9E9E9',
+    backgroundColor: "#E9E9E9",
     paddingLeft: 15,
-    justifyContent: 'center',
+    justifyContent: "center",
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
 });

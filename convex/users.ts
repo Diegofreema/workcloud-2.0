@@ -35,6 +35,25 @@ export const createUser = internalMutation({
     await ctx.scheduler.runAfter(0, internal.users.createStreamToken, { id });
   },
 });
+export const addUserToDb = mutation({
+  args: {
+    email: v.string(),
+    clerkId: v.string(),
+    imageUrl: v.optional(v.string()),
+    name: v.string(),
+
+  },
+  handler: async (ctx, args) => {
+    const isUserInDb = await ctx.db
+      .query("users")
+      .withIndex("clerkId", (q) => q.eq("clerkId", args.clerkId))
+      .unique();
+    if (isUserInDb) return;
+    await ctx.db.insert("users", {
+      ...args,
+    });
+  },
+});
 export const createStreamToken = internalAction({
   args: {
     id: v.id("users"),
@@ -84,8 +103,15 @@ export const getUserByClerkId = query({
       .query("users")
       .filter((q) => q.eq(q.field("clerkId"), args.clerkId))
       .unique();
+    let workProfile;
+    if (user?.workerId) {
+      workProfile = await ctx.db.get(user?.workerId!);
+    }
     if (!user?.imageUrl || user.imageUrl.startsWith("http")) {
-      return user;
+      return {
+        ...user,
+        worker: workProfile,
+      };
     }
 
     const url = await ctx.storage.getUrl(user.imageUrl as Id<"_storage">);
@@ -93,6 +119,7 @@ export const getUserByClerkId = query({
     return {
       ...user,
       imageUrl: url,
+      worker: workProfile,
     };
   },
 });
@@ -289,5 +316,3 @@ const helperToGetUser = async (ctx: QueryCtx, user: User) => {
     imageUrl,
   };
 };
-
-

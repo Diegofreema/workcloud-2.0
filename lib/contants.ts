@@ -1,0 +1,1 @@
+export const APPWRITE_PROJECT_ID = "681b3f0a00211d68896c";

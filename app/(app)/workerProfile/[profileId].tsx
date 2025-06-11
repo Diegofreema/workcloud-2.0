@@ -1,4 +1,4 @@
-import {useUser} from "@clerk/clerk-expo";
+
 import {AntDesign, EvilIcons, MaterialCommunityIcons, SimpleLineIcons,} from "@expo/vector-icons";
 import {Button} from "@rneui/themed";
 import {format} from "date-fns";
@@ -18,11 +18,12 @@ import {Id} from "~/convex/_generated/dataModel";
 import {useDarkMode} from "~/hooks/useDarkMode";
 import {useGetUserId} from "~/hooks/useGetUserId";
 import {useWorkerActions} from "~/features/staff/hooks/use-worker-actions";
+import {useAuth} from "~/context/auth";
 
 const Profile = () => {
   const { profileId } = useLocalSearchParams<{ profileId: Id<"workers"> }>();
 
-  const { user } = useUser();
+  const { user } = useAuth();
   const { id } = useGetUserId();
   const { darkMode } = useDarkMode();
 

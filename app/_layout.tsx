@@ -1,27 +1,23 @@
-import {ClerkLoaded, ClerkLoading, ClerkProvider, useAuth,} from "@clerk/clerk-expo";
-import {tokenCache} from "@clerk/clerk-expo/token-cache";
-import {ConvexQueryClient} from "@convex-dev/react-query";
+import { ConvexQueryClient } from "@convex-dev/react-query";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {ConvexReactClient} from "convex/react";
-import {ConvexProviderWithClerk} from "convex/react-clerk";
-import {useFonts} from "expo-font";
-import {Slot, usePathname, useRouter, useSegments,} from "expo-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ConvexProvider, ConvexReactClient } from "convex/react";
+import { useFonts } from "expo-font";
+import { Slot, usePathname, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import {StatusBar} from "expo-status-bar";
+import { StatusBar } from "expo-status-bar";
 import * as Updates from "expo-updates";
-import {useEffect} from "react";
-import {PermissionsAndroid, Platform} from "react-native";
-import {GestureHandlerRootView} from "react-native-gesture-handler";
-import {SafeAreaView} from "react-native-safe-area-context";
-import {Toaster} from "sonner-native";
-
-import {LoadingComponent} from "~/components/Ui/LoadingComponent";
-import {useDarkMode} from "~/hooks/useDarkMode";
+import { useEffect } from "react";
+import { PermissionsAndroid, Platform } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Toaster } from "sonner-native";
+import { useDarkMode } from "~/hooks/useDarkMode";
 
 // import * as Sentry from "@sentry/react-native";
 // import { isRunningInExpoGo } from "expo";
-import {MenuProvider} from "react-native-popup-menu";
+import { MenuProvider } from "react-native-popup-menu";
+import { AuthProvider, useAuth } from "~/context/auth";
 
 // Construct a new integration instance. This is needed to communicate between the integration and React
 // const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -65,20 +61,19 @@ SplashScreen.preventAutoHideAsync();
 const InitialRouteLayout = () => {
   const segments = useSegments();
   const router = useRouter();
-  const { isLoaded, isSignedIn } = useAuth();
-  console.log({ isSignedIn });
+  const { user } = useAuth();
 
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!user) return;
 
     const inTabsGroup = segments[0] === "(app)";
 
-    if (isSignedIn && !inTabsGroup) {
-      router.replace(`/(app)/(tabs)`);
-    } else if (!isSignedIn && inTabsGroup) {
-      router.replace("/(auth)/login");
+    if (user && !inTabsGroup) {
+      router.replace(`/`);
+    } else if (!user && inTabsGroup) {
+      router.replace("/login");
     }
-  }, [isSignedIn, isLoaded, segments, router]);
+  }, [user, segments, router]);
   return <Slot />;
 };
 
@@ -144,43 +139,30 @@ export function RootLayout() {
     return null;
   }
 
-  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
-
-  if (!publishableKey) {
-    throw new Error(
-      "Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env",
-    );
-  }
-
   return (
-    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-      <ClerkLoaded>
-        <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-          <QueryClientProvider client={queryClient}>
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <StatusBar
-                style={darkMode === "dark" ? "light" : "dark"}
-                backgroundColor={darkMode === "dark" ? "black" : "white"}
-              />
-              <SafeAreaView
-                style={{
-                  flex: 1,
-                  backgroundColor: darkMode === "dark" ? "black" : "white",
-                }}
-              >
-                <MenuProvider>
-                  <InitialRouteLayout />
-                </MenuProvider>
-                <Toaster />
-              </SafeAreaView>
-            </GestureHandlerRootView>
-          </QueryClientProvider>
-        </ConvexProviderWithClerk>
-      </ClerkLoaded>
-      <ClerkLoading>
-        <LoadingComponent />
-      </ClerkLoading>
-    </ClerkProvider>
+    <ConvexProvider client={convex}>
+      <AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <StatusBar
+              style={darkMode === "dark" ? "light" : "dark"}
+              backgroundColor={darkMode === "dark" ? "black" : "white"}
+            />
+            <SafeAreaView
+              style={{
+                flex: 1,
+                backgroundColor: darkMode === "dark" ? "black" : "white",
+              }}
+            >
+              <MenuProvider>
+                <InitialRouteLayout />
+              </MenuProvider>
+              <Toaster />
+            </SafeAreaView>
+          </GestureHandlerRootView>
+        </QueryClientProvider>
+      </AuthProvider>
+    </ConvexProvider>
   );
 }
 

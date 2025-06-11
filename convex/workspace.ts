@@ -176,6 +176,35 @@ export const createAndAssignWorkspace = mutation({
     // update worker table with workspace id and boss id
   },
 });
+export const createWorkspace = mutation({
+  args: {
+    ownerId: v.id("users"),
+    organizationId: v.id("organizations"),
+    role: v.string(),
+    type: v.literal("personal"),
+    workerId: v.id("workers"),
+  },
+  handler: async (ctx, args) => {
+    const id = await ctx.db.insert("workspaces", {
+      type: args.type,
+      role: args.role,
+      ownerId: args.ownerId,
+      organizationId: args.organizationId,
+      locked: args.type !== "personal",
+      active: false,
+      leisure: false,
+      waitlistCount: 0,
+      workerId: args.workerId,
+    });
+
+    await ctx.db.patch(args.workerId, {
+      workspaceId: id,
+    });
+
+    return id;
+    // update worker table with workspace id and boss id
+  },
+});
 export const existLobby = mutation({
   args: {
     customerId: v.id("users"),

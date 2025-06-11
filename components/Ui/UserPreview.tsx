@@ -1,4 +1,3 @@
-import { useAuth } from "@clerk/clerk-expo";
 import { convexQuery } from "@convex-dev/react-query";
 import { Button } from "@rneui/themed";
 import { useQuery } from "@tanstack/react-query";
@@ -20,6 +19,7 @@ import { PendingRequests } from "~/constants/types";
 import { api } from "~/convex/_generated/api";
 import { useDecline } from "~/hooks/useDecline";
 import { useOpen } from "~/hooks/useOpen";
+import { useAuth } from "~/context/auth";
 
 type PreviewWorker = {
   name?: string;
@@ -137,7 +137,7 @@ export const UserPreview = ({
 };
 
 export const WorkPreview = ({ item }: { item: PendingRequests }) => {
-  const { userId } = useAuth();
+  const { user } = useAuth();
   const { onOpen } = useOpen();
 
   const { isOpen, onClose, onOpen: openDecline } = useDecline();
@@ -168,7 +168,7 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
   } = item;
 
   const acceptRequest = async () => {
-    if (!userId || isPending || isError || !organisation?._id) return;
+    if (!user?.id || isPending || isError || !organisation?._id) return;
     setAccepting(true);
     try {
       if (isEmployed) {

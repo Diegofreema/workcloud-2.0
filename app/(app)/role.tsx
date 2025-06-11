@@ -1,35 +1,37 @@
-import { convexQuery } from '@convex-dev/react-query';
-import { Input } from '@rneui/themed';
-import { useQuery } from '@tanstack/react-query';
-import { useMutation } from 'convex/react';
-import { useRouter } from 'expo-router';
-import React, { useMemo, useState } from 'react';
-import { FlatList, Pressable } from 'react-native';
-import { toast } from 'sonner-native';
+import { convexQuery } from "@convex-dev/react-query";
+import { Input } from "@rneui/themed";
+import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "convex/react";
+import { useRouter } from "expo-router";
+import React, { useMemo, useState } from "react";
+import { FlatList, Pressable } from "react-native";
+import { toast } from "sonner-native";
 
-import { AddRole } from '~/components/AddRole';
-import { HStack } from '~/components/HStack';
-import { HeaderNav } from '~/components/HeaderNav';
-import { Container } from '~/components/Ui/Container';
-import { ErrorComponent } from '~/components/Ui/ErrorComponent';
-import { LoadingComponent } from '~/components/Ui/LoadingComponent';
-import { MyText } from '~/components/Ui/MyText';
-import { api } from '~/convex/_generated/api';
-import { useDetailsToAdd } from '~/hooks/useDetailsToAdd';
-import { useGetUserId } from '~/hooks/useGetUserId';
+import { AddRole } from "~/components/AddRole";
+import { HStack } from "~/components/HStack";
+import { HeaderNav } from "~/components/HeaderNav";
+import { Container } from "~/components/Ui/Container";
+import { ErrorComponent } from "~/components/Ui/ErrorComponent";
+import { LoadingComponent } from "~/components/Ui/LoadingComponent";
+import { MyText } from "~/components/Ui/MyText";
+import { api } from "~/convex/_generated/api";
+import { useDetailsToAdd } from "~/hooks/useDetailsToAdd";
+import { useGetUserId } from "~/hooks/useGetUserId";
 
 const Role = () => {
   const { getData, personal, setPersonal } = useDetailsToAdd();
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState("");
 
-  const { organizationId, id, worker } = useGetUserId();
-  const { data, isPending, isError, refetch, error } = useQuery(convexQuery(api.workspace.getRoles, {}));
+  const { organizationId, id, worker, bossId } = useGetUserId();
+  const { data, isPending, isError, refetch, error } = useQuery(
+    convexQuery(api.workspace.getRoles, {}),
+  );
   const createWorkspace = useMutation(api.workspace.createWorkspace);
 
   const filteredData = useMemo(() => {
-    if (value.trim() === '') return data;
+    if (value.trim() === "") return data;
     return data?.filter((item) =>
-      item.role?.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+      item.role?.toLocaleLowerCase().includes(value.toLocaleLowerCase()),
     );
   }, [value, data]);
   const router = useRouter();
@@ -44,25 +46,39 @@ const Role = () => {
 
   const navigate = async (item: string) => {
     if (!organizationId || !id) return;
+    if (!worker) {
+      router.back();
+      return toast.error("Create a worker profile first", {
+        description: "Before creating a workspace",
+      });
+    }
+    if (bossId) {
+      router.back();
+      return toast.error("Failed to create", {
+        description: "You are already assigned a workspace",
+      });
+    }
     try {
       const workspaceId = await createWorkspace({
         organizationId,
         ownerId: id,
-        type: 'personal',
+        type: "personal",
         role: item,
-        workerId: personal ? worker : undefined,
+        workerId: worker,
       });
 
       router.back();
       getData({ orgId: organizationId!, role: item, workspaceId });
-      toast.success('Success', {
-        description: personal ? 'Personal workspace created' : 'Workspace created',
+      toast.success("Success", {
+        description: personal
+          ? "Personal workspace created"
+          : "Workspace created",
       });
       setPersonal(false);
     } catch (e) {
       console.log(e);
       router.back();
-      toast.error('Something went wrong');
+      toast.error("Something went wrong");
     }
   };
   return (
@@ -77,7 +93,8 @@ const Role = () => {
         renderItem={({ item }) => (
           <Pressable
             onPress={() => navigate(item.role!)}
-            style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}>
+            style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
+          >
             <HStack justifyContent="space-between" alignItems="center" p={10}>
               <MyText fontSize={13} poppins="Medium">
                 {item.role}
