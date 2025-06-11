@@ -182,6 +182,58 @@ export const getGroupConversationThatIAmIn = query({
   },
 });
 
+export const getGroupMessages = query({
+  args: {
+    conversationId: v.id("conversations"),
+    loggedInUserId: v.id("users"),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const members = await ctx.db
+      .query("members")
+      .withIndex("by_conversation_id", (q) =>
+        q.eq("conversationId", args.conversationId),
+      )
+      .collect();
+
+    const currentMember = members.find(
+      (member) => member.memberId === args.loggedInUserId,
+    );
+    if (!currentMember) {
+      throw new ConvexError("Member not found");
+    }
+    const messages = await ctx.db
+      .query("messages")
+      .withIndex("by_conversationId", (q) =>
+        q.eq("conversationId", args.conversationId!),
+      )
+      .filter((q) =>
+        q.gt(q.field("_creationTime"), currentMember?._creationTime),
+      )
+      .order("desc")
+      .paginate(args.paginationOpts);
+    const page = await Promise.all(
+      messages.page.map(async (m) => {
+        const sender = await getUserByUserId(ctx, m.senderId);
+        const reactions = await messageReactions(ctx, m._id);
+        let reply;
+        if (m.replyTo) {
+          reply = await messageHelper(ctx, m.replyTo);
+        }
+        return {
+          ...m,
+          user: sender,
+          reactions,
+          reply,
+        };
+      }),
+    );
+    return {
+      ...messages,
+      page,
+    };
+  },
+});
 export const getMessages = query({
   args: {
     conversationId: v.optional(v.id("conversations")),
@@ -385,6 +437,12 @@ export const addMembers = mutation({
     await ctx.db.patch(group._id, {
       participants: [...group.participants, ...args.members],
     });
+    for (const member of args.members) {
+      await ctx.db.insert("members", {
+        memberId: member,
+        conversationId: group._id,
+      });
+    }
   },
 });
 export const fetchWorkersThatAreNotInGroup = query({
@@ -430,6 +488,13 @@ export const closeGroup = mutation({
       throw new ConvexError("You are not authorized");
     }
 
+    const members = await ctx.db
+      .query("members")
+      .withIndex("by_conversation_id", (q) =>
+        q.eq("conversationId", args.groupId),
+      )
+      .collect();
+
     const messages = await ctx.db
       .query("messages")
       .withIndex("by_conversationId", (q) =>
@@ -437,12 +502,16 @@ export const closeGroup = mutation({
       )
       .collect();
 
+    for (const member of members) {
+      await ctx.db.delete(member._id);
+    }
     for (const message of messages) {
       await ctx.db.delete(message._id);
     }
     if (group.imageId) {
       await ctx.storage.delete(group.imageId);
     }
+
     await ctx.db.delete(group._id);
   },
 });

@@ -22,10 +22,13 @@ const GroupChatScreen = () => {
     results: data,
     isLoading,
   } = usePaginatedQuery(
-    api.conversation.getMessages,
-    {
-      conversationId: group?._id!,
-    },
+    api.conversation.getGroupMessages,
+    group && loggedInUserId
+      ? {
+          conversationId: group?._id!,
+          loggedInUserId,
+        }
+      : "skip",
     { initialNumItems: 100 },
   );
   useMarkRead({

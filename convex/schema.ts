@@ -252,5 +252,7 @@ export default defineSchema({
   })
     .index("by_conversationId_userId", ["conversationId", "userId"])
     .index("is_typing", ["conversationId", "isTyping"]),
-  members: defineTable(Members).index("by_conversation_id", ["memberId"]),
+  members: defineTable(Members)
+    .index("by_conversation_id", ["conversationId"])
+    .index("by_member_id", ["memberId"]),
 });
