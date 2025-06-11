@@ -147,28 +147,12 @@ export const getPostsByOrganizationId = query({
     organizationId: v.id("organizations"),
   },
   handler: async (ctx, args) => {
-    const res = await ctx.db
+    return await ctx.db
       .query("posts")
       .withIndex("by_org_id", (q) =>
         q.eq("organizationId", args.organizationId),
       )
       .collect();
-
-    if (!res) return null;
-
-    return await Promise.all(
-      res.map(async (r) => {
-        if (r.image.startsWith("https")) {
-          return r;
-        }
-        const imageUrl = await getImageUrl(ctx, r.image as Id<"_storage">);
-
-        return {
-          ...r,
-          image: imageUrl,
-        };
-      }),
-    );
   },
 });
 export const getTopSearches = query({
@@ -433,9 +417,14 @@ export const createPosts = mutation({
     storageId: v.id("_storage"),
   },
   handler: async (ctx, args) => {
+    const image = await ctx.storage.getUrl(args.storageId);
+    if (!image) {
+      throw new ConvexError("Failed to upload post");
+    }
     await ctx.db.insert("posts", {
-      image: args.storageId,
+      image,
       organizationId: args.organizationId,
+      imageId: args.storageId,
     });
   },
 });
@@ -445,7 +434,12 @@ export const deletePosts = mutation({
     postId: v.id("posts"),
   },
   handler: async (ctx, args) => {
-    await ctx.db.delete(args.postId);
+    const post = await ctx.db.get(args.postId);
+    if (!post) {
+      throw new ConvexError("Post not found");
+    }
+    await ctx.storage.delete(post.imageId);
+    await ctx.db.delete(post._id);
   },
 });
 export const handleFollow = mutation({

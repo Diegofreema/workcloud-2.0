@@ -11,6 +11,7 @@ import {useQuery} from "convex/react";
 import {api} from "~/convex/_generated/api";
 import {useGetUserId} from "~/hooks/useGetUserId";
 import {StyleSheet, View} from "react-native";
+import {useUnreadMessageCount} from "~/features/common/hook/use-unread-message-count";
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -25,13 +26,9 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const { darkMode } = useDarkMode();
-  const { id } = useGetUserId();
-  const unreadCount = useQuery(
-    api.conversation.getUnreadAllMessages,
-    id ? { userId: id } : "skip",
-  );
 
-  const count = unreadCount || 0;
+
+  const count = useUnreadMessageCount()
 
   return (
     <>

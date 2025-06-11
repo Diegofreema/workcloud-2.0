@@ -1,26 +1,28 @@
-import {useMutation, useQuery} from "convex/react";
-import {format} from "date-fns";
-import {Redirect, router, useLocalSearchParams} from "expo-router";
-import {useCallback, useMemo, useState} from "react";
-import {ScrollView, StyleSheet, Text, View} from "react-native";
-import {toast} from "sonner-native";
+import { useMutation, useQuery } from "convex/react";
+import { format } from "date-fns";
+import { Redirect, router, useLocalSearchParams } from "expo-router";
+import { useCallback, useMemo, useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { toast } from "sonner-native";
 
-import {WaitListModal} from "~/components/Dialogs/WaitListModal";
-import {HeaderNav} from "~/components/HeaderNav";
-import {BottomActive} from "~/components/Ui/BottomActive";
-import {Container} from "~/components/Ui/Container";
-import {LoadingComponent} from "~/components/Ui/LoadingComponent";
-import {MyButton} from "~/components/Ui/MyButton";
-import {UserPreview} from "~/components/Ui/UserPreview";
-import {Waitlists} from "~/components/Ui/Waitlists";
-import {WorkspaceButtons} from "~/components/Ui/WorkspaceButtons";
-import {colors} from "~/constants/Colors";
-import {api} from "~/convex/_generated/api";
-import {Id} from "~/convex/_generated/dataModel";
-import {useGetUserId} from "~/hooks/useGetUserId";
-import {useGetWaitlistIdForCustomer} from "~/hooks/useGetWorkspaceIdForCustomer";
-import {useWaitlistId} from "~/hooks/useWaitlistId";
-import {useGetCustomerId} from "~/hooks/useCustomerId";
+import { WaitListModal } from "~/components/Dialogs/WaitListModal";
+import { HeaderNav } from "~/components/HeaderNav";
+import { BottomActive } from "~/components/Ui/BottomActive";
+import { Container } from "~/components/Ui/Container";
+import { LoadingComponent } from "~/components/Ui/LoadingComponent";
+import { MyButton } from "~/components/Ui/MyButton";
+import { UserPreview } from "~/components/Ui/UserPreview";
+import { Waitlists } from "~/components/Ui/Waitlists";
+import { WorkspaceButtons } from "~/components/Ui/WorkspaceButtons";
+import { colors } from "~/constants/Colors";
+import { api } from "~/convex/_generated/api";
+import { Id } from "~/convex/_generated/dataModel";
+import { useGetUserId } from "~/hooks/useGetUserId";
+import { useGetWaitlistIdForCustomer } from "~/hooks/useGetWorkspaceIdForCustomer";
+import { useWaitlistId } from "~/hooks/useWaitlistId";
+import { useGetCustomerId } from "~/hooks/useCustomerId";
+import { CustomPressable } from "~/components/Ui/CustomPressable";
+import { MessageBtn } from "~/features/common/components/message-btn";
 
 const today = format(new Date(), "dd-MM-yyyy");
 
@@ -222,6 +224,7 @@ const Work = () => {
           <HeaderNav
             title="Workspace"
             subTitle={`${organization?.name} lobby`}
+            rightComponent={<MessageBtn />}
           />
           <View style={{ marginTop: 20 }} />
           <UserPreview

@@ -60,8 +60,9 @@ export const Worker = {
   ),
 };
 export const Post = {
-  image: v.union(v.id("_storage"), v.string()),
+  image: v.string(),
   organizationId: v.id("organizations"),
+  imageId: v.id("_storage"),
 };
 export const Role = {
   role: v.string(),
@@ -153,6 +154,7 @@ export const Message = {
 export const Members = {
   conversationId: v.id("conversations"),
   memberId: v.id("users"),
+  addedBy: v.string(),
 };
 
 export const Suggestion = {
@@ -254,5 +256,6 @@ export default defineSchema({
     .index("is_typing", ["conversationId", "isTyping"]),
   members: defineTable(Members)
     .index("by_conversation_id", ["conversationId"])
-    .index("by_member_id", ["memberId"]),
+    .index("by_member_id", ["memberId"])
+    .index("by_member_id_conversation_id", ["memberId", "conversationId"]),
 });

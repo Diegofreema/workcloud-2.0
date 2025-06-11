@@ -216,7 +216,7 @@ const MyOrg = () => {
             name="Staffs"
           />
           <WorkspaceDetails
-            onPress={() => router.push(`/(tabs)/messages`)}
+            onPress={() => router.push(`/message`)}
             darkMode={darkMode}
             uri={require('~/assets/images/message.png')}
             name="Messages"

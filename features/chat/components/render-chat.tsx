@@ -26,6 +26,7 @@ export const RenderChat = ({ chat }: Props) => {
   const getTypingUsers = useQuery(api.message.getTypingUsers, {
     conversationId: chat._id,
   });
+
   const otherUser = useQuery(
     api.users.getUserById,
     otherUserId ? { id: otherUserId } : "skip",

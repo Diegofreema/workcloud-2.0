@@ -31,11 +31,15 @@ export const RenderGroupChat = ({ chat }: Props) => {
     conversationId: _id,
     userId: id!,
   });
-
+  const member = useQuery(
+    api.member.fetchMember,
+    id ? { group: chat.id, userId: id } : "skip",
+  );
   if (
     id === undefined ||
     unread === undefined ||
-    getTypingUsers === undefined
+    getTypingUsers === undefined ||
+    member === undefined
   ) {
     return <ChatPreviewSkeleton />;
   }
@@ -48,14 +52,20 @@ export const RenderGroupChat = ({ chat }: Props) => {
   const isTyping = getTypingUsers.length > 0 && !getTypingUsers.includes(id!);
   const isImage = lastMessage?.startsWith("https");
   const typingText = getTypingUsers.length;
+  const groupCreatedBeforeMemberJoined =
+    (chat?.lastMessageTime ?? 0) < (member?._creationTime ?? 0);
   const typingIsGreaterThanOne = getTypingUsers.length > 1;
   const justCreated = !!chat.lastMessage?.includes(
     `${chat.name} was created by`,
   );
   const iAmCreator = chat.creatorId === id;
+
   const lastText = justCreated
     ? `${lastMessage} ${iAmCreator ? "you" : user?.name}`
-    : lastMessage;
+    : groupCreatedBeforeMemberJoined
+      ? `You were added by ${member?.addedBy}`
+      : lastMessage;
+
   return (
     <CustomPressable onPress={onPress} style={styles.pressable}>
       <HStack justifyContent="space-between" alignItems="flex-start">

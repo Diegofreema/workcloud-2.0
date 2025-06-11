@@ -21,6 +21,7 @@ export const RenderChats = ({ chats, loadMore, isLoading }: Props) => {
         recycleItems
         ListEmptyComponent={<EmptyText text={"No conversation found"} />}
         onEndReachedThreshold={0.5}
+        keyExtractor={(item, ) => item._id}
         onEndReached={loadMore}
         ListFooterComponent={isLoading ? <SmallLoader /> : null}
       />

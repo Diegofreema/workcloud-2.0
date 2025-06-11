@@ -8,6 +8,7 @@ import { getImageUrl } from "~/convex/organisation";
 import { filter } from "convex-helpers/server/filter";
 import { messageHelper, messageReactions } from "~/convex/message";
 import { getUserByUserId, getWorkerProfile } from "~/convex/users";
+import { getMemberHelper } from "~/convex/member";
 
 export const getConversations = query({
   args: {
@@ -81,12 +82,19 @@ export const getUnreadMessages = query({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    const member = await getMemberHelper(ctx, args.conversationId, args.userId);
+    if (!member) return 0;
     const messages = await ctx.db
       .query("messages")
       .withIndex("by_conversationId", (q) =>
         q.eq("conversationId", args.conversationId),
       )
-      .filter((q) => q.neq(q.field("senderId"), args.userId))
+      .filter((q) =>
+        q.and(
+          q.neq(q.field("senderId"), args.userId),
+          q.gt(q.field("_creationTime"), member._creationTime),
+        ),
+      )
       .collect();
     const unseenMessages = messages.filter(
       (m) => !m.seenId.includes(args.userId),
@@ -104,12 +112,25 @@ export const getUnreadAllMessages = query({
 
     const messagesThatIHaveNotRead = await Promise.all(
       conversations.map(async (conversation) => {
+        const member = await getMemberHelper(
+          ctx,
+          conversation._id,
+          args.userId,
+        );
+        if (!member) return 0;
         const messages = await ctx.db
           .query("messages")
           .withIndex("by_conversationId", (q) =>
             q.eq("conversationId", conversation._id),
           )
+          .filter((q) =>
+            q.and(
+              q.neq(q.field("senderId"), args.userId),
+              q.gt(q.field("_creationTime"), member._creationTime),
+            ),
+          )
           .collect();
+
         const messagesThatIHaveNotSeen = messages.filter(
           (m) => !m.seenId.includes(args.userId),
         );
@@ -345,6 +366,10 @@ export const createGroupConversation = mutation({
     if (args.imageId) {
       imageUrl = (await ctx.storage.getUrl(args.imageId)) as string;
     }
+    const user = await ctx.db.get(args.loggedInUserId);
+    if (!user) {
+      throw new ConvexError("You are not authorized");
+    }
     const id = await ctx.db.insert("conversations", {
       name: args.name,
       type: "group",
@@ -362,6 +387,7 @@ export const createGroupConversation = mutation({
       await ctx.db.insert("members", {
         conversationId: id,
         memberId: member,
+        addedBy: user.name,
       });
     }
 
@@ -429,8 +455,8 @@ export const addMembers = mutation({
     if (!group) {
       throw new ConvexError("Group not found");
     }
-
-    if (group.creatorId !== args.loggedInUserId) {
+    const user = await ctx.db.get(args.loggedInUserId);
+    if (group.creatorId !== args.loggedInUserId || !user) {
       throw new ConvexError("You are not authorized");
     }
 
@@ -441,6 +467,7 @@ export const addMembers = mutation({
       await ctx.db.insert("members", {
         memberId: member,
         conversationId: group._id,
+        addedBy: user.name,
       });
     }
   },
@@ -526,13 +553,16 @@ export const removeStaffsFromConversation = mutation({
     if (!group) {
       throw new ConvexError("Failed to remove user");
     }
-    if (group.creatorId !== args.loggedInUserId) {
+    const member = await getMemberHelper(ctx, group._id, args.userToRemoveId);
+
+    if (group.creatorId !== args.loggedInUserId || !member) {
       throw new ConvexError("You are not authorized");
     }
 
     await ctx.db.patch(group._id, {
       participants: group.participants.filter((p) => p !== args.userToRemoveId),
     });
+    await ctx.db.delete(member._id);
   },
 });
 // helpers

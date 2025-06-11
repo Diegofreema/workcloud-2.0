@@ -1,24 +1,22 @@
-import { FontAwesome } from '@expo/vector-icons';
-import { Image } from 'expo-image';
-import { FlatList, Pressable, View } from 'react-native';
+import { FontAwesome } from "@expo/vector-icons";
+import { Image } from "expo-image";
+import { FlatList, Pressable, View } from "react-native";
 
-import { EmptyText } from './EmptyText';
+import { EmptyText } from "./EmptyText";
 
-import { PostType } from '~/constants/types';
-import { useDeletePost } from '~/hooks/useDeletePost';
+import { PostType } from "~/constants/types";
+import { useDeletePost } from "~/hooks/useDeletePost";
+import { LegendList } from "@legendapp/list";
+import { colors } from "~/constants/Colors";
 
 type Props = {
-  imgUrls: PostType[] | null;
-  refetch: () => void;
-  isRefetching: boolean;
+  imgUrls: PostType[];
 };
 
-export const PostComponent = ({ imgUrls, isRefetching, refetch }: Props): JSX.Element => {
+export const PostComponent = ({ imgUrls }: Props): JSX.Element => {
   return (
-    <FlatList
+    <LegendList
       style={{ marginTop: 20 }}
-      onRefresh={refetch}
-      refreshing={isRefetching}
       data={imgUrls}
       renderItem={({ item }) => <PostItem {...item} />}
       keyExtractor={(item) => item._id.toString()}
@@ -26,6 +24,7 @@ export const PostComponent = ({ imgUrls, isRefetching, refetch }: Props): JSX.El
       contentContainerStyle={{ paddingBottom: 50 }}
       ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
       ListEmptyComponent={() => <EmptyText text="No posts yet" />}
+      recycleItems
     />
   );
 };
@@ -40,21 +39,24 @@ const PostItem = ({ image, _id }: PostType) => {
     <View>
       <Image
         source={{ uri: image! }}
-        style={{ width: '100%', height: 200, borderRadius: 10 }}
+        style={{ width: "100%", height: 200, borderRadius: 10 }}
         contentFit="cover"
-        placeholder={require('~/assets/images.png')}
+        placeholder={require("~/assets/images.png")}
         placeholderContentFit="cover"
       />
       <Pressable
         onPress={handleDelete}
         style={({ pressed }) => ({
-          position: 'absolute',
+          position: "absolute",
           top: 10,
           right: 10,
-          padding: 5,
+          padding: 10,
           opacity: pressed ? 0.5 : 1,
-        })}>
-        <FontAwesome name="trash" color="red" size={25} />
+          backgroundColor: colors.closeTextColor,
+          borderRadius: 100,
+        })}
+      >
+        <FontAwesome name="trash" color="white" size={25} />
       </Pressable>
     </View>
   );
