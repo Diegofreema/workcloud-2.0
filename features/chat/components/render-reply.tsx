@@ -20,7 +20,7 @@ export const RenderReply = ({ message }: Props) => {
     if (message?.fileType === "image" && message.fileUrl) {
       return (
         <DisplayReply
-          name={displayName}
+          name={displayName!}
           content={
             <Image
               source={{ uri: message.fileUrl }}
@@ -35,7 +35,7 @@ export const RenderReply = ({ message }: Props) => {
     } else if (message?.fileType === "pdf" && message.fileUrl) {
       return (
         <DisplayReply
-          name={displayName}
+          name={displayName!}
           content={
             <Pdf
               source={{ uri: message.fileUrl }}
@@ -48,7 +48,7 @@ export const RenderReply = ({ message }: Props) => {
     } else {
       return (
         <DisplayReply
-          name={displayName}
+          name={displayName!}
           flexDirection={"column"}
           content={
             <Text style={styles.text} numberOfLines={5}>

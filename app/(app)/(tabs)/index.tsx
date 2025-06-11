@@ -18,7 +18,7 @@ export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
 
 export default function TabOneScreen() {
   const { user } = useAuth();
-  console.log({ id: user?.sub });
+
   const userData = useUserData({ userId: user?.id as string });
   const connections = useConnections({ ownerId: userData?._id });
 

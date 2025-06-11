@@ -1,5 +1,5 @@
 import { Avatar } from "@rneui/themed";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { Plus } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, View } from "react-native";
@@ -53,18 +53,13 @@ export const GroupDetail = (): JSX.Element => {
     }
   };
   const onClose = () => setClose(true);
-  const onNav = () => {
-    router.push(`/addToGroup?chatId=${chatId}`);
-  };
+
   return (
     <View style={{ flex: 1 }}>
       <HStack justifyContent="space-between" alignItems="center">
         <AuthHeader path="Group Details" />
         {isAdmin && (
-          <Pressable
-            style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
-            onPress={onNav}
-          >
+          <Pressable style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}>
             <Plus color={darkMode === "dark" ? "white" : "black"} size={25} />
           </Pressable>
         )}
@@ -124,8 +119,6 @@ export const GroupDetail = (): JSX.Element => {
 const MemberItem = ({
   member,
   isAdmin,
-
-  chatId,
 }: {
   member: ChatMember;
   isAdmin: boolean;

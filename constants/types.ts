@@ -241,7 +241,7 @@ export type Worker = {
   role?: string;
   bossId?: Id<"users">;
   gender: string;
-  type?: "processor" | "normal" | undefined;
+  type?: "processor" | "front" | "personal"
 };
 // type UserWthWorkerProfile = {
 //   avatar: string;

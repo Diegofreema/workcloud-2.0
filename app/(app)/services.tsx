@@ -13,8 +13,8 @@ import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
 import { useDetailsToAdd } from '~/hooks/useDetailsToAdd';
 
-export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
-  return <ErrorComponent refetch={retry} />;
+export function ErrorBoundary({ retry , error}: ErrorBoundaryProps) {
+  return <ErrorComponent refetch={retry} text={error?.message} />;
 }
 
 const Services = () => {

@@ -90,14 +90,14 @@ export const getWorkspaceWithWaitingList = query({
 });
 // mutation
 
-// export const starCustomer = mutation({
-//   args: {
-//     text: v.string(),
-//     customerId: v.id("users"),
-//     workspaceId: v.id("workspaces"),
-//   },
-//   handler: async (ctx, { customerId, workspaceId, text }) => {},
-// });
+export const starCustomer = mutation({
+  args: {
+    text: v.string(),
+    customerId: v.id("users"),
+    workspaceId: v.id("workspaces"),
+  },
+  handler: async (ctx, { customerId, workspaceId, text }) => {},
+});
 
 export const handleWaitlist = mutation({
   args: {

@@ -1,14 +1,14 @@
-import { convexQuery } from '@convex-dev/react-query';
-import { FontAwesome } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { useQuery } from '@tanstack/react-query';
-import { useMutation } from 'convex/react';
-import { format } from 'date-fns';
-import { Image } from 'expo-image';
-import * as ImagePicker from 'expo-image-picker';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useFormik } from 'formik';
-import React, { useEffect, useState } from 'react';
+import { convexQuery } from "@convex-dev/react-query";
+import { FontAwesome } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "convex/react";
+import { format } from "date-fns";
+import { Image } from "expo-image";
+import * as ImagePicker from "expo-image-picker";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useFormik } from "formik";
+import React, { useEffect, useState } from "react";
 import {
   Pressable,
   ScrollView,
@@ -16,46 +16,46 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { SelectList } from 'react-native-dropdown-select-list';
-import { toast } from 'sonner-native';
-import * as yup from 'yup';
+} from "react-native";
+import { SelectList } from "react-native-dropdown-select-list";
+import { toast } from "sonner-native";
+import * as yup from "yup";
 
-import { AuthHeader } from '~/components/AuthHeader';
-import { InputComponent } from '~/components/InputComponent';
-import { Container } from '~/components/Ui/Container';
-import { ErrorComponent } from '~/components/Ui/ErrorComponent';
-import { LoadingComponent } from '~/components/Ui/LoadingComponent';
-import { MyButton } from '~/components/Ui/MyButton';
-import { MyText } from '~/components/Ui/MyText';
-import { days } from '~/constants';
-import { colors } from '~/constants/Colors';
-import { api } from '~/convex/_generated/api';
-import { Id } from '~/convex/_generated/dataModel';
-import { useDarkMode } from '~/hooks/useDarkMode';
-import { useGetCat } from '~/hooks/useGetCat';
-import { convertTimeToDateTime, uploadProfilePicture } from '~/lib/helper';
+import { AuthHeader } from "~/components/AuthHeader";
+import { InputComponent } from "~/components/InputComponent";
+import { Container } from "~/components/Ui/Container";
+import { ErrorComponent } from "~/components/Ui/ErrorComponent";
+import { LoadingComponent } from "~/components/Ui/LoadingComponent";
+import { MyButton } from "~/components/Ui/MyButton";
+import { MyText } from "~/components/Ui/MyText";
+import { days } from "~/constants";
+import { colors } from "~/constants/Colors";
+import { api } from "~/convex/_generated/api";
+import { Id } from "~/convex/_generated/dataModel";
+import { useDarkMode } from "~/hooks/useDarkMode";
+import { useGetCat } from "~/hooks/useGetCat";
+import { convertTimeToDateTime, uploadProfilePicture } from "~/lib/helper";
 
 const validationSchema = yup.object().shape({
-  organizationName: yup.string().required('Name of organization is required'),
-  category: yup.string().required('Category is required'),
-  location: yup.string().required('Location is required'),
-  description: yup.string().required('Description is required'),
-  startDay: yup.string().required('Working days are required'),
-  endDay: yup.string().required('Working days are required'),
-  startTime: yup.string().required('Working time is required'),
-  endTime: yup.string().required('Working time is required'),
-  websiteUrl: yup.string().required('Website link is required'),
-  email: yup.string().email('Invalid email').required('Email is required'),
-  image: yup.string().required('Logo is required'),
+  organizationName: yup.string().required("Name of organization is required"),
+  category: yup.string().required("Category is required"),
+  location: yup.string().required("Location is required"),
+  description: yup.string().required("Description is required"),
+  startDay: yup.string().required("Working days are required"),
+  endDay: yup.string().required("Working days are required"),
+  startTime: yup.string().required("Working time is required"),
+  endTime: yup.string().required("Working time is required"),
+  websiteUrl: yup.string().required("Website link is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
+  image: yup.string().required("Logo is required"),
 });
 
 const Edit = () => {
-  const { editId } = useLocalSearchParams<{ editId: Id<'organizations'> }>();
+  const { editId } = useLocalSearchParams<{ editId: Id<"organizations"> }>();
   const { data, isPending, isError, refetch } = useQuery(
     convexQuery(api.organisation.getOrganisationById, {
       organisationId: editId!,
-    })
+    }),
   );
   const [selectedImage, setSelectedImage] =
     useState<ImagePicker.ImagePickerAsset | null>(null);
@@ -70,8 +70,8 @@ const Edit = () => {
   const { darkMode } = useDarkMode();
   const cat = useGetCat((state) => state.cat);
   const router = useRouter();
-  const startDay = data?.workDays?.split('-')?.[0]?.trim() || '';
-  const endDay = data?.workDays?.split('-')?.[1]?.trim() || '';
+  const startDay = data?.workDays?.split("-")?.[0]?.trim() || "";
+  const endDay = data?.workDays?.split("-")?.[1]?.trim() || "";
   const {
     values,
     handleChange,
@@ -83,17 +83,17 @@ const Edit = () => {
     setValues,
   } = useFormik({
     initialValues: {
-      email: data?.email || '',
-      organizationName: data?.name || '',
-      category: data?.category || '',
+      email: data?.email || "",
+      organizationName: data?.name || "",
+      category: data?.category || "",
       startDay,
       endDay,
-      description: data?.description || '',
-      location: data?.location || '',
-      websiteUrl: data?.website || '',
-      startTime: data?.start || '',
-      endTime: data?.end || '',
-      image: data?.avatar || '',
+      description: data?.description || "",
+      location: data?.location || "",
+      websiteUrl: data?.website || "",
+      startTime: data?.start || "",
+      endTime: data?.end || "",
+      image: data?.avatar || "",
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -102,17 +102,18 @@ const Edit = () => {
       }
       try {
         if (selectedImage) {
-          const { storageId } = await uploadProfilePicture(
-            selectedImage,
-            generateUploadUrl
+          const res = await uploadProfilePicture(
+            generateUploadUrl,
+            selectedImage.uri,
           );
+          if (!res?.storageId) return;
           await updateOrganization({
-            avatar: storageId,
+            avatar: res?.storageId,
             end: values.endTime,
             name: values.organizationName,
             start: values.startTime,
             website: values.websiteUrl,
-            workDays: values.startDay + ' - ' + values.endDay,
+            workDays: values.startDay + " - " + values.endDay,
             category: values.category,
             description: values.description,
             email: values.email,
@@ -126,7 +127,7 @@ const Edit = () => {
             name: values.organizationName,
             start: values.startTime,
             website: values.websiteUrl,
-            workDays: values.startDay + ' - ' + values.endDay,
+            workDays: values.startDay + " - " + values.endDay,
             category: values.category,
             description: values.description,
             email: values.email,
@@ -136,14 +137,14 @@ const Edit = () => {
         }
 
         resetForm();
-        toast.success('Success', {
-          description: 'Organization updated successfully',
+        toast.success("Success", {
+          description: "Organization updated successfully",
         });
         // queryClient.invalidateQueries({
         //   queryKey: ['organizations', 'organization'],
         // });
 
-        router.replace('/my-org');
+        router.replace("/my-org");
       } catch (error) {
         console.log(error);
       }
@@ -195,14 +196,14 @@ const Edit = () => {
   }, [cat, setValues, values]);
   const onChange = (event: any, selectedDate: any, type: string) => {
     const currentDate = selectedDate;
-    if (type === 'startTime') {
+    if (type === "startTime") {
       setShow(false);
       setStartTime(currentDate);
-      setValues({ ...values, startTime: format(currentDate, 'HH:mm') });
+      setValues({ ...values, startTime: format(currentDate, "HH:mm") });
     } else {
       setShow2(false);
       setEndTime(currentDate);
-      setValues({ ...values, endTime: format(currentDate, 'HH:mm') });
+      setValues({ ...values, endTime: format(currentDate, "HH:mm") });
     }
   };
   const showMode = () => {
@@ -212,7 +213,7 @@ const Edit = () => {
     setShow2(true);
   };
   const handleDeleteImage = () => {
-    setValues({ ...values, image: '' });
+    setValues({ ...values, image: "" });
   };
 
   const {
@@ -228,7 +229,7 @@ const Edit = () => {
   } = values;
 
   if (isError) {
-    return <ErrorComponent refetch={refetch()} />;
+    return <ErrorComponent refetch={refetch} text={"Something went wrong!"} />;
   }
   if (isPending) {
     return <LoadingComponent />;
@@ -245,7 +246,7 @@ const Edit = () => {
 
         <View style={{ marginTop: 20, flex: 1 }}>
           <View style={{ flex: 0.6, gap: 10 }}>
-            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ alignItems: "center", justifyContent: "center" }}>
               <View
                 style={{
                   width: 100,
@@ -261,10 +262,10 @@ const Edit = () => {
                 {!values.image && (
                   <TouchableOpacity
                     style={{
-                      position: 'absolute',
+                      position: "absolute",
                       bottom: 0,
                       right: 3,
-                      backgroundColor: darkMode ? 'white' : 'black',
+                      backgroundColor: darkMode ? "white" : "black",
                       padding: 5,
                       borderRadius: 30,
                     }}
@@ -273,17 +274,17 @@ const Edit = () => {
                     <FontAwesome
                       name="plus"
                       size={20}
-                      color={darkMode ? 'black' : 'white'}
+                      color={darkMode ? "black" : "white"}
                     />
                   </TouchableOpacity>
                 )}
                 {values.image && (
                   <TouchableOpacity
                     style={{
-                      position: 'absolute',
+                      position: "absolute",
                       bottom: 0,
                       right: 3,
-                      backgroundColor: darkMode ? 'white' : 'black',
+                      backgroundColor: darkMode ? "white" : "black",
                       padding: 5,
                       borderRadius: 30,
                     }}
@@ -299,12 +300,12 @@ const Edit = () => {
               <InputComponent
                 label="Organization Name"
                 value={organizationName}
-                onChangeText={handleChange('organizationName')}
+                onChangeText={handleChange("organizationName")}
                 placeholder="Organization Name"
                 keyboardType="default"
               />
               {touched.organizationName && errors.organizationName && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
+                <Text style={{ color: "red", fontWeight: "bold" }}>
                   {errors.organizationName}
                 </Text>
               )}
@@ -313,34 +314,34 @@ const Edit = () => {
               <InputComponent
                 label="Description"
                 value={description}
-                onChangeText={handleChange('description')}
+                onChangeText={handleChange("description")}
                 placeholder="Description"
                 keyboardType="default"
                 numberOfLines={5}
                 textarea
               />
               {touched.description && errors.description && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
+                <Text style={{ color: "red", fontWeight: "bold" }}>
                   {errors.description}
                 </Text>
               )}
             </>
             <>
               <Pressable
-                onPress={() => router.push('/category')}
+                onPress={() => router.push("/category")}
                 style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
               >
                 <InputComponent
                   label="Category"
                   value={category}
-                  onChangeText={handleChange('category')}
+                  onChangeText={handleChange("category")}
                   placeholder="Category"
                   keyboardType="default"
                   editable={false}
                 />
               </Pressable>
               {touched.category && errors.category && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
+                <Text style={{ color: "red", fontWeight: "bold" }}>
                   {errors.category}
                 </Text>
               )}
@@ -349,12 +350,12 @@ const Edit = () => {
               <InputComponent
                 label="Location"
                 value={location}
-                onChangeText={handleChange('location')}
+                onChangeText={handleChange("location")}
                 placeholder="Location"
                 keyboardType="default"
               />
               {touched.location && errors.location && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
+                <Text style={{ color: "red", fontWeight: "bold" }}>
                   {errors.location}
                 </Text>
               )}
@@ -363,12 +364,12 @@ const Edit = () => {
               <InputComponent
                 label="Website Link"
                 value={websiteUrl}
-                onChangeText={handleChange('websiteUrl')}
+                onChangeText={handleChange("websiteUrl")}
                 placeholder="Website link"
                 keyboardType="default"
               />
               {touched.websiteUrl && errors.websiteUrl && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
+                <Text style={{ color: "red", fontWeight: "bold" }}>
                   {errors.websiteUrl}
                 </Text>
               )}
@@ -377,12 +378,12 @@ const Edit = () => {
               <InputComponent
                 label="Email"
                 value={email}
-                onChangeText={handleChange('email')}
+                onChangeText={handleChange("email")}
                 placeholder="Email"
                 keyboardType="email-address"
               />
               {touched.email && errors.email && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
+                <Text style={{ color: "red", fontWeight: "bold" }}>
                   {errors.email}
                 </Text>
               )}
@@ -393,7 +394,7 @@ const Edit = () => {
             <MyText
               fontSize={15}
               poppins="Medium"
-              style={{ fontFamily: 'PoppinsMedium' }}
+              style={{ fontFamily: "PoppinsMedium" }}
             >
               Work Days
             </MyText>
@@ -402,17 +403,17 @@ const Edit = () => {
               search={false}
               boxStyles={{
                 ...styles2.border,
-                justifyContent: 'flex-start',
-                width: '100%',
+                justifyContent: "flex-start",
+                width: "100%",
               }}
               inputStyles={{
-                textAlign: 'left',
+                textAlign: "left",
                 fontSize: 14,
                 borderWidth: 0,
-                width: '100%',
+                width: "100%",
               }}
               fontFamily="PoppinsMedium"
-              setSelected={handleChange('startDay')}
+              setSelected={handleChange("startDay")}
               data={days}
               defaultOption={{
                 key: startDay,
@@ -421,7 +422,7 @@ const Edit = () => {
               save="key"
               placeholder="Select Start Day"
               dropdownTextStyles={{
-                color: darkMode === 'dark' ? 'white' : 'black',
+                color: darkMode === "dark" ? "white" : "black",
               }}
             />
 
@@ -429,20 +430,20 @@ const Edit = () => {
               search={false}
               boxStyles={{
                 ...styles2.border,
-                justifyContent: 'flex-start',
-                backgroundColor: '#E9E9E9',
-                width: '100%',
+                justifyContent: "flex-start",
+                backgroundColor: "#E9E9E9",
+                width: "100%",
               }}
               dropdownTextStyles={{
-                color: darkMode === 'dark' ? 'white' : 'black',
+                color: darkMode === "dark" ? "white" : "black",
               }}
               inputStyles={{
-                textAlign: 'left',
+                textAlign: "left",
                 fontSize: 14,
-                width: '100%',
+                width: "100%",
               }}
               fontFamily="PoppinsMedium"
-              setSelected={handleChange('endDay')}
+              setSelected={handleChange("endDay")}
               data={days}
               defaultOption={{
                 key: e,
@@ -456,18 +457,18 @@ const Edit = () => {
           <Text
             style={{
               marginBottom: 5,
-              fontFamily: 'PoppinsMedium',
+              fontFamily: "PoppinsMedium",
               marginHorizontal: 10,
             }}
           >
             Opening And Closing Time
           </Text>
           <View
-            style={{ flexDirection: 'column', gap: 10, marginHorizontal: 10 }}
+            style={{ flexDirection: "column", gap: 10, marginHorizontal: 10 }}
           >
             <>
               <Pressable onPress={showMode} style={styles2.border}>
-                <Text> {`${format(start, 'HH:mm') || ' Opening Time'}`} </Text>
+                <Text> {`${format(start, "HH:mm") || " Opening Time"}`} </Text>
               </Pressable>
 
               {show && (
@@ -478,14 +479,14 @@ const Edit = () => {
                   mode="time"
                   is24Hour
                   onChange={(event, selectedDate) =>
-                    onChange(event, selectedDate, 'startTime')
+                    onChange(event, selectedDate, "startTime")
                   }
                 />
               )}
             </>
             <>
               <Pressable onPress={showMode2} style={styles2.border}>
-                <Text>{`${format(end, 'HH:mm') || ' Closing Time'}`} </Text>
+                <Text>{`${format(end, "HH:mm") || " Closing Time"}`} </Text>
               </Pressable>
 
               {show2 && (
@@ -496,7 +497,7 @@ const Edit = () => {
                   mode="time"
                   is24Hour
                   onChange={(event, selectedDate) =>
-                    onChange(event, selectedDate, 'endTime')
+                    onChange(event, selectedDate, "endTime")
                   }
                 />
               )}
@@ -510,10 +511,10 @@ const Edit = () => {
               buttonColor={colors.buttonBlue}
               buttonStyle={{ width: 200 }}
               textColor={colors.white}
-              labelStyle={{ fontFamily: 'PoppinsMedium', fontSize: 12 }}
+              labelStyle={{ fontFamily: "PoppinsMedium", fontSize: 12 }}
               contentStyle={{ height: 50, borderRadius: 20 }}
             >
-              {isSubmitting ? 'Updating...' : 'Update'}
+              {isSubmitting ? "Updating..." : "Update"}
             </MyButton>
           </View>
         </View>
@@ -526,13 +527,13 @@ export default Edit;
 
 const styles2 = StyleSheet.create({
   border: {
-    backgroundColor: '#E9E9E9',
+    backgroundColor: "#E9E9E9",
     minHeight: 52,
 
     paddingLeft: 15,
-    justifyContent: 'center',
+    justifyContent: "center",
     borderBottomWidth: 1,
-    borderBottomColor: '#DADADA',
-    width: '100%',
+    borderBottomColor: "#DADADA",
+    width: "100%",
   },
 });

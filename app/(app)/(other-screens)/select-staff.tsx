@@ -11,11 +11,11 @@ const SelectStaff = () => {
     <Container>
       <HeaderNav
         title={"Select staffs"}
-        RightComponent={() => (
+        rightComponent={
           <MyText poppins={"Medium"} fontSize={20}>
             {staffs.length}
           </MyText>
-        )}
+        }
       />
       <FetchStaffs />
     </Container>

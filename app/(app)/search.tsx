@@ -19,8 +19,8 @@ import { SearchServicePoints } from '~/constants/types';
 import { api } from '~/convex/_generated/api';
 import { useGetUserId } from '~/hooks/useGetUserId';
 
-export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
-  return <ErrorComponent refetch={retry} />;
+export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
+  return <ErrorComponent refetch={retry} text={error.message} />;
 }
 
 const Search = () => {

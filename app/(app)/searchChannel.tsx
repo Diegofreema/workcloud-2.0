@@ -13,8 +13,8 @@ const SearchChannelScreen = () => {
   const { filterChannels, loading } = useFilterChannel(id, query);
   const onClear = useCallback(() => setQuery(''), []);
   const onPress = useCallback(
-    (channel: Channel) => {
-      router.push(`/channel/${channel.cid}`);
+    () => {
+      router.push(`/`);
     },
     [router]
   );

@@ -1,12 +1,14 @@
-import { Image } from 'expo-image';
-import { router } from 'expo-router';
-import { TouchableOpacity } from 'react-native';
-import { IMessage, MessageImageProps } from 'react-native-gifted-chat';
-import * as ContextMenu from 'zeego/context-menu';
+import { Image } from "expo-image";
+import { router } from "expo-router";
+import { TouchableOpacity } from "react-native";
+import { IMessage, MessageImageProps } from "react-native-gifted-chat";
+import * as ContextMenu from "zeego/context-menu";
 
-import { downloadAndSaveImage } from '~/lib/helper';
+import { downloadAndSaveFile } from "~/lib/helper";
 
-export const RenderMessageImage = ({ ...props }: MessageImageProps<IMessage>) => {
+export const RenderMessageImage = ({
+  ...props
+}: MessageImageProps<IMessage>) => {
   // const [visible, setVisible] = useState(false);
 
   return (
@@ -14,9 +16,14 @@ export const RenderMessageImage = ({ ...props }: MessageImageProps<IMessage>) =>
       <ContextMenu.Trigger>
         <TouchableOpacity
           style={{ padding: 5 }}
-          onPress={() => router.push(`/modal/previe-image?url=${props.currentMessage?.image}`)}>
+          onPress={() =>
+            router.push(
+              `/preview-image?url=${props.currentMessage?.image}`,
+            )
+          }
+        >
           <Image
-            placeholder={require('~/assets/images/pl.png')}
+            placeholder={require("~/assets/images/pl.png")}
             source={{ uri: props.currentMessage?.image }}
             style={[{ borderRadius: 5, width: 200, height: 300 }]}
             contentFit="cover"
@@ -26,13 +33,16 @@ export const RenderMessageImage = ({ ...props }: MessageImageProps<IMessage>) =>
       <ContextMenu.Content>
         <ContextMenu.Item
           key="Save"
-          onSelect={() => downloadAndSaveImage(props.currentMessage.image!)}
-          title="Save">
+          onSelect={() =>
+            downloadAndSaveFile(props.currentMessage.image!, "image")
+          }
+          title="Save"
+        >
           <ContextMenu.ItemTitle>Save</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon
             ios={{
               pointSize: 18,
-              name: 'arrow.down.to.line',
+              name: "arrow.down.to.line",
             }}
             androidIconName="arrow_down_float"
           />

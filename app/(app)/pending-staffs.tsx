@@ -19,7 +19,7 @@ const PendingStaffs = () => {
   );
 
   if (isError || isRefetchError || isPaused) {
-    return <ErrorComponent refetch={refetch} />;
+    return <ErrorComponent refetch={refetch} text="Something went wrong" />;
   }
 
   if (isPending) {

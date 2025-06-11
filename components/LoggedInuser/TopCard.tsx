@@ -35,7 +35,7 @@ export const TopCard = ({ image, name, id }: Props): JSX.Element => {
           },
         ]}>
         <HStack justifyContent="space-between" alignItems="center">
-          <UserPreview imageUrl={image} name={name} id={id} />
+          <UserPreview imageUrl={image} name={name!} id={id} />
           <Pressable
             style={{
               backgroundColor: colors.dialPad,
