@@ -20,20 +20,20 @@ import {
  */
 export async function POST(request: Request) {
   try {
-    // Determine the platform (web or native)
+
     let platform = "native";
     let refreshToken: string | null = null;
 
-    // Check content type to determine how to parse the body
+
     const contentType = request.headers.get("content-type") || "";
 
     if (contentType.includes("application/json")) {
-      // Handle JSON body
+
       try {
         const jsonBody = await request.json();
         platform = jsonBody.platform || "native";
 
-        // For native clients, get refresh token from request body
+
         if (platform === "native" && jsonBody.refreshToken) {
           refreshToken = jsonBody.refreshToken;
         }
@@ -44,12 +44,12 @@ export async function POST(request: Request) {
       contentType.includes("application/x-www-form-urlencoded") ||
       contentType.includes("multipart/form-data")
     ) {
-      // Handle form data
+
       try {
         const formData = await request.formData();
         platform = (formData.get("platform") as string) || "native";
 
-        // For native clients, get refresh token from form data
+
         if (platform === "native" && formData.get("refreshToken")) {
           refreshToken = formData.get("refreshToken") as string;
         }
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // For web clients, get refresh token from cookies
+
     if (platform === "web" && !refreshToken) {
       const cookieHeader = request.headers.get("cookie");
       if (cookieHeader) {
@@ -80,30 +80,29 @@ export async function POST(request: Request) {
           {} as Record<string, string>,
         );
 
-        // Get refresh token from cookie
+
         refreshToken = cookies[REFRESH_COOKIE_NAME];
       }
     }
 
-    // If no refresh token found, try to use the access token as fallback
+
     if (!refreshToken) {
-      // For native clients, get access token from Authorization header
+
       const authHeader = request.headers.get("authorization");
       if (authHeader && authHeader.startsWith("Bearer ")) {
         const accessToken = authHeader.split(" ")[1];
 
         try {
-          // Verify the access token
+
           const decoded = await jose.jwtVerify(
             accessToken,
             new TextEncoder().encode(JWT_SECRET),
           );
 
-          // If token is still valid, use it to create a new token
-          // This is a fallback mechanism and not ideal for security
+
           console.log("No refresh token found, using access token as fallback");
 
-          // Get the user info from the token
+
           const userInfo = decoded.payload;
 
           // Current timestamp in seconds
@@ -117,7 +116,7 @@ export async function POST(request: Request) {
             .setIssuedAt(issuedAt)
             .sign(new TextEncoder().encode(JWT_SECRET));
 
-          // For web platform with cookies
+
           if (platform === "web") {
             const response = Response.json({
               success: true,
@@ -140,13 +139,13 @@ export async function POST(request: Request) {
             return response;
           }
 
-          // For native platforms
+
           return Response.json({
             accessToken: newAccessToken,
             warning: "Using access token fallback - refresh token missing",
           });
         } catch (error) {
-          // Access token is invalid or expired
+
           return Response.json(
             { error: "Authentication required - no valid refresh token" },
             { status: 401 },
@@ -181,7 +180,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // Verify this is actually a refresh token
+
     const payload = decoded.payload;
     if (payload.type !== "refresh") {
       return Response.json(
@@ -190,7 +189,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Get the subject (user ID) from the token
+
     const sub = payload.sub;
     if (!sub) {
       return Response.json(
@@ -199,29 +198,23 @@ export async function POST(request: Request) {
       );
     }
 
-    // Current timestamp in seconds
+
     const issuedAt = Math.floor(Date.now() / 1000);
 
-    // Generate a unique jti (JWT ID) for the new refresh token
+
     const jti = crypto.randomUUID();
 
-    // Get the user info from the token
+
     const userInfo = decoded.payload;
 
-    // Check if we have all the required user information
-    // If not, we need to add it to ensure ProfileCard works correctly
     const hasRequiredUserInfo =
       userInfo.name && userInfo.email && userInfo.picture;
 
     // Create a complete user info object
     let completeUserInfo = { ...userInfo };
 
-    // If we're missing user info, try to fetch it from a user database or service
-    // For this example, we'll just ensure the type field is preserved
     if (!hasRequiredUserInfo) {
-      // In a real implementation, you would fetch the user data from your database
-      // using the sub (user ID) as the key
-      // For now, we'll just ensure we keep the refresh token type
+
       completeUserInfo = {
         ...userInfo,
         // Preserve the refresh token type
@@ -236,10 +229,9 @@ export async function POST(request: Request) {
       };
     }
 
-    // Create a new access token with complete user info
     const newAccessToken = await new jose.SignJWT({
       ...completeUserInfo,
-      // Remove the refresh token specific fields from the access token
+
       type: undefined,
     })
       .setProtectedHeader({ alg: "HS256" })
@@ -259,16 +251,16 @@ export async function POST(request: Request) {
       .setIssuedAt(issuedAt)
       .sign(new TextEncoder().encode(JWT_SECRET));
 
-    // Handle web platform with cookies
+
     if (platform === "web") {
-      // Create a response with success info
+
       const response = Response.json({
         success: true,
         issuedAt: issuedAt,
         expiresAt: issuedAt + COOKIE_MAX_AGE,
       });
 
-      // Set the new access token in an HTTP-only cookie
+
       response.headers.set(
         "Set-Cookie",
         `${COOKIE_NAME}=${newAccessToken}; Max-Age=${
@@ -280,7 +272,7 @@ export async function POST(request: Request) {
         }`,
       );
 
-      // Set the new refresh token in a separate HTTP-only cookie
+
       response.headers.append(
         "Set-Cookie",
         `${REFRESH_COOKIE_NAME}=${newRefreshToken}; Max-Age=${
@@ -295,7 +287,7 @@ export async function POST(request: Request) {
       return response;
     }
 
-    // For native platforms, return the new tokens in the response body
+
     return Response.json({
       accessToken: newAccessToken,
       refreshToken: newRefreshToken,

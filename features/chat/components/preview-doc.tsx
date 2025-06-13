@@ -1,8 +1,8 @@
 import { useRouter } from "expo-router";
 import React from "react";
-import { Platform, StyleSheet } from "react-native";
-import Pdf from "react-native-pdf";
+import { StyleSheet } from "react-native";
 import { DownloadBlurView } from "~/features/chat/components/download-blur-view";
+import PDFViewer from "~/features/chat/components/pdf-viewer";
 
 type Props = {
   uri: string;
@@ -23,15 +23,7 @@ export const PreviewDoc = ({ uri }: Props) => {
   };
   return (
     <>
-      <Pdf
-        source={{ uri, cache: true }}
-        style={styles.pdf}
-        enableDoubleTapZoom
-        trustAllCerts={Platform.OS !== "android"}
-        enablePaging
-        minScale={0.5}
-        maxScale={5}
-      />
+      <PDFViewer pdfUrl={uri} style={styles.pdf} />
       <DownloadBlurView url={url} onClose={onPress} type="pdf" />
     </>
   );

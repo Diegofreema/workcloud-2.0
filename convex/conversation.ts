@@ -612,11 +612,19 @@ export const createConversation = async (
   if (!me || !otherUser) {
     throw new ConvexError("User not found");
   }
-  await ctx.db.insert("conversations", {
-    participants: [loggedInUserId, otherUserId],
+  const members = [loggedInUserId, otherUserId];
+  const id = await ctx.db.insert("conversations", {
+    participants: members,
     participantNames: [me.name, otherUser.name],
     type: type,
   });
+  for (const member of members) {
+    await ctx.db.insert("members", {
+      memberId: member,
+      conversationId: id,
+      addedBy: me.name,
+    });
+  }
 };
 
 export const getConversationIamIn = async (

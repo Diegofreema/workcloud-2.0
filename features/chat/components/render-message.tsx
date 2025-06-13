@@ -1,11 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Pdf from "react-native-pdf";
+
 import Animated, { FadeInDown, FadeOutDown } from "react-native-reanimated";
 import { EditType, IMessage } from "~/constants/types";
 import { useGetUserId } from "~/hooks/useGetUserId";
 import { colors } from "~/constants/Colors";
+import PDFViewer from "~/features/chat/components/pdf-viewer";
 
 type ReplyMessageBarProps = {
   clearReply: () => void;
@@ -20,7 +21,6 @@ const ReplyMessageBar = ({
   clearEdit,
   editText,
 }: ReplyMessageBarProps) => {
-
   const { id: loggedInUser } = useGetUserId();
   const renderContent = () => {
     if (message?.fileType === "image" && message.fileUrl) {
@@ -35,7 +35,9 @@ const ReplyMessageBar = ({
       );
     } else if (message?.fileType === "pdf" && message.fileUrl) {
       return (
-        <Pdf source={{ uri: message.fileUrl }} style={styles.pdf} singlePage />
+        <View style={styles.pdf}>
+          <PDFViewer pdfUrl={message.fileUrl} />
+        </View>
       );
     } else {
       return (

@@ -4,7 +4,7 @@ import { usePaginatedQuery, useQuery } from "convex/react";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
 
-import { ChatComponent } from "~/components/Ui/ChatComponent";
+import { ChatComponentNative } from "~/components/Ui/ChatComponent.native";
 import { ChatHeader } from "~/components/Ui/ChatHeader";
 import ChatSkeleton from "~/components/Ui/ChatSkeleton";
 import { Container } from "~/components/Ui/Container";
@@ -56,7 +56,7 @@ const SingleChat = () => {
   return (
     <Container noPadding>
       <ChatHeader name={otherUser?.name!} imageUrl={otherUser?.imageUrl!} />
-      <ChatComponent
+      <ChatComponentNative
         conversationId={conversationData?._id!}
         otherUserId={userToChat}
         otherUserName={otherUser?.name!}

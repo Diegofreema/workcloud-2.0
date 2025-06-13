@@ -1,5 +1,5 @@
-import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /**
  * Creates a token cache for the native platform
@@ -18,7 +18,8 @@ const createTokenCache = (): {
      */
     getToken: async (key: string) => {
       try {
-        const item = await SecureStore.getItemAsync(key);
+        const item = await AsyncStorage.getItem(key);
+
         if (item) {
           console.log(`${key} was used 🔐 \n`);
         } else {
@@ -27,7 +28,7 @@ const createTokenCache = (): {
         return item;
       } catch (error) {
         console.error("secure store get item error: ", error);
-        await SecureStore.deleteItemAsync(key);
+        await AsyncStorage.removeItem(key);
         return null;
       }
     },
@@ -37,14 +38,14 @@ const createTokenCache = (): {
      * @param token - The token to save
      */
     saveToken: (key: string, token: string) => {
-      return SecureStore.setItemAsync(key, token);
+      return AsyncStorage.setItem(key, token);
     },
     /**
      * Deletes a token from the cache
      * @param key - The key to delete the token from
      */
     deleteToken: (key: string) => {
-      return SecureStore.deleteItemAsync(key);
+      return AsyncStorage.removeItem(key);
     },
   };
 };

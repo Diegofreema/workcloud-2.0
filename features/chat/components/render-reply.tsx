@@ -1,10 +1,11 @@
 import { Image } from "expo-image";
 import React, { ReactNode } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import Pdf from "react-native-pdf";
+
 import { useGetUserId } from "~/hooks/useGetUserId";
 import { ReplyType } from "~/constants/types";
 import { colors } from "~/constants/Colors";
+import PDFViewer from "~/features/chat/components/pdf-viewer";
 
 type Props = {
   message?: ReplyType;
@@ -36,13 +37,7 @@ export const RenderReply = ({ message }: Props) => {
       return (
         <DisplayReply
           name={displayName!}
-          content={
-            <Pdf
-              source={{ uri: message.fileUrl }}
-              style={styles.file}
-              singlePage
-            />
-          }
+          content={<PDFViewer pdfUrl={message.fileUrl} style={styles.file} />}
         />
       );
     } else {

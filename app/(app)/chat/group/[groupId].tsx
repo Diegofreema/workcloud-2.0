@@ -6,11 +6,12 @@ import { Id } from "~/convex/_generated/dataModel";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import { api } from "~/convex/_generated/api";
 import ChatSkeleton from "~/components/Ui/ChatSkeleton";
-import { ChatGroupComponent } from "~/features/chat/components/group-gifted-chat";
+import { ChatGroupComponent } from "~/features/chat/components/group-gifted-chat.native";
 import { useGetUserId } from "~/hooks/useGetUserId";
 import { useMarkRead } from "~/hooks/useMarkRead";
 import { ChatMenu } from "~/features/chat/components/chat-menu";
 import { toast } from "sonner-native";
+import {Platform} from "react-native";
 
 const GroupChatScreen = () => {
   const { groupId } = useLocalSearchParams<{ groupId: Id<"conversations"> }>();
@@ -48,6 +49,7 @@ const GroupChatScreen = () => {
     return <Redirect href={"/message"} />;
   }
   const isCreator = group?.creatorId === loggedInUserId;
+  const isWeb = Platform.OS === "web";
   return (
     <Container noPadding>
       <ChatHeader

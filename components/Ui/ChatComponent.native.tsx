@@ -49,7 +49,7 @@ type Props = {
   createdAt: number;
   isLoading: boolean;
 };
-export const ChatComponent = ({
+export const ChatComponentNative = ({
   loggedInUserId,
   otherUserId,
   conversationId,
@@ -63,6 +63,7 @@ export const ChatComponent = ({
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
   // const { darkMode } = useDarkMode();
+  console.log({ conversationId });
   const [isTypingLocally, setIsTypingLocally] = useState(false);
   const setTypingState = useMutation(api.message.setTypingState);
   const getTypingUsers = useQuery(

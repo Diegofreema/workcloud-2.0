@@ -1,24 +1,28 @@
-import { getItem, setItem } from 'expo-secure-store';
-import { create } from 'zustand';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type DarkModeState = {
-  darkMode: 'dark' | 'light';
+  darkMode: "dark" | "light";
   toggleDarkMode: () => void;
   // getDarkMode: () => void;
 };
 
-const darkMode: 'light' | 'dark' = (getItem('darkMode') as 'light' | 'dark') || 'light';
-export const useDarkMode = create<DarkModeState>((set) => ({
-  darkMode,
-  toggleDarkMode: () => {
-    set((state) => {
-      const newDarkMode = state.darkMode === 'light' ? 'dark' : 'light';
-      setItem('darkMode', newDarkMode);
-      return { darkMode: newDarkMode };
-    });
-  },
-  // getDarkMode: () => {
-  //  const darkMode: 'light' | 'dark' =
-  //    (getItem('darkMode') as 'light' | 'dark') || 'light';
-  // }
-}));
+export const useDarkMode = create<DarkModeState>()(
+  persist(
+    (set) => ({
+      darkMode: "light",
+      toggleDarkMode: () => {
+        set((state) => {
+          const newDarkMode = state.darkMode === "light" ? "dark" : "light";
+
+          return { darkMode: newDarkMode };
+        });
+      },
+    }),
+    {
+      name: "darkMode",
+      storage: createJSONStorage(() => AsyncStorage),
+    },
+  ),
+);

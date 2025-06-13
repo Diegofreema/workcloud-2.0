@@ -73,15 +73,13 @@
     "web": {
       "bundler": "metro",
       "output": "server",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "babel": {
+        "exclude": ["react-native-pdf"]
+      }
     },
     "plugins": [
-      [
-        "expo-router",
-        {
-          "origin": "https://wks.onrender.com"
-        }
-      ],
+      ["expo-router"],
       [
         "expo-splash-screen",
         {
@@ -99,7 +97,6 @@
           "url": "https://sentry.io/"
         }
       ],
-      "expo-secure-store",
       [
         "expo-build-properties",
         {
@@ -129,24 +126,7 @@
         "projectId": "c6f4d0db-820e-41f4-9840-49346d4a94af"
       }
     },
-    "doctor": {
-      "reactNativeDirectoryCheck": {
-        "exclude": [
-          "@likashefqet/react-native-image-zoom",
-          "react-native-incall-manager",
-          " @rneui/base",
-          "@rneui/themed",
-          "react-native-material-menu",
-          "react-native-quick-sqlite",
-          "react-native-responsive-fontsize",
-          "@convex-dev/react-query",
-          "conves",
-          "convex",
-          "react-native-dropdown-select-list",
-          "use-debounce"
-        ]
-      }
-    },
+
     "runtimeVersion": {
       "policy": "appVersion"
     },

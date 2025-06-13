@@ -32,7 +32,7 @@ export const useWorkerActions = ({ id, profileId }: Props) => {
   const isPending = data === undefined && pendingData === undefined;
   const isInPending = !!pendingData;
   const onMessage = async () => {
-    router.push(`/chat/${data?.user?._id}`);
+    router.push(`/chat/${data?.user?._id}?type=single`);
   };
 
   const cancelRequest = async () => {
