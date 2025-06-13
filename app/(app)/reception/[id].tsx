@@ -151,8 +151,8 @@ const Reception = () => {
           {data?.posts?.length > 0 && (
             <Carousel
               loop
-              width={width}
-              height={150}
+              width={width - 20}
+              height={200}
               autoPlay
               data={data?.posts}
               scrollAnimationDuration={1500}
@@ -160,13 +160,13 @@ const Reception = () => {
                 <View
                   style={{
                     width: width * 0.98,
-                    height: 150,
+                    height: 200,
                     borderRadius: 5,
                     overflow: "hidden",
                   }}
                 >
                   <Image
-                    source={{ uri: item! }}
+                    source={{ uri: item.image }}
                     style={styles.image}
                     contentFit="cover"
                     placeholder={require("~/assets/images/pl.png")}
