@@ -1,15 +1,9 @@
 import { useQuery } from "convex/react";
-import { useCallback, useState } from "react";
-import { TouchableOpacity, View } from "react-native";
-import { Rating } from "react-native-ratings";
+import { View } from "react-native";
 import { RFPercentage } from "react-native-responsive-fontsize";
-
-import { ReviewModal } from "~/components/Dialogs/ReviewModal";
-import { HStack } from "~/components/HStack";
 import { RatingPercentage } from "~/components/RatingPercentage";
 import { ReviewComments } from "~/components/ReviewComments";
 import { MyText } from "~/components/Ui/MyText";
-import { colors } from "~/constants/Colors";
 import { api } from "~/convex/_generated/api";
 import { Id } from "~/convex/_generated/dataModel";
 import { calculateRatingStats } from "~/lib/helper";

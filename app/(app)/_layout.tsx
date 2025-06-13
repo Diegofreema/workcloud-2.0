@@ -26,7 +26,14 @@ export default function AppLayout() {
       {/* <ChatWrapper>
         <VideoProvider>
           <CallProvider> */}
-      <Stack screenOptions={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="upload-review"
+          options={{
+            presentation: "modal",
+          }}
+        />
+      </Stack>
       {/* </CallProvider>
         </VideoProvider>
       </ChatWrapper> */}
