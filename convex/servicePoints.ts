@@ -1,72 +1,60 @@
-import { v } from 'convex/values';
+import { v } from "convex/values";
 
-import { Id } from '~/convex/_generated/dataModel';
-import { mutation, query, QueryCtx } from '~/convex/_generated/server';
-import { getImageUrl } from '~/convex/organisation';
+import { Id } from "~/convex/_generated/dataModel";
+import { mutation, query, QueryCtx } from "~/convex/_generated/server";
+import { getImageUrl } from "~/convex/organisation";
 
 export const getServicePoints = query({
   args: {
-    organisationId: v.id('organizations'),
+    organisationId: v.id("organizations"),
   },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query('servicePoints')
-      .withIndex('by_organisation_id', (q) => q.eq('organizationId', args.organisationId))
+      .query("servicePoints")
+      .withIndex("by_organisation_id", (q) =>
+        q.eq("organizationId", args.organisationId),
+      )
       .collect();
   },
 });
 
 export const getSingleServicePointAndWorker = query({
   args: {
-    servicePointId: v.optional(v.id('servicePoints')),
+    servicePointId: v.optional(v.id("servicePoints")),
   },
   handler: async (ctx, args) => {
     if (!args.servicePointId) return null;
     const servicePoint = await ctx.db.get(args.servicePointId);
     if (!servicePoint) return null;
-    const worker = await getUserProfileByWorkerId(ctx, servicePoint.staff);
 
-    return {
-      ...servicePoint,
-      worker,
-    };
+    return servicePoint;
   },
 });
 // mutation
 export const createServicePoint = mutation({
   args: {
-    description: v.string(),
-    organisationId: v.id('organizations'),
+    description: v.optional(v.string()),
+    organisationId: v.id("organizations"),
     name: v.string(),
-    workerId: v.id('workers'),
   },
   handler: async (ctx, args) => {
-    const id = await ctx.db.insert('servicePoints', {
+    await ctx.db.insert("servicePoints", {
       organizationId: args.organisationId,
       name: args.name,
-      service: false,
       form: false,
       description: args.description,
-      staff: args.workerId,
     });
-    if (id) {
-      await ctx.db.patch(args.workerId, {
-        servicePointId: id,
-      });
-    }
   },
 });
 
 export const updateServicePoint = mutation({
   args: {
-    servicePointId: v.id('servicePoints'),
-    workerId: v.id('workers'),
+    servicePointId: v.id("servicePoints"),
     name: v.string(),
     description: v.string(),
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.servicePointId, {
-      staff: args.workerId,
       name: args.name,
       description: args.description,
     });
@@ -74,11 +62,11 @@ export const updateServicePoint = mutation({
 });
 
 export const deleteServicePoint = mutation({
-  args: { id: v.id('servicePoints') },
+  args: { id: v.id("servicePoints") },
   handler: async (ctx, args) => {
     const user = await ctx.db
-      .query('workers')
-      .filter((q) => q.eq(q.field('servicePointId'), args.id))
+      .query("workers")
+      .filter((q) => q.eq(q.field("servicePointId"), args.id))
       .first();
     if (!user) return;
     await ctx.db.patch(user._id, {
@@ -90,20 +78,23 @@ export const deleteServicePoint = mutation({
 
 // helpers
 
-export const getUserProfileByWorkerId = async (ctx: QueryCtx, userId: Id<'workers'>) => {
+export const getUserProfileByWorkerId = async (
+  ctx: QueryCtx,
+  userId: Id<"workers">,
+) => {
   const user = await ctx.db
-    .query('users')
-    .filter((q) => q.eq(q.field('workerId'), userId))
+    .query("users")
+    .filter((q) => q.eq(q.field("workerId"), userId))
     .first();
   const worker = await ctx.db.get(userId);
   if (!worker) return null;
   if (!user) return null;
-  if (user?.imageUrl && user?.imageUrl.startsWith('http'))
+  if (user?.imageUrl && user?.imageUrl.startsWith("http"))
     return {
       ...user,
       role: worker.role,
     };
-  const imageUrl = await getImageUrl(ctx, user.imageUrl as Id<'_storage'>);
+  const imageUrl = await getImageUrl(ctx, user.imageUrl as Id<"_storage">);
   return {
     ...user,
     imageUrl,

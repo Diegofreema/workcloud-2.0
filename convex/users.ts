@@ -1,16 +1,9 @@
-import { v } from "convex/values";
+import {v} from "convex/values";
 
-import { User } from "~/constants/types";
-import { internal } from "~/convex/_generated/api";
-import { Id } from "~/convex/_generated/dataModel";
-import {
-  internalAction,
-  internalMutation,
-  mutation,
-  query,
-  QueryCtx,
-} from "~/convex/_generated/server";
-import { getImageUrl } from "~/convex/organisation";
+import {User} from "~/constants/types";
+import {internal} from "~/convex/_generated/api";
+import {Id} from "~/convex/_generated/dataModel";
+import {internalAction, internalMutation, mutation, query, QueryCtx,} from "~/convex/_generated/server";
 
 export const getAllUsers = query({
   args: {},
@@ -300,10 +293,5 @@ export const getOrganisationWithoutImageByWorker = async (
 };
 
 const helperToGetUser = async (ctx: QueryCtx, user: User) => {
-  if (user?.imageUrl && user?.imageUrl.startsWith("http")) return user;
-  const imageUrl = await getImageUrl(ctx, user?.imageUrl as Id<"_storage">);
-  return {
-    ...user,
-    imageUrl,
-  };
+  return user;
 };

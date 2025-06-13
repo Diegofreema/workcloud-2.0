@@ -174,13 +174,11 @@ export const Reaction = {
   ),
 };
 export const ServicePoints = {
-  description: v.string(),
+  description: v.optional(v.string()),
   externalLink: v.optional(v.boolean()),
   form: v.optional(v.boolean()),
   name: v.string(),
   organizationId: v.id("organizations"),
-  service: v.boolean(),
-  staff: v.id("workers"),
 };
 export const Reviews = {
   organizationId: v.id("organizations"),

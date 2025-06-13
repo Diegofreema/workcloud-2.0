@@ -213,6 +213,7 @@ const Staffs = () => {
         onBottomOpen={onBottomOpen}
         isVisible={isVisible}
         setIsVisible={setIsVisible}
+        userId={staff?.id!}
         // @ts-ignore
         array={array}
         bossId={id}

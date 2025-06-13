@@ -514,11 +514,7 @@ export const getPosts = async (ctx: QueryCtx, orgsId: Id<"organizations">) => {
     .collect();
 
   if (!res) return [];
-  return await Promise.all(
-    res.map(async (r) => {
-      return await getImageUrl(ctx, r.image as Id<"_storage">);
-    }),
-  );
+  return res;
 };
 
 export const getWorkspaceWithWorkerAndUserProfile = async (
