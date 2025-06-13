@@ -34,9 +34,12 @@ export const ChatComponent = () => {
 
   const safeData = searchQuery || [];
 
-  const data = query ? safeData : results;
+  const sortedResults = results.sort(
+    (a, b) => (b?.lastMessageTime || 0) - (a.lastMessageTime || 0),
+  );
+  const data = query ? safeData : sortedResults;
   const loading = isLoading && status !== "LoadingFirstPage";
-
+  console.log({ results });
   return (
     <View style={{ flex: 1 }}>
       <SearchComponent

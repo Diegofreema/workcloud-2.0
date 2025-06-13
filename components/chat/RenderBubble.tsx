@@ -63,10 +63,10 @@ export const RenderBubble = ({
   const [isPickerVisible, setPickerVisible] = useState(false);
   const [pickerPosition, setPickerPosition] = useState({ top: 0, left: 0 });
   const onReactToMessage = useMutation(api.message.reactToMessage);
-  const { selected, setSelected, removeSelected } = useSelected();
-  const messageIsSelected = !!selected.find(
-    (message) => message.messageId === currentMessage._id,
-  );
+  const { selected,  } = useSelected();
+  // const messageIsSelected = !!selected.find(
+  //   (message) => message.messageId === currentMessage._id,
+  // );
 
   const selectedIsNotEmpty = selected.length > 0;
 
@@ -79,6 +79,7 @@ export const RenderBubble = ({
     type: FileType | undefined,
     selectedMessage: SelectedMessage | undefined,
   ) => {
+    console.log({selectedMessage})
     // if (selectedIsNotEmpty && !messageIsSelected) {
     //   setSelected({
     //     messageId: currentMessage._id.toString(),
@@ -365,6 +366,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
+    fontFamily: 'PoppinsLight'
   },
   sentText: {
     color: colors.white,

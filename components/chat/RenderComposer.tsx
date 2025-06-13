@@ -16,7 +16,6 @@ export const RenderComposer = ({ onPickImage, ...props }: Props) => {
         borderWidth: 1,
         borderColor: colors.gray,
         borderRadius: 30,
-        height: 50,
         padding: 10,
         flex: 1,
       }}
