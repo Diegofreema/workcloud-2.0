@@ -41,7 +41,6 @@ export const addUserToDb = mutation({
     clerkId: v.string(),
     imageUrl: v.optional(v.string()),
     name: v.string(),
-
   },
   handler: async (ctx, args) => {
     const isUserInDb = await ctx.db
@@ -96,7 +95,7 @@ export const createToken = internalMutation({
 
 export const getUserByClerkId = query({
   args: {
-    clerkId: v.optional(v.string()),
+    clerkId: v.string(),
   },
   handler: async (ctx, args) => {
     const user = await ctx.db

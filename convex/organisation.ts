@@ -179,7 +179,10 @@ export const getTopSearches = query({
 
     return await Promise.all(
       orgs.map(async (org) => {
-        const avatar = await getImageUrl(ctx, org?.avatar as Id<"_storage">);
+        let avatar;
+        if (org?.avatar) {
+          avatar = await getImageUrl(ctx, org?.avatar as Id<"_storage">);
+        }
         return {
           id: org._id,
           name: org.name,

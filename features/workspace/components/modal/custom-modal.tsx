@@ -1,9 +1,9 @@
-import {Modal, StyleSheet, Text, View} from "react-native";
-import {ReactNode} from "react";
-import {RFPercentage} from "react-native-responsive-fontsize";
-import {colors} from "~/constants/Colors";
-import {CustomPressable} from "~/components/Ui/CustomPressable";
-import {X} from "lucide-react-native";
+import { Modal, StyleSheet, Text, View } from "react-native";
+import { ReactNode } from "react";
+import { RFPercentage } from "react-native-responsive-fontsize";
+import { colors } from "~/constants/Colors";
+import { CustomPressable } from "~/components/Ui/CustomPressable";
+import { X } from "lucide-react-native";
 
 type Props = {
   isOpen: boolean;
@@ -22,7 +22,7 @@ export const CustomModal = ({ onClose, isOpen, children, title }: Props) => {
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           <CustomPressable onPress={onClose} style={styles.button}>
-            <X size={25} />
+            <X size={25} color={colors.black} />
           </CustomPressable>
           <View style={styles.title}>
             <Text style={styles.modalText}>{title}</Text>
@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 2,
     position: "absolute",
+    backgroundColor: "transparent",
     top: 5,
     right: 0,
   },

@@ -1,39 +1,45 @@
-import { useMutation } from 'convex/react';
-import { XCircle } from 'lucide-react-native';
-import { useState } from 'react';
-import { Modal, StyleSheet, TextInput, View } from 'react-native';
-import { AirbnbRating } from 'react-native-ratings';
-import { RFPercentage } from 'react-native-responsive-fontsize';
-import { toast } from 'sonner-native';
+import { useMutation } from "convex/react";
+import { XCircle } from "lucide-react-native";
+import { useState } from "react";
+import { Modal, StyleSheet, TextInput, View } from "react-native";
+import { AirbnbRating } from "react-native-ratings";
+import { RFPercentage } from "react-native-responsive-fontsize";
+import { toast } from "sonner-native";
 
-import { HStack } from '~/components/HStack';
-import { CustomPressable } from '~/components/Ui/CustomPressable';
-import { MyButton } from '~/components/Ui/MyButton';
-import { MyText } from '~/components/Ui/MyText';
-import VStack from '~/components/Ui/VStack';
-import { colors } from '~/constants/Colors';
-import { api } from '~/convex/_generated/api';
-import { Id } from '~/convex/_generated/dataModel';
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { HStack } from "~/components/HStack";
+import { CustomPressable } from "~/components/Ui/CustomPressable";
+import { MyButton } from "~/components/Ui/MyButton";
+import { MyText } from "~/components/Ui/MyText";
+import VStack from "~/components/Ui/VStack";
+import { colors } from "~/constants/Colors";
+import { api } from "~/convex/_generated/api";
+import { Id } from "~/convex/_generated/dataModel";
+import { useDarkMode } from "~/hooks/useDarkMode";
+import ReviewStar from "~/features/common/components/ReviewStars";
 
 const maxLength = 150;
 type ReviewModalProps = {
   visible: boolean;
   onClose: () => void;
-  userId: Id<'users'>;
-  organizationId: Id<'organizations'>;
+  userId: Id<"users">;
+  organizationId: Id<"organizations">;
 };
-export const ReviewModal = ({ visible, onClose, userId, organizationId }: ReviewModalProps) => {
+export const ReviewModal = ({
+  visible,
+  onClose,
+  userId,
+  organizationId,
+}: ReviewModalProps) => {
   const { darkMode } = useDarkMode();
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState("");
   const [rating, setRating] = useState(3);
   const [sending, setSending] = useState(false);
   const addReview = useMutation(api.reviews.addReview);
-  const iconColor = darkMode === 'dark' ? 'white' : 'black';
+  const iconColor = darkMode === "dark" ? "white" : "black";
   const valueLength = value.length;
   console.log(rating);
   const handleClose = () => {
-    setValue('');
+    setValue("");
     onClose();
   };
   const onSubmit = async () => {
@@ -41,26 +47,28 @@ export const ReviewModal = ({ visible, onClose, userId, organizationId }: Review
     try {
       await addReview({ rating, text: value, userId, organizationId });
       handleClose();
-      toast.success('Success', {
-        description: 'Review added successfully',
+      toast.success("Success", {
+        description: "Review submitted",
       });
     } catch (error) {
       console.log(error);
       handleClose();
-      toast.error('Failed to add review', {
-        description: 'Please try again later',
+      toast.error("Failed to add review", {
+        description: "Please try again later",
       });
     } finally {
       setSending(false);
     }
   };
+
   return (
     <Modal
       visible={visible}
       onRequestClose={onClose}
       animationType="slide"
       transparent
-      statusBarTranslucent>
+      statusBarTranslucent
+    >
       <View style={styles.centeredView}>
         <View style={styles.modal}>
           <HStack justifyContent="space-between">
@@ -76,13 +84,8 @@ export const ReviewModal = ({ visible, onClose, userId, organizationId }: Review
               <XCircle color={iconColor} />
             </CustomPressable>
           </HStack>
-          <AirbnbRating
-            count={5}
-            reviews={[]}
-            defaultRating={rating}
-            size={20}
-            onFinishRating={setRating}
-          />
+
+          <ReviewStar onRatingChange={setRating} />
           <VStack gap={4}>
             <MyText poppins="Medium" fontSize={RFPercentage(1.5)}>
               Feedback
@@ -102,7 +105,11 @@ export const ReviewModal = ({ visible, onClose, userId, organizationId }: Review
               {valueLength} / {maxLength}
             </MyText>
           </VStack>
-          <MyButton onPress={onSubmit} buttonStyle={{ width: '100%' }} loading={sending}>
+          <MyButton
+            onPress={onSubmit}
+            buttonStyle={{ width: "100%" }}
+            loading={sending}
+          >
             Submit Review
           </MyButton>
         </View>
@@ -114,16 +121,16 @@ export const ReviewModal = ({ visible, onClose, userId, organizationId }: Review
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   modal: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
     padding: 15,
-    width: '90%',
+    width: "90%",
     marginHorizontal: 15,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 5,
@@ -134,7 +141,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   input: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     borderWidth: 1,
     borderColor: colors.grayText,
     borderRadius: 5,

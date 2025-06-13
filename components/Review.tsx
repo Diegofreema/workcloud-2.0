@@ -1,23 +1,24 @@
-import { useQuery } from 'convex/react';
-import { useCallback, useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
-import { Rating } from 'react-native-ratings';
-import { RFPercentage } from 'react-native-responsive-fontsize';
+import { useQuery } from "convex/react";
+import { useCallback, useState } from "react";
+import { TouchableOpacity, View } from "react-native";
+import { Rating } from "react-native-ratings";
+import { RFPercentage } from "react-native-responsive-fontsize";
 
-import { ReviewModal } from '~/components/Dialogs/ReviewModal';
-import { HStack } from '~/components/HStack';
-import { RatingPercentage } from '~/components/RatingPercentage';
-import { ReviewComments } from '~/components/ReviewComments';
-import { MyText } from '~/components/Ui/MyText';
-import { colors } from '~/constants/Colors';
-import { api } from '~/convex/_generated/api';
-import { Id } from '~/convex/_generated/dataModel';
-import { calculateRatingStats } from '~/lib/helper';
+import { ReviewModal } from "~/components/Dialogs/ReviewModal";
+import { HStack } from "~/components/HStack";
+import { RatingPercentage } from "~/components/RatingPercentage";
+import { ReviewComments } from "~/components/ReviewComments";
+import { MyText } from "~/components/Ui/MyText";
+import { colors } from "~/constants/Colors";
+import { api } from "~/convex/_generated/api";
+import { Id } from "~/convex/_generated/dataModel";
+import { calculateRatingStats } from "~/lib/helper";
+import ReviewStar from "~/features/common/components/ReviewStars";
+import {EmptyText} from "~/components/EmptyText";
 
 type ReviewProps = {
-  userId: Id<'users'>;
-  organizationId: Id<'organizations'>;
-  show?: boolean;
+  organizationId: Id<"organizations">;
+  scroll?: boolean;
   showComments?: boolean;
 };
 type RatingCounts = {
@@ -25,15 +26,13 @@ type RatingCounts = {
 };
 export const Review = ({
   organizationId,
-  userId,
-  show,
+
   showComments,
+    scroll
 }: ReviewProps) => {
-  const [visible, setVisible] = useState(false);
-  const onClose = useCallback(() => setVisible(false), []);
   const reviews = useQuery(api.reviews.fetchReviews, { organizationId });
   if (reviews === undefined) return null;
-  if (reviews.length === 0) return null;
+  if (reviews.length === 0) return <EmptyText text="No reviews yet" />;
   const counts: RatingCounts = {
     1: 0,
     2: 0,
@@ -57,51 +56,25 @@ export const Review = ({
   const { averageRating, ratingPercentages } =
     calculateRatingStats(reviewsData);
   return (
-    <View>
-      <ReviewModal
-        visible={visible}
-        onClose={onClose}
-        organizationId={organizationId}
-        userId={userId}
-      />
-      <HStack justifyContent="space-between">
-        <MyText poppins="Medium" fontSize={15}>
-          Reviews and Ratings
-        </MyText>
-        {show && (
-          <TouchableOpacity onPress={() => setVisible(true)}>
-            <MyText
-              poppins="Medium"
-              fontSize={15}
-              style={{ color: colors.dialPad }}
-            >
-              Write a review
-            </MyText>
-          </TouchableOpacity>
-        )}
-      </HStack>
+    <View style={{ flex: 1 }}>
       <MyText
         poppins="Bold"
         fontSize={RFPercentage(2.4)}
-        style={{ textAlign: 'center', marginVertical: 10 }}
+        style={{ textAlign: "center", marginVertical: 10 }}
       >
         {averageRating} out of 5.0
       </MyText>
-      <Rating
-        ratingCount={5}
-        startingValue={averageRating}
-        imageSize={20}
-        readonly
-      />
+
+      <ReviewStar readOnly rating={averageRating} />
       <MyText
         poppins="Light"
         fontSize={RFPercentage(1.6)}
-        style={{ textAlign: 'center', marginVertical: 10 }}
+        style={{ textAlign: "center", marginVertical: 10 }}
       >
         ({reviews?.length} Reviews)
       </MyText>
       <RatingPercentage data={ratingPercentages} />
-      {showComments && <ReviewComments organizationId={organizationId} />}
+      {showComments && <ReviewComments organizationId={organizationId} scroll={scroll} />}
     </View>
   );
 };

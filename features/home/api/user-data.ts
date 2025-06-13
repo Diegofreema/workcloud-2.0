@@ -6,5 +6,8 @@ type UserData = {
 };
 
 export const useUserData = ({ userId }: UserData) => {
-  return useQuery(api.users.getUserByClerkId, { clerkId: userId! });
+  return useQuery(
+    api.users.getUserByClerkId,
+    userId ? { clerkId: userId } : "skip",
+  );
 };

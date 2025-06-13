@@ -1,11 +1,11 @@
-import {View} from "react-native";
-import {HStack} from "~/components/HStack";
-import {UserPreview} from "~/components/Ui/UserPreview";
-import {capitaliseFirstLetter} from "~/lib/helper";
-import {EmptyText} from "~/components/EmptyText";
-import React, {ReactNode} from "react";
-import {LegendList} from "@legendapp/list";
-import {ProcessorType} from "~/features/staff/type";
+import { View } from "react-native";
+import { HStack } from "~/components/HStack";
+import { UserPreview } from "~/components/Ui/UserPreview";
+import { capitaliseFirstLetter } from "~/lib/helper";
+import { EmptyText } from "~/components/EmptyText";
+import React, { ReactNode } from "react";
+import { LegendList } from "@legendapp/list";
+import { ProcessorType } from "~/features/staff/type";
 
 type Props = {
   data: ProcessorType[];
@@ -31,6 +31,7 @@ export const StaffLists = ({ data, rightContent }: Props) => {
         )}
         ListEmptyComponent={() => <EmptyText text="No staffs found" />}
         recycleItems
+        keyExtractor={(item) => item.id}
       />
     </View>
   );
