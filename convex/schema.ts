@@ -17,7 +17,8 @@ export const User = {
 };
 
 export const Organization = {
-  avatar: v.union(v.id("_storage"), v.string()),
+  avatar: v.string(),
+  avatarId: v.id("_storage"),
   category: v.string(),
   description: v.string(),
   email: v.string(),
@@ -208,7 +209,8 @@ export default defineSchema({
     .index("userId", ["userId"]),
   workspaces: defineTable(Workspace)
     .index("workspace", ["organizationId", "ownerId"])
-    .index("personal", ["organizationId", "type"]),
+    .index("personal", ["organizationId", "type"])
+    .index("by_worker_id", ["workerId"]),
   connections: defineTable(Connection)
     .index("by_ownerId_orgId", ["ownerId", "connectedTo"])
     .index("by_createdAt", ["connectedAt"]),

@@ -1,4 +1,3 @@
-import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {BottomSheet, Divider} from "@rneui/themed";
 import {useMutation, useQuery} from "convex/react";
 import {useLocalSearchParams, useRouter} from "expo-router";
@@ -18,7 +17,6 @@ import {DottedButton} from "~/components/Ui/DottedButton";
 import {LoadingComponent} from "~/components/Ui/LoadingComponent";
 import {MyText} from "~/components/Ui/MyText";
 import {colors} from "~/constants/Colors";
-import {WorkType} from "~/constants/types";
 import {api} from "~/convex/_generated/api";
 import {Id} from "~/convex/_generated/dataModel";
 import {useDarkMode} from "~/hooks/useDarkMode";
@@ -30,7 +28,7 @@ import {RFPercentage} from "react-native-responsive-fontsize";
 import {useWorkspaceModal} from "~/features/workspace/hooks/use-workspace-modal";
 import {StaffRoles} from "~/features/staff/components/staff-roles";
 import {useCreateStaffState} from "~/features/staff/hooks/use-create-staff-state";
-import {StaffType} from "~/features/staff/type";
+import {ProcessorType, StaffType} from "~/features/staff/type";
 import {LoadingModal} from "~/features/common/components/loading-modal";
 import {StaffLists} from "~/features/staff/components/staff-lists";
 
@@ -76,7 +74,7 @@ const Staffs = () => {
     router.push("/pending-staffs");
   };
 
-  const showMenu = (item: WorkType) => {
+  const showMenu = (item: ProcessorType) => {
     setIsVisible(true);
     getItem(item);
   };
@@ -89,7 +87,7 @@ const Staffs = () => {
         ownerId: id,
         type: "front",
         role: staff?.role!,
-        workerId: staff?._id!,
+        workerId: staff?._id,
       });
       onHideBottom();
       toast.success("Workspace created and assigned to staff");
@@ -171,12 +169,18 @@ const Staffs = () => {
     },
     { title: "Processor workspace", onPress: () => handleSelect("processor") },
   ];
-  const workersData = workers.map(({ user, role }) => ({
-    id: user._id!,
-    name: user.name!,
-    image: user.imageUrl!,
-    role: role!,
-  }));
+  const workersData = workers.map(
+    ({ user, role, organizationId, workspace, workspaceId, _id }) => ({
+      id: user?._id!,
+      name: user?.name!,
+      image: user?.imageUrl!,
+      role: role!,
+      organizationId,
+      workspace,
+      workspaceId,
+      _id,
+    }),
+  );
   return (
     <Container>
       <LoadingModal isOpen={assigning} />
@@ -226,22 +230,7 @@ const Staffs = () => {
           />
         </HStack>
       </View>
-      <StaffLists
-        data={workersData}
-        rightContent={
-          <Pressable
-            // @ts-ignore
-            onPress={() => showMenu(item)}
-            style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-          >
-            <MaterialCommunityIcons
-              name="dots-vertical"
-              size={24}
-              color={darkMode === "dark" ? "white" : "black"}
-            />
-          </Pressable>
-        }
-      />
+      <StaffLists data={workersData} showMenu={showMenu} />
       <BottomSheet
         modalProps={{}}
         onBackdropPress={onHideBottom}

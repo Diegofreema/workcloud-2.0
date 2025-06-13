@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 
 import { Id } from "~/convex/_generated/dataModel";
 import { mutation, query } from "~/convex/_generated/server";
@@ -104,11 +104,13 @@ export const acceptOffer = mutation({
   handler: async (ctx, args) => {
     const worker = await ctx.db
       .query("workers")
-      .filter((q) => q.eq(q.field("userId"), args.to))
+      .withIndex("userId", (q) => q.eq("userId", args.to))
       .first();
 
     const org = await ctx.db.get(args.organizationId);
-    if (!worker || !org) return { message: "failed" };
+    if (!worker || !org) {
+      throw new ConvexError("Failed to accept offer");
+    }
     const prevWorkers = org.workers || [];
     await Promise.all([
       ctx.db.patch(args.organizationId, {

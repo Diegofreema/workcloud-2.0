@@ -10,6 +10,10 @@ export type WorkerData = {
 export type ProcessorType = {
   name: string;
   id: Id<"users">;
+  _id: Id<"workers">;
   role: string;
   image: string;
+  organizationId?: Id<"organizations">;
+  workspace: Doc<"workspaces"> | null;
+  workspaceId?: Id<"workspaces">;
 };

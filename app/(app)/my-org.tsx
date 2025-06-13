@@ -1,27 +1,27 @@
-import {useQuery} from "convex/react";
-import {EvilIcons} from "@expo/vector-icons";
+import { useQuery } from "convex/react";
+import { EvilIcons } from "@expo/vector-icons";
 
-import {Image} from "expo-image";
+import { Image } from "expo-image";
 import * as Linking from "expo-linking";
-import {router} from "expo-router";
+import { router } from "expo-router";
 import React from "react";
-import {Pressable, ScrollView, StyleSheet, Text, View} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import {AuthHeader} from "~/components/AuthHeader";
-import {CreateWorkspaceModal} from "~/components/Dialogs/CreateWorkspace";
-import {DeleteWksSpaceModal} from "~/components/Dialogs/DeleteWks";
-import {SelectRow} from "~/components/Dialogs/SelectRow";
-import {Container} from "~/components/Ui/Container";
-import {LoadingComponent} from "~/components/Ui/LoadingComponent";
-import {MyText} from "~/components/Ui/MyText";
-import {WorkspaceDetails} from "~/components/WorkspaceDetails";
-import {colors} from "~/constants/Colors";
-import {api} from "~/convex/_generated/api";
-import {Id} from "~/convex/_generated/dataModel";
-import {useCreate} from "~/hooks/useCreate";
-import {useDarkMode} from "~/hooks/useDarkMode";
-import {useGetUserId} from "~/hooks/useGetUserId";
-import {Star} from "lucide-react-native";
+import { AuthHeader } from "~/components/AuthHeader";
+import { CreateWorkspaceModal } from "~/components/Dialogs/CreateWorkspace";
+import { DeleteWksSpaceModal } from "~/components/Dialogs/DeleteWks";
+import { SelectRow } from "~/components/Dialogs/SelectRow";
+import { Container } from "~/components/Ui/Container";
+import { LoadingComponent } from "~/components/Ui/LoadingComponent";
+import { MyText } from "~/components/Ui/MyText";
+import { WorkspaceDetails } from "~/components/WorkspaceDetails";
+import { colors } from "~/constants/Colors";
+import { api } from "~/convex/_generated/api";
+import { Id } from "~/convex/_generated/dataModel";
+import { useCreate } from "~/hooks/useCreate";
+import { useDarkMode } from "~/hooks/useDarkMode";
+import { useGetUserId } from "~/hooks/useGetUserId";
+import { Star } from "lucide-react-native";
 
 const MyOrg = () => {
   const { id } = useGetUserId();

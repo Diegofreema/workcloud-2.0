@@ -1,15 +1,14 @@
-import { create } from 'zustand';
-
-import { WorkType } from '~/constants/types';
+import {create} from 'zustand';
+import {ProcessorType} from "~/features/staff/type";
 
 type ItemType = {
-  item: WorkType | null;
-  getItem: (item: WorkType) => void;
+  item: ProcessorType | null;
+  getItem: (item: ProcessorType) => void;
 };
 
 export const useHandleStaff = create<ItemType>((set) => ({
   item: null,
-  getItem: (item: WorkType) => {
+  getItem: (item: ProcessorType) => {
     set({ item });
   },
 }));

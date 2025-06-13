@@ -106,7 +106,7 @@ const CreateWorkSpace = () => {
         }
         await createOrganization({
           ownerId: id,
-          avatar: res?.storageId,
+          avatarId: res?.storageId,
           end: values.endTime,
           name: values.organizationName,
           start: values.startTime,

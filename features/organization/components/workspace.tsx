@@ -39,7 +39,7 @@ export const WorkspaceComponent = ({ item }: { item: WorkSpace }) => {
       <HStack gap={10} alignItems="center">
         <Avatar
           rounded
-          source={{ uri: item.organization?.avatar! }}
+          source={{ uri: item.image! }}
           size={50}
         />
         <VStack>

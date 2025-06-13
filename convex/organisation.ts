@@ -1,6 +1,4 @@
 import { ConvexError, v } from "convex/values";
-
-import { FullOrgsType } from "~/constants/types";
 import { Id } from "~/convex/_generated/dataModel";
 import { mutation, query, QueryCtx } from "~/convex/_generated/server";
 import { getUserByUserId, getUserForWorker } from "~/convex/users";
@@ -58,10 +56,9 @@ export const getOrganisationsWithPostAndWorkers = query({
     if (!orgs) return null;
     const posts = await getPosts(ctx, args.id);
     const workers = await getWorkspaceWithWorkerAndUserProfile(ctx, orgs._id);
-    const avatar = await getImageUrl(ctx, orgs.avatar as Id<"_storage">);
+
     return {
       ...orgs,
-      avatar,
       posts,
       workers: workers.filter((m) => m.type !== "processor"),
     };
@@ -116,7 +113,7 @@ export const getOrganizationWithOwnerAndWorkspaces = query({
   handler: async (ctx, args) => {
     const result = await ctx.db
       .query("organizations")
-      .filter((q) => q.eq(q.field("ownerId"), args.ownerId))
+      .withIndex("ownerId", (q) => q.eq("ownerId", args.ownerId))
       .first();
 
     if (!result) return null;
@@ -125,18 +122,10 @@ export const getOrganizationWithOwnerAndWorkspaces = query({
       getUserByOwnerId(ctx, result.ownerId),
       getWorkspacesByOrganizationId(ctx, result._id),
     ]);
-    if (result.avatar.startsWith("https")) {
-      return {
-        ...result,
-        owner,
-        workspaces,
-      };
-    }
 
-    const avatarUrl = await ctx.storage.getUrl(result.avatar as Id<"_storage">);
     return {
       ...result,
-      avatar: avatarUrl,
+      avatar: result.avatar,
       owner,
       workspaces,
     };
@@ -160,37 +149,21 @@ export const getTopSearches = query({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
-    const findIfLoggedInUserOwnsAnOrganisation = await ctx.db
-      .query("organizations")
-      .withIndex("ownerId", (q) => q.eq("ownerId", args.userId))
-      .first();
-    const takeNumber = findIfLoggedInUserOwnsAnOrganisation ? 6 : 5;
     const res = await ctx.db
       .query("organizations")
       .withIndex("by_search_count")
+      .filter((q) => q.neq(q.field("ownerId"), args.userId))
       .order("desc")
-      .take(takeNumber);
-    let orgs: FullOrgsType[];
-    if (findIfLoggedInUserOwnsAnOrganisation) {
-      orgs = res.filter((r) => r.ownerId !== args.userId);
-    } else {
-      orgs = res;
-    }
+      .take(5);
 
-    return await Promise.all(
-      orgs.map(async (org) => {
-        let avatar;
-        if (org?.avatar) {
-          avatar = await getImageUrl(ctx, org?.avatar as Id<"_storage">);
-        }
-        return {
-          id: org._id,
-          name: org.name,
-          ownerId: org.ownerId,
-          avatar,
-        };
-      }),
-    );
+    return res.map((org) => {
+      return {
+        id: org._id,
+        name: org.name,
+        ownerId: org.ownerId,
+        avatar: org.avatar,
+      };
+    });
   },
 });
 export const getOrganisationsByServicePointsSearchQuery = query({
@@ -230,20 +203,16 @@ export const getOrganisationsBySearchQuery = query({
       .filter((q) => q.neq(q.field("ownerId"), ownerId))
       .collect();
     if (!organisations) return [];
-    const organisationsWithImages = await Promise.all(
-      organisations.map(async (org) => {
-        const avatar = await getImageUrl(ctx, org.avatar as Id<"_storage">);
-        return {
-          name: org.name,
-          avatar,
-          id: org._id,
-          ownerId: org.ownerId,
-          description: org.description,
-        };
-      }),
-    );
 
-    return organisationsWithImages || [];
+    return organisations.map((org) => {
+      return {
+        name: org.name,
+        avatar: org.avatar,
+        id: org._id,
+        ownerId: org.ownerId,
+        description: org.description,
+      };
+    });
   },
 });
 export const getStaffsByBossId = query({
@@ -267,24 +236,10 @@ export const getStaffsByBossId = query({
           ctx,
           worker.workspaceId!,
         );
-        if (userProfile?.imageUrl?.startsWith("https")) {
-          return {
-            ...worker,
-            user: userProfile,
-            organization,
-            workspace,
-          };
-        }
-        const imageUrl = await getImageUrl(
-          ctx,
-          userProfile?.imageUrl as Id<"_storage">,
-        );
+
         return {
           ...worker,
-          user: {
-            ...userProfile,
-            imageUrl,
-          },
+          user: userProfile,
           organization,
           workspace,
         };
@@ -347,7 +302,6 @@ export const getStaffsByBossIdNotHavingServicePoint = query({
 
 export const createOrganization = mutation({
   args: {
-    avatar: v.id("_storage"),
     category: v.string(),
     description: v.string(),
     email: v.string(),
@@ -358,6 +312,7 @@ export const createOrganization = mutation({
     start: v.string(),
     website: v.string(),
     workDays: v.string(),
+    avatarId: v.id("_storage"),
   },
   handler: async (ctx, args) => {
     const organizationExist = await ctx.db
@@ -367,12 +322,14 @@ export const createOrganization = mutation({
     if (organizationExist) {
       throw new ConvexError("Organization with name exists");
     }
+    const avatar = await getImageUrl(ctx, args.avatarId);
     const organizationId = await ctx.db.insert("organizations", {
       ...args,
       has_group: false,
       workspaceCount: 0,
       followersCount: 0,
       searchCount: 0,
+      avatar: avatar!,
     });
     if (!organizationId) {
       throw new ConvexError("Failed to create organization");
@@ -519,12 +476,10 @@ export const getOrganizationByServicePointOrganizationId = async (
 ) => {
   const res = await ctx.db.get(organizationId);
   if (!res) return null;
-  const organizationAvatar = await ctx.storage.getUrl(
-    res.avatar as Id<"_storage">,
-  );
+
   return {
     name: res.name,
-    avatar: organizationAvatar,
+    avatar: res.avatar,
     id: res._id,
     ownerId: res.ownerId,
     description: res.description,
@@ -537,17 +492,11 @@ export const getOrganizationByOwnerId = async (
 ) => {
   const res = await ctx.db
     .query("organizations")
-    .filter((q) => q.eq(q.field("ownerId"), id))
+    .withIndex("ownerId", (q) => q.eq("ownerId", id))
     .first();
   if (!res) return null;
-  if (res.avatar.startsWith("https")) return res;
-  const organizationAvatar = await ctx.storage.getUrl(
-    res.avatar as Id<"_storage">,
-  );
-  return {
-    ...res,
-    avatar: organizationAvatar,
-  };
+
+  return res;
 };
 
 export const getWorkspaceByWorkerWorkspaceId = async (

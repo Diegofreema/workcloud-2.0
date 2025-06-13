@@ -22,5 +22,7 @@ export const useGetUserId = () => {
     clerkId: storedUser?.id,
     user,
     isLoading,
+    workspaceId: data?.worker?.workspaceId,
+    role: data?.worker?.role
   };
 };

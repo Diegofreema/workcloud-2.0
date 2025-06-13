@@ -77,6 +77,7 @@ export type WorkSpace = {
   locked: boolean;
   signedIn: boolean;
   personal: boolean;
+  image?: string;
 };
 
 export type WorkspaceWithoutOrganization = Omit<WorkSpace, "organization">;

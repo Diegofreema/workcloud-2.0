@@ -106,18 +106,10 @@ export const getUserByClerkId = query({
     if (user?.workerId) {
       workProfile = await ctx.db.get(user?.workerId!);
     }
-    if (!user?.imageUrl || user.imageUrl.startsWith("http")) {
-      return {
-        ...user,
-        worker: workProfile,
-      };
-    }
-
-    const url = await ctx.storage.getUrl(user.imageUrl as Id<"_storage">);
 
     return {
       ...user,
-      imageUrl: url,
+      imageUrl: user?.imageUrl,
       worker: workProfile,
     };
   },

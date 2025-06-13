@@ -11,17 +11,19 @@ export const getUserWorkspaceOrNull = query({
     if (!args.workerId) return null;
     const res = await ctx.db
       .query("workspaces")
-      .filter((q) => q.eq(q.field("workerId"), args.workerId))
+      .withIndex("by_worker_id", (q) => q.eq("workerId", args.workerId))
       .first();
     if (!res) return null;
     const organization = await organisationByWorkSpaceId(
       ctx,
       res?.organizationId,
     );
+    const workerProfile = await getUserByWorkerId(ctx, args.workerId);
 
     return {
       ...res,
       organization,
+      image: workerProfile?.imageUrl,
     };
   },
 });
