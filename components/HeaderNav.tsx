@@ -39,7 +39,7 @@ export const HeaderNav = ({
           justifyContent: "space-between",
           backgroundColor: darkMode === "dark" ? "black" : "white",
           alignItems: "center",
-          paddingRight: 5,
+          paddingRight: 2,
         },
         style,
       ]}

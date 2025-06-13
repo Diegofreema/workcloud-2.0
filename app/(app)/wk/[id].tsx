@@ -21,7 +21,6 @@ import { useGetUserId } from "~/hooks/useGetUserId";
 import { useGetWaitlistIdForCustomer } from "~/hooks/useGetWorkspaceIdForCustomer";
 import { useWaitlistId } from "~/hooks/useWaitlistId";
 import { useGetCustomerId } from "~/hooks/useCustomerId";
-import { CustomPressable } from "~/components/Ui/CustomPressable";
 import { MessageBtn } from "~/features/common/components/message-btn";
 
 const today = format(new Date(), "dd-MM-yyyy");

@@ -1,17 +1,17 @@
-import {useMutation, useQuery} from "convex/react";
-import {router, useLocalSearchParams} from "expo-router";
-import {useCallback, useEffect, useState} from "react";
-import {toast} from "sonner-native";
+import { useMutation, useQuery } from "convex/react";
+import { router, useLocalSearchParams } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner-native";
 
-import {ServicePointModal} from "../Dialogs/ServicePointModal";
-import {InputComponent} from "../InputComponent";
-import {LoadingComponent} from "../Ui/LoadingComponent";
-import {MyButton} from "../Ui/MyButton";
-import {MyText} from "../Ui/MyText";
+import { ServicePointModal } from "../Dialogs/ServicePointModal";
+import { InputComponent } from "../InputComponent";
+import { LoadingComponent } from "../Ui/LoadingComponent";
+import { MyButton } from "../Ui/MyButton";
+import { MyText } from "../Ui/MyText";
 import VStack from "../Ui/VStack";
-import {api} from "~/convex/_generated/api";
-import {Id} from "~/convex/_generated/dataModel";
-import {useSelect} from "~/hooks/useSelect";
+import { api } from "~/convex/_generated/api";
+import { Id } from "~/convex/_generated/dataModel";
+import { useSelect } from "~/hooks/useSelect";
 
 export const ServicePointForm = () => {
   const { onDeselect, onSelect } = useSelect();
@@ -159,5 +159,3 @@ export const ServicePointForm = () => {
     </VStack>
   );
 };
-
-

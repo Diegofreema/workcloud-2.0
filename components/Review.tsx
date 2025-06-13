@@ -14,12 +14,13 @@ import { api } from "~/convex/_generated/api";
 import { Id } from "~/convex/_generated/dataModel";
 import { calculateRatingStats } from "~/lib/helper";
 import ReviewStar from "~/features/common/components/ReviewStars";
-import {EmptyText} from "~/components/EmptyText";
+import { EmptyText } from "~/components/EmptyText";
 
 type ReviewProps = {
   organizationId: Id<"organizations">;
   scroll?: boolean;
   showComments?: boolean;
+  hide?: boolean;
 };
 type RatingCounts = {
   [K in 1 | 2 | 3 | 4 | 5]: number;
@@ -28,7 +29,8 @@ export const Review = ({
   organizationId,
 
   showComments,
-    scroll
+  scroll,
+  hide,
 }: ReviewProps) => {
   const reviews = useQuery(api.reviews.fetchReviews, { organizationId });
   if (reviews === undefined) return null;
@@ -74,7 +76,13 @@ export const Review = ({
         ({reviews?.length} Reviews)
       </MyText>
       <RatingPercentage data={ratingPercentages} />
-      {showComments && <ReviewComments organizationId={organizationId} scroll={scroll} />}
+      {showComments && (
+        <ReviewComments
+          organizationId={organizationId}
+          scroll={scroll}
+          hide={hide}
+        />
+      )}
     </View>
   );
 };

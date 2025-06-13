@@ -12,9 +12,10 @@ import { Button } from "~/features/common/components/Button";
 type Props = {
   organizationId: Id<"organizations">;
   scroll?: boolean;
+  hide?: boolean;
 };
 
-export const ReviewComments = ({ organizationId, scroll }: Props) => {
+export const ReviewComments = ({ organizationId, scroll, hide }: Props) => {
   const { results, status, loadMore, isLoading } = usePaginatedQuery(
     api.reviews.getPaginatedReviews,
     {
@@ -36,11 +37,11 @@ export const ReviewComments = ({ organizationId, scroll }: Props) => {
         // @ts-ignore
         renderItem={({ item }) => <ReviewComment comment={item} />}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ gap: 25, marginTop: 20, paddingBottom: 100 }}
+        contentContainerStyle={{ gap: 25, marginTop: 20, paddingBottom: 50 }}
         keyExtractor={(item) => item._id.toString()}
         scrollEnabled={scroll}
         ListFooterComponent={() =>
-          canLoadMore ? (
+          canLoadMore && !hide ? (
             <Button
               title={"Load more"}
               style={{ backgroundColor: "transparent" }}

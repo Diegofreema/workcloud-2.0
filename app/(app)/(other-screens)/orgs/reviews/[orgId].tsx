@@ -21,12 +21,6 @@ const Review = (props: Props) => {
   const isOwner = !!owner;
   return (
     <Container>
-      <ReviewModal
-        visible={visible}
-        onClose={onClose}
-        organizationId={orgId}
-        userId={userId!}
-      />
       <HeaderNav
         title={"Reviews"}
         rightComponent={
@@ -36,6 +30,12 @@ const Review = (props: Props) => {
             </CustomPressable>
           )
         }
+      />
+      <ReviewModal
+        visible={visible}
+        onClose={onClose}
+        organizationId={orgId}
+        userId={userId!}
       />
       <FetchReview id={orgId} />
     </Container>

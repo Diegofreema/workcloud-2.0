@@ -2,7 +2,6 @@ import { useMutation } from "convex/react";
 import { XCircle } from "lucide-react-native";
 import { useState } from "react";
 import { Modal, StyleSheet, TextInput, View } from "react-native";
-import { AirbnbRating } from "react-native-ratings";
 import { RFPercentage } from "react-native-responsive-fontsize";
 import { toast } from "sonner-native";
 

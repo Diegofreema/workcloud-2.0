@@ -22,6 +22,7 @@ import { useCreate } from "~/hooks/useCreate";
 import { useDarkMode } from "~/hooks/useDarkMode";
 import { useGetUserId } from "~/hooks/useGetUserId";
 import { Star } from "lucide-react-native";
+import {Review} from "~/components/Review";
 
 const MyOrg = () => {
   const { id } = useGetUserId();
@@ -35,7 +36,7 @@ const MyOrg = () => {
   const { onOpen } = useCreate();
   const { darkMode } = useDarkMode();
 
-  if (!data) {
+  if (data === undefined) {
     return <LoadingComponent />;
   }
 
@@ -288,6 +289,7 @@ const MyOrg = () => {
             name="Reviews"
           />
         </View>
+
       </ScrollView>
     </Container>
   );

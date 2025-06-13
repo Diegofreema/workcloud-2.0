@@ -1,9 +1,15 @@
-import {v} from "convex/values";
+import { v } from "convex/values";
 
-import {User} from "~/constants/types";
-import {internal} from "~/convex/_generated/api";
-import {Id} from "~/convex/_generated/dataModel";
-import {internalAction, internalMutation, mutation, query, QueryCtx,} from "~/convex/_generated/server";
+import { User } from "~/constants/types";
+import { internal } from "~/convex/_generated/api";
+import { Id } from "~/convex/_generated/dataModel";
+import {
+  internalAction,
+  internalMutation,
+  mutation,
+  query,
+  QueryCtx,
+} from "~/convex/_generated/server";
 
 export const getAllUsers = query({
   args: {},
@@ -142,7 +148,20 @@ export const updateUserById = mutation({
     imageUrl: v.optional(v.id("_storage")),
   },
   handler: async (ctx, args) => {
-    await ctx.db.patch(args._id, { ...args });
+    let img;
+    if (args.imageUrl) {
+      img = await ctx.storage.getUrl(args.imageUrl);
+      await ctx.db.patch(args._id, {
+        name: args.name,
+        phoneNumber: args.phoneNumber,
+        imageUrl: img!,
+      });
+    } else {
+      await ctx.db.patch(args._id, {
+        name: args.name,
+        phoneNumber: args.phoneNumber,
+      });
+    }
   },
 });
 
@@ -266,10 +285,7 @@ export const getWorkerProfile = async (ctx: QueryCtx, userId: Id<"users">) => {
 
 export const getUserByUserId = async (ctx: QueryCtx, userId?: Id<"users">) => {
   if (!userId) return null;
-  const user = await ctx.db.get(userId);
-  if (!user) return null;
-
-  return await helperToGetUser(ctx, user);
+  return await ctx.db.get(userId);
 };
 
 export const getUserByWorkerId = async (
