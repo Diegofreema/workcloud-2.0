@@ -1,13 +1,14 @@
-import { View } from "react-native";
-import { constantStyles } from "~/constants/styles";
-import { SearchComponent } from "~/features/common/components/SearchComponent";
-import { useSearch } from "~/features/common/hook/use-search";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { usePaginatedQuery, useQuery } from "convex/react";
-import { api } from "~/convex/_generated/api";
-import { useCallback } from "react";
-import { ChatPreviewSkeleton } from "~/components/ChatPreviewSkeleton";
-import { RenderGroupChats } from "~/features/chat/components/render-group-chat";
+import {View} from "react-native";
+import {constantStyles} from "~/constants/styles";
+import {SearchComponent} from "~/features/common/components/SearchComponent";
+import {useSearch} from "~/features/common/hook/use-search";
+import {useGetUserId} from "~/hooks/useGetUserId";
+import {usePaginatedQuery, useQuery} from "convex/react";
+import {api} from "~/convex/_generated/api";
+import {useCallback} from "react";
+import {ChatPreviewSkeleton} from "~/components/ChatPreviewSkeleton";
+import {RenderGroupChats} from "~/features/chat/components/render-group-chat";
+import Animated, {SlideInRight} from "react-native-reanimated";
 
 export const GroupChats = () => {
   const { value, setValue, query } = useSearch();
@@ -32,11 +33,17 @@ export const GroupChats = () => {
       }
     }
   }, [status, isLoading, loadMore]);
-
-  const data = query ? searchQuery : results;
+  const sortedResults = results.sort(
+    (a, b) => (b?.lastMessageTime || 0) - (a.lastMessageTime || 0),
+  );
+  const data = query ? searchQuery : sortedResults;
   if (data === undefined)
     return (
-      <View style={constantStyles.full}>
+      <Animated.View
+        key={"group"}
+        entering={SlideInRight}
+        style={constantStyles.full}
+      >
         <SearchComponent
           show={false}
           placeholder={"Search messages..."}
@@ -44,7 +51,7 @@ export const GroupChats = () => {
           setValue={setValue}
         />
         <ChatPreviewSkeleton length={4} />
-      </View>
+      </Animated.View>
     );
   const loading = status !== "LoadingFirstPage" && isLoading;
   const finalData = data.map((item) => ({

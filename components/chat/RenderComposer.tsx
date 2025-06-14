@@ -24,7 +24,8 @@ export const RenderComposer = ({ onPickImage, ...props }: Props) => {
       <Composer
         {...props}
         multiline
-        textInputStyle={{ backgroundColor: "transparent", maxHeight: 50 }}
+        textInputStyle={{ backgroundColor: "transparent" }}
+        composerHeight={45}
       />
       <CustomPressable onPress={onPickImage}>
         <Camera size={24} color="black" strokeWidth={1.5} />

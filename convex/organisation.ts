@@ -3,6 +3,31 @@ import { Id } from "~/convex/_generated/dataModel";
 import { mutation, query, QueryCtx } from "~/convex/_generated/server";
 import { getUserByUserId, getUserForWorker } from "~/convex/users";
 
+export const getServicePoints = query({
+  args: {},
+  handler: async (ctx, ) => {
+    const organisations = await ctx.db
+      .query("organizations")
+      .withIndex("by_search_count")
+      .take(10);
+
+    const servicePoints = organisations.map(async (organisation) => {
+      const servicePoints = await ctx.db
+        .query("servicePoints")
+        .withIndex("by_organisation_id", (q) =>
+          q.eq("organizationId", organisation._id),
+        )
+        .first();
+      return {
+        ...servicePoints,
+        organizationName: organisation.name,
+      };
+    });
+
+    return await Promise.all(servicePoints);
+  },
+});
+
 export const getOrganisationsOrNull = query({
   args: {
     ownerId: v.optional(v.id("users")),

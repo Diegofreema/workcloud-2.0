@@ -81,7 +81,7 @@ const DisplayReply = ({
     >
       <Text
         style={{
-          color: "#89BC0C",
+          color: "#000",
           paddingLeft: 10,
           paddingTop: 5,
           fontWeight: "600",
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   text: {
-    color: colors.gray,
+    color: colors.grayText,
     paddingLeft: 10,
     paddingTop: 5,
     fontSize: 15,
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     height: "100%",
     maxHeight: width * 0.15,
-    backgroundColor: "rgba(204, 204, 204, 0.8)",
+    backgroundColor: "white",
     borderRadius: 6,
     paddingHorizontal: 3,
   },

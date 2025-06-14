@@ -1,13 +1,13 @@
-import { View } from "react-native";
-import { SearchComponent } from "~/features/common/components/SearchComponent";
-import { useCallback, useState } from "react";
-import { useDebounce } from "use-debounce";
-import { useGetConversationType } from "~/features/chat/api/use-get-conversation-type";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { RenderChats } from "~/features/chat/components/render-single-chats";
-import { useQuery } from "convex/react";
-import { api } from "~/convex/_generated/api";
-import { ChatPreviewSkeleton } from "~/components/ChatPreviewSkeleton";
+import {SearchComponent} from "~/features/common/components/SearchComponent";
+import {useCallback, useState} from "react";
+import {useDebounce} from "use-debounce";
+import {useGetConversationType} from "~/features/chat/api/use-get-conversation-type";
+import {useGetUserId} from "~/hooks/useGetUserId";
+import {RenderChats} from "~/features/chat/components/render-single-chats";
+import {useQuery} from "convex/react";
+import {api} from "~/convex/_generated/api";
+import {ChatPreviewSkeleton} from "~/components/ChatPreviewSkeleton";
+import Animated, {SlideInLeft} from "react-native-reanimated";
 
 export const ChatComponent = () => {
   const [value, setValue] = useState("");
@@ -39,9 +39,8 @@ export const ChatComponent = () => {
   );
   const data = query ? safeData : sortedResults;
   const loading = isLoading && status !== "LoadingFirstPage";
-  console.log({ results });
   return (
-    <View style={{ flex: 1 }}>
+    <Animated.View key={'single'} entering={SlideInLeft} style={{ flex: 1 }}>
       <SearchComponent
         show={false}
         placeholder={"Search messages..."}
@@ -53,6 +52,6 @@ export const ChatComponent = () => {
       ) : (
         <RenderChats chats={data} loadMore={handleMore} isLoading={loading} />
       )}
-    </View>
+    </Animated.View>
   );
 };

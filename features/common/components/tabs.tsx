@@ -5,20 +5,20 @@ import {colors} from "~/constants/Colors";
 
 type Props = {
   data: string[];
-  selected: string;
-  onSelect: (item: string) => void;
+  selectedIndex: number;
+  onSelectIndex: (index: number) => void;
 };
-export const TabsSelector = ({ onSelect, selected, data }: Props) => {
+export const TabsSelector = ({  data,onSelectIndex,selectedIndex }: Props) => {
   return (
     <View>
       <FlatList
         data={data}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <CustomPressable
-            onPress={() => onSelect(item)}
+            onPress={() => onSelectIndex(index)}
             style={{
               backgroundColor:
-                selected === item ? colors.dialPad : "transparent",
+                selectedIndex === index ? colors.dialPad : "transparent",
               borderRadius: 4,
             }}
           >
@@ -26,7 +26,7 @@ export const TabsSelector = ({ onSelect, selected, data }: Props) => {
               poppins={"Medium"}
               fontSize={15}
               style={{
-                color: selected === item ? colors.white : colors.black,
+                color: selectedIndex === index ? colors.white : colors.black,
               }}
             >
               {item}

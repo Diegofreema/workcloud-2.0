@@ -1,30 +1,30 @@
-import { Avatar } from '@rneui/themed';
-import { useMutation, useQuery } from 'convex/react';
-import { ErrorBoundaryProps, useGlobalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable } from 'react-native';
-import { useDebounce } from 'use-debounce';
+import {Avatar} from "@rneui/themed";
+import {useMutation, useQuery} from "convex/react";
+import {ErrorBoundaryProps, useGlobalSearchParams, useRouter,} from "expo-router";
+import React, {useEffect, useState} from "react";
+import {ActivityIndicator, FlatList, Pressable} from "react-native";
+import {useDebounce} from "use-debounce";
 
-import { HStack } from '~/components/HStack';
-import { RecentSearch } from '~/components/RecentSearch';
-import { SearchComponent } from '~/features/common/components/SearchComponent';
-import { TSearch } from '~/components/TopSearch';
-import { Container } from '~/components/Ui/Container';
-import { ErrorComponent } from '~/components/Ui/ErrorComponent';
-import { LoadingComponent } from '~/components/Ui/LoadingComponent';
-import { MyText } from '~/components/Ui/MyText';
-import { Suggestions } from '~/components/Ui/Suggestions';
-import VStack from '~/components/Ui/VStack';
-import { SearchServicePoints } from '~/constants/types';
-import { api } from '~/convex/_generated/api';
-import { useGetUserId } from '~/hooks/useGetUserId';
+import {HStack} from "~/components/HStack";
+import {SearchComponent} from "~/features/common/components/SearchComponent";
+import {TSearch} from "~/components/TopSearch";
+import {Container} from "~/components/Ui/Container";
+import {ErrorComponent} from "~/components/Ui/ErrorComponent";
+import {LoadingComponent} from "~/components/Ui/LoadingComponent";
+import {MyText} from "~/components/Ui/MyText";
+import {Suggestions} from "~/components/Ui/Suggestions";
+import VStack from "~/components/Ui/VStack";
+import {SearchServicePoints} from "~/constants/types";
+import {api} from "~/convex/_generated/api";
+import {useGetUserId} from "~/hooks/useGetUserId";
+import {RenderSuggestions} from "~/features/organization/components/render-suggestions";
 
 export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
   return <ErrorComponent refetch={retry} text={error.message} />;
 }
 
 const Search = () => {
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState("");
   const [val] = useDebounce(value, 500);
   const { query } = useGlobalSearchParams<{ query: string }>();
   const { id } = useGetUserId();
@@ -34,17 +34,23 @@ const Search = () => {
 
   console.log({ query, value });
   const topSearch = useQuery(api.organisation.getTopSearches, { userId: id! });
-  const searches = useQuery(api.organisation.getOrganisationsByServicePointsSearchQuery, {
-    query: val,
-    ownerId: id!,
-  });
+  const searches = useQuery(
+    api.organisation.getOrganisationsByServicePointsSearchQuery,
+    {
+      query: val,
+      ownerId: id!,
+    },
+  );
+  const servicePoints = useQuery(api.organisation.getServicePoints);
   const data = useQuery(api.organisation.getOrganisationsBySearchQuery, {
     query: val,
     ownerId: id!,
   });
   const addSuggestionToDb = useMutation(api.suggestions.addToSuggestions);
-  const suggestions = useQuery(api.suggestions.getSuggestions, { query: value });
-  if (!topSearch) {
+  const suggestions = useQuery(api.suggestions.getSuggestions, {
+    query: value,
+  });
+  if (topSearch === undefined || servicePoints === undefined) {
     return (
       <Container>
         <SearchComponent />
@@ -55,18 +61,20 @@ const Search = () => {
   const dataToArray = data || [];
   const searchToArray = searches || [];
   const dataToRender = [...new Set([...searchToArray, ...dataToArray])];
-  console.log(dataToRender);
+
   const addSuggestion = async () => {
     await addSuggestionToDb({ suggestion: val });
   };
-  const showResultText = val !== '' && searchToArray?.length > 0;
+  const showResultText = val !== "" && searchToArray?.length > 0;
   const loading = val?.length > 0 && !searches;
+
   return (
     <Container>
       <SearchComponent value={value} setValue={setValue} />
       {value && <Suggestions suggestions={suggestions} />}
       <TSearch data={topSearch} />
-      <RecentSearch />
+      {/*@ts-ignore*/}
+      <RenderSuggestions suggestions={servicePoints} />
       {loading ? (
         <ActivityIndicator size="large" style={{ marginTop: 30 }} />
       ) : (
@@ -78,7 +86,8 @@ const Search = () => {
                 style={{
                   fontSize: 14,
                   marginBottom: 20,
-                }}>
+                }}
+              >
                 Results
               </MyText>
             ) : null
@@ -127,8 +136,11 @@ const OrganizationItem = ({
   };
   return (
     <Pressable
-      style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1, marginBottom: 10 }]}
-      onPress={onPress}>
+      style={({ pressed }) => [
+        { opacity: pressed ? 0.5 : 1, marginBottom: 10 },
+      ]}
+      onPress={onPress}
+    >
       <HStack alignItems="center" gap={10}>
         <Avatar rounded source={{ uri: item.avatar! }} size={50} />
         <VStack>
