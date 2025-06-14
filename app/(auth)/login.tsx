@@ -1,5 +1,4 @@
-import { FontAwesome } from "@expo/vector-icons";
-import { Divider, Text } from "@rneui/themed";
+import { Divider } from "@rneui/themed";
 import { LinearGradient } from "expo-linear-gradient";
 import {
   Image,
@@ -12,10 +11,10 @@ import {
 import { AuthTitle } from "~/components/AuthTitle";
 import { Subtitle } from "~/components/Subtitle";
 import { Container } from "~/components/Ui/Container";
-import { MyButton } from "~/components/Ui/MyButton";
 import { useDarkMode } from "~/hooks/useDarkMode";
 import { useWarmUpBrowser } from "~/hooks/warmUpBrowser";
 import { useAuth } from "~/context/auth";
+import { Button } from "~/features/common/components/Button";
 
 export default function SignInScreen() {
   useWarmUpBrowser();
@@ -123,39 +122,12 @@ export default function SignInScreen() {
           }}
         >
           <View style={{ marginTop: "auto", marginBottom: 20 }}>
-            <MyButton
-              disabled={isLoading}
-              buttonStyle={{ borderRadius: 6 }}
-              disabledStyle={{ backgroundColor: "rgba(255, 255, 255, 0.3)" }}
-              contentStyle={{
-                height: 60,
-                marginTop: "auto",
-                marginBottom: 50,
-                marginHorizontal: 40,
-              }}
-              style={{ marginTop: "auto" }}
+            <Button
+              title={"Sign in with Google"}
+              loading={isLoading}
+              loadingTitle={"Signing in..."}
               onPress={signIn}
-            >
-              <Text
-                style={{
-                  fontFamily: "PoppinsMedium",
-                  color: "white",
-                  fontSize: 15,
-                }}
-              >
-                Sign in with{" "}
-              </Text>
-              <FontAwesome name="google" size={20} color="white" />
-              <Text
-                style={{
-                  fontFamily: "PoppinsMedium",
-                  color: "white",
-                  fontSize: 15,
-                }}
-              >
-                oogle
-              </Text>
-            </MyButton>
+            />
           </View>
         </LinearGradient>
       </ScrollView>
@@ -166,7 +138,6 @@ export default function SignInScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
     gap: 10,
   },
 });

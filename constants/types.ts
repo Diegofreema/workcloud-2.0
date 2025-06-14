@@ -393,10 +393,8 @@ export type ServicePointType = {
   externalLink?: boolean | undefined;
   form?: boolean | undefined;
   organizationId: Id<"organizations">;
-  description: string;
+  description?: string;
   name: string;
-  service: boolean;
-  staff: string;
 };
 
 export type SearchServicePoints = {

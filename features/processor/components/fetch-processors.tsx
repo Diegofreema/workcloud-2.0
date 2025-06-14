@@ -1,8 +1,8 @@
-import {useGetUserId} from "~/hooks/useGetUserId";
-import {useQuery} from "convex/react";
-import {api} from "~/convex/_generated/api";
-import {LoadingComponent} from "~/components/Ui/LoadingComponent";
-import {RenderProcessors} from "~/features/processor/components/render-processors";
+import { useGetUserId } from "~/hooks/useGetUserId";
+import { useQuery } from "convex/react";
+import { api } from "~/convex/_generated/api";
+import { LoadingComponent } from "~/components/Ui/LoadingComponent";
+import { RenderProcessors } from "~/features/processor/components/render-processors";
 
 export const FetchProcessors = () => {
   const { id } = useGetUserId();
@@ -10,6 +10,7 @@ export const FetchProcessors = () => {
     api.processors.getProcessorThroughUser,
     id ? { userId: id } : "skip",
   );
+
 
   if (processors === undefined) {
     return <LoadingComponent />;
@@ -20,6 +21,7 @@ export const FetchProcessors = () => {
     image: item?.imageUrl!,
     id: item?._id!,
     role: item?.role!,
+    workspace: null,
   }));
   return <RenderProcessors data={formattedData} />;
 };

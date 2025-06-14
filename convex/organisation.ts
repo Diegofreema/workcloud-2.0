@@ -5,26 +5,28 @@ import { getUserByUserId, getUserForWorker } from "~/convex/users";
 
 export const getServicePoints = query({
   args: {},
-  handler: async (ctx, ) => {
+  handler: async (ctx) => {
     const organisations = await ctx.db
       .query("organizations")
-      .withIndex("by_search_count")
-      .take(10);
-
-    const servicePoints = organisations.map(async (organisation) => {
+      .withIndex("by_id")
+      .take(50);
+    const shuffled = [...organisations];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    const randomTenOrgs = shuffled.slice(0, 5);
+    const servicePoints = randomTenOrgs.map(async (organisation) => {
       const servicePoints = await ctx.db
         .query("servicePoints")
         .withIndex("by_organisation_id", (q) =>
           q.eq("organizationId", organisation._id),
         )
-        .first();
-      return {
-        ...servicePoints,
-        organizationName: organisation.name,
-      };
+        .collect();
+      return [...servicePoints];
     });
-
-    return await Promise.all(servicePoints);
+    const array = await Promise.all(servicePoints);
+    return array.flatMap(a => a);
   },
 });
 

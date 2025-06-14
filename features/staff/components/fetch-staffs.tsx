@@ -12,10 +12,12 @@ export const FetchStaffs = () => {
   );
   if (staffs === undefined) return <ChatPreviewSkeleton length={6} />;
   const data = staffs.map((item) => ({
-    name: item.user.name!,
-    image: item.user.imageUrl!,
-    id: item.user._id!,
+    name: item?.user?.name!,
+    image: item?.user?.imageUrl!,
+    id: item?.user?._id!,
     role: item.role!,
+    workspace: item.workspace,
+
   }));
   return <RenderStaffs data={data} />;
 };

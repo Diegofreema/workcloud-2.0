@@ -202,6 +202,7 @@ export const createWorkspace = mutation({
     await ctx.db.patch(args.workerId, {
       workspaceId: id,
       organizationId: args.organizationId,
+      role: args.role,
     });
 
     return id;

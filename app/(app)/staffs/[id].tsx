@@ -79,7 +79,7 @@ const Staffs = () => {
     getItem(item);
   };
   const onCreate = async () => {
-    if (!staff) return;
+    if (!staff || !staff._id) return;
     setAssigning(true);
     try {
       await createWorkspace({

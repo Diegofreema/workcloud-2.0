@@ -33,6 +33,7 @@ export const FetchStaffToAdd = () => {
     image: item.imageUrl!,
     id: item._id!,
     role: item.role!,
+    workspace: null
   }));
 
   const onAdd = async () => {

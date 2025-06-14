@@ -24,6 +24,7 @@ const Connections = () => {
     return <LoadingComponent />;
   }
 
+  // @ts-ignore
   return (
     <View
       style={{
@@ -43,7 +44,7 @@ const Connections = () => {
         renderItem={({ item, index }) => {
           const lastIndex = [1, 2, 3].length - 1;
           const isLastItemOnList = index === lastIndex;
-          // @ts-expect-error
+          // @ts-ignore
           return <Item {...item} isLastItemOnList={isLastItemOnList} />;
         }}
         showsVerticalScrollIndicator={false}

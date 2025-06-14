@@ -34,7 +34,10 @@ export const GroupInfo = () => {
         image: item.imageUrl!,
         id: item._id!,
         role: item.role!,
+        _id: item.workerId!,
+        workspace: null,
       })) ?? [];
+
   return (
     <View style={{ flex: 1 }}>
       <RoomInfoTop data={group!} count={groupMembers?.length || 0} />
