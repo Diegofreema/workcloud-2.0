@@ -1,18 +1,28 @@
-import { Rating } from 'react-native-ratings';
-import { RFPercentage } from 'react-native-responsive-fontsize';
+import { Rating } from "react-native-ratings";
+import { RFPercentage } from "react-native-responsive-fontsize";
 
-import { HStack } from '~/components/HStack';
-import { Avatar } from '~/components/Ui/Avatar';
-import { MyText } from '~/components/Ui/MyText';
-import VStack from '~/components/Ui/VStack';
-import { ReviewType } from '~/constants/types';
-import { formatDateToNowHelper } from '~/lib/helper';
+import { HStack } from "~/components/HStack";
+import { Avatar } from "~/components/Ui/Avatar";
+import { MyText } from "~/components/Ui/MyText";
+import VStack from "~/components/Ui/VStack";
+import { ReviewType } from "~/constants/types";
+import { formatDateToNowHelper } from "~/lib/helper";
+import { useLocalSearchParams } from "expo-router";
+import { Id } from "~/convex/_generated/dataModel";
+import { Reply } from "~/features/review/component/reply";
 
 type Props = {
   comment: ReviewType;
 };
 
 export const ReviewComment = ({ comment }: Props) => {
+  const { owner } = useLocalSearchParams<{
+    orgId: Id<"organizations">;
+    owner: string;
+  }>();
+
+  const isOwner = !!owner;
+
   return (
     <VStack gap={8}>
       <HStack alignItems="center" justifyContent="space-between">
@@ -34,8 +44,9 @@ export const ReviewComment = ({ comment }: Props) => {
         startingValue={comment.rating}
         imageSize={20}
         readonly
-        style={{ alignSelf: 'flex-start' }}
+        style={{ alignSelf: "flex-start" }}
       />
+      <Reply isOwner={isOwner} reviewId={comment._id} />
     </VStack>
   );
 };

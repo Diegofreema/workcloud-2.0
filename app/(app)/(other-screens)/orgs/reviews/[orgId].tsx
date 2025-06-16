@@ -29,7 +29,7 @@ const Review = () => {
         }
       />
 
-      <FetchReview id={orgId} />
+      <FetchReview id={orgId}  />
     </Container>
   );
 };

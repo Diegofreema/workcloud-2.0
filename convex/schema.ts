@@ -161,6 +161,12 @@ export const Members = {
 export const Suggestion = {
   text: v.string(),
 };
+
+const ReplyToReview = {
+  reply: v.string(),
+  from: v.id("users"),
+  reviewId: v.id("reviews"),
+};
 export const Reaction = {
   user_id: v.id("users"),
   message_id: v.id("messages"),
@@ -263,4 +269,5 @@ export default defineSchema({
     .index("by_conversation_id", ["conversationId"])
     .index("by_member_id", ["memberId"])
     .index("by_member_id_conversation_id", ["memberId", "conversationId"]),
+  replies: defineTable(ReplyToReview).index("by_review_id", ["reviewId"]),
 });
