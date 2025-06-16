@@ -1,17 +1,17 @@
-import {View} from "react-native";
-import {Button} from "~/features/common/components/Button";
-import {colors} from "~/constants/Colors";
-import Animated, {FadeIn, FadeOut} from "react-native-reanimated";
-import {InputComponent} from "~/components/InputComponent";
-import {HStack} from "~/components/HStack";
-import {useState} from "react";
-import {Id} from "~/convex/_generated/dataModel";
-import {useMutation, useQuery} from "convex/react";
-import {api} from "~/convex/_generated/api";
-import {useGetUserId} from "~/hooks/useGetUserId";
-import {toast} from "sonner-native";
+import { Alert, View } from "react-native";
+import { Button } from "~/features/common/components/Button";
+import { colors } from "~/constants/Colors";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { InputComponent } from "~/components/InputComponent";
+import { HStack } from "~/components/HStack";
+import { useState } from "react";
+import { Id } from "~/convex/_generated/dataModel";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "~/convex/_generated/api";
+import { useGetUserId } from "~/hooks/useGetUserId";
+import { toast } from "sonner-native";
 import Card from "~/features/common/components/card";
-import {formatDateToNowHelper,} from "~/lib/helper";
+import { formatDateToNowHelper, generateErrorMessage } from "~/lib/helper";
 
 type Props = {
   isOwner: boolean;
@@ -22,31 +22,84 @@ export const Reply = ({ isOwner, reviewId }: Props) => {
   const addReply = useMutation(api.reviews.addReply);
   const { id } = useGetUserId();
   const reply = useQuery(api.reviews.getReply, { reviewId });
+  const deleteReply = useMutation(api.reviews.deleteReply);
+  const editReply = useMutation(api.reviews.editReply);
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [value, setValue] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [replying, setReplying] = useState(false);
   const onCancel = () => {
     setShowReplyInput(false);
+    setEditing(false);
     setValue("");
+  };
+  const onDelete = async () => {
+    if (!reply || !id) return;
+    Alert.alert("Are you sure?", "This action cannot be undone", [
+      { text: "Cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            setDeleting(true);
+            await deleteReply({
+              replyId: reply.id,
+              userId: id,
+            });
+            toast.success("Reply deleted");
+          } catch (error) {
+            const errorMessage = generateErrorMessage(
+              error,
+              "Failed to delete reply",
+            );
+            toast.error("Something went wrong", {
+              description: errorMessage,
+            });
+          } finally {
+            setDeleting(false);
+          }
+        },
+      },
+    ]);
   };
   const onReply = async () => {
     if (!value.trim()) return;
     try {
       setReplying(true);
-      await addReply({
-        reply: value,
-        reviewId,
-        from: id!,
-      });
-      toast.success("Reply sent successfully.");
+      if (editing) {
+        await editReply({
+          replyId: reply?.id!,
+          newReply: value,
+          userId: id!,
+        });
+      } else {
+        await addReply({
+          reply: value,
+          reviewId,
+          from: id!,
+        });
+      }
+      toast.success("Success");
       setShowReplyInput(false);
     } catch (e) {
-      toast.error("Failed to send reply");
+      const errorMessage = generateErrorMessage(e, "An error occurred.");
+      toast.error(errorMessage);
     } finally {
       setReplying(false);
+      setEditing(false);
     }
   };
+
+  const onEdit = () => {
+    if (!reply) return;
+    setEditing(true);
+    setValue(reply.reply);
+    setShowReplyInput(true);
+  };
   const disable = value.trim() === "" || replying;
+  const disableEdit = reply?.reply === value || replying;
   if (reply === undefined) return null;
   return (
     <View>
@@ -75,11 +128,11 @@ export const Reply = ({ isOwner, reviewId }: Props) => {
               style={{ backgroundColor: colors.closeTextColor, flex: 1 }}
             />
             <Button
-              title={"Reply"}
+              title={editing ? "Edit" : "Reply"}
               onPress={onReply}
-              disabled={disable}
+              disabled={editing ? disableEdit : disable}
               loading={replying}
-              loadingTitle={"Replying..."}
+              loadingTitle={editing ? "Editing..." : "Replying..."}
               style={{ backgroundColor: colors.dialPad, flex: 1 }}
             />
           </HStack>
@@ -87,7 +140,7 @@ export const Reply = ({ isOwner, reviewId }: Props) => {
       )}
 
       {reply && (
-        <Card style={{ boxShadow: "", marginHorizontal: 5, alignSelf: "flex-end" }}>
+        <Card style={{ boxShadow: "" }}>
           <Card.Header>
             <Card.Title>{reply.organizationName}</Card.Title>
             <Card.Description>
@@ -95,6 +148,26 @@ export const Reply = ({ isOwner, reviewId }: Props) => {
             </Card.Description>
             <Card.Description>{reply.reply}</Card.Description>
           </Card.Header>
+          {isOwner && (
+            <Card.Footer>
+              <HStack width={"100%"} gap={10}>
+                <Button
+                  disabled={deleting}
+                  title={"Edit"}
+                  onPress={onEdit}
+                  style={{ flex: 1 }}
+                />
+                <Button
+                  title={"Delete"}
+                  onPress={onDelete}
+                  loading={deleting}
+                  loadingTitle={"Deleting..."}
+                  disabled={deleting}
+                  style={{ backgroundColor: colors.closeTextColor, flex: 1 }}
+                />
+              </HStack>
+            </Card.Footer>
+          )}
         </Card>
       )}
     </View>

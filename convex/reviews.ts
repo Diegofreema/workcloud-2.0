@@ -1,5 +1,5 @@
 import { paginationOptsValidator } from "convex/server";
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 
 import { mutation, query } from "~/convex/_generated/server";
 import { getUserByUserId } from "~/convex/users";
@@ -28,6 +28,40 @@ export const addReply = mutation({
   handler: async (ctx, args) => {
     await ctx.db.insert("replies", {
       ...args,
+    });
+  },
+});
+export const deleteReply = mutation({
+  args: { replyId: v.id("replies"), userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const reply = await ctx.db.get(args.replyId);
+    if (!reply) {
+      throw new ConvexError("Reply not found");
+    }
+    if (reply.from !== args.userId) {
+      throw new ConvexError("You are not authorized");
+    }
+
+    await ctx.db.delete(reply._id);
+  },
+});
+export const editReply = mutation({
+  args: {
+    replyId: v.id("replies"),
+    userId: v.id("users"),
+    newReply: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const reply = await ctx.db.get(args.replyId);
+    if (!reply) {
+      throw new ConvexError("Reply not found");
+    }
+    if (reply.from !== args.userId) {
+      throw new ConvexError("You are not authorized");
+    }
+
+    await ctx.db.patch(reply._id, {
+      reply: args.newReply,
     });
   },
 });
@@ -108,7 +142,7 @@ export const getReply = query({
       organizationName: organization.name,
       reply: reply.reply,
       id: reply._id,
-      creationTime: reply._creationTime
+      creationTime: reply._creationTime,
     };
   },
 });
