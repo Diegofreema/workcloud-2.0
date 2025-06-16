@@ -198,6 +198,7 @@ export default defineSchema({
     .index("ownerId", ["ownerId"])
     .index("by_search_count", ["searchCount"])
     .index("by_name", ["name"])
+
     .searchIndex("name", {
       searchField: "name",
     }),
@@ -217,8 +218,12 @@ export default defineSchema({
     "customerId",
   ]),
   servicePoints: defineTable(ServicePoints)
+    .index("by_name_org_id", ["name", "organizationId"])
     .searchIndex("description", {
       searchField: "description",
+    })
+    .searchIndex("name", {
+      searchField: "name",
     })
     .index("by_organisation_id", ["organizationId"]),
   roles: defineTable(Role),

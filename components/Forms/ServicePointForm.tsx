@@ -12,6 +12,7 @@ import VStack from "../Ui/VStack";
 import { api } from "~/convex/_generated/api";
 import { Id } from "~/convex/_generated/dataModel";
 import { useSelect } from "~/hooks/useSelect";
+import { generateErrorMessage } from "~/lib/helper";
 
 export const ServicePointForm = () => {
   const { onDeselect, onSelect } = useSelect();
@@ -101,9 +102,12 @@ export const ServicePointForm = () => {
       onDeselect();
       router.back();
     } catch (error) {
-      console.log(error);
+      const errorMessage = generateErrorMessage(
+        error,
+        "Failed to create service point. Please try again",
+      );
       toast.error("Something went wrong", {
-        description: "Failed to create service point. Please try again",
+        description: errorMessage,
       });
     } finally {
       setLoading(false);

@@ -16,17 +16,26 @@ export const getServicePoints = query({
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     const randomTenOrgs = shuffled.slice(0, 5);
-    const servicePoints = randomTenOrgs.map(async (organisation) => {
+    const servicePointsPromises = randomTenOrgs.map(async (organisation) => {
       const servicePoints = await ctx.db
         .query("servicePoints")
         .withIndex("by_organisation_id", (q) =>
           q.eq("organizationId", organisation._id),
         )
         .collect();
-      return [...servicePoints];
+      if (servicePoints.length === 0) {
+        console.warn(
+          `No service points found for organization ${organisation._id}`,
+        );
+        return null; // Return null for organizations with no service points
+      }
+      const randomIndex = Math.floor(Math.random() * servicePoints.length);
+      console.log({ randomIndex });
+      return servicePoints[randomIndex];
     });
-    const array = await Promise.all(servicePoints);
-    return array.flatMap(a => a);
+    return (await Promise.all(servicePointsPromises)).filter(
+      (point) => point !== null,
+    );
   },
 });
 

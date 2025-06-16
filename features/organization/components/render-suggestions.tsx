@@ -35,8 +35,8 @@ type SuggestionsProps = {
 };
 export const Suggestion = ({ suggestion }: SuggestionsProps) => {
   const onPress = () => {
-    // @ts-ignore
-    router.push(`reception/${suggestion.organizationId}`);
+
+    router.push(`/service-points/${suggestion.name}`);
   };
   return (
     <CustomPressable onPress={onPress}>

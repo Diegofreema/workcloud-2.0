@@ -1,8 +1,8 @@
-import { v } from "convex/values";
+import {ConvexError, v} from "convex/values";
 
-import { Id } from "~/convex/_generated/dataModel";
-import { mutation, query, QueryCtx } from "~/convex/_generated/server";
-import { getImageUrl } from "~/convex/organisation";
+import {Id} from "~/convex/_generated/dataModel";
+import {mutation, query, QueryCtx} from "~/convex/_generated/server";
+import {getImageUrl} from "~/convex/organisation";
 
 export const getServicePoints = query({
   args: {
@@ -18,6 +18,29 @@ export const getServicePoints = query({
   },
 });
 
+export const getOrganizationsByNameOfServicePoints = query({
+  args: {
+    query: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const servicePoints = await ctx.db
+      .query("servicePoints")
+      .withSearchIndex("name", (q) => q.search("name", args.query))
+      .collect();
+
+    const organizationPromises = servicePoints.map(async (servicePoint) => {
+      const organization = await ctx.db.get(servicePoint.organizationId);
+      return {
+        name: organization?.name!,
+        image: organization?.avatar!,
+        id: organization?._id!,
+        description: organization?.description,
+      };
+    });
+
+    return await Promise.all(organizationPromises);
+  },
+});
 export const getSingleServicePointAndWorker = query({
   args: {
     servicePointId: v.optional(v.id("servicePoints")),
@@ -38,6 +61,15 @@ export const createServicePoint = mutation({
     name: v.string(),
   },
   handler: async (ctx, args) => {
+    const alreadyHasServicePointWithName = await ctx.db
+      .query("servicePoints")
+      .withIndex("by_name_org_id", (q) =>
+        q.eq("name", args.name).eq("organizationId", args.organisationId),
+      )
+      .first();
+    if (alreadyHasServicePointWithName) {
+      throw new ConvexError("You already have a service point with this name");
+    }
     await ctx.db.insert("servicePoints", {
       organizationId: args.organisationId,
       name: args.name,

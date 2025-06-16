@@ -22,6 +22,8 @@ import { useGetWaitlistIdForCustomer } from "~/hooks/useGetWorkspaceIdForCustome
 import { useWaitlistId } from "~/hooks/useWaitlistId";
 import { useGetCustomerId } from "~/hooks/useCustomerId";
 import { MessageBtn } from "~/features/common/components/message-btn";
+import { useAuth } from "~/context/auth";
+import { useStreamVideoClient } from "@stream-io/video-react-bindings";
 
 const today = format(new Date(), "dd-MM-yyyy");
 
@@ -29,6 +31,8 @@ const Work = () => {
   const { id } = useLocalSearchParams<{ id: Id<"workspaces"> }>();
   const [showMenu, setShowMenu] = useState(false);
   const { id: loggedInUser } = useGetUserId();
+  const { user } = useAuth();
+  const client = useStreamVideoClient();
   const [leaving, setLeaving] = useState(false);
   const [customerLeaving, setCustomerLeaving] = useState(false);
   const [customerToRemove, setCustomerToRemove] = useState<Id<"users"> | null>(
@@ -192,7 +196,19 @@ const Work = () => {
     currentUser: Id<"waitlists">,
     nextUser: Id<"waitlists">,
     customerId: Id<"users">,
-  ) => {};
+    customerCallId: string,
+  ) => {
+    if (!client) return;
+    const call = client.call("default", `call_${Date.now()}${id}`);
+    await call.join({
+      create: true,
+      ring: true,
+      video: true,
+      data: {
+        members: [{ user_id: user?.id! }, { user_id: customerCallId }],
+      },
+    });
+  };
   const handleExit = async () => {
     if (customerLeaving) {
       await onLeave();

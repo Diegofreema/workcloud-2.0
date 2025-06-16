@@ -34,6 +34,7 @@ export type User = {
   workerId?: Id<"workers">;
   phoneNumber?: string;
   date_of_birth?: string;
+  userId?: string
 };
 export type ProcessorType = {
   worker: Worker;

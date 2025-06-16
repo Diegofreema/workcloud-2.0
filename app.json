@@ -11,7 +11,11 @@
     "ios": {
       "supportsTablet": true,
       "bitcode": false,
-      "bundleIdentifier": "com.diegodark.workcloud"
+      "bundleIdentifier": "com.diegodark.workcloud",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera for video calls.",
+        "NSMicrophoneUsageDescription": "This app uses the microphone to record audio for video or voice messages."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -80,6 +84,14 @@
     },
     "plugins": [
       ["expo-router"],
+      "@stream-io/video-react-native-sdk",
+      [
+        "@config-plugins/react-native-webrtc",
+        {
+          "cameraPermission": "$(PRODUCT_NAME) requires camera access in order to capture and transmit video",
+          "microphonePermission": "$(PRODUCT_NAME) requires microphone access in order to capture and transmit audio"
+        }
+      ],
       [
         "expo-splash-screen",
         {
@@ -112,6 +124,12 @@
           "ios": {
             "deploymentTarget": "15.1"
           }
+        }
+      ],
+      [
+        "react-native-permissions",
+        {
+          "iosPermissions": ["Camera", "Microphone"]
         }
       ]
     ],
