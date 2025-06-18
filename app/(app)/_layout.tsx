@@ -1,16 +1,19 @@
-import {ErrorBoundaryProps, Redirect, Stack} from "expo-router";
-import {StatusBar} from "expo-status-bar";
-import {GestureHandlerRootView} from "react-native-gesture-handler";
+import { ErrorBoundaryProps, Redirect, Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import {ErrorComponent} from "~/components/Ui/ErrorComponent";
-import {useDarkMode} from "~/hooks/useDarkMode";
-import {useAuth} from "~/context/auth";
-import {LogLevel, StreamVideo, StreamVideoClient,} from "@stream-io/video-react-native-sdk";
-import {useGetUserId} from "~/hooks/useGetUserId";
+import { ErrorComponent } from "~/components/Ui/ErrorComponent";
+import { useDarkMode } from "~/hooks/useDarkMode";
+import { useAuth } from "~/context/auth";
+import {
+  LogLevel,
+  StreamVideo,
+  StreamVideoClient,
+} from "@stream-io/video-react-native-sdk";
+import { useGetUserId } from "~/hooks/useGetUserId";
+import { CallContext } from "~/context/call-context";
 
 const apiKey = "cnvc46pm8uq9";
-
-
 
 export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
   return <ErrorComponent refetch={retry} text={error.message} />;
@@ -45,6 +48,7 @@ export default function AppLayout() {
         }),
       });
       const data = await response.json();
+      console.log({ token: data.token });
       return data.token;
     } catch (error) {
       console.error("error", error);
@@ -55,32 +59,31 @@ export default function AppLayout() {
     apiKey,
     user: person,
     options: {
-      logger: (logLevel: LogLevel, message: string, ...args: unknown[]) => {},
+      logger: (logLevel: LogLevel, message: string, ...args: unknown[]) => {
+        console.log(message, "message");
+      },
     },
     tokenProvider,
   });
   return (
     <StreamVideo client={client}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <StatusBar
-          style={darkMode === "dark" ? "light" : "dark"}
-          backgroundColor={darkMode === "dark" ? "black" : "white"}
-        />
-        {/* <ChatWrapper>
-        <VideoProvider>
-          <CallProvider> */}
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen
-            name="upload-review"
-            options={{
-              presentation: "modal",
-            }}
+      <CallContext>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <StatusBar
+            style={darkMode === "dark" ? "light" : "dark"}
+            backgroundColor={darkMode === "dark" ? "black" : "white"}
           />
-        </Stack>
-        {/* </CallProvider>
-        </VideoProvider>
-      </ChatWrapper> */}
-      </GestureHandlerRootView>
+
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen
+              name="upload-review"
+              options={{
+                presentation: "modal",
+              }}
+            />
+          </Stack>
+        </GestureHandlerRootView>
+      </CallContext>
     </StreamVideo>
   );
 }

@@ -7,9 +7,6 @@ import React from "react";
 import {fontFamily} from "~/constants";
 import {colors} from "~/constants/Colors";
 import {useDarkMode} from "~/hooks/useDarkMode";
-import {useQuery} from "convex/react";
-import {api} from "~/convex/_generated/api";
-import {useGetUserId} from "~/hooks/useGetUserId";
 import {StyleSheet, View} from "react-native";
 import {useUnreadMessageCount} from "~/features/common/hook/use-unread-message-count";
 

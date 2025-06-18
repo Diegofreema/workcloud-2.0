@@ -24,6 +24,7 @@ import { useGetCustomerId } from "~/hooks/useCustomerId";
 import { MessageBtn } from "~/features/common/components/message-btn";
 import { useAuth } from "~/context/auth";
 import { useStreamVideoClient } from "@stream-io/video-react-bindings";
+import { Button } from "~/features/common/components/Button";
 
 const today = format(new Date(), "dd-MM-yyyy");
 
@@ -199,7 +200,12 @@ const Work = () => {
     customerCallId: string,
   ) => {
     if (!client) return;
-    const call = client.call("default", `call_${Date.now()}${id}`);
+    // await updateWaitlistType({
+    //   waitlistId: currentUser,
+    //   nextWaitListId: nextUser,
+    // });
+    const callId = `call_${Date.now()}${id}`;
+    const call = client.call("default", callId);
     await call.join({
       create: true,
       ring: true,
@@ -208,6 +214,7 @@ const Work = () => {
         members: [{ user_id: user?.id! }, { user_id: customerCallId }],
       },
     });
+    router.push(`/call/${callId}`);
   };
   const handleExit = async () => {
     if (customerLeaving) {
@@ -275,17 +282,11 @@ const Work = () => {
                 marginBottom: 20,
               }}
             >
-              <MyButton onPress={onShowExitModal} loading={leaving}>
-                <Text
-                  style={{
-                    color: colors.white,
-                    fontFamily: "PoppinsMedium",
-                    fontSize: 15,
-                  }}
-                >
-                  Exit Lobby
-                </Text>
-              </MyButton>
+              <Button
+                title={"Exit Lobby"}
+                onPress={onShowExitModal}
+                loading={leaving}
+              />
             </View>
           )}
           <BottomActive
