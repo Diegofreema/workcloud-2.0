@@ -1,45 +1,31 @@
-import { FontAwesome6 } from "@expo/vector-icons";
-import { Avatar } from "@rneui/themed";
-import { useMutation, useQuery } from "convex/react";
-import { format } from "date-fns";
-import { Image } from "expo-image";
-import {
-  ErrorBoundaryProps,
-  router,
-  useLocalSearchParams,
-  useRouter,
-} from "expo-router";
-import React, { useEffect, useMemo } from "react";
-import {
-  FlatList,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import {FontAwesome6} from "@expo/vector-icons";
+import {Avatar} from "@rneui/themed";
+import {useMutation, useQuery} from "convex/react";
+import {format} from "date-fns";
+import {Image} from "expo-image";
+import {ErrorBoundaryProps, router, useLocalSearchParams, useRouter,} from "expo-router";
+import React, {useEffect, useMemo} from "react";
+import {FlatList, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View,} from "react-native";
 import Carousel from "react-native-reanimated-carousel";
-import { toast } from "sonner-native";
+import {toast} from "sonner-native";
 
-import { EmptyText } from "~/components/EmptyText";
-import { HStack } from "~/components/HStack";
-import { HeaderNav } from "~/components/HeaderNav";
-import { Container } from "~/components/Ui/Container";
-import { ErrorComponent } from "~/components/Ui/ErrorComponent";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { MyText } from "~/components/Ui/MyText";
+import {EmptyText} from "~/components/EmptyText";
+import {HStack} from "~/components/HStack";
+import {HeaderNav} from "~/components/HeaderNav";
+import {Container} from "~/components/Ui/Container";
+import {ErrorComponent} from "~/components/Ui/ErrorComponent";
+import {LoadingComponent} from "~/components/Ui/LoadingComponent";
+import {MyText} from "~/components/Ui/MyText";
 import VStack from "~/components/Ui/VStack";
-import { colors } from "~/constants/Colors";
-import { WorkerWithWorkspace } from "~/constants/types";
-import { api } from "~/convex/_generated/api";
-import { Id } from "~/convex/_generated/dataModel";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { useWaitlistId } from "~/hooks/useWaitlistId";
-import { useAuth } from "~/context/auth";
-import { Button } from "~/features/common/components/Button";
-import { Review } from "~/components/Review";
+import {colors} from "~/constants/Colors";
+import {WorkerWithWorkspace} from "~/constants/types";
+import {api} from "~/convex/_generated/api";
+import {Id} from "~/convex/_generated/dataModel";
+import {useDarkMode} from "~/hooks/useDarkMode";
+import {useGetUserId} from "~/hooks/useGetUserId";
+import {useWaitlistId} from "~/hooks/useWaitlistId";
+import {useAuth} from "~/context/auth";
+import {Review} from "~/components/Review";
 
 export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
   return <ErrorComponent refetch={retry} text={error.message} />;
@@ -91,7 +77,7 @@ const Reception = () => {
   const finalDay1 = day1.charAt(0).toUpperCase() + day1.slice(1);
   const finalDay2 = day2.charAt(0).toUpperCase() + day2.slice(1);
 
-  const onSeeReview = () => router.push(`/orgs/reviews/${id}`);
+
   return (
     <Container>
       <ScrollView
@@ -189,7 +175,7 @@ const Reception = () => {
         </MyText>
         <Representatives data={data?.workers} />
         <Review organizationId={id} showComments scroll hide />
-        <Button title={"See all"} onPress={onSeeReview} />
+
       </ScrollView>
     </Container>
   );
