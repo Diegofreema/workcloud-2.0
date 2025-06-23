@@ -64,7 +64,7 @@ const ServicePointItem = ({
 
   const handleEdit = () => {
     onClose();
-    router.push(`/create-service?editId=${item._id}`);
+    router.push(`/edit-service-point?editId=${item._id}`);
   };
 
   return (

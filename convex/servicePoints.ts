@@ -85,12 +85,14 @@ export const updateServicePoint = mutation({
   args: {
     servicePointId: v.id("servicePoints"),
     name: v.string(),
-    description: v.string(),
+    description: v.optional(v.string()),
+    link: v.string(),
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.servicePointId, {
       name: args.name,
       description: args.description,
+      externalLink: args.link,
     });
   },
 });
@@ -98,15 +100,11 @@ export const updateServicePoint = mutation({
 export const deleteServicePoint = mutation({
   args: { id: v.id("servicePoints") },
   handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query("workers")
-      .filter((q) => q.eq(q.field("servicePointId"), args.id))
-      .first();
-    if (!user) return;
-    await ctx.db.patch(user._id, {
-      servicePointId: undefined,
-    });
-    await ctx.db.delete(args.id);
+    const servicePoint = await ctx.db.get(args.id);
+    if (!servicePoint) {
+      throw new ConvexError("Service point not found");
+    }
+    await ctx.db.delete(servicePoint._id);
   },
 });
 

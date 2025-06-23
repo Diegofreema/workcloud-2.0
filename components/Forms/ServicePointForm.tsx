@@ -1,101 +1,40 @@
-import {useMutation, useQuery} from "convex/react";
-import {router, useLocalSearchParams} from "expo-router";
-import React, {useCallback, useState} from "react";
-import {toast} from "sonner-native";
+import React, { useCallback, useState } from "react";
 
-import {ServicePointModal} from "../Dialogs/ServicePointModal";
-import {InputComponent} from "../InputComponent";
-import {MyButton} from "../Ui/MyButton";
-import {MyText} from "../Ui/MyText";
+import { ServicePointModal } from "../Dialogs/ServicePointModal";
+import { InputComponent } from "../InputComponent";
 import VStack from "../Ui/VStack";
-import {api} from "~/convex/_generated/api";
-import {Id} from "~/convex/_generated/dataModel";
-import {generateErrorMessage} from "~/lib/helper";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {Controller, useForm} from "react-hook-form";
-import {StyleSheet, Text} from "react-native";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import { StyleSheet, Text } from "react-native";
+import { schema, SchemaType } from "~/validator";
+import { Button } from "~/features/common/components/Button";
 
-const schema = z.object({
-  name: z
-    .string()
-    .min(1, "Name is required")
-    .max(100, "A maximum of 100 characters is allowed")
-    .regex(
-      /^[a-zA-Z0-9 ]*$/,
-      "Only alphanumeric characters and spaces are allowed",
-    ),
-  description: z
-    .string()
-    .max(255, "A maximum of 255 characters is allowed")
-    .optional(),
-  link: z.string().url("Invalid URL, url should contain https://"),
-});
+type Props = {
+  onSubmit: (data: SchemaType) => void;
+  initialValues?: SchemaType;
+};
 
-type SchemaType = z.infer<typeof schema>;
-
-export const ServicePointForm = () => {
-
-  const { editId } = useLocalSearchParams<{ editId: Id<"servicePoints"> }>();
-
-
-  const { id } = useLocalSearchParams<{ id: Id<"organizations"> }>();
+export const ServicePointForm = ({ onSubmit, initialValues }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+
   const {
     formState: { errors, isSubmitting },
     handleSubmit,
     control,
+      watch
   } = useForm<SchemaType>({
     defaultValues: {
       link: "",
       name: "",
       description: "",
+      ...initialValues,
     },
     resolver: zodResolver(schema),
   });
-
-  const onSubmit = async (data: SchemaType) => {
-    try {
-      await createServicePoint({
-        name: data.name,
-        description: data.description,
-        organisationId: id,
-        link: data.link
-      });
-
-      toast.success("Success", {
-        description: "Service point created successfully",
-      });
-      setIsOpen(true);
-
-      router.back();
-    } catch (error) {
-      const errorMessage = generateErrorMessage(
-        error,
-        "Failed to create service point. Please try again",
-      );
-      toast.error("Something went wrong", {
-        description: errorMessage,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-  const createServicePoint = useMutation(api.servicePoints.createServicePoint);
-  const updateServicePoint = useMutation(api.servicePoints.updateServicePoint);
-  const servicePoint = useQuery(
-    api.servicePoints.getSingleServicePointAndWorker,
-    {
-      servicePointId: editId,
-    },
-  );
+  const {link,name,description} = watch()
 
   const onClose = useCallback(() => setIsOpen(false), []);
-
-
-  const isDisabled = isSubmitting || loading;
-
+    const disable = (!!initialValues && initialValues.name === name && initialValues.description === description && initialValues.link === link) || isSubmitting
   return (
     <VStack flex={1}>
       <ServicePointModal
@@ -132,7 +71,6 @@ export const ServicePointForm = () => {
               onBlur={onBlur}
               multiline
               textarea
-
             />
           )}
           name="description"
@@ -151,7 +89,7 @@ export const ServicePointForm = () => {
               onChangeText={onChange}
               placeholder="Paste a link for this service point"
               onBlur={onBlur}
-              autoCapitalize={'none'}
+              autoCapitalize={"none"}
             />
           )}
           name="link"
@@ -159,17 +97,13 @@ export const ServicePointForm = () => {
         {errors.link && <Text style={styles.error}>{errors.link.message}</Text>}
       </>
 
-      <MyButton
+      <Button
+        title={"Submit"}
         onPress={handleSubmit(onSubmit)}
-        disabled={isDisabled}
-        containerStyle={{ marginHorizontal: 10, marginTop: 20 }}
-        buttonStyle={{ height: 55, width: "100%" }}
-        loading={loading}
-      >
-        <MyText poppins="Bold" fontSize={15} style={{ color: "white" }}>
-          Proceed
-        </MyText>
-      </MyButton>
+        loading={isSubmitting}
+        disabled={disable}
+        loadingTitle={"Submitting..."}
+      />
     </VStack>
   );
 };

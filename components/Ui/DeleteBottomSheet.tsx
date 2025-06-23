@@ -1,28 +1,29 @@
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { Button } from '@rneui/themed';
-import { useMutation } from 'convex/react';
-import { forwardRef, useMemo, useState } from 'react';
-import { StyleSheet } from 'react-native';
-import { toast } from 'sonner-native';
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import { Button } from "@rneui/themed";
+import { useMutation } from "convex/react";
+import { forwardRef, useMemo, useState } from "react";
+import { StyleSheet } from "react-native";
+import { toast } from "sonner-native";
 
-import { HStack } from '~/components/HStack';
-import { MyText } from '~/components/Ui/MyText';
-import { colors } from '~/constants/Colors';
-import { api } from '~/convex/_generated/api';
-import { Id } from '~/convex/_generated/dataModel';
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { HStack } from "~/components/HStack";
+import { MyText } from "~/components/Ui/MyText";
+import { colors } from "~/constants/Colors";
+import { api } from "~/convex/_generated/api";
+import { Id } from "~/convex/_generated/dataModel";
+import { useDarkMode } from "~/hooks/useDarkMode";
+import { generateErrorMessage } from "~/lib/helper";
 
 type Props = {
   onClose: () => void;
-  id: Id<'servicePoints'>;
+  id: Id<"servicePoints">;
 };
 type RefProps = BottomSheet;
 export const DeleteBottomSheet = forwardRef<RefProps, Props>(
   ({ id, onClose }, ref) => {
-    const snapPoints = useMemo(() => ['25%'], []);
+    const snapPoints = useMemo(() => ["25%"], []);
     const [isLoading, setIsLoading] = useState(false);
     const deleteServicePoint = useMutation(
-      api.servicePoints.deleteServicePoint
+      api.servicePoints.deleteServicePoint,
     );
     const { darkMode } = useDarkMode();
     const onPress = async () => {
@@ -30,13 +31,17 @@ export const DeleteBottomSheet = forwardRef<RefProps, Props>(
       setIsLoading(true);
       try {
         await deleteServicePoint({ id });
-        toast.success('Success', {
-          description: 'Service point deleted successfully.',
+        toast.success("Success", {
+          description: "Service point deleted successfully.",
         });
         onClose();
       } catch (e) {
-        toast.error('Error', {
-          description: 'Something went wrong, Please try again later.',
+        const errorMessage = generateErrorMessage(
+          e,
+          "Something went wrong, Please try again later.",
+        );
+        toast.error("Error", {
+          description: errorMessage,
         });
         onClose();
         console.log(e);
@@ -55,8 +60,8 @@ export const DeleteBottomSheet = forwardRef<RefProps, Props>(
           style={[
             styles.centeredView,
             {
-              backgroundColor: darkMode === 'dark' ? 'black' : 'white',
-              shadowColor: darkMode === 'dark' ? '#fff' : '#000',
+              backgroundColor: darkMode === "dark" ? "black" : "white",
+              shadowColor: darkMode === "dark" ? "#fff" : "#000",
             },
           ]}
         >
@@ -64,9 +69,9 @@ export const DeleteBottomSheet = forwardRef<RefProps, Props>(
             poppins="Bold"
             fontSize={17}
             style={{
-              textAlign: 'center',
+              textAlign: "center",
               marginBottom: 15,
-              color: darkMode === 'dark' ? 'white' : 'black',
+              color: darkMode === "dark" ? "white" : "black",
             }}
           >
             Are you sure you want to delete this service point?
@@ -76,7 +81,7 @@ export const DeleteBottomSheet = forwardRef<RefProps, Props>(
             <Button
               disabled={isLoading}
               loading={isLoading}
-              titleStyle={{ fontFamily: 'PoppinsMedium' }}
+              titleStyle={{ fontFamily: "PoppinsMedium" }}
               buttonStyle={{
                 backgroundColor: colors.dialPad,
                 borderRadius: 5,
@@ -88,7 +93,7 @@ export const DeleteBottomSheet = forwardRef<RefProps, Props>(
             </Button>
             <Button
               titleStyle={{
-                fontFamily: 'PoppinsMedium',
+                fontFamily: "PoppinsMedium",
                 color: colors.dialPad,
               }}
               buttonStyle={{
@@ -105,28 +110,28 @@ export const DeleteBottomSheet = forwardRef<RefProps, Props>(
         </BottomSheetView>
       </BottomSheet>
     );
-  }
+  },
 );
 
-DeleteBottomSheet.displayName = 'DeleteBottomSheet';
+DeleteBottomSheet.displayName = "DeleteBottomSheet";
 
 const styles = StyleSheet.create({
   centeredView: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 30,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
 
     borderRadius: 15,
   },
 
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
