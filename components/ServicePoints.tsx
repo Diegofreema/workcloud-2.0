@@ -61,25 +61,7 @@ const ServicePointItem = ({
     onClose();
     onGetId(item._id);
   };
-  // const handleDelete = async () => {
-  //   setDeleting(true);
-  //   try {
-  //     const { error } = await supabase.from('servicePoint').delete().eq('id', item._id);
-  //     if (error) {
-  //       toast.error('Error deleting service point');
-  //     } else {
-  //       toast.success('Service point deleted successfully');
-  //       queryClient.invalidateQueries({ queryKey: ['service_points'] });
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //
-  //     toast.error('Error deleting service point');
-  //   } finally {
-  //     setDeleting(false);
-  //     setShowDeleteModal(false);
-  //   }
-  // };
+
   const handleEdit = () => {
     onClose();
     router.push(`/create-service?editId=${item._id}`);
@@ -88,8 +70,8 @@ const ServicePointItem = ({
   return (
     <>
       <HStack justifyContent="space-between">
-        <VStack>
-          <MyText poppins="Bold" fontSize={15}>
+        <VStack flex={1}>
+          <MyText poppins="Bold" fontSize={18}>
             {item.name}
           </MyText>
           <MyText poppins="Medium" fontSize={14}>

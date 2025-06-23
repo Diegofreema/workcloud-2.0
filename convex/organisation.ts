@@ -24,9 +24,6 @@ export const getServicePoints = query({
         )
         .collect();
       if (servicePoints.length === 0) {
-        console.warn(
-          `No service points found for organization ${organisation._id}`,
-        );
         return null; // Return null for organizations with no service points
       }
       const randomIndex = Math.floor(Math.random() * servicePoints.length);

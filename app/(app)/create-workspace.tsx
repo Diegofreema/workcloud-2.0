@@ -1,38 +1,30 @@
-import { FontAwesome } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Button } from "@rneui/themed";
-import { useMutation } from "convex/react";
-import { format } from "date-fns";
-import { Image } from "expo-image";
+import {Button} from "@rneui/themed";
+import {useMutation} from "convex/react";
+import {format} from "date-fns";
+import {Image} from "expo-image";
 import * as ImagePicker from "expo-image-picker";
-import { useRouter } from "expo-router";
-import { useFormik } from "formik";
-import React, { useEffect, useState } from "react";
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { SelectList } from "react-native-dropdown-select-list";
-import { toast } from "sonner-native";
+import {useRouter} from "expo-router";
+import {useFormik} from "formik";
+import React, {useEffect, useState} from "react";
+import {Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View,} from "react-native";
+import {SelectList} from "react-native-dropdown-select-list";
+import {toast} from "sonner-native";
 import * as yup from "yup";
 
-import { AuthHeader } from "~/components/AuthHeader";
-import { AuthTitle } from "~/components/AuthTitle";
-import { InputComponent } from "~/components/InputComponent";
-import { Subtitle } from "~/components/Subtitle";
-import { Container } from "~/components/Ui/Container";
-import { MyText } from "~/components/Ui/MyText";
-import { days } from "~/constants";
-import { colors } from "~/constants/Colors";
-import { api } from "~/convex/_generated/api";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { useGetCat } from "~/hooks/useGetCat";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { generateErrorMessage, uploadProfilePicture } from "~/lib/helper";
+import {AuthHeader} from "~/components/AuthHeader";
+import {AuthTitle} from "~/components/AuthTitle";
+import {InputComponent} from "~/components/InputComponent";
+import {Subtitle} from "~/components/Subtitle";
+import {Container} from "~/components/Ui/Container";
+import {MyText} from "~/components/Ui/MyText";
+import {days} from "~/constants";
+import {colors} from "~/constants/Colors";
+import {api} from "~/convex/_generated/api";
+import {useDarkMode} from "~/hooks/useDarkMode";
+import {useGetCat} from "~/hooks/useGetCat";
+import {useGetUserId} from "~/hooks/useGetUserId";
+import {generateErrorMessage, uploadProfilePicture} from "~/lib/helper";
 
 const validationSchema = yup.object().shape({
   organizationName: yup.string().required("Name of organization is required"),
@@ -55,7 +47,7 @@ const CreateWorkSpace = () => {
   const createOrganization = useMutation(api.organisation.createOrganization);
 
   const [endTime, setEndTime] = useState(new Date(1598051730000));
-  const [avatar, setAvatar] = useState<string>("https://placehold.co/100x100");
+
   const [selectedImage, setSelectedImage] =
     useState<ImagePicker.ImagePickerAsset | null>(null);
 
@@ -87,7 +79,7 @@ const CreateWorkSpace = () => {
       websiteUrl: "",
       startTime: "",
       endTime: "",
-      image: "",
+      image: "https://placehold.co/100x100",
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -172,8 +164,7 @@ const CreateWorkSpace = () => {
 
   // ! to fix later
   const handleDeleteImage = () => {
-    setValues({ ...values, image: "" });
-    setAvatar("https://placehold.co/100x100");
+    setFieldValue("image", "");
   };
   const {
     email,
@@ -182,8 +173,15 @@ const CreateWorkSpace = () => {
     organizationName,
     description,
     websiteUrl,
+    image,
   } = values;
-
+  const pickImage = async () => {
+    if (image) {
+      handleDeleteImage();
+    } else {
+      await onSelectImage();
+    }
+  };
   return (
     <Container>
       <ScrollView
@@ -206,61 +204,22 @@ const CreateWorkSpace = () => {
             >
               Organization logo
             </Text>
-            <View style={{ alignItems: "center", justifyContent: "center" }}>
-              <View
-                style={{
-                  width: 100,
-                  height: 100,
-                  borderRadius: 50,
-                }}
-              >
+            <TouchableOpacity style={styles2.imagePicker} onPress={pickImage}>
+              {image ? (
                 <Image
-                  contentFit="cover"
-                  style={{ width: 100, height: 100, borderRadius: 50 }}
-                  source={{ uri: selectedImage?.uri || avatar }}
+                  source={{ uri: image }}
+                  style={styles2.imageContent}
+                  contentFit={"cover"}
                 />
-                {!values.image && (
-                  <TouchableOpacity
-                    style={{
-                      position: "absolute",
-                      bottom: 0,
-                      right: 3,
-                      backgroundColor: darkMode ? "white" : "black",
-                      padding: 5,
-                      borderRadius: 30,
-                    }}
-                    onPress={onSelectImage}
-                  >
-                    <FontAwesome
-                      name="plus"
-                      size={20}
-                      color={darkMode ? "black" : "white"}
-                    />
-                  </TouchableOpacity>
-                )}
-                {values.image && (
-                  <TouchableOpacity
-                    style={{
-                      position: "absolute",
-                      bottom: 0,
-                      right: 3,
-                      backgroundColor: darkMode ? "white" : "black",
-                      padding: 5,
-                      borderRadius: 30,
-                    }}
-                    onPress={handleDeleteImage}
-                  >
-                    <FontAwesome name="trash" size={20} color="red" />
-                  </TouchableOpacity>
-                )}
-              </View>
-              {errors.image && (
-                <Text style={{ color: "red", fontWeight: "bold" }}>
-                  {errors.image}
-                </Text>
+              ) : (
+                <Text style={[styles2.imageText]}>Click to select image</Text>
               )}
-            </View>
-
+            </TouchableOpacity>
+            {touched.image && errors.image && (
+              <Text style={{ color: "red", fontFamily: "PoppinsMedium" }}>
+                {errors.email}
+              </Text>
+            )}
             <>
               <InputComponent
                 label="Organization Name"
@@ -514,5 +473,35 @@ const styles2 = StyleSheet.create({
     borderRadius: 5,
     width: "100%",
     height: 60,
+  },
+  imageText: {
+    color: colors.grayText,
+    fontSize: 16,
+    textAlign: "center",
+    marginHorizontal: 10,
+  },
+
+  imageContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    overflow: "hidden",
+  },
+  imageContent: {
+    width: "100%",
+    height: "100%",
+  },
+  imagePicker: {
+    height: 150,
+    width: 150,
+    overflow: "hidden",
+    borderColor: colors.grayText,
+    borderWidth: 1,
+    borderRadius: 100,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 15,
+    backgroundColor: colors.white,
+    alignSelf: "center",
   },
 });

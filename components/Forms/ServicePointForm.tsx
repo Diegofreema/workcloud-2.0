@@ -1,105 +1,74 @@
-import { useMutation, useQuery } from "convex/react";
-import { router, useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner-native";
+import {useMutation, useQuery} from "convex/react";
+import {router, useLocalSearchParams} from "expo-router";
+import React, {useCallback, useState} from "react";
+import {toast} from "sonner-native";
 
-import { ServicePointModal } from "../Dialogs/ServicePointModal";
-import { InputComponent } from "../InputComponent";
-import { LoadingComponent } from "../Ui/LoadingComponent";
-import { MyButton } from "../Ui/MyButton";
-import { MyText } from "../Ui/MyText";
+import {ServicePointModal} from "../Dialogs/ServicePointModal";
+import {InputComponent} from "../InputComponent";
+import {MyButton} from "../Ui/MyButton";
+import {MyText} from "../Ui/MyText";
 import VStack from "../Ui/VStack";
-import { api } from "~/convex/_generated/api";
-import { Id } from "~/convex/_generated/dataModel";
-import { useSelect } from "~/hooks/useSelect";
-import { generateErrorMessage } from "~/lib/helper";
+import {api} from "~/convex/_generated/api";
+import {Id} from "~/convex/_generated/dataModel";
+import {generateErrorMessage} from "~/lib/helper";
+import {z} from "zod";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {Controller, useForm} from "react-hook-form";
+import {StyleSheet, Text} from "react-native";
+
+const schema = z.object({
+  name: z
+    .string()
+    .min(1, "Name is required")
+    .max(100, "A maximum of 100 characters is allowed")
+    .regex(
+      /^[a-zA-Z0-9 ]*$/,
+      "Only alphanumeric characters and spaces are allowed",
+    ),
+  description: z
+    .string()
+    .max(255, "A maximum of 255 characters is allowed")
+    .optional(),
+  link: z.string().url("Invalid URL, url should contain https://"),
+});
+
+type SchemaType = z.infer<typeof schema>;
 
 export const ServicePointForm = () => {
-  const { onDeselect, onSelect } = useSelect();
+
   const { editId } = useLocalSearchParams<{ editId: Id<"servicePoints"> }>();
 
-  const [fetching, setFetching] = useState(false);
+
   const { id } = useLocalSearchParams<{ id: Id<"organizations"> }>();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const createServicePoint = useMutation(api.servicePoints.createServicePoint);
-  const updateServicePoint = useMutation(api.servicePoints.updateServicePoint);
-  const servicePoint = useQuery(
-    api.servicePoints.getSingleServicePointAndWorker,
-    {
-      servicePointId: editId,
+  const {
+    formState: { errors, isSubmitting },
+    handleSubmit,
+    control,
+  } = useForm<SchemaType>({
+    defaultValues: {
+      link: "",
+      name: "",
+      description: "",
     },
-  );
-  useEffect(() => {
-    if (!editId || !servicePoint) return;
-    const fetchServicePoint = async () => {
-      setFetching(true);
-      try {
-        if (servicePoint) {
-          setValues({
-            name: servicePoint.name,
-            description: servicePoint.description!,
-          });
-        }
-      } catch (error) {
-        console.log(error);
-        toast.error("Something went wrong", {
-          description: "Failed to fetch service point. Please try again",
-        });
-      } finally {
-        setFetching(false);
-      }
-    };
-    void fetchServicePoint();
-  }, [editId, servicePoint, onSelect]);
-  const onClose = useCallback(() => setIsOpen(false), []);
-
-  const [values, setValues] = useState({
-    name: "",
-    description: "",
+    resolver: zodResolver(schema),
   });
-  const handleChange = (name: string, value: string) => {
-    setValues({
-      ...values,
-      [name]: value,
-    });
-  };
-  const onChangeStaff = async () => {
-    setLoading(true);
 
-    try {
-      await updateServicePoint({
-        servicePointId: editId,
-        name: values.name,
-        description: values.description,
-      });
-      toast.success("Edited successfully");
-      router.back();
-      onDeselect();
-    } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong", {
-        description: "Failed to edit. Please try again",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-  const onCreateServicePoint = async () => {
-    setLoading(true);
+  const onSubmit = async (data: SchemaType) => {
     try {
       await createServicePoint({
-        name: values.name,
-        description: values.description,
+        name: data.name,
+        description: data.description,
         organisationId: id,
+        link: data.link
       });
 
       toast.success("Success", {
         description: "Service point created successfully",
       });
       setIsOpen(true);
-      setValues({ name: "", description: "" });
-      onDeselect();
+
       router.back();
     } catch (error) {
       const errorMessage = generateErrorMessage(
@@ -113,15 +82,19 @@ export const ServicePointForm = () => {
       setLoading(false);
     }
   };
-  const onAddServicePoint = async () => {
-    if (editId) {
-      await onChangeStaff();
-    } else {
-      await onCreateServicePoint();
-    }
-  };
-  if (fetching) return <LoadingComponent />;
-  const isDisabled = !values.name || loading;
+  const createServicePoint = useMutation(api.servicePoints.createServicePoint);
+  const updateServicePoint = useMutation(api.servicePoints.updateServicePoint);
+  const servicePoint = useQuery(
+    api.servicePoints.getSingleServicePointAndWorker,
+    {
+      servicePointId: editId,
+    },
+  );
+
+  const onClose = useCallback(() => setIsOpen(false), []);
+
+
+  const isDisabled = isSubmitting || loading;
 
   return (
     <VStack flex={1}>
@@ -132,25 +105,62 @@ export const ServicePointForm = () => {
       />
 
       <>
-        <InputComponent
-          label="Quick point name"
-          value={values.name}
-          onChangeText={(text) => handleChange("name", text)}
-          placeholder="Eg. customers service"
+        <Controller
+          control={control}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <InputComponent
+              label="Quick point name"
+              value={value}
+              onChangeText={onChange}
+              placeholder="Eg. customers service"
+              onBlur={onBlur}
+            />
+          )}
+          name="name"
         />
+        {errors.name && <Text style={styles.error}>{errors.name.message}</Text>}
+      </>
+      <>
+        <Controller
+          control={control}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <InputComponent
+              label="Description"
+              value={value!}
+              onChangeText={onChange}
+              placeholder="Describe what this service point is for"
+              onBlur={onBlur}
+              multiline
+              textarea
 
-        <InputComponent
-          label="Description"
-          value={values.description}
-          onChangeText={(text) => handleChange("description", text)}
-          placeholder="Describe what this service point is for"
-          multiline
-          textarea
+            />
+          )}
+          name="description"
         />
+        {errors.description && (
+          <Text style={styles.error}>{errors.description.message}</Text>
+        )}
+      </>
+      <>
+        <Controller
+          control={control}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <InputComponent
+              label="Link"
+              value={value}
+              onChangeText={onChange}
+              placeholder="Paste a link for this service point"
+              onBlur={onBlur}
+              autoCapitalize={'none'}
+            />
+          )}
+          name="link"
+        />
+        {errors.link && <Text style={styles.error}>{errors.link.message}</Text>}
       </>
 
       <MyButton
-        onPress={onAddServicePoint}
+        onPress={handleSubmit(onSubmit)}
         disabled={isDisabled}
         containerStyle={{ marginHorizontal: 10, marginTop: 20 }}
         buttonStyle={{ height: 55, width: "100%" }}
@@ -163,3 +173,11 @@ export const ServicePointForm = () => {
     </VStack>
   );
 };
+
+const styles = StyleSheet.create({
+  error: {
+    color: "red",
+    marginTop: 2,
+    fontFamily: "PoppinsMedium",
+  },
+});

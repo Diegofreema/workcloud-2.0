@@ -181,7 +181,7 @@ export const Reaction = {
 };
 export const ServicePoints = {
   description: v.optional(v.string()),
-  externalLink: v.optional(v.boolean()),
+  externalLink: v.string(),
   form: v.optional(v.boolean()),
   name: v.string(),
   organizationId: v.id("organizations"),

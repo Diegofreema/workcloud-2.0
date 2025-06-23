@@ -391,7 +391,7 @@ export type WaitList = {
 export type ServicePointType = {
   _id: Id<"servicePoints">;
   _creationTime: number;
-  externalLink?: boolean | undefined;
+  externalLink: string;
   form?: boolean | undefined;
   organizationId: Id<"organizations">;
   description?: string;

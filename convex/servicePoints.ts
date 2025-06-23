@@ -1,8 +1,8 @@
-import {ConvexError, v} from "convex/values";
+import { ConvexError, v } from "convex/values";
 
-import {Id} from "~/convex/_generated/dataModel";
-import {mutation, query, QueryCtx} from "~/convex/_generated/server";
-import {getImageUrl} from "~/convex/organisation";
+import { Id } from "~/convex/_generated/dataModel";
+import { mutation, query, QueryCtx } from "~/convex/_generated/server";
+import { getImageUrl } from "~/convex/organisation";
 
 export const getServicePoints = query({
   args: {
@@ -59,6 +59,7 @@ export const createServicePoint = mutation({
     description: v.optional(v.string()),
     organisationId: v.id("organizations"),
     name: v.string(),
+    link: v.string(),
   },
   handler: async (ctx, args) => {
     const alreadyHasServicePointWithName = await ctx.db
@@ -75,6 +76,7 @@ export const createServicePoint = mutation({
       name: args.name,
       form: false,
       description: args.description,
+      externalLink: args.link,
     });
   },
 });

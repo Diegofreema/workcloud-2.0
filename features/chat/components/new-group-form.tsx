@@ -1,18 +1,25 @@
 import React from "react";
-import {Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity,} from "react-native";
-import {Controller, useForm} from "react-hook-form";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
+import { Controller, useForm } from "react-hook-form";
 import * as ImagePicker from "expo-image-picker";
-import {colors} from "~/constants/Colors";
+import { colors } from "~/constants/Colors";
 import VStack from "~/components/Ui/VStack";
-import {CustomPressable} from "~/components/Ui/CustomPressable";
-import {useRouter} from "expo-router";
-import {useStaffStore} from "~/features/staff/store/staff-store";
-import {DisplayStaffList} from "~/features/staff/components/display-staff-list";
-import {toast} from "sonner-native";
-import {useMutation} from "convex/react";
-import {api} from "~/convex/_generated/api";
-import {useGetUserId} from "~/hooks/useGetUserId";
-import {capitaliseFirstLetter, uploadProfilePicture} from "~/lib/helper";
+import { CustomPressable } from "~/components/Ui/CustomPressable";
+import { useRouter } from "expo-router";
+import { useStaffStore } from "~/features/staff/store/staff-store";
+import { DisplayStaffList } from "~/features/staff/components/display-staff-list";
+import { toast } from "sonner-native";
+import { useMutation } from "convex/react";
+import { api } from "~/convex/_generated/api";
+import { useGetUserId } from "~/hooks/useGetUserId";
+import { capitaliseFirstLetter, uploadProfilePicture } from "~/lib/helper";
 
 type FormData = {
   groupName: string;
