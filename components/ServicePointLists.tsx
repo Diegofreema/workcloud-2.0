@@ -1,13 +1,15 @@
-import { Divider } from '@rneui/themed';
-import { FlatList } from 'react-native';
+import { Divider } from "@rneui/themed";
+import { FlatList } from "react-native";
 
-import { EmptyText } from './EmptyText';
-import { MyText } from './Ui/MyText';
-import VStack from './Ui/VStack';
+import { EmptyText } from "./EmptyText";
+import { MyText } from "./Ui/MyText";
+import VStack from "./Ui/VStack";
 
-import { colors } from '~/constants/Colors';
-import { ServicePointType } from '~/constants/types';
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { colors } from "~/constants/Colors";
+import { ServicePointType } from "~/constants/types";
+import { useDarkMode } from "~/hooks/useDarkMode";
+import { CustomPressable } from "~/components/Ui/CustomPressable";
+import * as Linking from "expo-linking";
 
 type Props = {
   data: ServicePointType[];
@@ -31,7 +33,7 @@ export const ServicePointLists = ({ data }: Props): JSX.Element => {
         <Divider
           style={{
             marginVertical: 10,
-            backgroundColor: darkMode === 'dark' ? 'transparent' : '#ccc',
+            backgroundColor: darkMode === "dark" ? "transparent" : "#ccc",
           }}
         />
       )}
@@ -42,21 +44,26 @@ export const ServicePointLists = ({ data }: Props): JSX.Element => {
 
 const ServicePointItem = ({ item }: { item: ServicePointType }) => {
   const { darkMode } = useDarkMode();
+  const onPress = async () => {
+    await Linking.openURL(item.externalLink);
+  };
   return (
-    <VStack>
-      <MyText poppins="Bold" fontSize={14}>
-        {item.name}
-      </MyText>
-      <MyText
-        poppins="Medium"
-        fontSize={12}
-        style={{
-          color: darkMode === 'dark' ? colors.white : colors.grayText,
-          marginTop: 5,
-        }}
-      >
-        {item.description}
-      </MyText>
-    </VStack>
+    <CustomPressable onPress={onPress}>
+      <VStack>
+        <MyText poppins="Bold" fontSize={14}>
+          {item.name}
+        </MyText>
+        <MyText
+          poppins="Medium"
+          fontSize={12}
+          style={{
+            color: darkMode === "dark" ? colors.white : colors.grayText,
+            marginTop: 5,
+          }}
+        >
+          {item.description}
+        </MyText>
+      </VStack>
+    </CustomPressable>
   );
 };
