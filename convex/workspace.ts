@@ -380,6 +380,7 @@ export const getWaitlist = async ({
   if (!waitlists) return [];
   const usersInWaitlist = waitlists.map(async (waitlist) => {
     const customer = await getUserByUserId(ctx, waitlist.customerId);
+
     return {
       ...waitlist,
       customer,

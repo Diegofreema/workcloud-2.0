@@ -29,7 +29,7 @@ export const Profile = ({
       disabled={isLoading}
       style={{ width: "30%" }}
       onPress={() =>
-        onAddToCall(item?._id, item?.customerId, item?.customer?.userId!)
+        onAddToCall(item?._id, item?.customerId, item?.customer?.clerkId!)
       }
       onLongPress={onLongPress}
     >

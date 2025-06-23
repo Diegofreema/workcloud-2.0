@@ -23,9 +23,8 @@ export const FetchCalls = () => {
     return <LoadingComponent />;
   }
 
-  console.log({ data });
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, marginTop: 20 }}>
       <LegendList
         data={data}
         recycleItems

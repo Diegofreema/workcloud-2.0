@@ -30,7 +30,7 @@ export const getServicePoints = query({
         return null; // Return null for organizations with no service points
       }
       const randomIndex = Math.floor(Math.random() * servicePoints.length);
-      console.log({ randomIndex });
+
       return servicePoints[randomIndex];
     });
     return (await Promise.all(servicePointsPromises)).filter(
@@ -96,7 +96,7 @@ export const getOrganisationsWithPostAndWorkers = query({
     return {
       ...orgs,
       posts,
-      workers: workers.filter((m) => m.type !== "processor"),
+      workers: workers.filter((m) => m.type !== "processor" && m.workspaceId),
     };
   },
 });

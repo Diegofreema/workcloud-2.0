@@ -2,19 +2,17 @@ import { useMutation, useQuery } from "convex/react";
 import { format } from "date-fns";
 import { Redirect, router, useLocalSearchParams } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { toast } from "sonner-native";
-
+import * as Crypto from "expo-crypto";
 import { WaitListModal } from "~/components/Dialogs/WaitListModal";
 import { HeaderNav } from "~/components/HeaderNav";
 import { BottomActive } from "~/components/Ui/BottomActive";
 import { Container } from "~/components/Ui/Container";
 import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { MyButton } from "~/components/Ui/MyButton";
 import { UserPreview } from "~/components/Ui/UserPreview";
 import { Waitlists } from "~/components/Ui/Waitlists";
 import { WorkspaceButtons } from "~/components/Ui/WorkspaceButtons";
-import { colors } from "~/constants/Colors";
 import { api } from "~/convex/_generated/api";
 import { Id } from "~/convex/_generated/dataModel";
 import { useGetUserId } from "~/hooks/useGetUserId";
@@ -31,7 +29,7 @@ const today = format(new Date(), "dd-MM-yyyy");
 const Work = () => {
   const { id } = useLocalSearchParams<{ id: Id<"workspaces"> }>();
   const [showMenu, setShowMenu] = useState(false);
-  const { id: loggedInUser } = useGetUserId();
+  const { id: loggedInUser, user: convexUser } = useGetUserId();
   const { user } = useAuth();
   const client = useStreamVideoClient();
   const [leaving, setLeaving] = useState(false);
@@ -199,22 +197,24 @@ const Work = () => {
     customerId: Id<"users">,
     customerCallId: string,
   ) => {
+    console.log({ id: user?.id, customerCallId });
     if (!client) return;
     // await updateWaitlistType({
     //   waitlistId: currentUser,
     //   nextWaitListId: nextUser,
     // });
-    const callId = `call_${Date.now()}${id}`;
-    const call = client.call("default", callId);
-    await call.join({
-      create: true,
+    const callId = Crypto.randomUUID();
+    await client.call("default", callId).getOrCreate({
       ring: true,
       video: true,
       data: {
-        members: [{ user_id: user?.id! }, { user_id: customerCallId }],
+        members: [
+          { user_id: user?.id!, custom: { convexId: loggedInUser } },
+          { user_id: customerCallId, custom: { convexId: customerId } },
+        ],
       },
     });
-    router.push(`/call/${callId}`);
+    router.push(`/call/${callId}?wkId=${id}`);
   };
   const handleExit = async () => {
     if (customerLeaving) {

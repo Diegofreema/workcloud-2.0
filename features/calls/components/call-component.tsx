@@ -1,25 +1,18 @@
-import { StyleSheet, View } from "react-native";
-import { Redirect, router, useLocalSearchParams } from "expo-router";
+import { Href, Redirect, useLocalSearchParams } from "expo-router";
 import {
   CallContent,
-  CallControlProps,
-  StreamCall,
-  useCall,
-  useCalls,
-  HangUpCallButton,
-  ToggleAudioPublishingButton as ToggleMic,
-  ToggleVideoPublishingButton as ToggleCamera,
   CallingState,
-  RingingCallContent,
+  StreamCall,
+  useCalls,
 } from "@stream-io/video-react-native-sdk";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
 import { useEffect } from "react";
+import { InComing, Outgoing } from "~/features/calls/components/call-panel";
 
 export const CallComponent = () => {
-  const { callId } = useLocalSearchParams<{ callId: string }>();
+  const { id, wkId } = useLocalSearchParams<{ id: string; wkId: string }>();
+  // const { data: call, isPending, isError } = useFetchCall(id);
   const calls = useCalls();
-
-  const call = calls[0];
+  const call = calls.find((c) => c.id === id);
   useEffect(() => {
     return () => {
       if (call?.state.callingState !== CallingState.LEFT) {
@@ -27,55 +20,26 @@ export const CallComponent = () => {
       }
     };
   }, [call]);
-
+  console.log(!!call);
+  const path = wkId ? `/wk/${wkId}` : `/`;
   if (!call) {
-    return <LoadingComponent />;
+    return <Redirect href={path as Href} />;
   }
-  const endCall = () => {
-    router.back();
-  };
-  const ringing = call.ringing;
+
+  const showOutGoing =
+    call.isCreatedByMe && call.state.callingState === CallingState.RINGING;
+  const showInComing =
+    !call.isCreatedByMe && call.state.callingState === CallingState.RINGING;
+  const showCall =
+    call.state.callingState !== CallingState.LEFT &&
+    call.state.callingState !== CallingState.RINGING;
+  console.log({ state: call.state.callingState });
+  console.log({ showOutGoing, showInComing, showCall });
   return (
     <StreamCall call={call}>
-      <View style={{ flex: 1 }}>
-        {ringing ? (
-          <RingingCallContent />
-        ) : (
-          <CallContent
-            onHangupCallHandler={endCall}
-            CallControls={CustomCallControls}
-          />
-        )}
-      </View>
+      {showOutGoing && <Outgoing />}
+      {showInComing && <InComing />}
+      {showCall && <CallContent />}
     </StreamCall>
   );
 };
-
-const CustomCallControls = (props: CallControlProps) => {
-  const call = useCall();
-  return (
-    <View style={styles.customCallControlsContainer}>
-      <ToggleMic onPressHandler={call?.microphone.toggle} />
-      <ToggleCamera onPressHandler={call?.camera.toggle} />
-      <HangUpCallButton onHangupCallHandler={props.onHangupCallHandler} />
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  customCallControlsContainer: {
-    position: "absolute",
-    bottom: 40,
-    paddingVertical: 10,
-    width: "80%",
-    marginHorizontal: 20,
-    flexDirection: "row",
-    alignSelf: "center",
-    justifyContent: "space-around",
-    backgroundColor: "orange",
-    borderRadius: 10,
-    borderColor: "black",
-    borderWidth: 5,
-    zIndex: 5,
-  },
-});

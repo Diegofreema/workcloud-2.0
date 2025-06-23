@@ -11,7 +11,7 @@ import {
   StreamVideoClient,
 } from "@stream-io/video-react-native-sdk";
 import { useGetUserId } from "~/hooks/useGetUserId";
-import { CallContext } from "~/context/call-context";
+import CallProvider from "~/context/call-provider";
 
 const apiKey = "cnvc46pm8uq9";
 
@@ -21,7 +21,7 @@ export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
 export default function AppLayout() {
   const { darkMode } = useDarkMode();
   const { user } = useAuth();
-  const { user: userData } = useGetUserId();
+  const { user: userData, id } = useGetUserId();
 
   if (!user) {
     return <Redirect href="/login" />;
@@ -35,11 +35,13 @@ export default function AppLayout() {
 
   const tokenProvider = async () => {
     try {
+
       const response = await fetch(`https://workcloud-web.vercel.app/token`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+
         body: JSON.stringify({
           id: user?.id,
           name: user?.name,
@@ -60,14 +62,14 @@ export default function AppLayout() {
     user: person,
     options: {
       logger: (logLevel: LogLevel, message: string, ...args: unknown[]) => {
-        console.log(message, "message");
+        console.log(message, "message", logLevel, "level", ...args);
       },
     },
     tokenProvider,
   });
   return (
     <StreamVideo client={client}>
-      <CallContext>
+      <CallProvider>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <StatusBar
             style={darkMode === "dark" ? "light" : "dark"}
@@ -83,7 +85,7 @@ export default function AppLayout() {
             />
           </Stack>
         </GestureHandlerRootView>
-      </CallContext>
+      </CallProvider>
     </StreamVideo>
   );
 }
