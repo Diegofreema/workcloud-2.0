@@ -9,6 +9,8 @@ import { Id } from "~/convex/_generated/dataModel";
 import { calculateRatingStats } from "~/lib/helper";
 import ReviewStar from "~/features/common/components/ReviewStars";
 import { EmptyText } from "~/components/EmptyText";
+import { Button } from "~/features/common/components/Button";
+import { router } from "expo-router";
 
 type ReviewProps = {
   organizationId: Id<"organizations">;
@@ -51,6 +53,7 @@ export const Review = ({
   ];
   const { averageRating, ratingPercentages } =
     calculateRatingStats(reviewsData);
+  const onSeeReview = () => router.push(`/orgs/reviews/${organizationId}`);
   return (
     <View style={{ flex: 1 }}>
       <MyText
@@ -77,6 +80,7 @@ export const Review = ({
           hide={hide}
         />
       )}
+      {reviews.length > 0 && <Button title={"See all"} onPress={onSeeReview} />}
     </View>
   );
 };

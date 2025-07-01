@@ -1,13 +1,11 @@
-import { usePaginatedQuery } from "convex/react";
-import { FlatList, TouchableOpacity, View } from "react-native";
+import {usePaginatedQuery} from "convex/react";
+import {View} from "react-native";
 
-import { ReviewComment } from "~/components/ReviewComment";
-import { MyText } from "~/components/Ui/MyText";
-import { api } from "~/convex/_generated/api";
-import { Id } from "~/convex/_generated/dataModel";
-import { EmptyText } from "~/components/EmptyText";
-import { LegendList } from "@legendapp/list";
-import { Button } from "~/features/common/components/Button";
+import {ReviewComment} from "~/components/ReviewComment";
+import {api} from "~/convex/_generated/api";
+import {Id} from "~/convex/_generated/dataModel";
+import {LegendList} from "@legendapp/list";
+import {Button} from "~/features/common/components/Button";
 
 type Props = {
   organizationId: Id<"organizations">;
@@ -54,7 +52,7 @@ export const ReviewComments = ({ organizationId, scroll, hide }: Props) => {
           ) : null
         }
         recycleItems
-        ListEmptyComponent={() => <EmptyText text="No review yet" />}
+        // ListEmptyComponent={() => <EmptyText text="No review yet" />}
       />
     </View>
   );
