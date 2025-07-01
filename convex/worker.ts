@@ -1,45 +1,45 @@
-import { ConvexError, v } from "convex/values";
+import { ConvexError, v } from 'convex/values';
 
-import { Id } from "~/convex/_generated/dataModel";
-import { mutation, query } from "~/convex/_generated/server";
+import { Id } from '~/convex/_generated/dataModel';
+import { mutation, query } from '~/convex/_generated/server';
 import {
   getOrganisationWithoutImageByWorker,
   getUserByUserId,
   getUserByWorkerId,
-} from "~/convex/users";
-import { User } from "~/constants/types";
+} from '~/convex/users';
+import { User } from '~/constants/types';
 
 export const getAllOtherWorkers = query({
   args: {
-    bossId: v.id("users"),
+    bossId: v.id('users'),
   },
   handler: async (ctx, args) => {
     const res = await ctx.db
-      .query("workers")
+      .query('workers')
       .filter((q) =>
         q.and(
-          q.neq(q.field("userId"), args.bossId),
-          q.eq(q.field("bossId"), undefined),
-        ),
+          q.neq(q.field('userId'), args.bossId),
+          q.eq(q.field('bossId'), undefined),
+          q.neq(q.field('type'), 'personal')
+        )
       )
       .collect();
 
     return Promise.all(
       res.map(async (worker) => {
         const user = await getUserByUserId(ctx, worker.userId);
-
         return {
           worker,
           user,
         };
-      }),
+      })
     );
   },
 });
 
 export const getSingleWorkerProfile = query({
   args: {
-    id: v.id("workers"),
+    id: v.id('workers'),
   },
   handler: async (ctx, args) => {
     const worker = await ctx.db.get(args.id);
@@ -47,7 +47,7 @@ export const getSingleWorkerProfile = query({
     const user = await getUserByUserId(ctx, worker.userId);
     const organization = await getOrganisationWithoutImageByWorker(
       ctx,
-      worker.organizationId as Id<"organizations">,
+      worker.organizationId as Id<'organizations'>
     );
     return {
       worker,
@@ -58,13 +58,13 @@ export const getSingleWorkerProfile = query({
 });
 export const getProcessors = query({
   args: {
-    organizationId: v.id("organizations"),
+    organizationId: v.id('organizations'),
   },
   handler: async (ctx, { organizationId }) => {
     const workers = await ctx.db
-      .query("workers")
-      .withIndex("by_org_id", (q) => q.eq("organizationId", organizationId))
-      .filter((q) => q.eq(q.field("type"), "processor"))
+      .query('workers')
+      .withIndex('by_org_id', (q) => q.eq('organizationId', organizationId))
+      .filter((q) => q.eq(q.field('type'), 'processor'))
       .collect();
     if (!workers) return [];
     const workersWithUserProfile = workers.map(async (worker) => {
@@ -80,12 +80,12 @@ export const getProcessors = query({
 });
 export const checkIfWorkerIsEmployed = query({
   args: {
-    id: v.id("users"),
+    id: v.id('users'),
   },
   handler: async (ctx, args) => {
     const worker = await ctx.db
-      .query("workers")
-      .filter((q) => q.eq(q.field("userId"), args.id))
+      .query('workers')
+      .filter((q) => q.eq(q.field('userId'), args.id))
       .first();
     return !!worker?.organizationId;
   },
@@ -96,20 +96,20 @@ export const checkIfWorkerIsEmployed = query({
 export const acceptOffer = mutation({
   args: {
     role: v.string(),
-    to: v.id("users"),
-    _id: v.id("requests"),
-    from: v.id("users"),
-    organizationId: v.id("organizations"),
+    to: v.id('users'),
+    _id: v.id('requests'),
+    from: v.id('users'),
+    organizationId: v.id('organizations'),
   },
   handler: async (ctx, args) => {
     const worker = await ctx.db
-      .query("workers")
-      .withIndex("userId", (q) => q.eq("userId", args.to))
+      .query('workers')
+      .withIndex('userId', (q) => q.eq('userId', args.to))
       .first();
 
     const org = await ctx.db.get(args.organizationId);
     if (!worker || !org) {
-      throw new ConvexError("Failed to accept offer");
+      throw new ConvexError('Failed to accept offer');
     }
     const prevWorkers = org.workers || [];
     await Promise.all([
@@ -121,7 +121,7 @@ export const acceptOffer = mutation({
         bossId: args.from,
         organizationId: args.organizationId,
         workspaceId: undefined,
-        type: args.role === "processor" ? "processor" : "front",
+        type: args.role === 'processor' ? 'processor' : 'front',
       }),
       ctx.db.patch(args._id, {
         pending: false,
@@ -133,8 +133,8 @@ export const acceptOffer = mutation({
 
 export const checkIfItMyStaff = query({
   args: {
-    workerId: v.id("workers"),
-    bossId: v.id("users"),
+    workerId: v.id('workers'),
+    bossId: v.id('users'),
   },
   handler: async (ctx, args) => {
     const worker = await ctx.db.get(args.workerId);

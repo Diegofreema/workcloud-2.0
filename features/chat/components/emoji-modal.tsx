@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Dimensions,
   Modal,
@@ -6,10 +6,11 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
-import { MessageReactionsType } from "~/constants/types";
-import { emojis } from "~/constants";
-import { colors } from "~/constants/Colors";
+  Pressable, // 1. Import Pressable
+} from 'react-native';
+import { MessageReactionsType } from '~/constants/types';
+import { emojis } from '~/constants';
+import { colors } from '~/constants/Colors';
 
 interface EmojiPickerModalProps {
   visible: boolean;
@@ -18,8 +19,6 @@ interface EmojiPickerModalProps {
   position?: { top: number; left: number }; // Position above the bubble
   findEmojiISelected: MessageReactionsType | undefined;
 }
-
-// WhatsApp-like emojis
 
 export const EmojiPickerModal: React.FC<EmojiPickerModalProps> = ({
   visible,
@@ -33,7 +32,10 @@ export const EmojiPickerModal: React.FC<EmojiPickerModalProps> = ({
       transparent
       visible={visible}
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={() => {
+        console.log('Pressed outside');
+        onClose();
+      }}
       accessible
       accessibilityLabel="Emoji reaction picker"
     >
@@ -70,25 +72,28 @@ export const EmojiPickerModal: React.FC<EmojiPickerModalProps> = ({
   );
 };
 
-const { width } = Dimensions.get("window");
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
+  // 4. Style for the overlay. It fills the screen.
+  // A background color (even a transparent one) is crucial for Pressable to detect taps.
   overlay: {
     flex: 1,
-    backgroundColor: "transparent", // Semi-transparent overlay
+    backgroundColor: 'transparent',
   },
   pickerContainer: {
-    position: "absolute",
-    flexDirection: "row",
-    backgroundColor: "#FFFFFF",
+    position: 'absolute', // The picker is positioned absolutely within the overlay
+    flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 8,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
     maxWidth: width - 32,
+    // No zIndex needed anymore
   },
   emojiButton: {
     padding: 8,

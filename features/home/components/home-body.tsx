@@ -1,9 +1,21 @@
-import { View } from "react-native";
-import { LegendList } from "@legendapp/list";
-import { HeadingText } from "~/components/Ui/HeadingText";
-import { Item } from "~/components/Item";
-import { EmptyText } from "~/components/EmptyText";
-import { constantStyles } from "~/constants/styles";
+import { Alert, View } from 'react-native';
+import { LegendList } from '@legendapp/list';
+import { HeadingText } from '~/components/Ui/HeadingText';
+import { Item } from '~/components/Item';
+import { EmptyText } from '~/components/EmptyText';
+import { constantStyles } from '~/constants/styles';
+import Animated, {
+  SharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
+import { Trash } from 'lucide-react-native';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { colors } from '~/constants/Colors';
+import React, { useState } from 'react';
+import { useMutation } from 'convex/react';
+import { api } from '~/convex/_generated/api';
+import { toast } from 'sonner-native';
+import { generateErrorMessage } from '~/lib/helper';
 
 type Props<T> = {
   headerText: string;
@@ -12,6 +24,40 @@ type Props<T> = {
 
 let T;
 export const HomeBody = <T,>({ data, headerText }: Props<T>) => {
+  const deleteConnection = useMutation(api.connection.deleteConnection);
+  const [deleting, setDeleting] = useState(false);
+  const onAlertDelete = async (item: any) => {
+    Alert.alert(
+      'Delete Connection',
+      'Are you sure you want to delete this connection?',
+      [
+        { text: 'Cancel' },
+        {
+          text: 'Delete',
+          onPress: async () => {
+            if (deleting) return;
+            setDeleting(true);
+            try {
+              await deleteConnection({ id: item.id });
+              toast.success('Success', {
+                description: 'Connection deleted successfully',
+              });
+            } catch (e) {
+              const errorMessage = generateErrorMessage(
+                e,
+                'Failed to delete connection'
+              );
+              toast.error('Error', {
+                description: errorMessage,
+              });
+            } finally {
+              setDeleting(false);
+            }
+          },
+        },
+      ]
+    );
+  };
   return (
     <View style={{ flex: 1 }}>
       <LegendList
@@ -22,13 +68,28 @@ export const HomeBody = <T,>({ data, headerText }: Props<T>) => {
         }
         contentContainerStyle={constantStyles.contentContainerStyle}
         data={data}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item: any, index) => item.id}
         renderItem={({ item, index }) => {
           const lastIndex = [1, 2, 3].length - 1;
           const isLastItemOnList = index === lastIndex;
 
-          // @ts-ignore
-          return <Item {...item} isLastItemOnList={isLastItemOnList} />;
+          return (
+            <ReanimatedSwipeable
+              renderRightActions={(p, d) =>
+                RightAction(p, d, () => onAlertDelete(item as any))
+              }
+              friction={2}
+              enableTrackpadTwoFingerGesture
+              rightThreshold={40}
+              onEnded={() => console.log('ended')}
+              onActivated={() => console.log('activated')}
+              onCancelled={() => console.log('cancelled')}
+              onBegan={() => console.log('began')}
+            >
+              {/*@ts-ignore*/}
+              <Item {...item} isLastItemOnList={isLastItemOnList} />
+            </ReanimatedSwipeable>
+          );
         }}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={() => {
@@ -39,3 +100,32 @@ export const HomeBody = <T,>({ data, headerText }: Props<T>) => {
     </View>
   );
 };
+
+function RightAction(
+  prog: SharedValue<number>,
+  dragX: SharedValue<number>,
+  onAlertDelete: () => void
+) {
+  const styleAnimation = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: dragX.value + 50 }],
+    };
+  });
+
+  return (
+    <Animated.View
+      style={[
+        {
+          alignItems: 'center',
+          backgroundColor: 'red',
+          justifyContent: 'center',
+          width: 50,
+          height: '100%',
+        },
+        styleAnimation,
+      ]}
+    >
+      <Trash color={colors.white} size={24} onPress={onAlertDelete} />
+    </Animated.View>
+  );
+}

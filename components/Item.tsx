@@ -15,17 +15,24 @@ export const Item = (item: Connection & { isLastItemOnList?: boolean }) => {
   const router = useRouter();
   if (!item.organisation) return null;
 
-  const isOpen = checkIfOpen(item?.organisation?.start, item?.organisation?.end);
+  const isOpen = checkIfOpen(
+    item?.organisation?.start,
+    item?.organisation?.end
+  );
 
   const startChannel = async () => {
     router.push(`/reception/${item?.organisation?._id}`);
   };
-  const parsedDate = parse(item.connectedAt, 'dd/MM/yyyy, HH:mm:ss', new Date());
+  const parsedDate = parse(
+    item.connectedAt,
+    'dd/MM/yyyy, HH:mm:ss',
+    new Date()
+  );
   return (
     <Pressable
-      //@ts-ignore
       onPress={startChannel}
-      style={({ pressed }) => [styles.item, pressed && { opacity: 0.3 }]}>
+      style={({ pressed }) => [styles.item, pressed && { opacity: 0.3 }]}
+    >
       <HStack justifyContent="space-between" alignItems="center">
         <HStack gap={7} alignItems="center">
           <Avatar image={item?.organisation?.avatar!} width={50} height={50} />
@@ -42,11 +49,13 @@ export const Item = (item: Connection & { isLastItemOnList?: boolean }) => {
                   borderRadius: 9999,
                   justifyContent: 'center',
                   alignItems: 'center',
-                }}>
+                }}
+              >
                 <MyText
                   poppins="Medium"
                   style={{ color: colors.openBackgroundColor }}
-                  fontSize={10}>
+                  fontSize={10}
+                >
                   Open
                 </MyText>
               </View>
@@ -58,8 +67,13 @@ export const Item = (item: Connection & { isLastItemOnList?: boolean }) => {
                   borderRadius: 9999,
                   justifyContent: 'center',
                   alignItems: 'center',
-                }}>
-                <MyText style={{ color: colors.closeTextColor }} poppins="Medium" fontSize={10}>
+                }}
+              >
+                <MyText
+                  style={{ color: colors.closeTextColor }}
+                  poppins="Medium"
+                  fontSize={10}
+                >
                   Closed
                 </MyText>
               </View>
@@ -86,5 +100,6 @@ const styles = StyleSheet.create({
   item: {
     marginBottom: 10,
     paddingBottom: 20,
+    paddingRight: 5,
   },
 });

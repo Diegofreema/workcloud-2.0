@@ -30,7 +30,7 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "server",
+      "output": "static",
       "favicon": "./assets/images/favicon.png",
       "babel": {
         "exclude": ["react-native-pdf"]
@@ -71,7 +71,7 @@
             "compileSdkVersion": 35,
             "targetSdkVersion": 35,
             "buildToolsVersion": "35.0.0",
-        
+
             "enableProguardInReleaseBuilds": true,
             "allowBackup": false,
             "enableShrinkResourcesInReleaseBuilds": true

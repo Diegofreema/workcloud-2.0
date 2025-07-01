@@ -1,23 +1,23 @@
-import { ConvexQueryClient } from "@convex-dev/react-query";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ConvexProvider, ConvexReactClient } from "convex/react";
-import { useFonts } from "expo-font";
-import { Slot, usePathname, useRouter, useSegments } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
-import { StatusBar } from "expo-status-bar";
-import * as Updates from "expo-updates";
-import { useEffect } from "react";
-import { PermissionsAndroid, Platform } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Toaster } from "sonner-native";
-import { useDarkMode } from "~/hooks/useDarkMode";
+import { ConvexQueryClient } from '@convex-dev/react-query';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ConvexProvider, ConvexReactClient } from 'convex/react';
+import { useFonts } from 'expo-font';
+import { Slot, Stack, usePathname } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
+import * as Updates from 'expo-updates';
+import { useEffect } from 'react';
+import { PermissionsAndroid, Platform } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Toaster } from 'sonner-native';
+import { useDarkMode } from '~/hooks/useDarkMode';
 
 // import * as Sentry from "@sentry/react-native";
 // import { isRunningInExpoGo } from "expo";
-import { MenuProvider } from "react-native-popup-menu";
-import { AuthProvider, useAuth } from "~/context/auth";
+import { MenuProvider } from 'react-native-popup-menu';
+import { AuthProvider } from '~/context/auth';
 
 // Construct a new integration instance. This is needed to communicate between the integration and React
 // const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -59,36 +59,26 @@ convexQueryClient.connect(queryClient);
 SplashScreen.preventAutoHideAsync();
 
 const InitialRouteLayout = () => {
-  const segments = useSegments();
-  const router = useRouter();
-  const { user } = useAuth();
-
-  useEffect(() => {
-    if (!user) return;
-
-    const inTabsGroup = segments[0] === "(app)";
-
-    if (user && !inTabsGroup) {
-      router.replace(`/`);
-    } else if (!user && inTabsGroup) {
-      router.replace("/login");
-    }
-  }, [user, segments, router]);
-  return <Slot />;
+  return (
+    <Stack>
+      <Stack.Screen name="(app)" />
+      <Stack.Screen name="(auth)" />
+    </Stack>
+  );
 };
 
 export function RootLayout() {
   const { darkMode } = useDarkMode();
 
   const pathname = usePathname();
-  console.log("🚀 ~ RootLayoutNav ~ pathname:", pathname);
+  console.log('🚀 ~ RootLayoutNav ~ pathname:', pathname);
   const [loaded, error] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
-    PoppinsLight: require("../assets/fonts/Poppins-Light.ttf"),
-    PoppinsBold: require("../assets/fonts/Poppins-Bold.ttf"),
-    PoppinsMedium: require("../assets/fonts/Poppins-Medium.ttf"),
-    PoppinsBoldItalic: require("../assets/fonts/Poppins-BoldItalic.ttf"),
-    PoppinsLightItalic: require("../assets/fonts/Poppins-BoldItalic.ttf"),
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    PoppinsLight: require('../assets/fonts/Poppins-Light.ttf'),
+    PoppinsBold: require('../assets/fonts/Poppins-Bold.ttf'),
+    PoppinsMedium: require('../assets/fonts/Poppins-Medium.ttf'),
+    PoppinsBoldItalic: require('../assets/fonts/Poppins-BoldItalic.ttf'),
+    PoppinsLightItalic: require('../assets/fonts/Poppins-BoldItalic.ttf'),
     ...FontAwesome.font,
   });
   // const ref = useNavigationContainerRef();
@@ -126,10 +116,10 @@ export function RootLayout() {
   }, []);
   useEffect(() => {
     const run = async () => {
-      if (Platform.OS === "android") {
+      if (Platform.OS === 'android') {
         await PermissionsAndroid.requestMultiple([
-          "android.permission.POST_NOTIFICATIONS",
-          "android.permission.BLUETOOTH_CONNECT",
+          'android.permission.POST_NOTIFICATIONS',
+          'android.permission.BLUETOOTH_CONNECT',
         ]);
       }
     };
@@ -145,13 +135,13 @@ export function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <GestureHandlerRootView style={{ flex: 1 }}>
             <StatusBar
-              style={darkMode === "dark" ? "light" : "dark"}
-              backgroundColor={darkMode === "dark" ? "black" : "white"}
+              style={darkMode === 'dark' ? 'light' : 'dark'}
+              backgroundColor={darkMode === 'dark' ? 'black' : 'white'}
             />
             <SafeAreaView
               style={{
                 flex: 1,
-                backgroundColor: darkMode === "dark" ? "black" : "white",
+                backgroundColor: darkMode === 'dark' ? 'black' : 'white',
               }}
             >
               <MenuProvider>

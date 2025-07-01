@@ -1,22 +1,17 @@
-import { Redirect, Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { useAuth } from "~/context/auth";
+import { useDarkMode } from '~/hooks/useDarkMode';
 
 const AuthLayout = () => {
   const { darkMode } = useDarkMode();
-  const { user } = useAuth();
 
-  if (user) {
-    return <Redirect href={"/(app)/(tabs)"} />;
-  }
   return (
     // @ts-ignore
     <>
       <StatusBar
-        style={darkMode === "dark" ? "light" : "dark"}
-        backgroundColor={darkMode === "dark" ? "black" : "white"}
+        style={darkMode === 'dark' ? 'light' : 'dark'}
+        backgroundColor={darkMode === 'dark' ? 'black' : 'white'}
       />
       <Stack screenOptions={{ headerShown: false }} />
     </>
