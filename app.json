@@ -8,6 +8,7 @@
     "scheme": "workcloud",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+
     "ios": {
       "supportsTablet": true,
       "bitcode": false,
@@ -71,7 +72,6 @@
             "compileSdkVersion": 35,
             "targetSdkVersion": 35,
             "buildToolsVersion": "35.0.0",
-
             "enableProguardInReleaseBuilds": true,
             "allowBackup": false,
             "enableShrinkResourcesInReleaseBuilds": true
@@ -86,7 +86,9 @@
         {
           "iosPermissions": ["Camera", "Microphone"]
         }
-      ]
+      ],
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
@@ -99,7 +101,6 @@
         "projectId": "c6f4d0db-820e-41f4-9840-49346d4a94af"
       }
     },
-
     "runtimeVersion": {
       "policy": "appVersion"
     },

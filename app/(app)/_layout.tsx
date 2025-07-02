@@ -71,11 +71,15 @@ export default function AppLayout() {
             backgroundColor={darkMode === 'dark' ? 'black' : 'white'}
           />
 
-          <Stack screenOptions={{ headerShown: false }}>
+          <Stack
+            screenOptions={{ headerShown: false }}
+            initialRouteName="(tabs)"
+          >
             <Stack.Screen
               name="upload-review"
               options={{
                 presentation: 'modal',
+                headerShown: false,
               }}
             />
           </Stack>

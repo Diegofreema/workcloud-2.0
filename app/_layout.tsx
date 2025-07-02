@@ -17,7 +17,7 @@ import { useDarkMode } from '~/hooks/useDarkMode';
 // import * as Sentry from "@sentry/react-native";
 // import { isRunningInExpoGo } from "expo";
 import { MenuProvider } from 'react-native-popup-menu';
-import { AuthProvider } from '~/context/auth';
+import { AuthProvider, useAuth } from '~/context/auth';
 
 // Construct a new integration instance. This is needed to communicate between the integration and React
 // const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -59,10 +59,18 @@ convexQueryClient.connect(queryClient);
 SplashScreen.preventAutoHideAsync();
 
 const InitialRouteLayout = () => {
+  const { user } = useAuth();
+  const isLoggedIn = !!user;
+  console.log({ isLoggedIn });
+
   return (
     <Stack>
-      <Stack.Screen name="(app)" />
-      <Stack.Screen name="(auth)" />
+      <Stack.Protected guard={isLoggedIn}>
+        <Stack.Screen name="(app)" options={{ headerShown: false }} />
+      </Stack.Protected>
+      <Stack.Protected guard={!isLoggedIn}>
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      </Stack.Protected>
     </Stack>
   );
 };
