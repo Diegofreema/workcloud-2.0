@@ -1,44 +1,26 @@
-import React, { useRef, useState } from 'react';
-import { BubbleProps } from 'react-native-gifted-chat';
+import React, {useRef, useState} from 'react';
+import {BubbleProps} from 'react-native-gifted-chat';
 import * as Linking from 'expo-linking';
-import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
-import { CircleChevronDown, Reply } from 'lucide-react-native';
-import {
-  Dimensions,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import ReanimatedSwipeable, {
-  SwipeableMethods,
-} from 'react-native-gesture-handler/ReanimatedSwipeable';
+import {Image} from 'expo-image';
+import {useRouter} from 'expo-router';
+import {CircleChevronDown, Reply} from 'lucide-react-native';
+import {Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View,} from 'react-native';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
-import Animated, {
-  SharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
-import { toast } from 'sonner-native';
-import { Id } from '~/convex/_generated/dataModel';
-import { colors } from '~/constants/Colors';
-import { emojis } from '~/constants';
-import {
-  EditType2,
-  FileType,
-  IMessage,
-  SelectedMessage,
-} from '~/constants/types';
-import { useSelected } from '~/features/chat/hook/use-selected';
-import { useMutation } from 'convex/react';
-import { api } from '~/convex/_generated/api';
-import { useFileUrlStore } from '~/features/chat/hook/use-file-url';
-import { EmojiPickerModal } from '~/features/chat/components/emoji-modal';
-import { RenderReply } from '~/features/chat/components/render-reply';
-import { ChatMenu } from '~/features/chat/components/chat-menu';
-import { HStack } from '~/components/HStack';
+import Animated, {SharedValue, useAnimatedStyle, withTiming,} from 'react-native-reanimated';
+import {toast} from 'sonner-native';
+import {Id} from '~/convex/_generated/dataModel';
+import {colors} from '~/constants/Colors';
+import {emojis} from '~/constants';
+import {EditType2, FileType, IMessage, SelectedMessage,} from '~/constants/types';
+import {useSelected} from '~/features/chat/hook/use-selected';
+import {useMutation} from 'convex/react';
+import {api} from '~/convex/_generated/api';
+import {useFileUrlStore} from '~/features/chat/hook/use-file-url';
+import {EmojiPickerModal} from '~/features/chat/components/emoji-modal';
+import {RenderReply} from '~/features/chat/components/render-reply';
+import {ChatMenu} from '~/features/chat/components/chat-menu';
+import {HStack} from '~/components/HStack';
 import PdfViewer from '~/features/chat/components/pdf-viewer';
 
 const { width } = Dimensions.get('window');
@@ -251,8 +233,8 @@ export const RenderBubble = ({
     );
   };
 
-  const onSwipeAction = (swipeable: SwipeableMethods) => {
-    swipeable.close();
+  const onSwipeAction = () => {
+    // swipeable.close();
     if (currentMessage) {
       setReplyOnSwipeOpen({ ...currentMessage });
     }
@@ -303,7 +285,7 @@ export const RenderBubble = ({
           width: '100%',
         }}
         ref={updateRowRef}
-        onSwipeableOpen={(direction, swipeable) => onSwipeAction(swipeable)}
+        onSwipeableOpen={onSwipeAction}
       >
         <View
           style={[

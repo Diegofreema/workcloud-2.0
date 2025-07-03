@@ -19,6 +19,7 @@ const CreateServicePoint = () => {
         description: data.description,
         organisationId: id,
         link: data.link,
+        linkText: data.linkText
       });
 
       toast.success("Success", {

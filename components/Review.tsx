@@ -80,7 +80,7 @@ export const Review = ({
           hide={hide}
         />
       )}
-      {reviews.length > 0 && <Button title={"See all"} onPress={onSeeReview} />}
+      <Button title={"See all"} onPress={onSeeReview} />
     </View>
   );
 };

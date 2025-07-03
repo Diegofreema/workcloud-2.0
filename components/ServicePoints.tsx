@@ -1,17 +1,20 @@
 import BottomSheet from '@gorhom/bottom-sheet';
-import { router } from 'expo-router';
-import { useCallback, useRef, useState } from 'react';
-import { FlatList } from 'react-native';
-
-import { EmptyText } from './EmptyText';
-import { HStack } from './HStack';
-import { ServicePointAction } from './ServicePointAction';
-import { MyText } from './Ui/MyText';
+import {router} from 'expo-router';
+import {useCallback, useRef, useState} from 'react';
+import {FlatList} from 'react-native';
+import * as Linking from 'expo-linking';
+import {EmptyText} from './EmptyText';
+import {HStack} from './HStack';
+import {ServicePointAction} from './ServicePointAction';
+import {MyText} from './Ui/MyText';
 import VStack from './Ui/VStack';
 
-import { DeleteBottomSheet } from '~/components/Ui/DeleteBottomSheet';
-import { ServicePointType } from '~/constants/types';
-import { Id } from '~/convex/_generated/dataModel';
+import {DeleteBottomSheet} from '~/components/Ui/DeleteBottomSheet';
+import {ServicePointType} from '~/constants/types';
+import {Id} from '~/convex/_generated/dataModel';
+import {CustomPressable} from "~/components/Ui/CustomPressable";
+import {colors} from "~/constants/Colors";
+import {toast} from "sonner-native";
 
 type Props = {
   data: ServicePointType[];
@@ -53,7 +56,6 @@ const ServicePointItem = ({
   onGetId: (id: Id<'servicePoints'>) => void;
 }) => {
   const [visible, setVisible] = useState(false);
-
   const onOpen = () => setVisible(true);
   const onClose = () => setVisible(false);
 
@@ -66,7 +68,14 @@ const ServicePointItem = ({
     onClose();
     router.push(`/edit-service-point?editId=${item._id}`);
   };
-
+const onOpenLink = async () => {
+ if(!item.externalLink) return
+  if( await Linking.canOpenURL(item.externalLink)) {
+    await Linking.openURL(item.externalLink);
+  }else {
+    toast.error('Can not open URL');
+  }
+}
   return (
     <>
       <HStack justifyContent="space-between">
@@ -77,6 +86,13 @@ const ServicePointItem = ({
           <MyText poppins="Medium" fontSize={14}>
             {item.description}
           </MyText>
+          {item.externalLink &&
+            <CustomPressable onPress={onOpenLink}>
+              <MyText poppins="Medium" fontSize={14} style={{color: colors.dialPad}}>
+                {item.linkText}
+              </MyText>
+            </CustomPressable>
+         }
         </VStack>
         <ServicePointAction
           visible={visible}

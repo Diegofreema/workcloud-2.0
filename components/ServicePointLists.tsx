@@ -10,6 +10,7 @@ import { ServicePointType } from "~/constants/types";
 import { useDarkMode } from "~/hooks/useDarkMode";
 import { CustomPressable } from "~/components/Ui/CustomPressable";
 import * as Linking from "expo-linking";
+import { toast } from "sonner-native";
 
 type Props = {
   data: ServicePointType[];
@@ -45,25 +46,38 @@ export const ServicePointLists = ({ data }: Props): JSX.Element => {
 const ServicePointItem = ({ item }: { item: ServicePointType }) => {
   const { darkMode } = useDarkMode();
   const onPress = async () => {
-    await Linking.openURL(item.externalLink);
+    if (item.externalLink && (await Linking.canOpenURL(item.externalLink))) {
+      await Linking.openURL(item.externalLink);
+    } else {
+      toast.success("Could not open URL");
+    }
   };
   return (
-    <CustomPressable onPress={onPress}>
-      <VStack>
-        <MyText poppins="Bold" fontSize={14}>
-          {item.name}
-        </MyText>
-        <MyText
-          poppins="Medium"
-          fontSize={12}
-          style={{
-            color: darkMode === "dark" ? colors.white : colors.grayText,
-            marginTop: 5,
-          }}
-        >
-          {item.description}
-        </MyText>
-      </VStack>
-    </CustomPressable>
+    <VStack>
+      <MyText poppins="Bold" fontSize={14}>
+        {item.name}
+      </MyText>
+      <MyText
+        poppins="Medium"
+        fontSize={12}
+        style={{
+          color: darkMode === "dark" ? colors.white : colors.grayText,
+          marginTop: 5,
+        }}
+      >
+        {item.description}
+      </MyText>
+      {item.externalLink && (
+        <CustomPressable onPress={onPress}>
+          <MyText
+            poppins="Medium"
+            fontSize={14}
+            style={{ color: colors.dialPad }}
+          >
+            {item.linkText}
+          </MyText>
+        </CustomPressable>
+      )}
+    </VStack>
   );
 };

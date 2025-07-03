@@ -21,20 +21,26 @@ export const ServicePointForm = ({ onSubmit, initialValues }: Props) => {
     formState: { errors, isSubmitting },
     handleSubmit,
     control,
-      watch
+    watch,
   } = useForm<SchemaType>({
     defaultValues: {
       link: "",
       name: "",
       description: "",
+      linkText: "",
       ...initialValues,
     },
     resolver: zodResolver(schema),
   });
-  const {link,name,description} = watch()
+  const { link, name, description } = watch();
 
   const onClose = useCallback(() => setIsOpen(false), []);
-    const disable = (!!initialValues && initialValues.name === name && initialValues.description === description && initialValues.link === link) || isSubmitting
+  const disable =
+    (!!initialValues &&
+      initialValues.name === name &&
+      initialValues.description === description &&
+      initialValues.link === link) ||
+    isSubmitting;
   return (
     <VStack flex={1}>
       <ServicePointModal
@@ -85,7 +91,7 @@ export const ServicePointForm = ({ onSubmit, initialValues }: Props) => {
           render={({ field: { onChange, onBlur, value } }) => (
             <InputComponent
               label="Link"
-              value={value}
+              value={value!}
               onChangeText={onChange}
               placeholder="Paste a link for this service point"
               onBlur={onBlur}
@@ -95,6 +101,25 @@ export const ServicePointForm = ({ onSubmit, initialValues }: Props) => {
           name="link"
         />
         {errors.link && <Text style={styles.error}>{errors.link.message}</Text>}
+      </>
+      <>
+        <Controller
+          control={control}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <InputComponent
+              label="Link Text"
+              value={value!}
+              onChangeText={onChange}
+              placeholder="Add a text for this link"
+              onBlur={onBlur}
+              autoCapitalize={"none"}
+            />
+          )}
+          name="linkText"
+        />
+        {errors.linkText && (
+          <Text style={[styles.error, {marginHorizontal: 15, marginBottom: 10}]}>{errors.linkText.message}</Text>
+        )}
       </>
 
       <Button

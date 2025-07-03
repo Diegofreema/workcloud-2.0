@@ -23,8 +23,8 @@ export const getUserConnections = query({
   handler: async (ctx, args) => {
     const connections = await ctx.db
       .query('connections')
-      .withIndex('by_createdAt')
-      .order('desc')
+      .withIndex('by_creation_time')
+      .order('asc')
       .filter((q) => q.eq(q.field('ownerId'), args.ownerId))
       .collect();
     return await Promise.all(

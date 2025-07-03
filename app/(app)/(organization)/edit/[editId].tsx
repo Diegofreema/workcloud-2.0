@@ -1,40 +1,32 @@
-import { convexQuery } from "@convex-dev/react-query";
-import { FontAwesome } from "@expo/vector-icons";
+import {convexQuery} from "@convex-dev/react-query";
+import {FontAwesome} from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useQuery } from "@tanstack/react-query";
-import { useMutation } from "convex/react";
-import { format } from "date-fns";
-import { Image } from "expo-image";
+import {useQuery} from "@tanstack/react-query";
+import {useMutation} from "convex/react";
+import {format} from "date-fns";
+import {Image} from "expo-image";
 import * as ImagePicker from "expo-image-picker";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useFormik } from "formik";
-import React, { useEffect, useState } from "react";
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { SelectList } from "react-native-dropdown-select-list";
-import { toast } from "sonner-native";
+import {useLocalSearchParams, useRouter} from "expo-router";
+import {useFormik} from "formik";
+import React, {useEffect, useState} from "react";
+import {Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View,} from "react-native";
+import {SelectList} from "react-native-dropdown-select-list";
+import {toast} from "sonner-native";
 import * as yup from "yup";
 
-import { AuthHeader } from "~/components/AuthHeader";
-import { InputComponent } from "~/components/InputComponent";
-import { Container } from "~/components/Ui/Container";
-import { ErrorComponent } from "~/components/Ui/ErrorComponent";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { MyButton } from "~/components/Ui/MyButton";
-import { MyText } from "~/components/Ui/MyText";
-import { days } from "~/constants";
-import { colors } from "~/constants/Colors";
-import { api } from "~/convex/_generated/api";
-import { Id } from "~/convex/_generated/dataModel";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { useGetCat } from "~/hooks/useGetCat";
-import { convertTimeToDateTime, uploadProfilePicture } from "~/lib/helper";
+import {AuthHeader} from "~/components/AuthHeader";
+import {InputComponent} from "~/components/InputComponent";
+import {Container} from "~/components/Ui/Container";
+import {ErrorComponent} from "~/components/Ui/ErrorComponent";
+import {LoadingComponent} from "~/components/Ui/LoadingComponent";
+import {MyText} from "~/components/Ui/MyText";
+import {days} from "~/constants";
+import {api} from "~/convex/_generated/api";
+import {Id} from "~/convex/_generated/dataModel";
+import {useDarkMode} from "~/hooks/useDarkMode";
+import {useGetCat} from "~/hooks/useGetCat";
+import {convertTimeToDateTime, uploadProfilePicture} from "~/lib/helper";
+import {Button} from "~/features/common/components/Button";
 
 const validationSchema = yup.object().shape({
   organizationName: yup.string().required("Name of organization is required"),
@@ -81,6 +73,7 @@ const Edit = () => {
     touched,
     resetForm,
     setValues,
+      setFieldValue
   } = useFormik({
     initialValues: {
       email: data?.email || "",
@@ -152,42 +145,27 @@ const Edit = () => {
   });
   const onSelectImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [4, 3],
     });
     if (!result.canceled) {
       const imgUrl = result.assets[0];
       setSelectedImage(imgUrl);
-      await setValues({
-        ...values,
-        image: imgUrl?.uri,
-      });
+     await setFieldValue('image', imgUrl.uri);
+
     }
   };
 
   useEffect(() => {
     if (data) {
-      setValues({
-        ...values,
-        email: data?.email!,
-        category: data?.category!,
-        location: data?.location!,
-        organizationName: data?.name!,
-        description: data?.description!,
-        websiteUrl: data?.website!,
-        startTime: data?.start!,
-        endTime: data?.end!,
-        image: data?.avatar!,
-        startDay,
-        endDay,
-      });
+
       const start = convertTimeToDateTime(data.start);
       const end = convertTimeToDateTime(data.end);
       setStartTime(new Date(start));
       setEndTime(new Date(end));
     }
-  }, [data, endDay, setValues, startDay, values]);
+  }, [data]);
 
   useEffect(() => {
     if (cat) {
@@ -258,6 +236,7 @@ const Edit = () => {
                   contentFit="cover"
                   style={{ width: 100, height: 100, borderRadius: 50 }}
                   source={image}
+                  placeholder={require('../../../../assets/images.png')}
                 />
                 {!values.image && (
                   <TouchableOpacity
@@ -505,17 +484,7 @@ const Edit = () => {
           </View>
 
           <View style={{ flex: 0.4, marginTop: 30 }}>
-            <MyButton
-              loading={isSubmitting}
-              onPress={() => handleSubmit()}
-              buttonColor={colors.buttonBlue}
-              buttonStyle={{ width: 200 }}
-              textColor={colors.white}
-              labelStyle={{ fontFamily: "PoppinsMedium", fontSize: 12 }}
-              contentStyle={{ height: 50, borderRadius: 20 }}
-            >
-              {isSubmitting ? "Updating..." : "Update"}
-            </MyButton>
+            <Button title={'Update'} onPress={() => handleSubmit()} loadingTitle={'Updating...'} loading={isSubmitting}  />
           </View>
         </View>
       </ScrollView>

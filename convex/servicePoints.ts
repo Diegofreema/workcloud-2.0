@@ -59,7 +59,8 @@ export const createServicePoint = mutation({
     description: v.optional(v.string()),
     organisationId: v.id("organizations"),
     name: v.string(),
-    link: v.string(),
+    link: v.optional(v.string()),
+    linkText: v.optional(v.string())
   },
   handler: async (ctx, args) => {
     const alreadyHasServicePointWithName = await ctx.db
@@ -77,6 +78,7 @@ export const createServicePoint = mutation({
       form: false,
       description: args.description,
       externalLink: args.link,
+      linkText: args.linkText
     });
   },
 });
