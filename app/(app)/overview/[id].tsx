@@ -119,6 +119,7 @@ const Overview = () => {
               style={{ width: 70, height: 70, borderRadius: 50 }}
               contentFit="cover"
               source={{ uri: organization?.avatar! }}
+              placeholder={require('../../../assets/images.png')}
             />
             <View>
               <Text

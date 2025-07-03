@@ -137,6 +137,7 @@ export const getOrganisationById = query({
     return {
       ...organisation,
       avatar: imageUrl,
+
     };
   },
 });
@@ -413,20 +414,39 @@ export const updateOrganization = mutation({
     start: v.string(),
     website: v.string(),
     workDays: v.string(),
+    oldId: v.optional(v.id('_storage'))
   },
   handler: async (ctx, args) => {
-    await ctx.db.patch(args.organizationId, {
-      avatar: args.avatar,
-      location: args.location,
-      email: args.email,
-      description: args.description,
-      name: args.name,
-      start: args.start,
-      end: args.end,
-      website: args.website,
-      workDays: args.workDays,
-      category: args.category,
-    });
+    if(args.oldId) {
+      await ctx.storage.delete(args.oldId)
+      const image = await ctx.storage.getUrl(args.avatar)
+      await ctx.db.patch(args.organizationId, {
+        avatar: image!,
+        location: args.location,
+        email: args.email,
+        description: args.description,
+        name: args.name,
+        start: args.start,
+        end: args.end,
+        website: args.website,
+        workDays: args.workDays,
+        category: args.category,
+        avatarId: args.avatar as Id<'_storage'>
+      });
+    } else {
+      await ctx.db.patch(args.organizationId, {
+        location: args.location,
+        email: args.email,
+        description: args.description,
+        name: args.name,
+        start: args.start,
+        end: args.end,
+        website: args.website,
+        workDays: args.workDays,
+        category: args.category,
+      });
+    }
+
   },
 });
 
@@ -616,3 +636,17 @@ export const increaseSearchCount = mutation({
     });
   },
 });
+
+
+export const deleteImageId = mutation({
+  args: {
+    id: v.id('_storage'),
+    orgsId: v.id('organizations')
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.orgsId, {
+      avatar: undefined
+    })
+    return await ctx.storage.delete(args.id);
+  }
+})

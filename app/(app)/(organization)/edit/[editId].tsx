@@ -44,6 +44,7 @@ const validationSchema = yup.object().shape({
 
 const Edit = () => {
   const { editId } = useLocalSearchParams<{ editId: Id<"organizations"> }>();
+
   const { data, isPending, isError, refetch } = useQuery(
     convexQuery(api.organisation.getOrganisationById, {
       organisationId: editId!,
@@ -53,6 +54,7 @@ const Edit = () => {
     useState<ImagePicker.ImagePickerAsset | null>(null);
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
   const updateOrganization = useMutation(api.organisation.updateOrganization);
+
   const [start, setStartTime] = useState(new Date(1598051730000));
   const [end, setEndTime] = useState(new Date(1598051730000));
 
@@ -73,7 +75,7 @@ const Edit = () => {
     touched,
     resetForm,
     setValues,
-      setFieldValue
+    setFieldValue,
   } = useFormik({
     initialValues: {
       email: data?.email || "",
@@ -112,6 +114,7 @@ const Edit = () => {
             email: values.email,
             location: values.location,
             organizationId: editId,
+            oldId: data.avatarId,
           });
         } else {
           await updateOrganization({
@@ -145,21 +148,19 @@ const Edit = () => {
   });
   const onSelectImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
+      mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [4, 3],
     });
     if (!result.canceled) {
       const imgUrl = result.assets[0];
       setSelectedImage(imgUrl);
-     await setFieldValue('image', imgUrl.uri);
-
+      await setFieldValue("image", imgUrl.uri);
     }
   };
 
   useEffect(() => {
     if (data) {
-
       const start = convertTimeToDateTime(data.start);
       const end = convertTimeToDateTime(data.end);
       setStartTime(new Date(start));
@@ -169,9 +170,9 @@ const Edit = () => {
 
   useEffect(() => {
     if (cat) {
-      setValues({ ...values, category: cat });
+      setFieldValue("category", cat);
     }
-  }, [cat, setValues, values]);
+  }, [cat, setFieldValue]);
   const onChange = (event: any, selectedDate: any, type: string) => {
     const currentDate = selectedDate;
     if (type === "startTime") {
@@ -191,7 +192,8 @@ const Edit = () => {
     setShow2(true);
   };
   const handleDeleteImage = () => {
-    setValues({ ...values, image: "" });
+    setFieldValue("image", "");
+    setSelectedImage(null);
   };
 
   const {
@@ -201,7 +203,6 @@ const Edit = () => {
     organizationName,
     description,
     websiteUrl,
-    image,
     startDay: s,
     endDay: e,
   } = values;
@@ -212,7 +213,7 @@ const Edit = () => {
   if (isPending) {
     return <LoadingComponent />;
   }
-
+  console.log({ image: values.image });
   return (
     <Container>
       <ScrollView
@@ -235,8 +236,8 @@ const Edit = () => {
                 <Image
                   contentFit="cover"
                   style={{ width: 100, height: 100, borderRadius: 50 }}
-                  source={image}
-                  placeholder={require('../../../../assets/images.png')}
+                  source={values.image}
+                  placeholder={require("../../../../assets/images.png")}
                 />
                 {!values.image && (
                   <TouchableOpacity
@@ -249,6 +250,7 @@ const Edit = () => {
                       borderRadius: 30,
                     }}
                     onPress={onSelectImage}
+
                   >
                     <FontAwesome
                       name="plus"
@@ -268,6 +270,7 @@ const Edit = () => {
                       borderRadius: 30,
                     }}
                     onPress={handleDeleteImage}
+
                   >
                     <FontAwesome name="trash" size={20} color="red" />
                   </TouchableOpacity>
@@ -484,7 +487,12 @@ const Edit = () => {
           </View>
 
           <View style={{ flex: 0.4, marginTop: 30 }}>
-            <Button title={'Update'} onPress={() => handleSubmit()} loadingTitle={'Updating...'} loading={isSubmitting}  />
+            <Button
+              title={"Update"}
+              onPress={() => handleSubmit()}
+              loadingTitle={"Updating..."}
+              loading={isSubmitting}
+            />
           </View>
         </View>
       </ScrollView>
