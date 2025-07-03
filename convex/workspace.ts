@@ -203,6 +203,7 @@ export const createWorkspace = mutation({
       workspaceId: id,
       organizationId: args.organizationId,
       role: args.role,
+      type: args.type
     });
 
     return id;

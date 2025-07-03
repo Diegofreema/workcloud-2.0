@@ -56,9 +56,9 @@ export const Worker = {
   bossId: v.optional(v.id('users')),
   gender: v.string(),
   email: v.string(),
-  type: v.optional(
+  type:
     v.union(v.literal('processor'), v.literal('front'), v.literal('personal'))
-  ),
+
 };
 export const Post = {
   image: v.string(),

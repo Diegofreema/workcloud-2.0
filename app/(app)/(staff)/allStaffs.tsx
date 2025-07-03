@@ -21,7 +21,7 @@ const AllStaffs = () => {
   }
 
   const data = staffs.filter((staff) => staff.user !== null) as WorkerData[];
-
+    console.log({data})
   return (
     <Container>
       <HeaderNav
