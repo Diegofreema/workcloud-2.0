@@ -17,7 +17,14 @@ export const getAllUsers = query({
     return await ctx.db.query("users").collect();
   },
 });
-
+export const getUser = query({
+  args: {
+    userId: v.string()
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.query('users').withIndex('clerkId', q => q.eq('clerkId', args.userId)).first()
+  }
+})
 export const createUser = internalMutation({
   args: {
     email: v.string(),
@@ -189,7 +196,7 @@ export const createWorkerProfile = mutation({
     qualifications: v.string(),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.insert("workers", { ...args });
+    return await ctx.db.insert("workers", { ...args, });
   },
 });
 

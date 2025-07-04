@@ -14,7 +14,7 @@ import * as MediaLibrary from "expo-media-library";
 
 import { ChatDateGroup, DataType } from "~/constants/types";
 import { Id } from "~/convex/_generated/dataModel";
-import { Channel } from "stream-chat";
+
 import { ConvexError } from "convex/values";
 import * as Sharing from "expo-sharing";
 import { Platform } from "react-native";
@@ -295,7 +295,7 @@ export const calculateRatingStats = (
   };
 };
 
-export const filterChannels = async (channels: Channel[], query: string) => {
+export const filterChannels = async (channels: any[], query: string) => {
   if (!query) return []; // Return all channels if no query is provided
 
   // Use Promise.all to handle async operations
@@ -306,7 +306,7 @@ export const filterChannels = async (channels: Channel[], query: string) => {
 
       // Check if the channel name or member name matches the query
       const isNameMatch = channel.data?.name?.includes(query);
-      const isMemberMatch = memberResponse.members.some((member) =>
+      const isMemberMatch = memberResponse.members.some((member: { user: { name: string | string[]; }; }) =>
         member.user?.name?.includes(query),
       );
 
@@ -316,7 +316,7 @@ export const filterChannels = async (channels: Channel[], query: string) => {
   );
 
   // Filter out null values (channels that didn't match the query)
-  return filteredChannels.filter((channel) => channel !== null) as Channel[];
+  return filteredChannels.filter((channel: null) => channel !== null) as any[];
 };
 
 export const sliceArray = <T>(array: T[], length = 10): T[] => {

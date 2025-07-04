@@ -57,7 +57,7 @@ export const Worker = {
   gender: v.string(),
   email: v.string(),
   type:
-    v.union(v.literal('processor'), v.literal('front'), v.literal('personal'))
+    v.optional(v.union(v.literal('processor'), v.literal('front'), v.literal('personal')))
 
 };
 export const Post = {

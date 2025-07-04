@@ -9,6 +9,9 @@ import { Mail, Phone } from "lucide-react-native";
 import { useAuth } from "~/context/auth";
 import { router } from "expo-router";
 import { useGetUserId } from "~/hooks/useGetUserId";
+import { useQuery } from "convex/react";
+import { api } from "~/convex/_generated/api";
+import {ChatPreviewSkeleton} from "~/components/ChatPreviewSkeleton";
 
 type Props = {
   videoCall: Call;
@@ -16,14 +19,22 @@ type Props = {
 export const VideoCall = ({ videoCall }: Props) => {
   const { user } = useAuth();
   const { id } = useGetUserId();
-
   const callUser = videoCall.state.members.find((m) => m.user_id !== user?.id)!;
 
   const { user: call_user, custom } = callUser;
-  const onChat = () => {
-    router.push(`/chat/${id}`);
-  };
+  const otherUser = useQuery(
+    api.users.getUser,
+    call_user.id ? { userId: call_user.id } : "skip",
+  );
 
+
+  console.log({ otherUser });
+if(otherUser === undefined) {
+  return <ChatPreviewSkeleton />
+}
+  const onChat = () => {
+    router.push(`/chat/${otherUser?._id}`);
+  };
   return (
     <HStack justifyContent={"space-between"} alignItems={"center"}>
       <HStack alignItems={"center"} gap={4}>
