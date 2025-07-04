@@ -18,12 +18,14 @@ import {
   GestureDetector,
 } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
+import {useUnreadProcessorMessageCount} from "~/features/common/hook/use-unread-message-count";
+import {UnreadProcessorMessage} from "~/components/processor-unread-message-banner";
 
 const Components = [ChatComponent, GroupChats];
 const MessageScreen = () => {
   const { id } = useGetUserId();
   const [selectedIndex, setSelectedIndex] = useState(0);
-
+  const unreadProcessorMessagesCount = useUnreadProcessorMessageCount()
   const ActiveComponents = Components[selectedIndex];
 
   const staffs = useQuery(
@@ -56,6 +58,9 @@ const MessageScreen = () => {
   return (
     <GestureDetector gesture={swipe}>
       <Container>
+        {unreadProcessorMessagesCount > 0 && (
+            <UnreadProcessorMessage unreadCount={unreadProcessorMessagesCount} />
+        )}
         <TabsHeader leftContent={<Title title={"Messages"} />} />
         <TabsSelector
           data={["Single", "Group"]}

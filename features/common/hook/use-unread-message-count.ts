@@ -11,3 +11,12 @@ export const useUnreadMessageCount = () => {
 
   return unreadCount || 0;
 };
+export const useUnreadProcessorMessageCount = () => {
+  const { id } = useGetUserId();
+  const unreadCount = useQuery(
+    api.conversation.getUnreadProcessorMessages,
+    id ? { userId: id } : "skip",
+  );
+
+  return unreadCount || 0;
+};

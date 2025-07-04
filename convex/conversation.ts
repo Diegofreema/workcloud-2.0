@@ -142,6 +142,45 @@ export const getUnreadAllMessages = query({
     return messagesThatIHaveNotRead.reduce((acc, curr) => acc + curr, 0);
   },
 });
+export const getUnreadProcessorMessages = query({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const conversations = await getProcessorConversationIamIn(ctx, args.userId);
+
+    const messagesThatIHaveNotRead = await Promise.all(
+      conversations.map(async (conversation) => {
+        const member = await getMemberHelper(
+          ctx,
+          conversation._id,
+          args.userId,
+        );
+        if (!member) return 0;
+        const messages = await ctx.db
+          .query("messages")
+          .withIndex("by_conversationId", (q) =>
+            q.eq("conversationId", conversation._id),
+          )
+          .filter((q) =>
+            q.and(
+              q.neq(q.field("senderId"), args.userId),
+              q.gt(q.field("_creationTime"), member._creationTime),
+            ),
+          )
+          .collect();
+
+        const messagesThatIHaveNotSeen = messages.filter(
+          (m) => !m.seenId.includes(args.userId),
+        );
+
+        return messagesThatIHaveNotSeen.length;
+      }),
+    );
+
+    return messagesThatIHaveNotRead.reduce((acc, curr) => acc + curr, 0);
+  },
+});
 
 export const getSingleConversationWithMessages = query({
   args: {
@@ -152,13 +191,12 @@ export const getSingleConversationWithMessages = query({
   handler: async (ctx, args) => {
     if (!args.loggedInUserId) return null;
     return filter(
-      ctx.db.query("conversations").withIndex("by_id"),
+      ctx.db.query("conversations").withIndex("type", q => q.eq('type', args.type)),
       (c) =>
         (c.participants[0] === args.loggedInUserId &&
           c.participants[1] === args.otherUserId) ||
         (c.participants[1] === args.loggedInUserId &&
-          c.participants[0] === args.otherUserId &&
-          c.type === args.type),
+          c.participants[0] === args.otherUserId),
     ).first();
   },
 });
@@ -634,5 +672,13 @@ export const getConversationIamIn = async (
   return filter(
     ctx.db.query("conversations").withIndex("by_id"),
     (conversation) => conversation.participants.includes(userId),
+  ).collect();
+};export const getProcessorConversationIamIn = async (
+  ctx: QueryCtx,
+  userId: Id<"users">,
+) => {
+  return filter(
+    ctx.db.query("conversations").withIndex("by_id"),
+    (conversation) => conversation.participants.includes(userId) && conversation.type === "processor",
   ).collect();
 };
