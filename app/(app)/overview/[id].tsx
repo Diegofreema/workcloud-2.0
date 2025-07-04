@@ -137,8 +137,6 @@ const Overview = () => {
         <View
           style={{
             marginTop: 10,
-            borderTopColor: darkMode ? colors.black : colors.gray,
-            borderTopWidth: 1,
             paddingTop: 10,
           }}>
           <MyText

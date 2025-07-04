@@ -15,8 +15,8 @@ export const RenderComposer = ({ onPickImage, ...props }: Props) => {
       style={{
         borderWidth: 1,
         borderColor: colors.gray,
-        borderRadius: 30,
-        padding: 10,
+        borderRadius: 5,
+        // padding: 10,
         flex: 1,
       }}
       alignItems="center"

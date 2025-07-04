@@ -225,7 +225,8 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
   const { id: customerId } = useGetUserId();
   const handleWaitlist = useMutation(api.workspace.handleWaitlist);
   const { setId } = useWaitlistId();
-  const { workspace, user } = item;
+  const { workspace, user,role } = item;
+  console.log({role})
   const handlePress = async () => {
     if (storedUser?.id === user?.clerkId) return;
     if (!workspace?.active || workspace?.leisure) {
@@ -257,7 +258,7 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
   };
 
   const onMessage = async () => {
-    router.push(`/chat/${item.user?._id}`);
+    router.push(`/chat/${item.user?._id}?type=single`);
   };
 
   return (

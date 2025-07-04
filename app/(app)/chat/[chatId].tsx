@@ -19,6 +19,8 @@ const SingleChat = () => {
     chatId: Id<"users">;
     type: "single" | "processor";
   }>();
+
+  console.log({userToChat})
   const { id: loggedInUserId } = useGetUserId();
   console.log({ type });
   const { data: conversationData, isPending } = useTanstackQuery(
@@ -53,6 +55,7 @@ const SingleChat = () => {
   const otherUser = useQuery(api.users.getUserById, { id: userToChat });
   if (otherUser === undefined || isPending || loading) return <ChatSkeleton />;
 
+  console.log({ conversationData})
   return (
     <Container noPadding>
       <ChatHeader name={otherUser?.name!} imageUrl={otherUser?.imageUrl!} />

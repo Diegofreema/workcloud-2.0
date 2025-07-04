@@ -31,6 +31,7 @@ export default function TabOneScreen() {
     return <LoadingComponent />;
   }
 
+
   const firstTen = sliceArray(connections);
   const headerText = connections.length > 10 ? "See all connections" : "";
   return (

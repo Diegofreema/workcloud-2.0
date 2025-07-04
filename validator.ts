@@ -14,7 +14,7 @@ export const schema = z
       .string()
       .max(255, "A maximum of 255 characters is allowed")
       .optional(),
-    link: z.string().url("Invalid URL, url should contain https://").optional(),
+    link: z.string().optional(),
     linkText: z.string().optional(),
   })
   .refine(
@@ -24,6 +24,18 @@ export const schema = z
     {
       message: "Link text is required when a link is provided",
       path: ["linkText"],
+    },
+  )
+  .refine(
+    (data) => {
+      return !(
+        data.link &&
+        (!data.link.startsWith("https") || !data.link.startsWith("www"))
+      );
+    },
+    {
+      message: "Link must start with https or www.",
+      path: ["link"],
     },
   );
 

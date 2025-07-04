@@ -24,11 +24,16 @@ export const getUserConnections = query({
     const connections = await ctx.db
       .query('connections')
       .withIndex('by_creation_time')
-      .order('asc')
+      .order('desc')
       .filter((q) => q.eq(q.field('ownerId'), args.ownerId))
-      .collect();
+      .take(10);
+    const c =   [...connections].sort((a, b) => {
+      const dateA = new Date(a.connectedAt.replace(/(\d+)\/(\d+)\/(\d+), (\d+):(\d+):(\d+)/, '$3-$2-$1T$4:$5:$6'));
+      const dateB = new Date(b.connectedAt.replace(/(\d+)\/(\d+)\/(\d+), (\d+):(\d+):(\d+)/, '$3-$2-$1T$4:$5:$6'));
+      return dateB.getTime() - dateA.getTime();
+    })
     return await Promise.all(
-      connections.map(async (connection) => {
+      c.map(async (connection) => {
         const organisation = await getOrganisations(
           ctx,
           connection.connectedTo

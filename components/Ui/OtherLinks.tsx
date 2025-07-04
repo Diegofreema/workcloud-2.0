@@ -1,15 +1,15 @@
-import { AntDesign } from '@expo/vector-icons';
-import { Divider } from '@rneui/themed';
-import { Href, router } from 'expo-router';
-import { Pressable } from 'react-native';
+import { AntDesign } from "@expo/vector-icons";
+import { Divider } from "@rneui/themed";
+import { Href, router } from "expo-router";
+import { Pressable } from "react-native";
+import * as WebBrowser from "expo-web-browser";
+import { HStack } from "../HStack";
+import { HelpSvg, LockSvg, UserSvg } from "../LockSvg";
+import { MyText } from "./MyText";
+import VStack from "./VStack";
 
-import { HStack } from '../HStack';
-import { HelpSvg, LockSvg, UserSvg } from '../LockSvg';
-import { MyText } from './MyText';
-import VStack from './VStack';
-
-import { colors } from '~/constants/Colors';
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { colors } from "~/constants/Colors";
+import { useDarkMode } from "~/hooks/useDarkMode";
 
 export const OtherLinks = ({
   workerId,
@@ -19,8 +19,8 @@ export const OtherLinks = ({
   const { darkMode } = useDarkMode();
   const link: string = workerId
     ? `/myWorkerProfile/${workerId}`
-    : '/create-worker-profile';
-  const title = workerId ? "Worker's Profile" : 'Create Worker Profile';
+    : "/create-worker-profile";
+  const title = workerId ? "Worker's Profile" : "Create Worker Profile";
   return (
     <VStack
       mt={20}
@@ -38,13 +38,14 @@ export const OtherLinks = ({
       />
       <Divider
         style={{
-          backgroundColor: darkMode === 'dark' ? 'transparent' : '#ccc',
+          backgroundColor: darkMode === "dark" ? "transparent" : "#ccc",
         }}
       />
       <Item
         rightIcon={<LockSvg height={50} width={50} />}
         title="Privacy Policy"
-        link="/privacy"
+        link="https://workcloud-web.vercel.app/privacy-policy"
+        external
       />
 
       <Item
@@ -60,14 +61,23 @@ const Item = ({
   rightIcon,
   title,
   link,
+  external,
 }: {
   rightIcon: JSX.Element;
   title: string;
   link: Href;
+  external?: boolean;
 }) => {
+  const onPress = async () => {
+    if (external) {
+      await WebBrowser.openBrowserAsync(link as string);
+    } else {
+      router.push(link);
+    }
+  };
   return (
     <Pressable
-      onPress={() => router.push(link)}
+      onPress={onPress}
       style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
     >
       <HStack justifyContent="space-between" alignItems="center">

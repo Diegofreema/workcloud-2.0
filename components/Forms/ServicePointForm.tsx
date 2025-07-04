@@ -118,7 +118,7 @@ export const ServicePointForm = ({ onSubmit, initialValues }: Props) => {
           name="linkText"
         />
         {errors.linkText && (
-          <Text style={[styles.error, {marginHorizontal: 15, marginBottom: 10}]}>{errors.linkText.message}</Text>
+          <Text style={[styles.error]}>{errors.linkText.message}</Text>
         )}
       </>
 
@@ -128,6 +128,7 @@ export const ServicePointForm = ({ onSubmit, initialValues }: Props) => {
         loading={isSubmitting}
         disabled={disable}
         loadingTitle={"Submitting..."}
+        style={{ height: 55, marginHorizontal: 10 }}
       />
     </VStack>
   );
@@ -138,5 +139,7 @@ const styles = StyleSheet.create({
     color: "red",
     marginTop: 2,
     fontFamily: "PoppinsMedium",
+    marginHorizontal: 15,
+    marginBottom: 10,
   },
 });
