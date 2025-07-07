@@ -190,7 +190,7 @@ const Work = () => {
   const onClose = () => {
     setIsVisible(false);
   };
-
+  console.log({ workerId: data?.workspace.workerId });
   const onAddToCall = async (
     currentUser: Id<"waitlists">,
     nextUser: Id<"waitlists">,
@@ -198,11 +198,13 @@ const Work = () => {
     customerCallId: string,
   ) => {
     console.log({ id: user?.id, customerCallId });
-    if (!client) return;
-    // await updateWaitlistType({
-    //   waitlistId: currentUser,
-    //   nextWaitListId: nextUser,
-    // });
+    if (!client || !data?.workspace.workerId) return;
+
+    await updateWaitlistType({
+      waitlistId: currentUser,
+      nextWaitListId: nextUser,
+      workerId: data?.workspace.workerId,
+    });
     const callId = Crypto.randomUUID();
     await client.call("default", callId).getOrCreate({
       ring: true,
@@ -214,7 +216,9 @@ const Work = () => {
         ],
       },
     });
-    router.push(`/call/${callId}?wkId=${id}`);
+    router.push(
+      `/call/${callId}?workerId=${data?.workspace.workerId}&workspaceId=${id}`,
+    );
   };
   const handleExit = async () => {
     if (customerLeaving) {

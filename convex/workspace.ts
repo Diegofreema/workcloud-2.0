@@ -203,7 +203,7 @@ export const createWorkspace = mutation({
       workspaceId: id,
       organizationId: args.organizationId,
       role: args.role,
-      type: args.type
+      type: args.type,
     });
 
     return id;
@@ -294,17 +294,34 @@ export const attendToCustomer = mutation({
   args: {
     waitlistId: v.id("waitlists"),
     nextWaitListId: v.optional(v.id("waitlists")),
+    workerId: v.id("workers"),
   },
-  handler: async (ctx, { waitlistId, nextWaitListId }) => {
+  handler: async (ctx, { waitlistId, nextWaitListId, workerId }) => {
     const waitlist = await ctx.db.get(waitlistId);
+
     if (!waitlist) return;
     await ctx.db.patch(waitlist._id, {
       type: "attending",
+    });
+    await ctx.db.patch(workerId, {
+      attendingTo: waitlist._id,
     });
     if (!nextWaitListId) return;
     await ctx.db.patch(nextWaitListId, {
       type: "next",
     });
+  },
+});
+
+export const getWaitlistByCustomerId = query({
+  args: {
+    customerId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("waitlists")
+      .withIndex("customer_id", (q) => q.eq("customerId", args.customerId))
+      .first();
   },
 });
 
@@ -389,3 +406,14 @@ export const getWaitlist = async ({
   });
   return await Promise.all(usersInWaitlist);
 };
+
+export const deleteWaitlist = mutation({
+  args: {
+    waitlistId: v.id("waitlists"),
+  },
+  handler: async (ctx, args) => {
+    const waitlist = await ctx.db.get(args.waitlistId);
+    if (!waitlist) return;
+    await ctx.db.delete(waitlist._id);
+  },
+});

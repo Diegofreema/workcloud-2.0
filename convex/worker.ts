@@ -37,6 +37,15 @@ export const getAllOtherWorkers = query({
   },
 });
 
+export const getWorker = query({
+  args: {
+    workerId: v.id('workers')
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.workerId)
+  }
+})
+
 export const getSingleWorkerProfile = query({
   args: {
     id: v.id('workers'),
