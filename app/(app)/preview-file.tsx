@@ -9,7 +9,7 @@ const PreviewFile = () => {
   const file = useFileUrlStore((state) => state.file);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
       <HeaderNav title={'Preview'} />
       {file?.type === 'image' ? (
         <PreviewChatImage url={file.url} />

@@ -39,12 +39,19 @@ export const getAllOtherWorkers = query({
 
 export const getWorker = query({
   args: {
-    workerId: v.id('workers')
+    workerId: v.id('workers'),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.workerId)
-  }
-})
+    const worker = await ctx.db.get(args.workerId);
+    if (!worker || !worker.attendingTo) return null;
+    const waitlist = await ctx.db.get(worker.attendingTo as Id<'waitlists'>);
+    if (!waitlist) return null;
+    return {
+      ...worker,
+      customerId: waitlist?.customerId,
+    };
+  },
+});
 
 export const getSingleWorkerProfile = query({
   args: {

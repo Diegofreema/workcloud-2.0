@@ -8,7 +8,9 @@
     "scheme": "workcloud",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-
+    "notification": {
+      "icon": "./assets/notification.png"
+    },
     "ios": {
       "supportsTablet": true,
       "bitcode": false,
@@ -16,18 +18,21 @@
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera for video calls.",
         "NSMicrophoneUsageDescription": "This app uses the microphone to record audio for video or voice messages."
-      }
+      },
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/images/appIcon.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.diegodark.workcloud"
+      "package": "com.diegodark.workcloud",
+      "googleServicesFile": "./google-services.json",
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "bundler": "metro",
@@ -39,7 +44,18 @@
     },
     "plugins": [
       ["expo-router"],
-      "@stream-io/video-react-native-sdk",
+      [
+        "@stream-io/video-react-native-sdk",
+        {
+          "ringingPushNotifications": {
+            "disableVideoIos": false,
+            "includesCallsInRecentsIos": false,
+            "showWhenLockedAndroid": true
+          },
+          "androidKeepCallAlive": true
+        }
+      ],
+      "@config-plugins/react-native-callkeep",
       [
         "@config-plugins/react-native-webrtc",
         {
@@ -47,6 +63,8 @@
           "microphonePermission": "$(PRODUCT_NAME) requires microphone access in order to capture and transmit audio"
         }
       ],
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging",
       [
         "expo-splash-screen",
         {
@@ -74,10 +92,14 @@
             "buildToolsVersion": "35.0.0",
             "enableProguardInReleaseBuilds": true,
             "allowBackup": false,
-            "enableShrinkResourcesInReleaseBuilds": true
+            "enableShrinkResourcesInReleaseBuilds": true,
+            "extraMavenRepos": [
+              "$rootDir/../../../node_modules/@notifee/react-native/android/libs"
+            ]
           },
           "ios": {
-            "deploymentTarget": "15.1"
+            "deploymentTarget": "15.1",
+            "useFrameworks": "static"
           }
         }
       ],

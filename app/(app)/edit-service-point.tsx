@@ -1,23 +1,23 @@
-import { Container } from "~/components/Ui/Container";
-import { AuthHeader } from "~/components/AuthHeader";
-import { ServicePointForm } from "~/components/Forms/ServicePointForm";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "~/convex/_generated/api";
-import { Redirect, router, useLocalSearchParams } from "expo-router";
-import { Id } from "~/convex/_generated/dataModel";
-import { SchemaType } from "~/validator";
-import { toast } from "sonner-native";
-import { generateErrorMessage } from "~/lib/helper";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
+import { Container } from '~/components/Ui/Container';
+import { AuthHeader } from '~/components/AuthHeader';
+import { ServicePointForm } from '~/components/Forms/ServicePointForm';
+import { useMutation, useQuery } from 'convex/react';
+import { api } from '~/convex/_generated/api';
+import { Redirect, router, useLocalSearchParams } from 'expo-router';
+import { Id } from '~/convex/_generated/dataModel';
+import { SchemaType } from '~/validator';
+import { toast } from 'sonner-native';
+import { generateErrorMessage } from '~/lib/helper';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
 
 const EditServicePoint = () => {
-  const { editId } = useLocalSearchParams<{ editId: Id<"servicePoints"> }>();
+  const { editId } = useLocalSearchParams<{ editId: Id<'servicePoints'> }>();
   const updateServicePoint = useMutation(api.servicePoints.updateServicePoint);
   const servicePoint = useQuery(
     api.servicePoints.getSingleServicePointAndWorker,
     {
       servicePointId: editId,
-    },
+    }
   );
 
   const onSubmit = async (values: SchemaType) => {
@@ -29,17 +29,17 @@ const EditServicePoint = () => {
         link: values.link,
       });
 
-      toast.success("Success", {
-        description: "Service point updated successfully",
+      toast.success('Success', {
+        description: 'Service point updated successfully',
       });
 
       router.back();
     } catch (error) {
       const errorMessage = generateErrorMessage(
         error,
-        "Failed to update service point. Please try again",
+        'Failed to update service point. Please try again'
       );
-      toast.error("Something went wrong", {
+      toast.error('Something went wrong', {
         description: errorMessage,
       });
     }
@@ -48,7 +48,7 @@ const EditServicePoint = () => {
     return <LoadingComponent />;
   }
   if (servicePoint === null) {
-    return <Redirect href={"/"} />;
+    return <Redirect href={'/'} />;
   }
   return (
     <Container>
@@ -59,6 +59,7 @@ const EditServicePoint = () => {
           link: servicePoint.externalLink,
           name: servicePoint.name,
           description: servicePoint.description,
+          linkText: servicePoint.linkText,
         }}
       />
     </Container>

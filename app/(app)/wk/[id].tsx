@@ -1,42 +1,44 @@
-import { useMutation, useQuery } from "convex/react";
-import { format } from "date-fns";
-import { Redirect, router, useLocalSearchParams } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import { toast } from "sonner-native";
-import * as Crypto from "expo-crypto";
-import { WaitListModal } from "~/components/Dialogs/WaitListModal";
-import { HeaderNav } from "~/components/HeaderNav";
-import { BottomActive } from "~/components/Ui/BottomActive";
-import { Container } from "~/components/Ui/Container";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { UserPreview } from "~/components/Ui/UserPreview";
-import { Waitlists } from "~/components/Ui/Waitlists";
-import { WorkspaceButtons } from "~/components/Ui/WorkspaceButtons";
-import { api } from "~/convex/_generated/api";
-import { Id } from "~/convex/_generated/dataModel";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { useGetWaitlistIdForCustomer } from "~/hooks/useGetWorkspaceIdForCustomer";
-import { useWaitlistId } from "~/hooks/useWaitlistId";
-import { useGetCustomerId } from "~/hooks/useCustomerId";
-import { MessageBtn } from "~/features/common/components/message-btn";
-import { useAuth } from "~/context/auth";
-import { useStreamVideoClient } from "@stream-io/video-react-bindings";
-import { Button } from "~/features/common/components/Button";
+import { useMutation, useQuery } from 'convex/react';
+import { format } from 'date-fns';
+import { Redirect, router, useLocalSearchParams } from 'expo-router';
+import { useCallback, useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { toast } from 'sonner-native';
+import * as Crypto from 'expo-crypto';
+import { WaitListModal } from '~/components/Dialogs/WaitListModal';
+import { HeaderNav } from '~/components/HeaderNav';
+import { BottomActive } from '~/components/Ui/BottomActive';
+import { Container } from '~/components/Ui/Container';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { UserPreview } from '~/components/Ui/UserPreview';
+import { Waitlists } from '~/components/Ui/Waitlists';
+import { WorkspaceButtons } from '~/components/Ui/WorkspaceButtons';
+import { api } from '~/convex/_generated/api';
+import { Id } from '~/convex/_generated/dataModel';
+import { useGetUserId } from '~/hooks/useGetUserId';
+import { useGetWaitlistIdForCustomer } from '~/hooks/useGetWorkspaceIdForCustomer';
+import { useWaitlistId } from '~/hooks/useWaitlistId';
+import { useGetCustomerId } from '~/hooks/useCustomerId';
+import { MessageBtn } from '~/features/common/components/message-btn';
+import { useAuth } from '~/context/auth';
+import { useStreamVideoClient } from '@stream-io/video-react-bindings';
+import { Button } from '~/features/common/components/Button';
+import { useCallStore } from '~/features/calls/hook/useCallStore';
 
-const today = format(new Date(), "dd-MM-yyyy");
+const today = format(new Date(), 'dd-MM-yyyy');
 
 const Work = () => {
-  const { id } = useLocalSearchParams<{ id: Id<"workspaces"> }>();
+  const { id } = useLocalSearchParams<{ id: Id<'workspaces'> }>();
   const [showMenu, setShowMenu] = useState(false);
   const { id: loggedInUser, user: convexUser } = useGetUserId();
   const { user } = useAuth();
   const client = useStreamVideoClient();
   const [leaving, setLeaving] = useState(false);
   const [customerLeaving, setCustomerLeaving] = useState(false);
-  const [customerToRemove, setCustomerToRemove] = useState<Id<"users"> | null>(
-    null,
+  const [customerToRemove, setCustomerToRemove] = useState<Id<'users'> | null>(
+    null
   );
+  const getData = useCallStore((state) => state.getData);
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [addingToCall, setAddingToCall] = useState(false);
@@ -49,7 +51,7 @@ const Work = () => {
   });
   const processorCount = useQuery(
     api.processors.getProcessorThroughUser,
-    loggedInUser ? { userId: loggedInUser } : "skip",
+    loggedInUser ? { userId: loggedInUser } : 'skip'
   );
 
   const leaveLobby = useMutation(api.workspace.existLobby);
@@ -60,15 +62,15 @@ const Work = () => {
     {
       workerId: loggedInUser!,
       today,
-    },
+    }
   );
 
   const customerWaitlistId = data?.waitlist?.find(
-    (w) => w?.customerId === loggedInUser,
+    (w) => w?.customerId === loggedInUser
   )?._id;
   const isLocked = useMemo(
     () => data?.workspace.locked || false,
-    [data?.workspace.locked],
+    [data?.workspace.locked]
   );
   const isWorker = data?.worker?._id === loggedInUser;
   useGetWaitlistIdForCustomer({ isWorker, waitlistId: customerWaitlistId });
@@ -87,13 +89,13 @@ const Work = () => {
   }, [data, loggedInUser]);
 
   const onLongPress = useCallback(
-    (id: Id<"users">) => {
+    (id: Id<'users'>) => {
       if (!isWorker) return;
       setCustomerLeaving(false);
       setCustomerToRemove(id);
       setShowMenu(true);
     },
-    [isWorker],
+    [isWorker]
   );
   const onHideWaitList = useCallback(() => {
     setShowMenu(false);
@@ -111,10 +113,10 @@ const Work = () => {
   ) {
     return <LoadingComponent />;
   }
-  const modalText = customerLeaving ? "Exist lobby" : "Remove from lobby";
+  const modalText = customerLeaving ? 'Exist lobby' : 'Remove from lobby';
   const hasSignedInToday = checkIfSignedInToday.signedInToday;
   const hasSignedOutToday = checkIfSignedInToday.signedOutToday;
-  const attendanceText = hasSignedInToday ? "Sign out" : "Sign in";
+  const attendanceText = hasSignedInToday ? 'Sign out' : 'Sign in';
   const onRemove = async () => {
     setLeaving(true);
     if (!customerToRemove) return;
@@ -122,8 +124,8 @@ const Work = () => {
       await leaveLobby({ customerId: customerToRemove!, workspaceId: id });
     } catch (error) {
       console.log(error);
-      toast.error("Failed to remove from lobby", {
-        description: "Something went wrong",
+      toast.error('Failed to remove from lobby', {
+        description: 'Something went wrong',
       });
     } finally {
       setLeaving(false);
@@ -137,15 +139,15 @@ const Work = () => {
 
     try {
       await leaveLobby({ customerId: loggedInUser!, workspaceId: id });
-      toast.success("You have left the lobby", {
-        description: "Hope to see you back soon!",
+      toast.success('You have left the lobby', {
+        description: 'Hope to see you back soon!',
       });
       onHideWaitList();
       router.back();
     } catch (error) {
       console.log(error);
-      toast.error("Failed to leave the lobby", {
-        description: "Something went wrong",
+      toast.error('Failed to leave the lobby', {
+        description: 'Something went wrong',
       });
     } finally {
       setLeaving(false);
@@ -168,20 +170,20 @@ const Work = () => {
         await handleAttendance({
           workerId: loggedInUser,
           today,
-          signOutAt: format(new Date(), "HH:mm:ss"),
+          signOutAt: format(new Date(), 'HH:mm:ss'),
           workspaceId: data?.workspace?._id,
         });
       } else {
         await handleAttendance({
           workerId: loggedInUser,
           today,
-          signInAt: format(new Date(), "HH:mm:ss"),
+          signInAt: format(new Date(), 'HH:mm:ss'),
         });
       }
     } catch (e) {
       console.log(e);
-      toast.error("Failed to update attendance", {
-        description: "Please try again later",
+      toast.error('Failed to update attendance', {
+        description: 'Please try again later',
       });
     } finally {
       setLoading(false);
@@ -190,25 +192,20 @@ const Work = () => {
   const onClose = () => {
     setIsVisible(false);
   };
-  console.log({ workerId: data?.workspace.workerId });
+
   const onAddToCall = async (
-    currentUser: Id<"waitlists">,
-    nextUser: Id<"waitlists">,
-    customerId: Id<"users">,
-    customerCallId: string,
+    currentUser: Id<'waitlists'>,
+    nextUser: Id<'waitlists'>,
+    customerId: Id<'users'>,
+    customerCallId: string
   ) => {
-    console.log({ id: user?.id, customerCallId });
     if (!client || !data?.workspace.workerId) return;
 
-    await updateWaitlistType({
-      waitlistId: currentUser,
-      nextWaitListId: nextUser,
-      workerId: data?.workspace.workerId,
-    });
     const callId = Crypto.randomUUID();
-    await client.call("default", callId).getOrCreate({
+    await client.call('default', callId).getOrCreate({
       ring: true,
       video: true,
+      // notify: true,
       data: {
         members: [
           { user_id: user?.id!, custom: { convexId: loggedInUser } },
@@ -216,9 +213,13 @@ const Work = () => {
         ],
       },
     });
-    router.push(
-      `/call/${callId}?workerId=${data?.workspace.workerId}&workspaceId=${id}`,
-    );
+    // await updateWaitlistType({
+    //   waitlistId: currentUser,
+    //   nextWaitListId: nextUser,
+    //   workerId: data?.workspace.workerId,
+    // });
+    getData({ callId, workerId: data?.workspace.workerId, workspaceId: id });
+    // router.push(`/call/${callId}`);
   };
   const handleExit = async () => {
     if (customerLeaving) {
@@ -287,7 +288,7 @@ const Work = () => {
               }}
             >
               <Button
-                title={"Exit Lobby"}
+                title={'Exit Lobby'}
                 onPress={onShowExitModal}
                 loading={leaving}
               />

@@ -1,13 +1,13 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState } from 'react';
 
-import { ServicePointModal } from "../Dialogs/ServicePointModal";
-import { InputComponent } from "../InputComponent";
-import VStack from "../Ui/VStack";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
-import { StyleSheet, Text } from "react-native";
-import { schema, SchemaType } from "~/validator";
-import { Button } from "~/features/common/components/Button";
+import { ServicePointModal } from '../Dialogs/ServicePointModal';
+import { InputComponent } from '../InputComponent';
+import VStack from '../Ui/VStack';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller, useForm } from 'react-hook-form';
+import { StyleSheet, Text } from 'react-native';
+import { schema, SchemaType } from '~/validator';
+import { Button } from '~/features/common/components/Button';
 
 type Props = {
   onSubmit: (data: SchemaType) => void;
@@ -24,22 +24,23 @@ export const ServicePointForm = ({ onSubmit, initialValues }: Props) => {
     watch,
   } = useForm<SchemaType>({
     defaultValues: {
-      link: "",
-      name: "",
-      description: "",
-      linkText: "",
+      link: '',
+      name: '',
+      description: '',
+      linkText: '',
       ...initialValues,
     },
     resolver: zodResolver(schema),
   });
-  const { link, name, description } = watch();
+  const { link, name, description, linkText } = watch();
 
   const onClose = useCallback(() => setIsOpen(false), []);
   const disable =
     (!!initialValues &&
       initialValues.name === name &&
       initialValues.description === description &&
-      initialValues.link === link) ||
+      initialValues.link === link &&
+      initialValues.linkText === linkText) ||
     isSubmitting;
   return (
     <VStack flex={1}>
@@ -95,7 +96,7 @@ export const ServicePointForm = ({ onSubmit, initialValues }: Props) => {
               onChangeText={onChange}
               placeholder="Paste a link for this service point"
               onBlur={onBlur}
-              autoCapitalize={"none"}
+              autoCapitalize={'none'}
             />
           )}
           name="link"
@@ -112,7 +113,7 @@ export const ServicePointForm = ({ onSubmit, initialValues }: Props) => {
               onChangeText={onChange}
               placeholder="Add a text for this link"
               onBlur={onBlur}
-              autoCapitalize={"none"}
+              autoCapitalize={'none'}
             />
           )}
           name="linkText"
@@ -123,11 +124,11 @@ export const ServicePointForm = ({ onSubmit, initialValues }: Props) => {
       </>
 
       <Button
-        title={"Submit"}
+        title={'Submit'}
         onPress={handleSubmit(onSubmit)}
         loading={isSubmitting}
         disabled={disable}
-        loadingTitle={"Submitting..."}
+        loadingTitle={'Submitting...'}
         style={{ height: 55, marginHorizontal: 10 }}
       />
     </VStack>
@@ -136,9 +137,9 @@ export const ServicePointForm = ({ onSubmit, initialValues }: Props) => {
 
 const styles = StyleSheet.create({
   error: {
-    color: "red",
+    color: 'red',
     marginTop: 2,
-    fontFamily: "PoppinsMedium",
+    fontFamily: 'PoppinsMedium',
     marginHorizontal: 15,
     marginBottom: 10,
   },

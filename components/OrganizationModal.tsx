@@ -37,7 +37,8 @@ export const OrganizationModal = (): JSX.Element => {
       animationIn="slideInDown"
       isVisible={isOpen}
       onBackButtonPress={onClose}
-      onBackdropPress={onClose}>
+      onBackdropPress={onClose}
+    >
       <View
         style={[
           styles.dialog,
@@ -46,7 +47,8 @@ export const OrganizationModal = (): JSX.Element => {
             borderRadius: 20,
             padding: 20,
           },
-        ]}>
+        ]}
+      >
         <View style={{ alignItems: 'center' }}>
           <MyText
             poppins="Bold"
@@ -55,7 +57,8 @@ export const OrganizationModal = (): JSX.Element => {
               textAlign: 'center',
               marginTop: 15,
               color: darkMode === 'dark' ? 'black' : 'white',
-            }}>
+            }}
+          >
             Hi, start your journey on workcloud
           </MyText>
           <Pressable
@@ -63,8 +66,13 @@ export const OrganizationModal = (): JSX.Element => {
             style={({ pressed }) => [
               { opacity: pressed ? 0.5 : 1 },
               { position: 'absolute', right: 15, top: -8 },
-            ]}>
-            <Feather name="x" size={20} color={darkMode === 'dark' ? 'black' : 'white'} />
+            ]}
+          >
+            <Feather
+              name="x"
+              size={20}
+              color={darkMode === 'dark' ? 'black' : 'white'}
+            />
           </Pressable>
         </View>
         <View

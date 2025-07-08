@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "730264280649",
+    "project_id": "test-notification-d20d7",
+    "storage_bucket": "test-notification-d20d7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:730264280649:android:d0b7811f42bc5151fda998",
+        "android_client_info": {
+          "package_name": "com.diegodark.workcloud"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOEvqhQ8jdvggRaITzHsQw-7RFlUV1gbY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

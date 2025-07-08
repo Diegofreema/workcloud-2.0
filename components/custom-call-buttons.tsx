@@ -6,14 +6,18 @@
  * switching camera, showing reactions (for non-therapists), and ending the call.
  */
 import {
-    CallControlProps,
-    HangUpCallButton,
-    ReactionsButton,
-    ToggleAudioPublishingButton as ToggleMic,
-    ToggleCameraFaceButton,
+  CallControlProps,
+  HangUpCallButton,
+  ToggleCameraFaceButton,
+  ToggleAudioPublishingButton as ToggleMic,
 } from '@stream-io/video-react-native-sdk';
 
-import {View} from 'react-native';
+import { Star } from 'lucide-react-native';
+import { StyleSheet, View } from 'react-native';
+import { colors } from '~/constants/Colors';
+import { useStarredModal } from '~/hooks/useStarredModal';
+import { CustomPressable } from './Ui/CustomPressable';
+import { useCallStore } from '~/features/calls/hook/useCallStore';
 
 /**
  * CustomCallControls component that renders a styled control bar for video calls
@@ -22,19 +26,44 @@ import {View} from 'react-native';
  * @returns A styled control bar with video call control buttons
  */
 export const CustomCallControls = (props: CallControlProps) => {
-    // Get user role information to conditionally render controls
-    const isWorker = false
+  const { onOpen } = useStarredModal();
+  const workspaceId = useCallStore((state) => state.data.workspaceId);
+  // Get user role information to conditionally render controls
+  const isWorker = !!workspaceId;
 
-    return (
-        <View className="absolute bottom-10 py-4 w-4/5 mx-5 flex-row self-center justify-around rounded-[10px] border-5 border-blue-500 bg-blue-800 z-5">
-            {/* Toggle microphone on/off */}
-            <ToggleMic />
-            {/* Switch between front and back camera */}
-            <ToggleCameraFaceButton />
-            {/* Only show reactions button for non-therapist users */}
-            {!isWorker && <ReactionsButton />}
-            {/* Button to end the call */}
-            <HangUpCallButton onHangupCallHandler={props.onHangupCallHandler} />
-        </View>
-    );
+  return (
+    <View style={styles.container}>
+      <HangUpCallButton onHangupCallHandler={props.onHangupCallHandler} />
+      {/* Toggle microphone on/off */}
+      <ToggleMic />
+      {isWorker && (
+        <CustomPressable onPress={onOpen} style={styles.button}>
+          <Star size={30} color={colors.white} />
+        </CustomPressable>
+      )}
+      {/* Switch between front and back camera */}
+      <ToggleCameraFaceButton />
+      {/* Only show reactions button for non-therapist users */}
+    </View>
+  );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    backgroundColor: colors.dialPad,
+    borderRadius: 10,
+    padding: 10,
+    marginHorizontal: 30,
+  },
+  button: {
+    backgroundColor: colors.callButtonBlue,
+    borderRadius: 50,
+    padding: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 50,
+    height: 50,
+  },
+});

@@ -1,18 +1,18 @@
-import { ConvexError, v } from "convex/values";
+import { ConvexError, v } from 'convex/values';
 
-import { Id } from "~/convex/_generated/dataModel";
-import { mutation, query, QueryCtx } from "~/convex/_generated/server";
-import { getImageUrl } from "~/convex/organisation";
+import { Id } from '~/convex/_generated/dataModel';
+import { mutation, query, QueryCtx } from '~/convex/_generated/server';
+import { getImageUrl } from '~/convex/organisation';
 
 export const getServicePoints = query({
   args: {
-    organisationId: v.id("organizations"),
+    organisationId: v.id('organizations'),
   },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query("servicePoints")
-      .withIndex("by_organisation_id", (q) =>
-        q.eq("organizationId", args.organisationId),
+      .query('servicePoints')
+      .withIndex('by_organisation_id', (q) =>
+        q.eq('organizationId', args.organisationId)
       )
       .collect();
   },
@@ -24,8 +24,8 @@ export const getOrganizationsByNameOfServicePoints = query({
   },
   handler: async (ctx, args) => {
     const servicePoints = await ctx.db
-      .query("servicePoints")
-      .withSearchIndex("name", (q) => q.search("name", args.query))
+      .query('servicePoints')
+      .withSearchIndex('name', (q) => q.search('name', args.query))
       .collect();
 
     const organizationPromises = servicePoints.map(async (servicePoint) => {
@@ -43,7 +43,7 @@ export const getOrganizationsByNameOfServicePoints = query({
 });
 export const getSingleServicePointAndWorker = query({
   args: {
-    servicePointId: v.optional(v.id("servicePoints")),
+    servicePointId: v.optional(v.id('servicePoints')),
   },
   handler: async (ctx, args) => {
     if (!args.servicePointId) return null;
@@ -57,54 +57,56 @@ export const getSingleServicePointAndWorker = query({
 export const createServicePoint = mutation({
   args: {
     description: v.optional(v.string()),
-    organisationId: v.id("organizations"),
+    organisationId: v.id('organizations'),
     name: v.string(),
     link: v.optional(v.string()),
-    linkText: v.optional(v.string())
+    linkText: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const alreadyHasServicePointWithName = await ctx.db
-      .query("servicePoints")
-      .withIndex("by_name_org_id", (q) =>
-        q.eq("name", args.name).eq("organizationId", args.organisationId),
+      .query('servicePoints')
+      .withIndex('by_name_org_id', (q) =>
+        q.eq('name', args.name).eq('organizationId', args.organisationId)
       )
       .first();
     if (alreadyHasServicePointWithName) {
-      throw new ConvexError("You already have a service point with this name");
+      throw new ConvexError('You already have a service point with this name');
     }
-    await ctx.db.insert("servicePoints", {
+    await ctx.db.insert('servicePoints', {
       organizationId: args.organisationId,
       name: args.name,
       form: false,
       description: args.description,
       externalLink: args.link,
-      linkText: args.linkText
+      linkText: args.linkText,
     });
   },
 });
 
 export const updateServicePoint = mutation({
   args: {
-    servicePointId: v.id("servicePoints"),
+    servicePointId: v.id('servicePoints'),
     name: v.string(),
     description: v.optional(v.string()),
-    link: v.string(),
+    link: v.optional(v.string()),
+    linkText: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.servicePointId, {
       name: args.name,
       description: args.description,
       externalLink: args.link,
+      linkText: args.linkText,
     });
   },
 });
 
 export const deleteServicePoint = mutation({
-  args: { id: v.id("servicePoints") },
+  args: { id: v.id('servicePoints') },
   handler: async (ctx, args) => {
     const servicePoint = await ctx.db.get(args.id);
     if (!servicePoint) {
-      throw new ConvexError("Service point not found");
+      throw new ConvexError('Service point not found');
     }
     await ctx.db.delete(servicePoint._id);
   },
@@ -114,21 +116,21 @@ export const deleteServicePoint = mutation({
 
 export const getUserProfileByWorkerId = async (
   ctx: QueryCtx,
-  userId: Id<"workers">,
+  userId: Id<'workers'>
 ) => {
   const user = await ctx.db
-    .query("users")
-    .filter((q) => q.eq(q.field("workerId"), userId))
+    .query('users')
+    .filter((q) => q.eq(q.field('workerId'), userId))
     .first();
   const worker = await ctx.db.get(userId);
   if (!worker) return null;
   if (!user) return null;
-  if (user?.imageUrl && user?.imageUrl.startsWith("http"))
+  if (user?.imageUrl && user?.imageUrl.startsWith('http'))
     return {
       ...user,
       role: worker.role,
     };
-  const imageUrl = await getImageUrl(ctx, user.imageUrl as Id<"_storage">);
+  const imageUrl = await getImageUrl(ctx, user.imageUrl as Id<'_storage'>);
   return {
     ...user,
     imageUrl,
