@@ -10,7 +10,6 @@ import { ActivityIndicator, FlatList, Pressable } from 'react-native';
 import { useDebounce } from 'use-debounce';
 
 import { HStack } from '~/components/HStack';
-import { SearchComponent } from '~/features/common/components/SearchComponent';
 import { TSearch } from '~/components/TopSearch';
 import { Container } from '~/components/Ui/Container';
 import { ErrorComponent } from '~/components/Ui/ErrorComponent';
@@ -20,9 +19,9 @@ import { Suggestions } from '~/components/Ui/Suggestions';
 import VStack from '~/components/Ui/VStack';
 import { SearchServicePoints } from '~/constants/types';
 import { api } from '~/convex/_generated/api';
-import { useGetUserId } from '~/hooks/useGetUserId';
+import { SearchComponent } from '~/features/common/components/SearchComponent';
 import { RenderSuggestions } from '~/features/organization/components/render-suggestions';
-import { getOrganisationsByServicePointsSearchQueryName } from '~/convex/organisation';
+import { useGetUserId } from '~/hooks/useGetUserId';
 
 export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
   return <ErrorComponent refetch={retry} text={error.message} />;
@@ -38,13 +37,7 @@ const Search = () => {
   }, [query]);
 
   const topSearch = useQuery(api.organisation.getTopSearches, { userId: id! });
-  const searches = useQuery(
-    api.organisation.getOrganisationsByServicePointsSearchQuery,
-    {
-      query: val,
-      ownerId: id!,
-    }
-  );
+
   const searchesByServicePointName = useQuery(
     api.organisation.getOrganisationsByServicePointsSearchQueryName,
     {
@@ -72,17 +65,16 @@ const Search = () => {
     );
   }
   const dataToArray = data || [];
-  const searchToArray = searches || [];
+
   const servicePointsByName = searchesByServicePointName || [];
-  const dataToRender = [
-    ...new Set([...searchToArray, ...dataToArray, ...servicePointsByName]),
-  ];
+  const dataToRender = [...new Set([...dataToArray, ...servicePointsByName])];
 
   const addSuggestion = async () => {
     await addSuggestionToDb({ suggestion: val });
   };
-  const showResultText = val !== '' && searchToArray?.length > 0;
-  const loading = val?.length > 0 && !searches;
+  const showResultText =
+    val !== '' && (searchesByServicePointName?.length ?? 0) > 0;
+  const loading = val?.length > 0 && searchesByServicePointName === undefined;
 
   const hide = dataToRender.length > 0;
   return (
