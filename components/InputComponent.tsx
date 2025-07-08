@@ -1,78 +1,131 @@
-import {IconNode} from "@rneui/base";
-import {Input} from "@rneui/themed";
-import {KeyboardTypeOptions, TextInputProps, View} from "react-native";
-
-import {useDarkMode} from "~/hooks/useDarkMode";
-import React from "react";
+import { Feather } from '@expo/vector-icons';
+import { Control, Controller, FieldErrors } from 'react-hook-form';
+import {
+  KeyboardAvoidingView,
+  KeyboardTypeOptions,
+  Platform,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextInput,
+  TextInputProps,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
+import { MyText } from './Ui/MyText';
+import { colors } from '~/constants/Colors';
 
 type Props = TextInputProps & {
+  label: string;
   placeholder: string;
-  value: string;
-  onChangeText?: (text: string) => void;
-  secureTextEntry?: boolean;
-  keyboardType?: KeyboardTypeOptions;
-  label?: string;
-  setToggle?: () => void;
   password?: boolean;
-  id?: string;
-  numberOfLines?: number;
-  rightIcon?: IconNode;
+  toggleSecure?: () => void;
+  secureTextEntry?: boolean;
+  name: string;
+  errors: FieldErrors<any>;
+  control: Control<any>;
+  type?: KeyboardTypeOptions;
+  onEditFinish?: () => void;
+  containerStyle?: StyleProp<ViewStyle>;
+  leftIcon?: React.ReactNode;
   textarea?: boolean;
 };
-
-export const InputComponent = ({
-  onChangeText,
-  placeholder,
-  value,
-  keyboardType,
-  secureTextEntry,
-  setToggle,
-  id,
-  password,
+export const CustomInput = ({
   label,
-  numberOfLines,
+  placeholder,
+  password,
+  toggleSecure,
+  secureTextEntry,
+  errors,
+  name,
+  control,
+  type = 'default',
+  onEditFinish,
+  containerStyle,
+  leftIcon,
   textarea,
-  ...props
-}: Props): JSX.Element => {
-  const { darkMode } = useDarkMode();
+  ...rest
+}: Props) => {
+  const onPress = () => {
+    if (toggleSecure) {
+      toggleSecure();
+    }
+  };
+  const onEndEditing = () => {
+    onEditFinish && onEditFinish();
+  };
   return (
-    <View
-      style={{
-        height: "auto",
-        backgroundColor: darkMode === "dark" ? "black" : "white",
-      }}
-    >
-      <Input
-        {...props}
-        placeholder={placeholder}
-        label={label}
-        inputContainerStyle={{
-          borderBottomColor: "transparent",
-          backgroundColor: "#E5E5E5",
-          borderBottomWidth: 0,
-          paddingHorizontal: 8,
-          borderRadius: 5,
-          height: textarea ? 100 : 60,
-        }}
-        placeholderTextColor="grey"
-        inputStyle={{
-          fontFamily: "PoppinsLight",
-          fontSize: 13,
-          textAlignVertical: textarea ? "top" : "center",
-          height: textarea ? 100 : 60,
-          paddingVertical: textarea ? 10 : 0,
-        }}
-        value={value}
-        onChangeText={onChangeText}
-        keyboardType={keyboardType}
-        secureTextEntry={secureTextEntry}
-        labelStyle={{
-          color: darkMode === "dark" ? "white" : "black",
-          marginBottom: 5,
-        }}
-        numberOfLines={numberOfLines}
-        multiline={textarea}
-      />
+    <View style={{ gap: 10 }}>
+      <MyText poppins="Bold" style={{ fontFamily: 'NunitoBold' }}>
+        {label}
+      </MyText>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <View style={[styles.inputContainer, containerStyle]}>
+          {leftIcon && <View style={{ marginRight: 5 }}>{leftIcon}</View>}
+          <Controller
+            control={control}
+            render={({ field: { onBlur, value, onChange } }) => (
+              <TextInput
+                placeholder={placeholder}
+                style={[
+                  {
+                    flex: 1,
+                    fontFamily: 'NunitoRegular',
+                    fontSize: 15,
+                    color: colors.black,
+                  },
+                  rest.style,
+                ]}
+                placeholderTextColor={colors.textGray}
+                secureTextEntry={secureTextEntry}
+                onBlur={onBlur}
+                value={value}
+                onChangeText={onChange}
+                keyboardType={type}
+                autoCapitalize="none"
+                onEndEditing={onEndEditing}
+                {...rest}
+              />
+            )}
+            name={name}
+          />
+          {password && (
+            <TouchableOpacity onPress={onPress} style={{ marginRight: 10 }}>
+              <Feather
+                name={secureTextEntry ? 'eye' : 'eye-off'}
+                size={25}
+                color={'grey'}
+              />
+            </TouchableOpacity>
+          )}
+        </View>
+      </KeyboardAvoidingView>
+      {errors[name] && (
+        // @ts-ignore
+        <Text style={styles.error}>{errors?.[name]?.message}</Text>
+      )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  inputContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: colors.gray,
+    borderRadius: 8,
+    padding: 5,
+    height: 55,
+  },
+  error: {
+    fontSize: 15,
+    fontFamily: 'NunitoBold',
+    color: 'red',
+  },
+});
