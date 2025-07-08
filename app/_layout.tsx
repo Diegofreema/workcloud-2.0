@@ -13,16 +13,26 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Toaster } from 'sonner-native';
 import { useDarkMode } from '~/hooks/useDarkMode';
+import * as Notifications from 'expo-notifications';
 
 // import * as Sentry from "@sentry/react-native";
 // import { isRunningInExpoGo } from "expo";
 import { MenuProvider } from 'react-native-popup-menu';
 import { AuthProvider, useAuth } from '~/context/auth';
+import { NotificationProvider } from '~/context/notification-context';
 
 // Construct a new integration instance. This is needed to communicate between the integration and React
 // const navigationIntegration = Sentry.reactNavigationIntegration({
 //   enableTimeToInitialDisplay: !isRunningInExpoGo(),
 // });
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
   unsavedChangesWarning: false,
@@ -138,29 +148,31 @@ export function RootLayout() {
   }
 
   return (
-    <ConvexProvider client={convex}>
-      <AuthProvider>
-        <QueryClientProvider client={queryClient}>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <StatusBar
-              style={darkMode === 'dark' ? 'light' : 'dark'}
-              backgroundColor={darkMode === 'dark' ? 'black' : 'white'}
-            />
-            <SafeAreaView
-              style={{
-                flex: 1,
-                backgroundColor: darkMode === 'dark' ? 'black' : 'white',
-              }}
-            >
-              <MenuProvider>
-                <InitialRouteLayout />
-              </MenuProvider>
-              <Toaster />
-            </SafeAreaView>
-          </GestureHandlerRootView>
-        </QueryClientProvider>
-      </AuthProvider>
-    </ConvexProvider>
+    <NotificationProvider>
+      <ConvexProvider client={convex}>
+        <AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <StatusBar
+                style={darkMode === 'dark' ? 'light' : 'dark'}
+                backgroundColor={darkMode === 'dark' ? 'black' : 'white'}
+              />
+              <SafeAreaView
+                style={{
+                  flex: 1,
+                  backgroundColor: darkMode === 'dark' ? 'black' : 'white',
+                }}
+              >
+                <MenuProvider>
+                  <InitialRouteLayout />
+                </MenuProvider>
+                <Toaster />
+              </SafeAreaView>
+            </GestureHandlerRootView>
+          </QueryClientProvider>
+        </AuthProvider>
+      </ConvexProvider>
+    </NotificationProvider>
   );
 }
 

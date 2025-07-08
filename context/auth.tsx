@@ -15,6 +15,7 @@ import { BASE_URL } from '~/utils/constants';
 import * as jose from 'jose';
 import { useMutation } from 'convex/react';
 import { api } from '~/convex/_generated/api';
+import { useNotification } from './notification-context';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -49,6 +50,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [error, setError] = React.useState<AuthError | null>(null);
   const isWeb = Platform.OS === 'web';
   const refreshInProgressRef = React.useRef(false);
+  const { expoPushToken } = useNotification();
   const handleNativeTokens = React.useCallback(
     async (tokens: { accessToken: string; refreshToken: string }) => {
       const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
@@ -83,10 +85,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           email: decoded.email as string,
           imageUrl: decoded.picture as string,
           name: decoded.name as string,
+          pushToken: expoPushToken,
         });
       }
     },
-    [addUserToDb]
+    [addUserToDb, expoPushToken]
   );
   const handleResponse = React.useCallback(async () => {
     // This function is called when Google redirects back to our app
@@ -151,6 +154,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 email: sessionData.email as string,
                 imageUrl: sessionData.picture as string,
                 name: sessionData.name as string,
+                pushToken: expoPushToken,
               });
             }
           }
@@ -180,6 +184,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     response?.error,
     // @ts-ignore
     response?.params,
+    expoPushToken,
   ]);
   const signOut = React.useCallback(async () => {
     if (isWeb) {
@@ -261,6 +266,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               email: sessionData.email as string,
               imageUrl: sessionData.picture as string,
               name: sessionData.name as string,
+              pushToken: expoPushToken,
             });
           }
 
@@ -343,6 +349,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               email: decoded.email as string,
               imageUrl: decoded.picture as string,
               name: decoded.name as string,
+              pushToken: expoPushToken,
             });
           }
 
@@ -357,7 +364,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         refreshInProgressRef.current = false;
       }
     },
-    [addUserToDb, isWeb, refreshToken, signOut]
+    [addUserToDb, isWeb, refreshToken, signOut, expoPushToken]
   );
   React.useEffect(() => {
     void handleResponse();
@@ -383,6 +390,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               email: userData.email,
               imageUrl: userData.picture,
               name: userData.name,
+              pushToken: expoPushToken,
             });
           } else {
             console.log('No active web session found');
@@ -432,6 +440,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                   email: decoded.email as string,
                   imageUrl: decoded.picture as string,
                   name: decoded.name as string,
+                  pushToken: expoPushToken,
                 });
               } else if (storedRefreshToken) {
                 // Access token expired, but we have a refresh token
@@ -466,7 +475,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     void restoreSession();
-  }, [isWeb, addUserToDb, refreshAccessToken]);
+  }, [isWeb, addUserToDb, refreshAccessToken, expoPushToken]);
 
   // Function to refresh the access token
 

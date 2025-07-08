@@ -1,30 +1,33 @@
-import { v } from "convex/values";
+import { v } from 'convex/values';
 
-import { User } from "~/constants/types";
-import { internal } from "~/convex/_generated/api";
-import { Id } from "~/convex/_generated/dataModel";
+import { User } from '~/constants/types';
+import { internal } from '~/convex/_generated/api';
+import { Id } from '~/convex/_generated/dataModel';
 import {
   internalAction,
   internalMutation,
   mutation,
   query,
   QueryCtx,
-} from "~/convex/_generated/server";
+} from '~/convex/_generated/server';
 
 export const getAllUsers = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("users").collect();
+    return await ctx.db.query('users').collect();
   },
 });
 export const getUser = query({
   args: {
-    userId: v.string()
+    userId: v.string(),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.query('users').withIndex('clerkId', q => q.eq('clerkId', args.userId)).first()
-  }
-})
+    return await ctx.db
+      .query('users')
+      .withIndex('clerkId', (q) => q.eq('clerkId', args.userId))
+      .first();
+  },
+});
 export const createUser = internalMutation({
   args: {
     email: v.string(),
@@ -34,10 +37,10 @@ export const createUser = internalMutation({
     isOnline: v.boolean(),
   },
   handler: async (ctx, args) => {
-    const id = await ctx.db.insert("users", {
+    const id = await ctx.db.insert('users', {
       ...args,
     });
-    console.log("User created");
+    console.log('User created');
     await ctx.scheduler.runAfter(0, internal.users.createStreamToken, { id });
   },
 });
@@ -47,21 +50,22 @@ export const addUserToDb = mutation({
     clerkId: v.string(),
     imageUrl: v.optional(v.string()),
     name: v.string(),
+    pushToken: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const isUserInDb = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", args.clerkId))
+      .query('users')
+      .withIndex('clerkId', (q) => q.eq('clerkId', args.clerkId))
       .unique();
     if (isUserInDb) return;
-    await ctx.db.insert("users", {
+    await ctx.db.insert('users', {
       ...args,
     });
   },
 });
 export const createStreamToken = internalAction({
   args: {
-    id: v.id("users"),
+    id: v.id('users'),
   },
   handler: async (ctx, { id }) => {
     const response = await fetch(`https://wks.onrender.com/user/${id}`);
@@ -76,7 +80,7 @@ export const createStreamToken = internalAction({
 
 export const createToken = internalMutation({
   args: {
-    id: v.id("users"),
+    id: v.id('users'),
     streamToken: v.string(),
   },
   handler: async (ctx, args) => {
@@ -105,8 +109,8 @@ export const getUserByClerkId = query({
   },
   handler: async (ctx, args) => {
     const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), args.clerkId))
+      .query('users')
+      .filter((q) => q.eq(q.field('clerkId'), args.clerkId))
       .unique();
     let workProfile;
     if (user?.workerId) {
@@ -122,15 +126,15 @@ export const getUserByClerkId = query({
 });
 export const getUserById = query({
   args: {
-    id: v.id("users"),
+    id: v.id('users'),
   },
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.id);
-    if (!user?.imageUrl || user.imageUrl.startsWith("http")) {
+    if (!user?.imageUrl || user.imageUrl.startsWith('http')) {
       return user;
     }
 
-    const url = await ctx.storage.getUrl(user.imageUrl as Id<"_storage">);
+    const url = await ctx.storage.getUrl(user.imageUrl as Id<'_storage'>);
 
     return {
       ...user,
@@ -141,7 +145,7 @@ export const getUserById = query({
 
 export const getOrganisations = async (
   ctx: QueryCtx,
-  organizationId: Id<"organizations">,
+  organizationId: Id<'organizations'>
 ) => {
   if (!organizationId) return null;
   return await ctx.db.get(organizationId);
@@ -149,10 +153,10 @@ export const getOrganisations = async (
 
 export const updateUserById = mutation({
   args: {
-    _id: v.id("users"),
+    _id: v.id('users'),
     name: v.string(),
     phoneNumber: v.optional(v.string()),
-    imageUrl: v.optional(v.id("_storage")),
+    imageUrl: v.optional(v.id('_storage')),
   },
   handler: async (ctx, args) => {
     let img;
@@ -177,7 +181,7 @@ export const generateUploadUrl = mutation(async (ctx) => {
 });
 
 export const updateImage = mutation({
-  args: { storageId: v.id("_storage"), _id: v.id("users") },
+  args: { storageId: v.id('_storage'), _id: v.id('users') },
   handler: async (ctx, args) => {
     await ctx.db.patch(args._id, {
       imageUrl: args.storageId,
@@ -187,7 +191,7 @@ export const updateImage = mutation({
 
 export const createWorkerProfile = mutation({
   args: {
-    userId: v.id("users"),
+    userId: v.id('users'),
     experience: v.string(),
     location: v.string(),
     skills: v.string(),
@@ -196,14 +200,14 @@ export const createWorkerProfile = mutation({
     qualifications: v.string(),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.insert("workers", { ...args, });
+    return await ctx.db.insert('workers', { ...args });
   },
 });
 
 export const updateWorkerIdOnUserTable = mutation({
   args: {
-    workerId: v.id("workers"),
-    _id: v.id("users"),
+    workerId: v.id('workers'),
+    _id: v.id('users'),
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args._id, { workerId: args.workerId });
@@ -211,7 +215,7 @@ export const updateWorkerIdOnUserTable = mutation({
 });
 export const updateWorkerProfile = mutation({
   args: {
-    _id: v.id("workers"),
+    _id: v.id('workers'),
     experience: v.string(),
     location: v.string(),
     skills: v.string(),
@@ -230,13 +234,13 @@ export const updateWorkerProfile = mutation({
 });
 export const getWorkerProfileWithUser = query({
   args: {
-    id: v.id("users"),
+    id: v.id('users'),
   },
   handler: async (ctx, args) => {
     // Fetch worker
     const worker = await ctx.db
-      .query("workers")
-      .filter((q) => q.eq(q.field("userId"), args.id))
+      .query('workers')
+      .filter((q) => q.eq(q.field('userId'), args.id))
       .first();
 
     if (!worker) return null;
@@ -248,22 +252,22 @@ export const getWorkerProfileWithUser = query({
     // Fetch and process organization
     const organisation = await getOrganisations(ctx, worker?.organizationId!);
     const processedOrganization = organisation
-      ? organisation.avatar.startsWith("http")
+      ? organisation.avatar.startsWith('http')
         ? organisation
         : {
             ...organisation,
             avatar: await ctx.storage.getUrl(
-              organisation.avatar as Id<"_storage">,
+              organisation.avatar as Id<'_storage'>
             ),
           }
       : null;
 
     // Process user image
     const { _creationTime, imageUrl, ...userRest } = user;
-    const processedImageUrl = imageUrl?.startsWith("http")
+    const processedImageUrl = imageUrl?.startsWith('http')
       ? imageUrl
       : imageUrl
-        ? await ctx.storage.getUrl(imageUrl as Id<"_storage">)
+        ? await ctx.storage.getUrl(imageUrl as Id<'_storage'>)
         : null;
 
     // Return processed data
@@ -280,28 +284,28 @@ export const getWorkerProfileWithUser = query({
   },
 });
 
-export const getUserForWorker = async (ctx: QueryCtx, userId: Id<"users">) => {
+export const getUserForWorker = async (ctx: QueryCtx, userId: Id<'users'>) => {
   return await ctx.db.get(userId);
 };
-export const getWorkerProfile = async (ctx: QueryCtx, userId: Id<"users">) => {
+export const getWorkerProfile = async (ctx: QueryCtx, userId: Id<'users'>) => {
   return await ctx.db
-    .query("workers")
-    .withIndex("userId", (q) => q.eq("userId", userId))
+    .query('workers')
+    .withIndex('userId', (q) => q.eq('userId', userId))
     .first();
 };
 
-export const getUserByUserId = async (ctx: QueryCtx, userId?: Id<"users">) => {
+export const getUserByUserId = async (ctx: QueryCtx, userId?: Id<'users'>) => {
   if (!userId) return null;
   return await ctx.db.get(userId);
 };
 
 export const getUserByWorkerId = async (
   ctx: QueryCtx,
-  workerId: Id<"workers">,
+  workerId: Id<'workers'>
 ) => {
   const user = await ctx.db
-    .query("users")
-    .filter((q) => q.eq(q.field("workerId"), workerId))
+    .query('users')
+    .filter((q) => q.eq(q.field('workerId'), workerId))
     .first();
   if (!user) return null;
   return await helperToGetUser(ctx, user);
@@ -309,7 +313,7 @@ export const getUserByWorkerId = async (
 
 export const getOrganisationWithoutImageByWorker = async (
   ctx: QueryCtx,
-  organizationId: Id<"organizations">,
+  organizationId: Id<'organizations'>
 ) => {
   if (!organizationId) return null;
   return await ctx.db.get(organizationId);
