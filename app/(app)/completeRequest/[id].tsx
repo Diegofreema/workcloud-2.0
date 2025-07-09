@@ -1,44 +1,36 @@
-import {convexQuery} from "@convex-dev/react-query";
-import {Button} from "@rneui/themed";
-import {useQuery} from "@tanstack/react-query";
-import {useMutation} from "convex/react";
-import {useLocalSearchParams, useRouter} from "expo-router";
-import {useFormik} from "formik";
-import React, {useEffect} from "react";
-import {ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View,} from "react-native";
-import {toast} from "sonner-native";
-import * as yup from "yup";
+import { convexQuery } from '@convex-dev/react-query';
 
-import {CompleteDialog} from "~/components/Dialogs/SavedDialog";
-import {HeaderNav} from "~/components/HeaderNav";
-import {InputComponent} from "~/components/InputComponent";
-import {Container} from "~/components/Ui/Container";
-import {ErrorComponent} from "~/components/Ui/ErrorComponent";
-import {LoadingComponent} from "~/components/Ui/LoadingComponent";
-import {MyText} from "~/components/Ui/MyText";
-import {UserPreview} from "~/components/Ui/UserPreview";
-import VStack from "~/components/Ui/VStack";
-import {colors} from "~/constants/Colors";
-import {api} from "~/convex/_generated/api";
-import {Id} from "~/convex/_generated/dataModel";
-import {useGetUserId} from "~/hooks/useGetUserId";
-import {useCreateStaffState} from "~/features/staff/hooks/use-create-staff-state";
+import { useQuery } from '@tanstack/react-query';
+import { useMutation } from 'convex/react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect } from 'react';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { toast } from 'sonner-native';
 
-
-const validationSchema = yup.object().shape({
-  role: yup.string().required("Role is required"),
-  responsibility: yup.string().required("responsibility is required"),
-  salary: yup.string().required("salary is required"),
-  qualities: yup.string().required("qualities are required"),
-});
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { CompleteDialog } from '~/components/Dialogs/SavedDialog';
+import { HeaderNav } from '~/components/HeaderNav';
+import { CustomInput } from '~/components/InputComponent';
+import { Container } from '~/components/Ui/Container';
+import { ErrorComponent } from '~/components/Ui/ErrorComponent';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { MyText } from '~/components/Ui/MyText';
+import { UserPreview } from '~/components/Ui/UserPreview';
+import VStack from '~/components/Ui/VStack';
+import { api } from '~/convex/_generated/api';
+import { Id } from '~/convex/_generated/dataModel';
+import { Button } from '~/features/common/components/Button';
+import { useCreateStaffState } from '~/features/staff/hooks/use-create-staff-state';
+import { useGetUserId } from '~/hooks/useGetUserId';
+import { offerSchema, OfferSchemaType } from '~/schema';
 
 const CompleteRequest = () => {
-  const { id } = useLocalSearchParams<{ id: Id<"workers"> }>();
+  const { id } = useLocalSearchParams<{ id: Id<'workers'> }>();
 
   const { staffData } = useCreateStaffState();
   const finalRole =
-    staffData?.type === "processor" ? staffData.type : staffData.role;
-
+    staffData?.type === 'processor' ? staffData.type : staffData.role;
 
   const { id: senderId } = useGetUserId();
   const router = useRouter();
@@ -46,48 +38,46 @@ const CompleteRequest = () => {
     useQuery(convexQuery(api.worker.getSingleWorkerProfile, { id }));
   const sendRequest = useMutation(api.request.createRequest);
   const {
-    values,
-    handleChange,
     handleSubmit,
-    isSubmitting,
-    errors,
-    touched,
-    resetForm,
-    setFieldValue,
-  } = useFormik({
-    initialValues: {
-      role: "",
-      responsibility: "",
-      salary: "",
-      qualities: "",
+    control,
+    formState: { isSubmitting, errors },
+    setValue,
+    reset,
+  } = useForm<OfferSchemaType>({
+    defaultValues: {
+      role: '',
+      responsibility: '',
+      salary: '',
+      qualities: '',
     },
-    validationSchema,
-    onSubmit: async (values) => {
-      const { responsibility, salary, qualities, role } = values;
-      if (!senderId || !data?.user) return;
-      try {
-        await sendRequest({
-          role,
-          salary,
-          qualities,
-          responsibility,
-          from: senderId,
-          to: data?.user?._id,
-        });
-        toast.success("Request sent");
-        resetForm();
-        router.replace("/pending-staffs");
-      } catch (error) {
-        console.log(error);
-        toast.error("Error, failed to send request");
-      }
-    },
+    resolver: zodResolver(offerSchema),
   });
-
+  const onSubmit = async (values: OfferSchemaType) => {
+    const { responsibility, salary, qualities, role } = values;
+    if (!senderId || !data?.user) return;
+    try {
+      await sendRequest({
+        role,
+        salary,
+        qualities,
+        responsibility,
+        from: senderId,
+        to: data?.user?._id,
+      });
+      toast.success('Request sent');
+      reset();
+      router.replace('/pending-staffs');
+    } catch (error) {
+      console.log(error);
+      toast.error('Error, failed to send request');
+    }
+  };
 
   useEffect(() => {
-    setFieldValue("role", finalRole);
-  }, [finalRole, setFieldValue]);
+    if (finalRole) {
+      setValue('role', finalRole);
+    }
+  }, [finalRole, setValue]);
   if (isError || isRefetchError || isPaused) {
     return <ErrorComponent refetch={refetch} text={error?.message!} />;
   }
@@ -95,8 +85,6 @@ const CompleteRequest = () => {
   if (isPending) {
     return <LoadingComponent />;
   }
-
-  const { responsibility, role, salary } = values;
 
   return (
     <Container>
@@ -121,7 +109,7 @@ const CompleteRequest = () => {
             <MyText
               style={{
                 fontSize: 15,
-                color: "black",
+                color: 'black',
                 marginBottom: 10,
                 marginLeft: 10,
               }}
@@ -131,93 +119,57 @@ const CompleteRequest = () => {
             </MyText>
             <TouchableOpacity
               style={styles.press}
-              onPress={() => router.push("/staff-role")}
+              onPress={() => router.push('/staff-role')}
             >
-              <MyText
-                style={{ fontFamily: "PoppinsLight", fontSize: 13 }}
-                poppins="Light"
-              >
-                {role || "Select a role"}
-              </MyText>
+              <CustomInput
+                control={control}
+                errors={errors}
+                name="role"
+                placeholder="Role"
+                label="Role"
+                editable={false}
+              />
             </TouchableOpacity>
-            {touched.role && errors.role && (
-              <Text style={{ color: "red", fontWeight: "bold" }}>
-                {errors.role}
-              </Text>
-            )}
           </>
 
-          <>
-            <InputComponent
-              label="Responsibility"
-              value={responsibility}
-              onChangeText={handleChange("responsibility")}
-              placeholder="What will this person do in your workspace?"
-              keyboardType="default"
-              multiline
-              numberOfLines={4}
-            />
-            {touched.responsibility && errors.responsibility && (
-              <Text style={{ color: "red", fontWeight: "bold" }}>
-                {errors.responsibility}
-              </Text>
-            )}
-          </>
+          <CustomInput
+            label="Responsibility"
+            name={'responsibility'}
+            control={control}
+            errors={errors}
+            placeholder="What will this person do in your workspace?"
+            keyboardType="default"
+            multiline
+            numberOfLines={4}
+          />
 
-          <>
-            <InputComponent
-              label="Qualities"
-              value={values.qualities}
-              onChangeText={handleChange("qualities")}
-              placeholder="What qualities are you looking for?"
-              keyboardType="default"
-              multiline
-              numberOfLines={4}
-            />
-            {touched.qualities && errors.qualities && (
-              <Text style={{ color: "red", fontWeight: "bold" }}>
-                {errors.qualities}
-              </Text>
-            )}
-          </>
-          <>
-            <InputComponent
-              label="Salary"
-              value={salary}
-              onChangeText={handleChange("salary")}
-              placeholder="Type a salary in naira"
-              keyboardType="number-pad"
-            />
-            {touched.salary && errors.salary && (
-              <Text style={{ color: "red", fontWeight: "bold" }}>
-                {errors.salary}
-              </Text>
-            )}
-          </>
+          <CustomInput
+            label="Qualities"
+            name={'qualities'}
+            control={control}
+            errors={errors}
+            placeholder="What qualities are you looking for?"
+            keyboardType="default"
+            multiline
+            numberOfLines={4}
+          />
+
+          <CustomInput
+            label="Salary"
+            name={'salary'}
+            control={control}
+            errors={errors}
+            placeholder="Type a salary in naira"
+            keyboardType="number-pad"
+          />
         </VStack>
 
         <Button
-          icon={
-            isSubmitting && (
-              <ActivityIndicator
-                style={{ marginRight: 10 }}
-                size={20}
-                color="white"
-              />
-            )
-          }
-          titleStyle={{ fontFamily: "PoppinsMedium" }}
-          buttonStyle={{
-            backgroundColor: colors.dialPad,
-            borderRadius: 5,
-            marginTop: 25,
-            marginHorizontal: 10,
-            height: 60,
-          }}
-          onPress={() => handleSubmit()}
-        >
-          Send Request
-        </Button>
+          title={'Send Request'}
+          onPress={handleSubmit(onSubmit)}
+          loadingTitle={'Sending...'}
+          loading={isSubmitting}
+        />
       </ScrollView>
     </Container>
   );
@@ -227,14 +179,14 @@ export default CompleteRequest;
 
 const styles = StyleSheet.create({
   press: {
-    borderBottomColor: "transparent",
-    backgroundColor: "#E5E5E5",
+    borderBottomColor: 'transparent',
+    backgroundColor: '#E5E5E5',
     borderBottomWidth: 0,
     paddingHorizontal: 8,
     borderRadius: 5,
     height: 60,
     marginHorizontal: 10,
-    justifyContent: "center",
+    justifyContent: 'center',
     marginBottom: 10,
   },
 });

@@ -1,21 +1,21 @@
-import { Alert, View } from "react-native";
-import { Button } from "~/features/common/components/Button";
-import { colors } from "~/constants/Colors";
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
-import { InputComponent } from "~/components/InputComponent";
-import { HStack } from "~/components/HStack";
-import { useState } from "react";
-import { Id } from "~/convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "~/convex/_generated/api";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { toast } from "sonner-native";
-import Card from "~/features/common/components/card";
-import { formatDateToNowHelper, generateErrorMessage } from "~/lib/helper";
+import { useMutation, useQuery } from 'convex/react';
+import { useState } from 'react';
+import { Alert, View } from 'react-native';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { toast } from 'sonner-native';
+import { Input } from '~/components/Forms/Input';
+import { HStack } from '~/components/HStack';
+import { colors } from '~/constants/Colors';
+import { api } from '~/convex/_generated/api';
+import { Id } from '~/convex/_generated/dataModel';
+import { Button } from '~/features/common/components/Button';
+import Card from '~/features/common/components/card';
+import { useGetUserId } from '~/hooks/useGetUserId';
+import { formatDateToNowHelper, generateErrorMessage } from '~/lib/helper';
 
 type Props = {
   isOwner: boolean;
-  reviewId: Id<"reviews">;
+  reviewId: Id<'reviews'>;
 };
 
 export const Reply = ({ isOwner, reviewId }: Props) => {
@@ -25,22 +25,22 @@ export const Reply = ({ isOwner, reviewId }: Props) => {
   const deleteReply = useMutation(api.reviews.deleteReply);
   const editReply = useMutation(api.reviews.editReply);
   const [showReplyInput, setShowReplyInput] = useState(false);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('');
   const [editing, setEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [replying, setReplying] = useState(false);
   const onCancel = () => {
     setShowReplyInput(false);
     setEditing(false);
-    setValue("");
+    setValue('');
   };
   const onDelete = async () => {
     if (!reply || !id) return;
-    Alert.alert("Are you sure?", "This action cannot be undone", [
-      { text: "Cancel" },
+    Alert.alert('Are you sure?', 'This action cannot be undone', [
+      { text: 'Cancel' },
       {
-        text: "Delete",
-        style: "destructive",
+        text: 'Delete',
+        style: 'destructive',
         onPress: async () => {
           try {
             setDeleting(true);
@@ -48,13 +48,13 @@ export const Reply = ({ isOwner, reviewId }: Props) => {
               replyId: reply.id,
               userId: id,
             });
-            toast.success("Reply deleted");
+            toast.success('Reply deleted');
           } catch (error) {
             const errorMessage = generateErrorMessage(
               error,
-              "Failed to delete reply",
+              'Failed to delete reply'
             );
-            toast.error("Something went wrong", {
+            toast.error('Something went wrong', {
               description: errorMessage,
             });
           } finally {
@@ -81,10 +81,10 @@ export const Reply = ({ isOwner, reviewId }: Props) => {
           from: id!,
         });
       }
-      toast.success("Success");
+      toast.success('Success');
       setShowReplyInput(false);
     } catch (e) {
-      const errorMessage = generateErrorMessage(e, "An error occurred.");
+      const errorMessage = generateErrorMessage(e, 'An error occurred.');
       toast.error(errorMessage);
     } finally {
       setReplying(false);
@@ -98,7 +98,7 @@ export const Reply = ({ isOwner, reviewId }: Props) => {
     setValue(reply.reply);
     setShowReplyInput(true);
   };
-  const disable = value.trim() === "" || replying;
+  const disable = value.trim() === '' || replying;
   const disableEdit = reply?.reply === value || replying;
   if (reply === undefined) return null;
   return (
@@ -106,33 +106,33 @@ export const Reply = ({ isOwner, reviewId }: Props) => {
       {isOwner && !showReplyInput && !reply && (
         <Animated.View entering={FadeIn} exiting={FadeOut}>
           <Button
-            title={"Reply"}
+            title={'Reply'}
             onPress={() => setShowReplyInput(true)}
-            style={{ backgroundColor: "transparent" }}
+            style={{ backgroundColor: 'transparent' }}
             textStyle={{ color: colors.dialPad }}
           />
         </Animated.View>
       )}
       {showReplyInput && (
         <Animated.View entering={FadeIn} exiting={FadeOut}>
-          <InputComponent
-            label={"Reply"}
-            placeholder={"Reply this comment"}
+          <Input
+            label={'Reply'}
+            placeholder={'Reply this comment'}
             value={value}
             onChangeText={setValue}
           />
           <HStack gap={10} style={{ marginHorizontal: 20 }}>
             <Button
-              title={"Cancel"}
+              title={'Cancel'}
               onPress={onCancel}
               style={{ backgroundColor: colors.closeTextColor, flex: 1 }}
             />
             <Button
-              title={editing ? "Edit" : "Reply"}
+              title={editing ? 'Edit' : 'Reply'}
               onPress={onReply}
               disabled={editing ? disableEdit : disable}
               loading={replying}
-              loadingTitle={editing ? "Editing..." : "Replying..."}
+              loadingTitle={editing ? 'Editing...' : 'Replying...'}
               style={{ backgroundColor: colors.dialPad, flex: 1 }}
             />
           </HStack>
@@ -140,7 +140,7 @@ export const Reply = ({ isOwner, reviewId }: Props) => {
       )}
 
       {reply && (
-        <Card style={{ boxShadow: "" }}>
+        <Card style={{ boxShadow: '' }}>
           <Card.Header>
             <Card.Title>{reply.organizationName}</Card.Title>
             <Card.Description>
@@ -150,18 +150,18 @@ export const Reply = ({ isOwner, reviewId }: Props) => {
           </Card.Header>
           {isOwner && (
             <Card.Footer>
-              <HStack width={"100%"} gap={10}>
+              <HStack width={'100%'} gap={10}>
                 <Button
                   disabled={deleting}
-                  title={"Edit"}
+                  title={'Edit'}
                   onPress={onEdit}
                   style={{ flex: 1 }}
                 />
                 <Button
-                  title={"Delete"}
+                  title={'Delete'}
                   onPress={onDelete}
                   loading={deleting}
-                  loadingTitle={"Deleting..."}
+                  loadingTitle={'Deleting...'}
                   disabled={deleting}
                   style={{ backgroundColor: colors.closeTextColor, flex: 1 }}
                 />

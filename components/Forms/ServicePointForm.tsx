@@ -1,13 +1,12 @@
 import React, { useCallback, useState } from 'react';
 
-import { ServicePointModal } from '../Dialogs/ServicePointModal';
-import { InputComponent } from '../InputComponent';
-import VStack from '../Ui/VStack';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
-import { StyleSheet, Text } from 'react-native';
-import { schema, SchemaType } from '~/validator';
+import { useForm } from 'react-hook-form';
 import { Button } from '~/features/common/components/Button';
+import { schema, SchemaType } from '~/validator';
+import { ServicePointModal } from '../Dialogs/ServicePointModal';
+import { CustomInput } from '../InputComponent';
+import VStack from '../Ui/VStack';
 
 type Props = {
   onSubmit: (data: SchemaType) => void;
@@ -50,78 +49,41 @@ export const ServicePointForm = ({ onSubmit, initialValues }: Props) => {
         onClose={onClose}
       />
 
-      <>
-        <Controller
-          control={control}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <InputComponent
-              label="Quick point name"
-              value={value}
-              onChangeText={onChange}
-              placeholder="Eg. customers service"
-              onBlur={onBlur}
-            />
-          )}
-          name="name"
-        />
-        {errors.name && <Text style={styles.error}>{errors.name.message}</Text>}
-      </>
-      <>
-        <Controller
-          control={control}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <InputComponent
-              label="Description"
-              value={value!}
-              onChangeText={onChange}
-              placeholder="Describe what this service point is for"
-              onBlur={onBlur}
-              multiline
-              textarea
-            />
-          )}
-          name="description"
-        />
-        {errors.description && (
-          <Text style={styles.error}>{errors.description.message}</Text>
-        )}
-      </>
-      <>
-        <Controller
-          control={control}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <InputComponent
-              label="Link"
-              value={value!}
-              onChangeText={onChange}
-              placeholder="Paste a link for this service point"
-              onBlur={onBlur}
-              autoCapitalize={'none'}
-            />
-          )}
-          name="link"
-        />
-        {errors.link && <Text style={styles.error}>{errors.link.message}</Text>}
-      </>
-      <>
-        <Controller
-          control={control}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <InputComponent
-              label="Link Text"
-              value={value!}
-              onChangeText={onChange}
-              placeholder="Add a text for this link"
-              onBlur={onBlur}
-              autoCapitalize={'none'}
-            />
-          )}
-          name="linkText"
-        />
-        {errors.linkText && (
-          <Text style={[styles.error]}>{errors.linkText.message}</Text>
-        )}
-      </>
+      <CustomInput
+        name="name"
+        control={control}
+        errors={errors}
+        label="Quick point name"
+        placeholder="Eg. customers service"
+      />
+
+      <CustomInput
+        label="Description"
+        name={'description'}
+        placeholder="Describe what this service point is for"
+        multiline
+        textarea
+        control={control}
+        errors={errors}
+      />
+
+      <CustomInput
+        label="Link"
+        control={control}
+        errors={errors}
+        placeholder="Paste a link for this service point"
+        autoCapitalize={'none'}
+        name="link"
+      />
+
+      <CustomInput
+        label="Link Text"
+        control={control}
+        errors={errors}
+        placeholder="Add a text for this link"
+        autoCapitalize={'none'}
+        name="linkText"
+      />
 
       <Button
         title={'Submit'}
@@ -134,13 +96,3 @@ export const ServicePointForm = ({ onSubmit, initialValues }: Props) => {
     </VStack>
   );
 };
-
-const styles = StyleSheet.create({
-  error: {
-    color: 'red',
-    marginTop: 2,
-    fontFamily: 'PoppinsMedium',
-    marginHorizontal: 15,
-    marginBottom: 10,
-  },
-});

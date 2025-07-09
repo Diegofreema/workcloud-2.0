@@ -54,7 +54,22 @@ export const editWorkerSchema = z.object({
     .min(1, 'Minimum of 1 skill is required'),
   qualifications: z.string().min(1, 'Qualifications are required'),
 });
+export const profileUpdateSchema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  avatar: z.string().min(1, 'Profile image is required'),
+  phoneNumber: z.string().optional(),
+});
 
+export const offerSchema = z.object({
+  role: z.string().min(1, 'Role is required'),
+  responsibility: z.string().min(1, 'responsibility is required'),
+  salary: z.string().min(1, 'salary is required'),
+  qualities: z.string().min(1, 'qualities are required'),
+});
+
+export type OfferSchemaType = z.infer<typeof offerSchema>;
+export type ProfileUpdateSchemaType = z.infer<typeof profileUpdateSchema>;
 export type CreateWorkerSchemaType = z.infer<typeof createWorkerSchema>;
 export type EditWorkerSchemaType = z.infer<typeof editWorkerSchema>;
 

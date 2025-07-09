@@ -1,38 +1,32 @@
-import { FontAwesome } from "@expo/vector-icons";
-import { useMutation } from "convex/react";
-import { Image } from "expo-image";
-import * as ImagePicker from "expo-image-picker";
-import { router } from "expo-router";
-import { useFormik } from "formik";
-import { useEffect, useState } from "react";
+import { FontAwesome } from '@expo/vector-icons';
+import { useMutation } from 'convex/react';
+import { Image } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
+import { router } from 'expo-router';
+import { useState } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
-} from "react-native";
-import { toast } from "sonner-native";
-import * as yup from "yup";
+} from 'react-native';
+import { toast } from 'sonner-native';
 
-import { InputComponent } from "../InputComponent";
-import { LoadingComponent } from "../Ui/LoadingComponent";
-import { MyButton } from "../Ui/MyButton";
-import { MyText } from "../Ui/MyText";
-import VStack from "../Ui/VStack";
+import { CustomInput } from '../InputComponent';
+import { LoadingComponent } from '../Ui/LoadingComponent';
+import { MyText } from '../Ui/MyText';
+import VStack from '../Ui/VStack';
 
-import { User } from "~/constants/types";
-import { api } from "~/convex/_generated/api";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { uploadProfilePicture } from "~/lib/helper";
-import { Button } from "~/features/common/components/Button";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { User } from '~/constants/types';
+import { api } from '~/convex/_generated/api';
+import { Button } from '~/features/common/components/Button';
+import { useDarkMode } from '~/hooks/useDarkMode';
+import { uploadProfilePicture } from '~/lib/helper';
+import { profileUpdateSchema, ProfileUpdateSchemaType } from '~/schema';
 
-const validationSchema = yup.object().shape({
-  firstName: yup.string().required("First name is required"),
-  lastName: yup.string().required("Last name is required"),
-  avatar: yup.string().required("Profile image is required"),
-  phoneNumber: yup.string(),
-});
 export const ProfileUpdateForm = ({ person }: { person: User }) => {
   const [loading, setLoading] = useState(false);
   const updateUser = useMutation(api.users.updateUserById);
@@ -40,78 +34,60 @@ export const ProfileUpdateForm = ({ person }: { person: User }) => {
   // const updateImage = useMutation(api.users.updateImage);
   const [selectedImage, setSelectedImage] =
     useState<ImagePicker.ImagePickerAsset | null>(null);
-
   const {
     handleSubmit,
-    isSubmitting,
-    values,
-    setFieldValue,
-    errors,
-    touched,
-    handleChange,
-    resetForm,
-  } = useFormik({
-    initialValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      date_of_birth: "",
-      phoneNumber: "",
-      avatar: "",
+    control,
+    formState: { isSubmitting, errors },
+    reset,
+  } = useForm<ProfileUpdateSchemaType>({
+    defaultValues: {
+      firstName: person?.name?.split(' ')[0] || '',
+      lastName: person?.name?.split(' ')[1] || '',
+      phoneNumber: person?.phoneNumber || '',
+      avatar: person.imageUrl || '',
     },
-    validationSchema,
-    onSubmit: async () => {
-      const { firstName, lastName, phoneNumber } = values;
-
-      const name = `${firstName} ${lastName}`;
-      try {
-        if (selectedImage) {
-          const res = await uploadProfilePicture(
-            generateUploadUrl,
-            selectedImage.uri,
-          );
-          if (!res?.storageId) return;
-          await updateUser({
-            name,
-            phoneNumber,
-            _id: person._id,
-            imageUrl: res.storageId,
-          });
-        } else {
-          await updateUser({
-            name,
-            phoneNumber,
-            _id: person._id,
-          });
-        }
-        resetForm();
-        router.back();
-      } catch (error: any) {
-        toast.error("Error updating profile");
-
-        console.log(error, "Error");
-      }
-    },
+    resolver: zodResolver(profileUpdateSchema),
   });
 
-  const { darkMode } = useDarkMode();
+  const onSubmit = async (values: ProfileUpdateSchemaType) => {
+    const { firstName, lastName, phoneNumber } = values;
 
-  useEffect(() => {
-    if (person) {
-      setFieldValue("firstName", person?.name?.split(" ")[0]);
-      setFieldValue("lastName", person?.name?.split(" ")[1]);
-      setFieldValue("email", person?.email);
-      setFieldValue("date_of_birth", person.date_of_birth);
-      setFieldValue("phoneNumber", person.phoneNumber);
-      setFieldValue("avatar", person.imageUrl);
-      setFieldValue("phoneNumber", person.phoneNumber);
+    const name = `${firstName} ${lastName}`;
+    try {
+      if (selectedImage) {
+        const res = await uploadProfilePicture(
+          generateUploadUrl,
+          selectedImage.uri
+        );
+        if (!res?.storageId) return;
+        await updateUser({
+          name,
+          phoneNumber,
+          _id: person._id,
+          imageUrl: res.storageId,
+        });
+      } else {
+        await updateUser({
+          name,
+          phoneNumber,
+          _id: person._id,
+        });
+      }
+      reset();
+      router.back();
+    } catch (error: any) {
+      toast.error('Error updating profile');
+
+      console.log(error, 'Error');
     }
-  }, [person, setFieldValue]);
+  };
+
+  const { darkMode } = useDarkMode();
 
   const pickImageAsync = async () => {
     setLoading(true);
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0.5,
@@ -129,7 +105,7 @@ export const ProfileUpdateForm = ({ person }: { person: User }) => {
       contentContainerStyle={{ paddingBottom: 100 }}
       showsVerticalScrollIndicator={false}
     >
-      <View style={{ alignItems: "center", justifyContent: "center" }}>
+      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         <View
           style={{
             width: 100,
@@ -147,7 +123,7 @@ export const ProfileUpdateForm = ({ person }: { person: User }) => {
             <ActivityIndicator
               style={[
                 styles.abs,
-                { backgroundColor: darkMode ? "white" : "black" },
+                { backgroundColor: darkMode ? 'white' : 'black' },
               ]}
               size={20}
             />
@@ -155,14 +131,14 @@ export const ProfileUpdateForm = ({ person }: { person: User }) => {
             <TouchableOpacity
               style={[
                 styles.abs,
-                { backgroundColor: darkMode ? "white" : "black" },
+                { backgroundColor: darkMode ? 'white' : 'black' },
               ]}
               onPress={pickImageAsync}
             >
               <FontAwesome
                 name="plus"
                 size={20}
-                color={darkMode ? "black" : "white"}
+                color={darkMode ? 'black' : 'white'}
               />
             </TouchableOpacity>
           )}
@@ -174,47 +150,34 @@ export const ProfileUpdateForm = ({ person }: { person: User }) => {
         </MyText>
 
         <VStack gap={10}>
+          <CustomInput
+            control={control}
+            errors={errors}
+            label="First Name"
+            placeholder="First Name"
+            autoCapitalize="sentences"
+            name={'firstName'}
+          />
+
           <>
-            <InputComponent
-              label="First Name"
-              onChangeText={handleChange("firstName")}
-              placeholder="First Name"
-              autoCapitalize="sentences"
-              value={values.firstName}
-            />
-            {touched.firstName && errors.firstName && (
-              <MyText poppins="Medium" style={styles.error}>
-                {errors.firstName}
-              </MyText>
-            )}
-          </>
-          <>
-            <InputComponent
+            <CustomInput
+              control={control}
+              errors={errors}
               label="Last Name"
-              onChangeText={handleChange("lastName")}
               placeholder="Last Name"
-              value={values.lastName}
+              name={'lastName'}
               autoCapitalize="sentences"
             />
-            {touched.lastName && errors.lastName && (
-              <MyText poppins="Medium" style={styles.error}>
-                {errors.lastName}
-              </MyText>
-            )}
           </>
 
           <>
-            <InputComponent
+            <CustomInput
+              control={control}
+              errors={errors}
               label="Phone Number"
-              onChangeText={handleChange("phoneNumber")}
               placeholder="Phone Number"
-              value={values.phoneNumber}
+              name={'phoneNumber'}
             />
-            {touched.phoneNumber && errors.phoneNumber && (
-              <MyText poppins="Medium" style={styles.error}>
-                {errors.phoneNumber}
-              </MyText>
-            )}
           </>
         </VStack>
 
@@ -222,9 +185,9 @@ export const ProfileUpdateForm = ({ person }: { person: User }) => {
           <Button
             disabled={isSubmitting}
             loading={isSubmitting}
-            onPress={() => handleSubmit()}
-            title={"Save changes"}
-            loadingTitle={"Saving"}
+            onPress={handleSubmit(onSubmit)}
+            title={'Save changes'}
+            loadingTitle={'Saving'}
           />
         </View>
       </View>
@@ -233,14 +196,14 @@ export const ProfileUpdateForm = ({ person }: { person: User }) => {
 };
 
 const styles = StyleSheet.create({
-  error: { color: "red", marginTop: 2 },
+  error: { color: 'red', marginTop: 2 },
   date: {
     height: 120,
     marginTop: -10,
   },
   camera: {
-    backgroundColor: "white",
-    shadowColor: "#000",
+    backgroundColor: 'white',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -254,15 +217,15 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 9999,
     lineHeight: 20,
-    verticalAlign: "middle",
-    position: "absolute",
+    verticalAlign: 'middle',
+    position: 'absolute',
     bottom: 2,
     right: -2,
   },
 
   phone: {
-    width: "100%",
-    backgroundColor: "#E9E9E9",
+    width: '100%',
+    backgroundColor: '#E9E9E9',
     height: 60,
     paddingHorizontal: 20,
 
@@ -272,29 +235,29 @@ const styles = StyleSheet.create({
   border: {
     borderRadius: 2,
     minHeight: 50,
-    alignItems: "center",
+    alignItems: 'center',
 
     height: 60,
-    backgroundColor: "#E9E9E9",
+    backgroundColor: '#E9E9E9',
     borderWidth: 0,
   },
   content: {
     paddingLeft: 10,
 
     width: 60,
-    color: "black",
-    fontFamily: "PoppinsMedium",
+    color: 'black',
+    fontFamily: 'PoppinsMedium',
     fontSize: 12,
   },
 
   container: {
-    backgroundColor: "#E9E9E9",
-    color: "black",
-    fontFamily: "PoppinsMedium",
+    backgroundColor: '#E9E9E9',
+    color: 'black',
+    fontFamily: 'PoppinsMedium',
     marginTop: 10,
   },
   abs: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     right: 3,
 
