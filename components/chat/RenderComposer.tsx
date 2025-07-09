@@ -16,18 +16,34 @@ export const RenderComposer = ({ onPickImage, ...props }: Props) => {
         borderWidth: 1,
         borderColor: colors.gray,
         borderRadius: 5,
-        // padding: 10,
+        padding: 5,
+        height: 'auto',
         flex: 1,
+        minHeight: 50,
       }}
       alignItems="center"
     >
       <Composer
         {...props}
         multiline
-        textInputStyle={{ backgroundColor: 'transparent' }}
-        textInputProps={{ numberOfLines: 5 }}
+        textInputStyle={{
+          backgroundColor: 'transparent',
+          minHeight: 45,
+          maxHeight: 120, // Approximately 5 lines of text (24px per line)
+        }}
+        textInputProps={{
+          numberOfLines: 5,
+          scrollEnabled: true,
+        }}
       />
-      <CustomPressable onPress={onPickImage}>
+      <CustomPressable
+        onPress={onPickImage}
+        style={{
+          paddingHorizontal: 8,
+          alignSelf: 'flex-end',
+          paddingBottom: 10,
+        }}
+      >
         <Camera size={24} color="black" strokeWidth={1.5} />
       </CustomPressable>
     </HStack>
