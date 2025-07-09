@@ -1,31 +1,36 @@
-import {mutation, MutationCtx, query, QueryCtx,} from "~/convex/_generated/server";
-import {ConvexError, v} from "convex/values";
-import {Id} from "~/convex/_generated/dataModel";
-import {getUserByUserId} from "~/convex/users";
+import {
+  mutation,
+  MutationCtx,
+  query,
+  QueryCtx,
+} from '~/convex/_generated/server';
+import { ConvexError, v } from 'convex/values';
+import { Id } from '~/convex/_generated/dataModel';
+import { getUserByUserId } from '~/convex/users';
 
 export const reactToMessage = mutation({
   args: {
-    messageId: v.id("messages"),
-    senderId: v.id("users"),
+    messageId: v.id('messages'),
+    senderId: v.id('users'),
     emoji: v.union(
-      v.literal("LIKE"),
-      v.literal("SAD"),
-      v.literal("LOVE"),
-      v.literal("WOW"),
-      v.literal("ANGRY"),
-      v.literal("LAUGH"),
+      v.literal('LIKE'),
+      v.literal('SAD'),
+      v.literal('LOVE'),
+      v.literal('WOW'),
+      v.literal('ANGRY'),
+      v.literal('LAUGH')
     ),
   },
   handler: async (ctx, args) => {
     const messageToReactTo = await ctx.db.get(args.messageId);
     if (!messageToReactTo) {
-      throw new ConvexError("Message not found");
+      throw new ConvexError('Message not found');
     }
 
     const reactionExists = await ctx.db
-      .query("reactions")
-      .withIndex("by_sender_message_id", (q) =>
-        q.eq("message_id", args.messageId).eq("user_id", args.senderId),
+      .query('reactions')
+      .withIndex('by_sender_message_id', (q) =>
+        q.eq('message_id', args.messageId).eq('user_id', args.senderId)
       )
       .first();
 
@@ -39,7 +44,7 @@ export const reactToMessage = mutation({
       await ctx.db.delete(reactionExists._id);
     }
 
-    await ctx.db.insert("reactions", {
+    await ctx.db.insert('reactions', {
       emoji: args.emoji,
       message_id: args.messageId,
       user_id: args.senderId,
@@ -49,8 +54,8 @@ export const reactToMessage = mutation({
 
 export const deleteMessage = mutation({
   args: {
-    sender_id: v.id("users"),
-    message_id: v.id("messages"),
+    sender_id: v.id('users'),
+    message_id: v.id('messages'),
   },
   handler: async (ctx, args) => {
     await deleteMessageHelpFn(ctx, args.message_id, args.sender_id);
@@ -61,19 +66,19 @@ export const deleteMessage = mutation({
 
 export const deleteMessageHelpFn = async (
   ctx: MutationCtx,
-  message_id: Id<"messages">,
-  logged_in_user: Id<"users">,
+  message_id: Id<'messages'>,
+  logged_in_user: Id<'users'>
 ) => {
   const messageToDelete = await ctx.db.get(message_id);
   if (!messageToDelete) {
-    throw new ConvexError("Message not found");
+    throw new ConvexError('Message not found');
   }
   const room = await ctx.db.get(messageToDelete.conversationId);
   if (!room) {
-    throw new ConvexError("Room not found");
+    throw new ConvexError('Room not found');
   }
   if (messageToDelete.senderId !== logged_in_user) {
-    throw new ConvexError("Unauthorized");
+    throw new ConvexError('Unauthorized');
   }
   if (messageToDelete.fileId) {
     await ctx.storage.delete(messageToDelete.fileId);
@@ -81,25 +86,25 @@ export const deleteMessageHelpFn = async (
   await findAndDeleteReplies(ctx, message_id);
   await ctx.db.delete(message_id);
   const messages = await ctx.db
-    .query("messages")
-    .withIndex("by_conversationId", (q) =>
-      q.eq("conversationId", messageToDelete.conversationId),
+    .query('messages')
+    .withIndex('by_conversationId', (q) =>
+      q.eq('conversationId', messageToDelete.conversationId)
     )
-    .order("asc")
+    .order('asc')
     .collect();
   await ctx.db.patch(room?._id, {
-    lastMessage: messages[messages.length - 1]?.content || "file",
+    lastMessage: messages[messages.length - 1]?.content || 'file',
     lastMessageTime: messages[messages.length - 1]?._creationTime,
   });
 };
 
 export const findAndDeleteReplies = async (
   ctx: MutationCtx,
-  message_id: Id<"messages">,
+  message_id: Id<'messages'>
 ) => {
   const isReplyTo = await ctx.db
-    .query("messages")
-    .withIndex("by_reply_to", (q) => q.eq("replyTo", message_id))
+    .query('messages')
+    .withIndex('by_reply_to', (q) => q.eq('replyTo', message_id))
     .collect();
   if (isReplyTo.length > 0) {
     for (const reply of isReplyTo) {
@@ -112,17 +117,17 @@ export const findAndDeleteReplies = async (
 
 export const messageReactions = async (
   ctx: QueryCtx,
-  messageId: Id<"messages">,
+  messageId: Id<'messages'>
 ) => {
   return await ctx.db
-    .query("reactions")
-    .withIndex("by_message_id", (q) => q.eq("message_id", messageId))
+    .query('reactions')
+    .withIndex('by_message_id', (q) => q.eq('message_id', messageId))
     .collect();
 };
 
 export const messageHelper = async (
   ctx: QueryCtx,
-  messageId: Id<"messages">,
+  messageId: Id<'messages'>
 ) => {
   const message = await ctx.db.get(messageId);
   if (!message) return;
@@ -143,21 +148,21 @@ export const messageHelper = async (
 
 export const sendMessage = mutation({
   args: {
-    conversationId: v.id("conversations"),
+    conversationId: v.id('conversations'),
     content: v.string(),
-    senderId: v.id("users"),
+    senderId: v.id('users'),
     fileType: v.optional(
-      v.union(v.literal("image"), v.literal("pdf"), v.literal("audio")),
+      v.union(v.literal('image'), v.literal('pdf'), v.literal('audio'))
     ),
     fileUrl: v.optional(v.string()),
-    fileId: v.optional(v.id("_storage")),
-    replyTo: v.optional(v.id("messages")),
-    senderName: v.optional(v.string())
+    fileId: v.optional(v.id('_storage')),
+    replyTo: v.optional(v.id('messages')),
+    senderName: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const room = await ctx.db.get(args.conversationId);
     if (!room) {
-      throw new ConvexError("Conversation not found");
+      throw new ConvexError('Conversation not found');
     }
 
     let file_url;
@@ -165,7 +170,7 @@ export const sendMessage = mutation({
       file_url = (await ctx.storage.getUrl(args.fileId)) as string;
     }
 
-    await ctx.db.insert("messages", {
+    await ctx.db.insert('messages', {
       ...args,
       fileUrl: file_url,
       seenId: [args.senderId],
@@ -181,16 +186,16 @@ export const sendMessage = mutation({
 export const editMessage = mutation({
   args: {
     text: v.string(),
-    message_id: v.id("messages"),
-    sender_id: v.id("users"),
+    message_id: v.id('messages'),
+    sender_id: v.id('users'),
   },
   handler: async (ctx, args) => {
     const messageToEdit = await ctx.db.get(args.message_id);
     if (!messageToEdit) {
-      throw new ConvexError("Message not found");
+      throw new ConvexError('Message not found');
     }
     if (messageToEdit.senderId !== args.sender_id) {
-      throw new ConvexError("You are not authorized to edit this text");
+      throw new ConvexError('You are not authorized to edit this text');
     }
     await ctx.db.patch(messageToEdit._id, {
       content: args.text,
@@ -200,15 +205,15 @@ export const editMessage = mutation({
 
 export const setTypingState = mutation({
   args: {
-    conversationId: v.id("conversations"),
-    userId: v.id("users"),
+    conversationId: v.id('conversations'),
+    userId: v.id('users'),
     isTyping: v.boolean(),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db
-      .query("typingStates")
-      .withIndex("by_conversationId_userId", (q) =>
-        q.eq("conversationId", args.conversationId).eq("userId", args.userId),
+      .query('typingStates')
+      .withIndex('by_conversationId_userId', (q) =>
+        q.eq('conversationId', args.conversationId).eq('userId', args.userId)
       )
       .first();
 
@@ -217,7 +222,7 @@ export const setTypingState = mutation({
         isTyping: args.isTyping,
       });
     } else {
-      await ctx.db.insert("typingStates", {
+      await ctx.db.insert('typingStates', {
         conversationId: args.conversationId,
         userId: args.userId,
         isTyping: args.isTyping,
@@ -230,16 +235,31 @@ export const setTypingState = mutation({
 
 export const getTypingUsers = query({
   args: {
-    conversationId: v.id("conversations"),
+    conversationId: v.id('conversations'),
   },
   handler: async (ctx, args) => {
     const states = await ctx.db
-      .query("typingStates")
-      .withIndex("is_typing", (q) =>
-        q.eq("conversationId", args.conversationId).eq("isTyping", true),
+      .query('typingStates')
+      .withIndex('is_typing', (q) =>
+        q.eq('conversationId', args.conversationId).eq('isTyping', true)
       )
       .collect();
 
     return states.map((state) => state.userId); // Return list of typing user IDs
+  },
+});
+
+export const getMembersInConversation = query({
+  args: { conversationId: v.id('conversations') },
+  handler: async (ctx, args) => {
+    const conversation = await ctx.db.get(args.conversationId);
+    if (!conversation) return [];
+
+    const members = conversation.participants.map(async (m) => {
+      const user = await ctx.db.get(m);
+      return user?.pushToken;
+    });
+
+    return await Promise.all(members);
   },
 });
