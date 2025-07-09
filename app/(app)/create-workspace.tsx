@@ -1,44 +1,42 @@
-import DateTimePicker from "@react-native-community/datetimepicker";
-import {Button} from "@rneui/themed";
-import {useMutation} from "convex/react";
-import {format} from "date-fns";
-import {Image} from "expo-image";
-import * as ImagePicker from "expo-image-picker";
-import {useRouter} from "expo-router";
-import {useFormik} from "formik";
-import React, {useEffect, useState} from "react";
-import {Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View,} from "react-native";
-import {SelectList} from "react-native-dropdown-select-list";
-import {toast} from "sonner-native";
-import * as yup from "yup";
+import { zodResolver } from '@hookform/resolvers/zod';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { useMutation } from 'convex/react';
+import { format } from 'date-fns';
+import { Image } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SelectList } from 'react-native-dropdown-select-list';
+import { toast } from 'sonner-native';
+import { Button } from '~/features/common/components/Button';
 
-import {AuthHeader} from "~/components/AuthHeader";
-import {AuthTitle} from "~/components/AuthTitle";
-import {InputComponent} from "~/components/InputComponent";
-import {Subtitle} from "~/components/Subtitle";
-import {Container} from "~/components/Ui/Container";
-import {MyText} from "~/components/Ui/MyText";
-import {days} from "~/constants";
-import {colors} from "~/constants/Colors";
-import {api} from "~/convex/_generated/api";
-import {useDarkMode} from "~/hooks/useDarkMode";
-import {useGetCat} from "~/hooks/useGetCat";
-import {useGetUserId} from "~/hooks/useGetUserId";
-import {generateErrorMessage, uploadProfilePicture} from "~/lib/helper";
+import { AuthHeader } from '~/components/AuthHeader';
+import { AuthTitle } from '~/components/AuthTitle';
+import { CustomInput } from '~/components/InputComponent';
 
-const validationSchema = yup.object().shape({
-  organizationName: yup.string().required("Name of organization is required"),
-  category: yup.string().required("Category is required"),
-  location: yup.string().required("Location is required"),
-  description: yup.string().required("Description is required"),
-  startDay: yup.string(),
-  endDay: yup.string(),
-  startTime: yup.string().required("Working time is required"),
-  endTime: yup.string().required("Working time is required"),
-  websiteUrl: yup.string().required("Website link is required"),
-  email: yup.string().email("Invalid email").required("Email is required"),
-  image: yup.string().required("Logo is required"),
-});
+import { Subtitle } from '~/components/Subtitle';
+import { Container } from '~/components/Ui/Container';
+import { MyText } from '~/components/Ui/MyText';
+import { days } from '~/constants';
+import { colors } from '~/constants/Colors';
+import { api } from '~/convex/_generated/api';
+import { useDarkMode } from '~/hooks/useDarkMode';
+import { useGetCat } from '~/hooks/useGetCat';
+import { useGetUserId } from '~/hooks/useGetUserId';
+import { generateErrorMessage, uploadProfilePicture } from '~/lib/helper';
+import {
+  createOrganizationSchema,
+  CreateOrganizationSchemaType,
+} from '~/schema';
 
 const CreateWorkSpace = () => {
   const [startTime, setStartTime] = useState(new Date(1598051730000));
@@ -56,103 +54,100 @@ const CreateWorkSpace = () => {
   const [show2, setShow2] = useState(false);
   const { darkMode } = useDarkMode();
   const router = useRouter();
-
   const {
-    values,
-    handleChange,
     handleSubmit,
-    isSubmitting,
-    errors,
-    touched,
-    resetForm,
-    setValues,
-    setFieldValue,
-  } = useFormik({
-    initialValues: {
-      email: "",
-      organizationName: "",
-      category: "",
-      startDay: "Monday",
-      endDay: "Friday",
-      description: "",
-      location: "",
-      websiteUrl: "",
-      startTime: "",
-      endTime: "",
-      image: "https://placehold.co/100x100",
+    control,
+    formState: { isSubmitting, errors },
+    setValue,
+    reset,
+    watch,
+  } = useForm<CreateOrganizationSchemaType>({
+    defaultValues: {
+      email: '',
+      organizationName: '',
+      category: '',
+      startDay: 'Monday',
+      endDay: 'Friday',
+      description: '',
+      location: '',
+      websiteUrl: '',
+      startTime: '',
+      endTime: '',
+      image: '',
     },
-    validationSchema,
-    onSubmit: async (values) => {
-      if (!id) return;
-
-      try {
-        const res = await uploadProfilePicture(
-          generateUploadUrl,
-          selectedImage?.uri,
-        );
-        if (!res?.storageId) {
-          toast.error("Something went wrong", {
-            description: "Couldn't create organization",
-          });
-          return;
-        }
-        await createOrganization({
-          ownerId: id,
-          avatarId: res?.storageId,
-          end: values.endTime,
-          name: values.organizationName,
-          start: values.startTime,
-          website: values.websiteUrl,
-          workDays: values.startDay + " - " + values.endDay,
-          category: values.category,
-          description: values.description,
-          email: values.email,
-          location: values.location,
-        });
-
-        router.replace(`/my-org`);
-        toast.success("Success", {
-          description: "Organization has been created successfully",
-        });
-        resetForm();
-      } catch (e) {
-        const errorMessage = generateErrorMessage(
-          e,
-          "Failed to create organization",
-        );
-        toast.error("Something went wrong", {
-          description: errorMessage,
-        });
-      }
-    },
+    resolver: zodResolver(createOrganizationSchema),
   });
+
+  const onSubmit = async (values: CreateOrganizationSchemaType) => {
+    if (!id) return;
+
+    try {
+      const res = await uploadProfilePicture(
+        generateUploadUrl,
+        selectedImage?.uri
+      );
+      if (!res?.storageId) {
+        toast.error('Something went wrong', {
+          description: "Couldn't create organization",
+        });
+        return;
+      }
+      await createOrganization({
+        ownerId: id,
+        avatarId: res?.storageId,
+        end: values.endTime,
+        name: values.organizationName,
+        start: values.startTime,
+        website: values.websiteUrl,
+        workDays: values.startDay + ' - ' + values.endDay,
+        category: values.category,
+        description: values.description,
+        email: values.email,
+        location: values.location,
+      });
+
+      router.replace(`/my-org`);
+      toast.success('Success', {
+        description: 'Organization has been created successfully',
+      });
+      reset();
+    } catch (e) {
+      const errorMessage = generateErrorMessage(
+        e,
+        'Failed to create organization'
+      );
+      toast.error('Something went wrong', {
+        description: errorMessage,
+      });
+    }
+  };
   const onSelectImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [4, 3],
     });
     if (!result.canceled) {
       const imgUrl = result.assets[0];
       setSelectedImage(imgUrl);
-      await setFieldValue("image", imgUrl?.uri);
+      await setValue('image', imgUrl?.uri);
     }
   };
   useEffect(() => {
     if (cat) {
-      setFieldValue("category", cat);
+      setValue('category', cat);
     }
-  }, [cat, setFieldValue]);
+  }, [cat, setValue]);
   const onChange = (event: any, selectedDate: any, type: string) => {
     const currentDate = selectedDate;
-    if (type === "startTime") {
+    if (type === 'startTime') {
       setShow(false);
       setStartTime(currentDate);
-      setValues({ ...values, startTime: format(currentDate, "HH:mm") });
+      setValue('startTime', format(currentDate, 'HH:mm'));
     } else {
       setShow2(false);
       setEndTime(currentDate);
-      setValues({ ...values, endTime: format(currentDate, "HH:mm") });
+      setValue('endTime', format(currentDate, 'HH:mm'));
     }
   };
   const showMode = () => {
@@ -164,17 +159,9 @@ const CreateWorkSpace = () => {
 
   // ! to fix later
   const handleDeleteImage = () => {
-    setFieldValue("image", "");
+    setValue('image', '');
   };
-  const {
-    email,
-    category,
-    location,
-    organizationName,
-    description,
-    websiteUrl,
-    image,
-  } = values;
+  const { image } = watch();
   const pickImage = async () => {
     if (image) {
       handleDeleteImage();
@@ -198,8 +185,8 @@ const CreateWorkSpace = () => {
           <View style={{ flex: 0.6, gap: 10 }}>
             <Text
               style={{
-                color: darkMode === "dark" ? "white" : "black",
-                fontFamily: "PoppinsMedium",
+                color: darkMode === 'dark' ? 'white' : 'black',
+                fontFamily: 'PoppinsMedium',
               }}
             >
               Organization logo
@@ -209,122 +196,73 @@ const CreateWorkSpace = () => {
                 <Image
                   source={{ uri: image }}
                   style={styles2.imageContent}
-                  contentFit={"cover"}
+                  contentFit={'cover'}
                 />
               ) : (
                 <Text style={[styles2.imageText]}>Click to select image</Text>
               )}
             </TouchableOpacity>
-            {touched.image && errors.image && (
-              <Text style={{ color: "red", fontFamily: "PoppinsMedium" }}>
-                {errors.email}
+            {errors.image && (
+              <Text style={{ color: 'red', fontFamily: 'PoppinsMedium' }}>
+                {errors.image.message}
               </Text>
             )}
-            <>
-              <InputComponent
-                label="Organization Name"
-                value={organizationName}
-                onChangeText={handleChange("organizationName")}
-                placeholder="Organization Name"
-                keyboardType="default"
+            <CustomInput
+              control={control}
+              errors={errors}
+              name="organizationName"
+              placeholder="Organization Name"
+              label="Organization Name"
+            />
+            <CustomInput
+              control={control}
+              errors={errors}
+              name="description"
+              placeholder="Description"
+              label="Description"
+              numberOfLines={5}
+              textarea
+            />
+            <Pressable
+              onPress={() => router.push('/category')}
+              style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+            >
+              <CustomInput
+                control={control}
+                errors={errors}
+                name="category"
+                placeholder="Category"
+                label="Category"
+                editable={false}
               />
-              {touched.organizationName && errors.organizationName && (
-                <Text style={{ color: "red", fontWeight: "bold" }}>
-                  {errors.organizationName}
-                </Text>
-              )}
-            </>
-            <>
-              <InputComponent
-                label="Description"
-                value={description}
-                onChangeText={handleChange("description")}
-                placeholder="Description"
-                keyboardType="default"
-                numberOfLines={5}
-                textarea
-              />
-              {touched.description && errors.description && (
-                <Text style={{ color: "red", fontWeight: "bold" }}>
-                  {errors.description}
-                </Text>
-              )}
-            </>
-            <View style={{ marginHorizontal: 10, marginBottom: 10 }}>
-              <MyText
-                fontSize={15}
-                poppins="Medium"
-                style={{ fontFamily: "PoppinsMedium" }}
-              >
-                Category
-              </MyText>
-              <Pressable
-                onPress={() => router.push("/category")}
-                style={({ pressed }) => [
-                  { opacity: pressed ? 0.5 : 1 },
-                  styles2.border,
-                ]}
-              >
-                <MyText poppins={"Light"} style={{ fontSize: 13 }}>
-                  {category || "Category"}
-                </MyText>
-              </Pressable>
-
-              {touched.category && errors.category && (
-                <Text style={{ color: "red", fontWeight: "bold" }}>
-                  {errors.category}
-                </Text>
-              )}
-            </View>
-            <>
-              <InputComponent
-                label="Location"
-                value={location}
-                onChangeText={handleChange("location")}
-                placeholder="Location"
-                keyboardType="default"
-              />
-              {touched.location && errors.location && (
-                <Text style={{ color: "red", fontWeight: "bold" }}>
-                  {errors.location}
-                </Text>
-              )}
-            </>
-            <>
-              <InputComponent
-                autoCapitalize="none"
-                label="Website Link"
-                value={websiteUrl}
-                onChangeText={handleChange("websiteUrl")}
-                placeholder="Website link"
-                keyboardType="default"
-              />
-              {touched.websiteUrl && errors.websiteUrl && (
-                <Text style={{ color: "red", fontWeight: "bold" }}>
-                  {errors.websiteUrl}
-                </Text>
-              )}
-            </>
-            <>
-              <InputComponent
-                label="Email"
-                value={email}
-                onChangeText={handleChange("email")}
-                placeholder="Email"
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-              {touched.email && errors.email && (
-                <Text style={{ color: "red", fontFamily: "PoppinsMedium" }}>
-                  {errors.email}
-                </Text>
-              )}
-            </>
+            </Pressable>
+            <CustomInput
+              control={control}
+              errors={errors}
+              name="location"
+              placeholder="Location"
+              label="Location"
+            />
+            <CustomInput
+              control={control}
+              errors={errors}
+              name="websiteUrl"
+              placeholder="Website link"
+              label="Website Link"
+            />
+            <CustomInput
+              control={control}
+              errors={errors}
+              name="email"
+              placeholder="Email"
+              label="Email"
+              keyboardType="email-address"
+            />
             <View style={{ marginHorizontal: 10, gap: 15 }}>
               <MyText
                 fontSize={15}
                 poppins="Medium"
-                style={{ fontFamily: "PoppinsMedium" }}
+                style={{ fontFamily: 'PoppinsMedium' }}
               >
                 Work Days
               </MyText>
@@ -333,25 +271,25 @@ const CreateWorkSpace = () => {
                 search={false}
                 boxStyles={{
                   ...styles2.border,
-                  justifyContent: "flex-start",
-                  width: "100%",
-                  alignItems: "center",
+                  justifyContent: 'flex-start',
+                  width: '100%',
+                  alignItems: 'center',
                 }}
                 inputStyles={{
-                  textAlign: "left",
+                  textAlign: 'left',
                   fontSize: 14,
                   borderWidth: 0,
-                  width: "100%",
+                  width: '100%',
                   paddingRight: 10,
                 }}
                 fontFamily="PoppinsMedium"
-                setSelected={handleChange("startDay")}
+                setSelected={(value: string) => setValue('startDay', value)}
                 data={days}
-                defaultOption={{ key: "monday", value: "Monday" }}
+                defaultOption={{ key: 'monday', value: 'Monday' }}
                 save="key"
                 placeholder="Select Start Day"
                 dropdownTextStyles={{
-                  color: darkMode === "dark" ? "white" : "black",
+                  color: darkMode === 'dark' ? 'white' : 'black',
                 }}
               />
 
@@ -359,23 +297,22 @@ const CreateWorkSpace = () => {
                 search={false}
                 boxStyles={{
                   ...styles2.border,
-                  justifyContent: "flex-start",
-                  backgroundColor: "#E9E9E9",
-                  width: "100%",
-                  alignItems: "center",
+                  justifyContent: 'flex-start',
+                  width: '100%',
+                  alignItems: 'center',
                 }}
                 dropdownTextStyles={{
-                  color: darkMode === "dark" ? "white" : "black",
+                  color: darkMode === 'dark' ? 'white' : 'black',
                 }}
                 inputStyles={{
-                  textAlign: "left",
+                  textAlign: 'left',
                   fontSize: 14,
-                  width: "100%",
+                  width: '100%',
                 }}
                 fontFamily="PoppinsMedium"
-                setSelected={handleChange("endDay")}
+                setSelected={(value: string) => setValue('endDay', value)}
                 data={days}
-                defaultOption={{ key: "friday", value: "Friday" }}
+                defaultOption={{ key: 'friday', value: 'Friday' }}
                 save="key"
                 placeholder="Select End day"
               />
@@ -386,7 +323,7 @@ const CreateWorkSpace = () => {
                 fontSize={15}
                 style={{
                   marginVertical: 10,
-                  fontFamily: "PoppinsMedium",
+                  fontFamily: 'PoppinsMedium',
                   marginHorizontal: 10,
                 }}
               >
@@ -396,8 +333,8 @@ const CreateWorkSpace = () => {
                 <>
                   <Pressable onPress={showMode} style={styles2.border}>
                     <Text>
-                      {" "}
-                      {`${format(startTime, "HH:mm") || " Opening Time"}`}{" "}
+                      {' '}
+                      {`${format(startTime, 'HH:mm') || ' Opening Time'}`}{' '}
                     </Text>
                   </Pressable>
 
@@ -411,7 +348,7 @@ const CreateWorkSpace = () => {
                         mode="time"
                         is24Hour
                         onChange={(event, selectedDate) =>
-                          onChange(event, selectedDate, "startTime")
+                          onChange(event, selectedDate, 'startTime')
                         }
                       />
                     </>
@@ -420,8 +357,8 @@ const CreateWorkSpace = () => {
                 <>
                   <Pressable onPress={showMode2} style={styles2.border}>
                     <Text>
-                      {" "}
-                      {`${format(endTime, "HH:mm") || " Closing Time"}`}{" "}
+                      {' '}
+                      {`${format(endTime, 'HH:mm') || ' Closing Time'}`}{' '}
                     </Text>
                   </Pressable>
 
@@ -433,7 +370,7 @@ const CreateWorkSpace = () => {
                       mode="time"
                       is24Hour
                       onChange={(event, selectedDate) =>
-                        onChange(event, selectedDate, "endTime")
+                        onChange(event, selectedDate, 'endTime')
                       }
                     />
                   )}
@@ -441,17 +378,12 @@ const CreateWorkSpace = () => {
               </View>
             </>
           </View>
-          <View style={{ flex: 0.4, marginTop: 30, marginHorizontal: 10 }}>
+          <View style={{ marginTop: 30 }}>
             <Button
+              title={'Create'}
+              onPress={handleSubmit(onSubmit)}
+              loadingTitle={'Creating...'}
               loading={isSubmitting}
-              onPress={() => handleSubmit()}
-              color={colors.buttonBlue}
-              buttonStyle={{
-                borderRadius: 10,
-                height: 50,
-              }}
-              titleStyle={{ fontFamily: "PoppinsMedium", color: colors.white }}
-              title={isSubmitting ? "Creating..." : "Create"}
             />
           </View>
         </View>
@@ -464,20 +396,19 @@ export default CreateWorkSpace;
 
 const styles2 = StyleSheet.create({
   border: {
-    backgroundColor: "#E9E9E9",
+    backgroundColor: 'transparent',
     minHeight: 52,
-    paddingLeft: 15,
-    justifyContent: "center",
-    borderBottomWidth: 0,
-    borderBottomColor: "#DADADA",
     borderRadius: 5,
-    width: "100%",
-    height: 60,
+    paddingLeft: 5,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.gray,
+    width: '100%',
   },
   imageText: {
     color: colors.grayText,
     fontSize: 16,
-    textAlign: "center",
+    textAlign: 'center',
     marginHorizontal: 10,
   },
 
@@ -485,23 +416,23 @@ const styles2 = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   imageContent: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   imagePicker: {
     height: 150,
     width: 150,
-    overflow: "hidden",
+    overflow: 'hidden',
     borderColor: colors.grayText,
     borderWidth: 1,
     borderRadius: 100,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 15,
     backgroundColor: colors.white,
-    alignSelf: "center",
+    alignSelf: 'center',
   },
 });

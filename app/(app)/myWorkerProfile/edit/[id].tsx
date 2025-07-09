@@ -1,38 +1,25 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery } from 'convex/react';
 import { useRouter } from 'expo-router';
-import { useFormik } from 'formik';
-import React, { useEffect } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { toast } from 'sonner-native';
-import * as yup from 'yup';
 
 import { AuthHeader } from '~/components/AuthHeader';
 import { AuthTitle } from '~/components/AuthTitle';
-import { InputComponent } from '~/components/InputComponent';
+import { CustomInput } from '~/components/InputComponent';
 import { Container } from '~/components/Ui/Container';
 import { LoadingComponent } from '~/components/Ui/LoadingComponent';
-import { MyButton } from '~/components/Ui/MyButton';
 import { MyText } from '~/components/Ui/MyText';
 import { colors } from '~/constants/Colors';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
+import { Button } from '~/features/common/components/Button';
 import { useDarkMode } from '~/hooks/useDarkMode';
 import { useGetUserId } from '~/hooks/useGetUserId';
-
-const validationSchema = yup.object().shape({
-  gender: yup.string().required('Gender is required'),
-  location: yup.string().required('Location is required'),
-  experience: yup
-    .string()
-    .required('Experience is required')
-    .max(100, 'Maximum 100 characters'),
-  skills: yup
-    .string()
-    .required('Skills are required')
-    .min(1, 'Minimum of 1 skill is required'),
-  qualifications: yup.string().required('Qualifications are required'),
-});
+import { editWorkerSchema, EditWorkerSchemaType } from '~/schema';
 
 const max = 150;
 const genders = [
@@ -56,53 +43,37 @@ const CreateProfile = () => {
   const router = useRouter();
 
   const {
-    values,
-    handleChange,
     handleSubmit,
-    isSubmitting,
-    errors,
-    touched,
-    setValues,
-  } = useFormik({
-    initialValues: {
-      location: '',
-      gender: '',
-      skills: '',
-      experience: '',
-      qualifications: '',
+    control,
+    formState: { isSubmitting, errors },
+    setValue,
+    reset,
+    watch,
+  } = useForm<EditWorkerSchemaType>({
+    defaultValues: {
+      location: data?.location || '',
+      gender: data?.gender || '',
+      skills: data?.skills || '',
+      experience: data?.experience || '',
+      qualifications: data?.qualifications || '',
     },
-    validationSchema,
-    onSubmit: async (values) => {
-      try {
-        if (!data?._id) return;
-        await updateWorkerProfile({ _id: data?._id, ...values });
-
-        toast.success(`${data?.user?.name} your work profile has been updated`);
-        router.back();
-      } catch (error: any) {
-        toast.error(error?.response?.data.error);
-        console.log(error, 'Error');
-      }
-    },
+    resolver: zodResolver(editWorkerSchema),
   });
-  const { gender, location, experience, skills, qualifications } = values;
-  useEffect(() => {
-    if (experience.length > 150) {
-      setValues({ ...values, experience: experience.substring(0, 150) });
-    }
-  }, [experience, setValues, values]);
+  const onSubmit = async (values: EditWorkerSchemaType) => {
+    try {
+      if (!data?._id) return;
+      await updateWorkerProfile({ _id: data?._id, ...values });
 
-  useEffect(() => {
-    if (data) {
-      setValues({
-        experience: data?.experience as string,
-        gender: data?.gender as string,
-        location: data?.location as string,
-        qualifications: data?.qualifications as string,
-        skills: data?.skills as string,
-      });
+      toast.success(`${data?.user?.name} your work profile has been updated`);
+      reset();
+      router.back();
+    } catch (error: any) {
+      toast.error(error?.response?.data.error);
+      console.log(error, 'Error');
     }
-  }, [data, setValues]);
+  };
+
+  const { experience, gender } = watch();
 
   if (!data) {
     return <LoadingComponent />;
@@ -127,83 +98,64 @@ const CreateProfile = () => {
         <View style={{ marginTop: 20, flex: 1 }}>
           <View style={{ flex: 0.6, gap: 10 }}>
             <>
-              <InputComponent
+              <CustomInput
+                control={control}
+                errors={errors}
+                name="experience"
                 label="Experience"
                 value={experience}
-                onChangeText={handleChange('experience')}
                 placeholder="Write about your past work experience..."
                 keyboardType="default"
                 numberOfLines={5}
-                textAlignVertical="top"
+                maxLength={max}
                 multiline
-                autoCapitalize="sentences"
+                textarea
               />
               <MyText poppins="Medium" fontSize={15}>
                 {experience.length}/{max}
               </MyText>
-              {touched.experience && errors.experience && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
-                  {errors.experience}
-                </Text>
-              )}
             </>
-            <>
-              <InputComponent
-                label="Qualifications"
-                value={qualifications}
-                onChangeText={handleChange('qualifications')}
-                placeholder="Bsc. Computer Science, Msc. Computer Science"
-                keyboardType="default"
-                numberOfLines={5}
-                multiline
-                autoCapitalize="sentences"
-              />
 
-              {touched.qualifications && errors.qualifications && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
-                  {errors.qualifications}
-                </Text>
-              )}
-            </>
-            <>
-              <InputComponent
-                label="Skills"
-                value={skills}
-                onChangeText={handleChange('skills')}
-                placeholder="e.g Customer service, marketing, sales"
-                keyboardType="default"
-                numberOfLines={5}
-                multiline
-                autoCapitalize="sentences"
-              />
-              {touched.skills && errors.skills && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
-                  {errors.skills}
-                </Text>
-              )}
-            </>
-            <>
-              <InputComponent
-                label="Location"
-                value={location}
-                onChangeText={handleChange('location')}
-                placeholder="Where do you reside?"
-                keyboardType="default"
-                numberOfLines={5}
-                multiline
-                autoCapitalize="sentences"
-              />
-              {touched.location && errors.location && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
-                  {errors.location}
-                </Text>
-              )}
-            </>
-            <>
+            <CustomInput
+              control={control}
+              errors={errors}
+              name="qualifications"
+              label="Qualifications"
+              placeholder="Bsc. Computer Science, Msc. Computer Science"
+              keyboardType="default"
+              numberOfLines={5}
+              multiline
+            />
+
+            <CustomInput
+              label="Skills"
+              name="skills"
+              errors={errors}
+              control={control}
+              placeholder="e.g Customer service, marketing, sales"
+              keyboardType="default"
+              numberOfLines={5}
+              multiline
+            />
+
+            <CustomInput
+              label="Location"
+              control={control}
+              errors={errors}
+              name="location"
+              placeholder="Where do you reside?"
+              keyboardType="default"
+              numberOfLines={5}
+              multiline
+            />
+
+            <View style={{ marginHorizontal: 10 }}>
               <Text
                 style={{
-                  color: darkMode ? colors.white : colors.black,
+                  color: darkMode === 'dark' ? colors.white : colors.black,
                   fontWeight: 'bold',
+                  fontSize: 15,
+                  marginBottom: 10,
                 }}
               >
                 Gender
@@ -214,39 +166,41 @@ const CreateProfile = () => {
                 boxStyles={{
                   ...styles2.border,
                   justifyContent: 'flex-start',
+                  width: '100%',
+                  alignItems: 'center',
+                }}
+                dropdownTextStyles={{
+                  color: darkMode === 'dark' ? colors.white : colors.black,
+                }}
+                inputStyles={{
+                  textAlign: 'left',
                   borderWidth: 0,
-                  height: 60,
+                  color: 'gray',
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}
-                inputStyles={{ textAlign: 'left', borderWidth: 0 }}
                 fontFamily="PoppinsMedium"
-                setSelected={handleChange('gender')}
+                setSelected={(value: string) => setValue('gender', value)}
                 data={genders}
-                defaultOption={{
-                  key: gender,
-                  value: gender,
-                }}
+                defaultOption={{ key: gender, value: gender }}
                 save="value"
                 placeholder="Select your a gender"
               />
 
-              {touched.gender && errors.gender && (
+              {errors.gender && (
                 <Text style={{ color: 'red', fontWeight: 'bold' }}>
-                  {errors.gender}
+                  {errors.gender.message}
                 </Text>
               )}
-            </>
+            </View>
           </View>
-          <View style={{ flex: 0.4, marginTop: 30 }}>
-            <MyButton
+          <View style={{ flex: 0.4, marginTop: 30, marginHorizontal: 10 }}>
+            <Button
+              title={'Submit'}
+              onPress={handleSubmit(onSubmit)}
+              loadingTitle={'Submitting...'}
               loading={isSubmitting}
-              onPress={() => handleSubmit()}
-              buttonColor={colors.buttonBlue}
-              textColor="white"
-              contentStyle={{ height: 50 }}
-              buttonStyle={{ width: 250, borderRadius: 7 }}
-            >
-              {isSubmitting ? 'Submitting...' : 'Submit'}
-            </MyButton>
+            />
           </View>
         </View>
       </ScrollView>
@@ -258,14 +212,13 @@ export default CreateProfile;
 
 const styles2 = StyleSheet.create({
   border: {
-    backgroundColor: '#E9E9E9',
+    backgroundColor: 'transparent',
     minHeight: 52,
-    paddingLeft: 15,
-    justifyContent: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#DADADA',
-    alignItems: 'center',
-    marginHorizontal: 10,
     borderRadius: 5,
+    paddingLeft: 5,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.gray,
+    width: '100%',
   },
 });

@@ -4,7 +4,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { useQuery } from '@tanstack/react-query';
 import { useMutation } from 'convex/react';
-import { format, set } from 'date-fns';
+import { format } from 'date-fns';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -30,6 +30,7 @@ import { ErrorComponent } from '~/components/Ui/ErrorComponent';
 import { LoadingComponent } from '~/components/Ui/LoadingComponent';
 import { MyText } from '~/components/Ui/MyText';
 import { days } from '~/constants';
+import { colors } from '~/constants/Colors';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
 import { Button } from '~/features/common/components/Button';
@@ -37,7 +38,6 @@ import { useDarkMode } from '~/hooks/useDarkMode';
 import { useGetCat } from '~/hooks/useGetCat';
 import { convertTimeToDateTime, uploadProfilePicture } from '~/lib/helper';
 import { editOrganizationSchema, EditOrganizationSchemaType } from '~/schema';
-import { colors } from '~/constants/Colors';
 
 const Edit = () => {
   const { editId } = useLocalSearchParams<{ editId: Id<'organizations'> }>();
@@ -297,26 +297,19 @@ const Edit = () => {
               textarea
             />
 
-            <>
-              <Pressable
-                onPress={() => router.push('/category')}
-                style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-              >
-                <CustomInput
-                  control={control}
-                  errors={errors}
-                  name="category"
-                  placeholder="Category"
-                  label="Category"
-                  editable={false}
-                />
-              </Pressable>
-              {errors.category && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
-                  {errors.category.message}
-                </Text>
-              )}
-            </>
+            <Pressable
+              onPress={() => router.push('/category')}
+              style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+            >
+              <CustomInput
+                control={control}
+                errors={errors}
+                name="category"
+                placeholder="Category"
+                label="Category"
+                editable={false}
+              />
+            </Pressable>
 
             <CustomInput
               control={control}
