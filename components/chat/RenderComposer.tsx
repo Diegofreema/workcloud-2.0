@@ -1,10 +1,10 @@
-import { Camera } from "lucide-react-native";
-import React from "react";
-import { Composer, ComposerProps } from "react-native-gifted-chat";
+import { Camera } from 'lucide-react-native';
+import React from 'react';
+import { Composer, ComposerProps } from 'react-native-gifted-chat';
 
-import { HStack } from "~/components/HStack";
-import { CustomPressable } from "~/components/Ui/CustomPressable";
-import { colors } from "~/constants/Colors";
+import { HStack } from '~/components/HStack';
+import { CustomPressable } from '~/components/Ui/CustomPressable';
+import { colors } from '~/constants/Colors';
 
 type Props = ComposerProps & {
   onPickImage: () => void;
@@ -24,8 +24,8 @@ export const RenderComposer = ({ onPickImage, ...props }: Props) => {
       <Composer
         {...props}
         multiline
-        textInputStyle={{ backgroundColor: "transparent" }}
-        composerHeight={45}
+        textInputStyle={{ backgroundColor: 'transparent' }}
+        textInputProps={{ numberOfLines: 5 }}
       />
       <CustomPressable onPress={onPickImage}>
         <Camera size={24} color="black" strokeWidth={1.5} />

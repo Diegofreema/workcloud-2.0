@@ -1,38 +1,52 @@
-import {FontAwesome6} from "@expo/vector-icons";
-import {Avatar} from "@rneui/themed";
-import {useMutation, useQuery} from "convex/react";
-import {format} from "date-fns";
-import {Image} from "expo-image";
-import {ErrorBoundaryProps, router, useLocalSearchParams, useRouter,} from "expo-router";
-import React, {useEffect, useMemo} from "react";
-import {FlatList, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View,} from "react-native";
-import Carousel from "react-native-reanimated-carousel";
-import {toast} from "sonner-native";
+import { FontAwesome6 } from '@expo/vector-icons';
+import { Avatar } from '@rneui/themed';
+import { useMutation, useQuery } from 'convex/react';
+import { format } from 'date-fns';
+import { Image } from 'expo-image';
+import {
+  ErrorBoundaryProps,
+  router,
+  useLocalSearchParams,
+  useRouter,
+} from 'expo-router';
+import React, { useEffect, useMemo } from 'react';
+import {
+  FlatList,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
+import Carousel from 'react-native-reanimated-carousel';
+import { toast } from 'sonner-native';
 
-import {EmptyText} from "~/components/EmptyText";
-import {HStack} from "~/components/HStack";
-import {HeaderNav} from "~/components/HeaderNav";
-import {Container} from "~/components/Ui/Container";
-import {ErrorComponent} from "~/components/Ui/ErrorComponent";
-import {LoadingComponent} from "~/components/Ui/LoadingComponent";
-import {MyText} from "~/components/Ui/MyText";
-import VStack from "~/components/Ui/VStack";
-import {colors} from "~/constants/Colors";
-import {WorkerWithWorkspace} from "~/constants/types";
-import {api} from "~/convex/_generated/api";
-import {Id} from "~/convex/_generated/dataModel";
-import {useDarkMode} from "~/hooks/useDarkMode";
-import {useGetUserId} from "~/hooks/useGetUserId";
-import {useWaitlistId} from "~/hooks/useWaitlistId";
-import {useAuth} from "~/context/auth";
-import {Review} from "~/components/Review";
+import { EmptyText } from '~/components/EmptyText';
+import { HStack } from '~/components/HStack';
+import { HeaderNav } from '~/components/HeaderNav';
+import { Container } from '~/components/Ui/Container';
+import { ErrorComponent } from '~/components/Ui/ErrorComponent';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { MyText } from '~/components/Ui/MyText';
+import VStack from '~/components/Ui/VStack';
+import { colors } from '~/constants/Colors';
+import { WorkerWithWorkspace } from '~/constants/types';
+import { api } from '~/convex/_generated/api';
+import { Id } from '~/convex/_generated/dataModel';
+import { useDarkMode } from '~/hooks/useDarkMode';
+import { useGetUserId } from '~/hooks/useGetUserId';
+import { useWaitlistId } from '~/hooks/useWaitlistId';
+import { useAuth } from '~/context/auth';
+import { Review } from '~/components/Review';
+import { sendPushNotification } from '~/utils/sendPushNotification';
 
 export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
   return <ErrorComponent refetch={retry} text={error.message} />;
 }
 
 const Reception = () => {
-  const { id } = useLocalSearchParams<{ id: Id<"organizations"> }>();
+  const { id } = useLocalSearchParams<{ id: Id<'organizations'> }>();
   const { id: from } = useGetUserId();
   const data = useQuery(api.organisation.getOrganisationsWithPostAndWorkers, {
     id,
@@ -57,12 +71,12 @@ const Reception = () => {
     const onConnect = async () => {
       try {
         await handleConnection({
-          connectedAt: format(Date.now(), "dd/MM/yyyy, HH:mm:ss"),
+          connectedAt: format(Date.now(), 'dd/MM/yyyy, HH:mm:ss'),
           from,
           to: id,
         });
       } catch (e) {
-        console.error("Connection error:", e);
+        console.error('Connection error:', e);
       }
     };
 
@@ -72,11 +86,10 @@ const Reception = () => {
   if (!data) {
     return <LoadingComponent />;
   }
-  const day1 = data?.workDays?.split("-")[0] || "";
-  const day2 = data?.workDays?.split("-")[1] || "";
+  const day1 = data?.workDays?.split('-')[0] || '';
+  const day2 = data?.workDays?.split('-')[1] || '';
   const finalDay1 = day1.charAt(0).toUpperCase() + day1.slice(1);
   const finalDay2 = day2.charAt(0).toUpperCase() + day2.slice(1);
-
 
   return (
     <Container>
@@ -148,14 +161,14 @@ const Reception = () => {
                     width: width * 0.98,
                     height: 200,
                     borderRadius: 5,
-                    overflow: "hidden",
+                    overflow: 'hidden',
                   }}
                 >
                   <Image
                     source={{ uri: item.image }}
                     style={styles.image}
                     contentFit="cover"
-                    placeholder={require("~/assets/images/pl.png")}
+                    placeholder={require('~/assets/images/pl.png')}
                     placeholderContentFit="cover"
                   />
                 </View>
@@ -175,7 +188,6 @@ const Reception = () => {
         </MyText>
         <Representatives data={data?.workers} />
         <Review organizationId={id} showComments scroll hide />
-
       </ScrollView>
     </Container>
   );
@@ -187,11 +199,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 7,
     borderRadius: 3,
     backgroundColor: colors.openTextColor,
-    alignItems: "center",
+    alignItems: 'center',
   },
   image: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     borderRadius: 5,
   },
 });
@@ -208,7 +220,7 @@ const Representatives = ({ data }: { data: WorkerWithWorkspace[] }) => {
       }}
       renderItem={({ item }) => <RepresentativeItem item={item} />}
       ListEmptyComponent={() => (
-        <VStack style={{ minHeight: 200, justifyContent: "center" }}>
+        <VStack style={{ minHeight: 200, justifyContent: 'center' }}>
           <EmptyText text="No representatives yet" />
         </VStack>
       )}
@@ -225,13 +237,13 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
   const { id: customerId } = useGetUserId();
   const handleWaitlist = useMutation(api.workspace.handleWaitlist);
   const { setId } = useWaitlistId();
-  const { workspace, user,role } = item;
-  console.log({role})
+  const { workspace, user, role } = item;
+  console.log({ role });
   const handlePress = async () => {
     if (storedUser?.id === user?.clerkId) return;
     if (!workspace?.active || workspace?.leisure) {
-      toast.info("This workspace is currently inactive", {
-        description: "Please try joining another workspace",
+      toast.info('This workspace is currently inactive', {
+        description: 'Please try joining another workspace',
       });
       return;
     }
@@ -240,19 +252,25 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
       const waitlistId = await handleWaitlist({
         customerId: customerId!,
         workspaceId: workspace._id,
-        joinedAt: format(Date.now(), "dd/MM/yyyy, HH:mm:ss"),
+        joinedAt: format(Date.now(), 'dd/MM/yyyy, HH:mm:ss'),
+      });
+      await sendPushNotification({
+        title: user?.name!,
+        body: 'Joined your workspace',
+        expoPushToken: '',
+        data: { workkspaceId: item?.workspace?._id!, type: 'workspace' },
       });
       if (waitlistId) {
         setId(waitlistId, false);
       }
-      toast.success("Welcome", {
-        description: "Please be in a quite environment",
+      toast.success('Welcome', {
+        description: 'Please be in a quite environment',
       });
       router.push(`/wk/${item?.workspace?._id}`);
     } catch (error) {
       console.log(error);
-      toast.error("An Error occurred", {
-        description: "Failed to join workspace, please try again later",
+      toast.error('An Error occurred', {
+        description: 'Failed to join workspace, please try again later',
       });
     }
   };
@@ -268,14 +286,14 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
           opacity: pressed ? 0.5 : 1,
           marginBottom: 10,
 
-          width: "33%",
+          width: '33%',
         },
       ]}
       onPress={handlePress}
     >
       <VStack alignItems="center" justifyContent="center" gap={2}>
         <Avatar rounded source={{ uri: item?.user?.imageUrl! }} size={50} />
-        <MyText poppins="Medium" fontSize={11} style={{ textAlign: "center" }}>
+        <MyText poppins="Medium" fontSize={11} style={{ textAlign: 'center' }}>
           {item?.role}
         </MyText>
 
@@ -284,8 +302,8 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
             style={{
               backgroundColor: colors.openTextColor,
               borderRadius: 20,
-              alignItems: "center",
-              justifyContent: "center",
+              alignItems: 'center',
+              justifyContent: 'center',
               padding: 3,
             }}
           >
@@ -303,8 +321,8 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
               style={{
                 backgroundColor: colors.closeBackgroundColor,
                 borderRadius: 20,
-                alignItems: "center",
-                justifyContent: "center",
+                alignItems: 'center',
+                justifyContent: 'center',
                 padding: 3,
               }}
             >
@@ -317,7 +335,7 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
               <Pressable
                 onPress={onMessage}
                 style={{
-                  backgroundColor: "#C0D1FE",
+                  backgroundColor: '#C0D1FE',
                   padding: 7,
                   marginTop: 5,
                   borderRadius: 5,
@@ -346,7 +364,7 @@ const ReceptionRightHeader = () => {
       <FontAwesome6
         name="building-columns"
         size={24}
-        color={darkMode === "dark" ? colors.white : colors.black}
+        color={darkMode === 'dark' ? colors.white : colors.black}
       />
     </Pressable>
   );
