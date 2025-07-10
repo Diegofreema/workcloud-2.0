@@ -57,6 +57,11 @@ export const addUserToDb = mutation({
       .query('users')
       .withIndex('clerkId', (q) => q.eq('clerkId', args.clerkId))
       .unique();
+    if (isUserInDb && !isUserInDb?.pushToken) {
+      await ctx.db.patch(isUserInDb?._id, {
+        pushToken: args.pushToken,
+      });
+    }
     if (isUserInDb) return;
     await ctx.db.insert('users', {
       ...args,

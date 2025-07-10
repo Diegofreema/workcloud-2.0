@@ -1,4 +1,5 @@
 import * as Notifications from 'expo-notifications';
+import { useRouter } from 'expo-router';
 import React, {
   createContext,
   ReactNode,
@@ -40,7 +41,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   const [notification, setNotification] =
     useState<Notifications.Notification | null>(null);
   const [error, setError] = useState<Error | null>(null);
-
+  const router = useRouter();
   useEffect(() => {
     registerForPushNotificationsAsync().then(
       (token) => setExpoPushToken(token),
@@ -54,14 +55,26 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 
     const responseListener =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
+        const data = response.notification.request.content.data;
+        if (data.type === 'single') {
+          router.push(`/chat/${data.conversationId}?type=single`);
+        }
+        if (data.type === 'group') {
+          router.push(`/chat/group/${data.conversationId}`);
+        }
+        if (data.type === 'processor') {
+          router.push(`/chat/${data.conversationId}?type=single`);
+        }
+        if (data.type === 'notification') {
+          router.push('/notification');
+        }
       });
 
     return () => {
       notificationListener.remove();
       responseListener.remove();
     };
-  }, []);
+  }, [router]);
 
   return (
     <NotificationContext.Provider

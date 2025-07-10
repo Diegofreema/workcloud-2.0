@@ -1,4 +1,4 @@
-import { useCall, useStreamVideoClient } from '@stream-io/video-react-bindings';
+import { useCall } from '@stream-io/video-react-bindings';
 import { CallContent } from '@stream-io/video-react-native-sdk';
 import { useMutation, useQuery } from 'convex/react';
 import { Href, Redirect, useRouter } from 'expo-router';
@@ -12,6 +12,7 @@ import { useCallStore } from '../hook/useCallStore';
 export const CallComponent = () => {
   const {
     data: { workerId, workspaceId },
+    clear,
   } = useCallStore();
 
   const { id: loggedInUser } = useGetUserId();
@@ -54,6 +55,7 @@ export const CallComponent = () => {
       await call.leave();
       if (workspaceId) {
         await deleteWaitlist({ waitlistId: worker?.attendingTo! });
+        clear();
       } else {
         await deleteWaitlist({ waitlistId: waitlist?._id! });
       }

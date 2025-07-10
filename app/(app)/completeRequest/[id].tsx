@@ -24,6 +24,7 @@ import { Button } from '~/features/common/components/Button';
 import { useCreateStaffState } from '~/features/staff/hooks/use-create-staff-state';
 import { useGetUserId } from '~/hooks/useGetUserId';
 import { offerSchema, OfferSchemaType } from '~/schema';
+import { sendPushNotification } from '~/utils/sendPushNotification';
 
 const CompleteRequest = () => {
   const { id } = useLocalSearchParams<{ id: Id<'workers'> }>();
@@ -36,6 +37,20 @@ const CompleteRequest = () => {
   const router = useRouter();
   const { data, isPaused, isPending, isError, refetch, isRefetchError, error } =
     useQuery(convexQuery(api.worker.getSingleWorkerProfile, { id }));
+  const {
+    data: orgData,
+    isPending: orgPending,
+    isError: orgError,
+  } = useQuery(
+    convexQuery(
+      api.organisation.getOrganizationByBossId,
+      senderId
+        ? {
+            bossId: senderId,
+          }
+        : 'skip'
+    )
+  );
   const sendRequest = useMutation(api.request.createRequest);
   const {
     handleSubmit,
@@ -64,6 +79,14 @@ const CompleteRequest = () => {
         from: senderId,
         to: data?.user?._id,
       });
+      await sendPushNotification({
+        title: 'Offer Request',
+        body: `${orgData?.name} sent you an offer request`,
+        data: {
+          type: 'notification',
+        },
+        expoPushToken: data.user.pushToken!,
+      });
       toast.success('Request sent');
       reset();
       router.replace('/pending-staffs');
@@ -78,11 +101,11 @@ const CompleteRequest = () => {
       setValue('role', finalRole);
     }
   }, [finalRole, setValue]);
-  if (isError || isRefetchError || isPaused) {
+  if (isError || isRefetchError || isPaused || orgError) {
     return <ErrorComponent refetch={refetch} text={error?.message!} />;
   }
 
-  if (isPending) {
+  if (isPending || orgPending) {
     return <LoadingComponent />;
   }
 

@@ -1,4 +1,4 @@
-import { useMutation, useQueries, useQuery } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -14,6 +14,8 @@ import { GiftedChat, SystemMessage } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Clipboard from 'expo-clipboard';
+import { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { toast } from 'sonner-native';
 import { RenderActions } from '~/components/chat/RenderActions';
 import { RenderBubble } from '~/components/chat/RenderBubble';
 import { RenderComposer } from '~/components/chat/RenderComposer';
@@ -32,12 +34,10 @@ import {
 } from '~/constants/types';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
-import { generateErrorMessage, uploadProfilePicture } from '~/lib/helper';
-import { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
-import { toast } from 'sonner-native';
-import { useDebounce } from '~/features/chat/hook/use-debounce';
 import ReplyMessageBar from '~/features/chat/components/render-message';
+import { useDebounce } from '~/features/chat/hook/use-debounce';
 import { useGetUserId } from '~/hooks/useGetUserId';
+import { generateErrorMessage, uploadProfilePicture } from '~/lib/helper';
 import { sendPushNotification } from '~/utils/sendPushNotification';
 
 type Props = {

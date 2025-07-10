@@ -137,8 +137,19 @@ export const getOrganisationById = query({
     return {
       ...organisation,
       avatar: imageUrl,
-
     };
+  },
+});
+
+export const getOrganizationByBossId = query({
+  args: {
+    bossId: v.id('users'),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query('organizations')
+      .withIndex('ownerId', (q) => q.eq('ownerId', args.bossId))
+      .first();
   },
 });
 export const getOrganizationWithOwnerAndWorkspaces = query({
@@ -414,12 +425,12 @@ export const updateOrganization = mutation({
     start: v.string(),
     website: v.string(),
     workDays: v.string(),
-    oldId: v.optional(v.id('_storage'))
+    oldId: v.optional(v.id('_storage')),
   },
   handler: async (ctx, args) => {
-    if(args.oldId) {
-      await ctx.storage.delete(args.oldId)
-      const image = await ctx.storage.getUrl(args.avatar)
+    if (args.oldId) {
+      await ctx.storage.delete(args.oldId);
+      const image = await ctx.storage.getUrl(args.avatar);
       await ctx.db.patch(args.organizationId, {
         avatar: image!,
         location: args.location,
@@ -431,7 +442,7 @@ export const updateOrganization = mutation({
         website: args.website,
         workDays: args.workDays,
         category: args.category,
-        avatarId: args.avatar as Id<'_storage'>
+        avatarId: args.avatar as Id<'_storage'>,
       });
     } else {
       await ctx.db.patch(args.organizationId, {
@@ -446,7 +457,6 @@ export const updateOrganization = mutation({
         category: args.category,
       });
     }
-
   },
 });
 
@@ -637,16 +647,15 @@ export const increaseSearchCount = mutation({
   },
 });
 
-
 export const deleteImageId = mutation({
   args: {
     id: v.id('_storage'),
-    orgsId: v.id('organizations')
+    orgsId: v.id('organizations'),
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.orgsId, {
-      avatar: undefined
-    })
+      avatar: undefined,
+    });
     return await ctx.storage.delete(args.id);
-  }
-})
+  },
+});

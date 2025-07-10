@@ -1,17 +1,16 @@
-import { Container } from '~/components/Ui/Container';
-import { ChatHeader } from '~/components/Ui/ChatHeader';
-import React from 'react';
-import { Redirect, router, useLocalSearchParams } from 'expo-router';
-import { Id } from '~/convex/_generated/dataModel';
 import { usePaginatedQuery, useQuery } from 'convex/react';
-import { api } from '~/convex/_generated/api';
+import { Redirect, router, useLocalSearchParams } from 'expo-router';
+import React from 'react';
+import { toast } from 'sonner-native';
+import { ChatHeader } from '~/components/Ui/ChatHeader';
 import ChatSkeleton from '~/components/Ui/ChatSkeleton';
+import { Container } from '~/components/Ui/Container';
+import { api } from '~/convex/_generated/api';
+import { Id } from '~/convex/_generated/dataModel';
+import { ChatMenu } from '~/features/chat/components/chat-menu';
 import { ChatGroupComponent } from '~/features/chat/components/group-gifted-chat.native';
 import { useGetUserId } from '~/hooks/useGetUserId';
 import { useMarkRead } from '~/hooks/useMarkRead';
-import { ChatMenu } from '~/features/chat/components/chat-menu';
-import { toast } from 'sonner-native';
-import { Platform } from 'react-native';
 
 const GroupChatScreen = () => {
   const { groupId } = useLocalSearchParams<{ groupId: Id<'conversations'> }>();
