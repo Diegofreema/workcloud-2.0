@@ -3,9 +3,7 @@ import { CallContent } from '@stream-io/video-react-native-sdk';
 import { useMutation, useQuery } from 'convex/react';
 import { View } from 'react-native';
 import { CustomCallControls } from '~/components/custom-call-buttons';
-import { StarredComponent } from '~/components/Dialogs/StarredComponent';
 import { api } from '~/convex/_generated/api';
-import { useGetUserId } from '~/hooks/useGetUserId';
 import { useCallStore } from '../hook/useCallStore';
 
 export const CallComponent = () => {
@@ -14,26 +12,17 @@ export const CallComponent = () => {
     clear,
   } = useCallStore();
 
-  const { id: loggedInUser } = useGetUserId();
-
   const deleteWaitlist = useMutation(api.workspace.deleteWaitlist);
-  const waitlist = useQuery(
-    api.workspace.getWaitlistByCustomerId,
-    loggedInUser ? { customerId: loggedInUser } : 'skip'
-  );
+
   const worker = useQuery(
     api.worker.getWorker,
     workerId ? { workerId: workerId } : 'skip'
   );
-  console.log({
-    attendingTo: worker?.attendingTo,
-    waitlist: waitlist?._id,
-    workspaceId,
-    workerId,
-  });
+  console.log({ workerId, workspaceId, attendingTo: worker });
 
   const call = useCall();
-
+  console.log(call?.state.members.map((m) => m.custom.currentUser));
+  const waitList = call?.state.members.map((m) => m.custom.currentUser)[0];
   // useEffect(() => {
   //   if (!call) {
   //     router.replace(path as Href)
@@ -46,12 +35,14 @@ export const CallComponent = () => {
 
   const onHangupCallHandler = async () => {
     try {
-      await call.leave();
+      await call.endCall();
       if (workspaceId) {
-        await deleteWaitlist({ waitlistId: worker?.attendingTo! });
+        await deleteWaitlist({ waitlistId: waitList });
+        console.log('Hanged up');
+
         clear();
       } else {
-        await deleteWaitlist({ waitlistId: waitlist?._id! });
+        await deleteWaitlist({ waitlistId: waitList });
       }
     } catch (e) {
       console.log(e);
@@ -60,10 +51,10 @@ export const CallComponent = () => {
 
   return (
     <>
-      <StarredComponent
+      {/* <StarredComponent
         workspaceId={workspaceId!}
         customerId={waitlist?.customerId!}
-      />
+      /> */}
       <View style={{ flex: 1 }}>
         <CallContent
           onHangupCallHandler={onHangupCallHandler}

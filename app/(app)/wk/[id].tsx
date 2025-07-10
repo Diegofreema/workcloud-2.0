@@ -208,8 +208,14 @@ const Work = () => {
       // notify: true,
       data: {
         members: [
-          { user_id: user?.id!, custom: { convexId: loggedInUser } },
-          { user_id: customerCallId, custom: { convexId: customerId } },
+          {
+            user_id: user?.id!,
+            custom: { convexId: loggedInUser, currentUser },
+          },
+          {
+            user_id: customerCallId,
+            custom: { convexId: customerId, currentUser },
+          },
         ],
       },
     });

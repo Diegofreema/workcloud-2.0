@@ -8,17 +8,13 @@
 import {
   CallControlProps,
   HangUpCallButton,
+  ToggleVideoPreviewButton as ToggleCamera,
   ToggleCameraFaceButton,
   ToggleAudioPublishingButton as ToggleMic,
-  ToggleVideoPreviewButton as ToggleCamera,
 } from '@stream-io/video-react-native-sdk';
 
-import { Star } from 'lucide-react-native';
 import { StyleSheet, View } from 'react-native';
 import { colors } from '~/constants/Colors';
-import { useStarredModal } from '~/hooks/useStarredModal';
-import { CustomPressable } from './Ui/CustomPressable';
-import { useCallStore } from '~/features/calls/hook/useCallStore';
 
 /**
  * CustomCallControls component that renders a styled control bar for video calls
@@ -27,21 +23,14 @@ import { useCallStore } from '~/features/calls/hook/useCallStore';
  * @returns A styled control bar with video call control buttons
  */
 export const CustomCallControls = (props: CallControlProps) => {
-  const { onOpen } = useStarredModal();
-  const workspaceId = useCallStore((state) => state.data.workspaceId);
   // Get user role information to conditionally render controls
-  const isWorker = !!workspaceId;
 
   return (
     <View style={styles.container}>
       <HangUpCallButton onHangupCallHandler={props.onHangupCallHandler} />
       {/* Toggle microphone on/off */}
       <ToggleMic />
-      {isWorker && (
-        <CustomPressable onPress={onOpen} style={styles.button}>
-          <Star size={30} color={colors.white} />
-        </CustomPressable>
-      )}
+
       {/* Switch between front and back camera */}
       <ToggleCameraFaceButton />
       <ToggleCamera />

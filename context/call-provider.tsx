@@ -18,10 +18,11 @@ export default function CallProvider({ children }: PropsWithChildren) {
     if (!ringingCall && isOnRingingScreen && workspaceId) {
       router.back();
     }
+    if (ringingCall && !isOnRingingScreen) {
+      router.push(`/call/ringing`);
+    }
   }, [ringingCall, isOnRingingScreen, workspaceId]);
-  if (ringingCall && !isOnRingingScreen) {
-    return <Redirect href="/call/ringing" />;
-  }
+
   if (!ringingCall && isOnRingingScreen && !workspaceId) {
     return <Redirect href={'/'} />;
   }

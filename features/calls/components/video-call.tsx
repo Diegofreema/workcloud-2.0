@@ -28,7 +28,7 @@ export const VideoCall = ({ videoCall }: Props) => {
     call_user.id ? { userId: call_user.id } : 'skip'
   );
   const client = useStreamVideoClient();
-  console.log({ otherUser });
+
   if (otherUser === undefined) {
     return <ChatPreviewSkeleton />;
   }

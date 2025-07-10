@@ -85,36 +85,36 @@ export default function AppLayout() {
     toggleCameraFaceButton: {
       container: {
         backgroundColor: colors.callButtonBlue,
-        width: 50,
-        height: 50,
+        width: 60,
+        height: 60,
       },
     },
     toggleAudioPreviewButton: {
       container: {
         backgroundColor: colors.callButtonBlue,
-        width: 50,
-        height: 50,
+        width: 60,
+        height: 60,
       },
     },
     toggleAudioPublishingButton: {
       container: {
         backgroundColor: colors.callButtonBlue,
-        width: 50,
-        height: 50,
+        width: 60,
+        height: 60,
       },
     },
     toggleVideoPublishingButton: {
       container: {
         backgroundColor: colors.callButtonBlue,
-        width: 50,
-        height: 50,
+        width: 60,
+        height: 60,
       },
     },
     hangupCallButton: {
       container: {
         // backgroundColor: colors.callButtonBlue,
-        width: 50,
-        height: 50,
+        width: 60,
+        height: 60,
       },
     },
   };
