@@ -1,7 +1,6 @@
 import { useCall } from '@stream-io/video-react-bindings';
 import { CallContent } from '@stream-io/video-react-native-sdk';
 import { useMutation, useQuery } from 'convex/react';
-import { Href, Redirect, useRouter } from 'expo-router';
 import { View } from 'react-native';
 import { CustomCallControls } from '~/components/custom-call-buttons';
 import { StarredComponent } from '~/components/Dialogs/StarredComponent';
@@ -33,11 +32,7 @@ export const CallComponent = () => {
     workerId,
   });
 
-  const router = useRouter();
-
   const call = useCall();
-
-  const path = workspaceId ? `/wk/${workspaceId}` : `/`;
 
   // useEffect(() => {
   //   if (!call) {
@@ -46,11 +41,10 @@ export const CallComponent = () => {
   // }, [call, path, router]);
 
   if (!call) {
-    return <Redirect href={path as Href} />;
+    return null;
   }
 
   const onHangupCallHandler = async () => {
-    router.replace(path as Href);
     try {
       await call.leave();
       if (workspaceId) {
@@ -73,7 +67,7 @@ export const CallComponent = () => {
       <View style={{ flex: 1 }}>
         <CallContent
           onHangupCallHandler={onHangupCallHandler}
-          layout={'spotlight'}
+          layout={'grid'}
           CallControls={CustomCallControls}
         />
       </View>

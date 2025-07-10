@@ -71,7 +71,6 @@ SplashScreen.preventAutoHideAsync();
 const InitialRouteLayout = () => {
   const { user } = useAuth();
   const isLoggedIn = !!user;
-  console.log({ isLoggedIn });
 
   return (
     <Stack>

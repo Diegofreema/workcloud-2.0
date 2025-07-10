@@ -103,6 +103,13 @@ export default function AppLayout() {
         height: 50,
       },
     },
+    toggleVideoPublishingButton: {
+      container: {
+        backgroundColor: colors.callButtonBlue,
+        width: 50,
+        height: 50,
+      },
+    },
     hangupCallButton: {
       container: {
         // backgroundColor: colors.callButtonBlue,

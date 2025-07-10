@@ -16,6 +16,7 @@ import * as jose from 'jose';
 import { useMutation } from 'convex/react';
 import { api } from '~/convex/_generated/api';
 import { useNotification } from './notification-context';
+import { useUser } from '~/hooks/use-id';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -42,6 +43,7 @@ const discovery: DiscoveryDocument = {
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = React.useState<AuthUser | null>(null);
+  const getUser = useUser((state) => state.getUser);
   const [accessToken, setAccessToken] = React.useState<string | null>(null);
   const [refreshToken, setRefreshToken] = React.useState<string | null>(null);
   const [request, response, promptAsync] = useAuthRequest(config, discovery);
@@ -80,16 +82,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const decoded = jose.decodeJwt(newAccessToken);
 
         setUser({ ...decoded, id: decoded.sub } as AuthUser);
-        await addUserToDb({
+        const user = await addUserToDb({
           clerkId: decoded.sub as string,
           email: decoded.email as string,
           imageUrl: decoded.picture as string,
           name: decoded.name as string,
           pushToken: expoPushToken,
         });
+        getUser(user);
       }
     },
-    [addUserToDb, expoPushToken]
+    [addUserToDb, expoPushToken, getUser]
   );
   const handleResponse = React.useCallback(async () => {
     // This function is called when Google redirects back to our app
@@ -149,13 +152,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               const sessionData = await sessionResponse.json();
 
               setUser({ ...sessionData, id: sessionData.sub } as AuthUser);
-              await addUserToDb({
+              const user = await addUserToDb({
                 clerkId: sessionData.sub as string,
                 email: sessionData.email as string,
                 imageUrl: sessionData.picture as string,
                 name: sessionData.name as string,
                 pushToken: expoPushToken,
               });
+              getUser(user);
             }
           }
         } else {
@@ -185,6 +189,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // @ts-ignore
     response?.params,
     expoPushToken,
+    getUser,
   ]);
   const signOut = React.useCallback(async () => {
     if (isWeb) {
@@ -261,13 +266,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const sessionData = await sessionResponse.json();
 
             setUser({ ...sessionData, id: sessionData.sub } as AuthUser);
-            await addUserToDb({
+            const user = await addUserToDb({
               clerkId: sessionData.sub as string,
               email: sessionData.email as string,
               imageUrl: sessionData.picture as string,
               name: sessionData.name as string,
               pushToken: expoPushToken,
             });
+            getUser(user);
           }
 
           return null; // Web doesn't use access token directly
@@ -344,13 +350,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             }
 
             setUser({ ...decoded, id: decoded.sub } as AuthUser);
-            await addUserToDb({
+            const user = await addUserToDb({
               clerkId: decoded.sub as string,
               email: decoded.email as string,
               imageUrl: decoded.picture as string,
               name: decoded.name as string,
               pushToken: expoPushToken,
             });
+            getUser(user);
           }
 
           return newAccessToken; // Return the new access token
@@ -364,7 +371,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         refreshInProgressRef.current = false;
       }
     },
-    [addUserToDb, isWeb, refreshToken, signOut, expoPushToken]
+    [addUserToDb, isWeb, refreshToken, signOut, expoPushToken, getUser]
   );
   React.useEffect(() => {
     void handleResponse();
@@ -385,13 +392,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const userData = await sessionResponse.json();
 
             setUser({ ...userData, id: userData.sub } as AuthUser);
-            await addUserToDb({
+            const user = await addUserToDb({
               clerkId: userData.sub,
               email: userData.email,
               imageUrl: userData.picture,
               name: userData.name,
               pushToken: expoPushToken,
             });
+            getUser(user);
           } else {
             console.log('No active web session found');
 
@@ -435,13 +443,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 }
 
                 setUser({ ...decoded, id: decoded.sub } as AuthUser);
-                await addUserToDb({
+                const user = await addUserToDb({
                   clerkId: decoded.sub as string,
                   email: decoded.email as string,
                   imageUrl: decoded.picture as string,
                   name: decoded.name as string,
                   pushToken: expoPushToken,
                 });
+                getUser(user);
               } else if (storedRefreshToken) {
                 // Access token expired, but we have a refresh token
                 console.log('Access token expired, using refresh token');
@@ -475,7 +484,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     void restoreSession();
-  }, [isWeb, addUserToDb, refreshAccessToken, expoPushToken]);
+  }, [isWeb, addUserToDb, refreshAccessToken, expoPushToken, getUser]);
 
   // Function to refresh the access token
 

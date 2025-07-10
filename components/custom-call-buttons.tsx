@@ -10,6 +10,7 @@ import {
   HangUpCallButton,
   ToggleCameraFaceButton,
   ToggleAudioPublishingButton as ToggleMic,
+  ToggleVideoPreviewButton as ToggleCamera,
 } from '@stream-io/video-react-native-sdk';
 
 import { Star } from 'lucide-react-native';
@@ -43,6 +44,7 @@ export const CustomCallControls = (props: CallControlProps) => {
       )}
       {/* Switch between front and back camera */}
       <ToggleCameraFaceButton />
+      <ToggleCamera />
       {/* Only show reactions button for non-therapist users */}
     </View>
   );

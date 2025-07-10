@@ -19,9 +19,9 @@ const SingleChat = () => {
     chatId: Id<'users'>;
     type: 'single' | 'processor';
   }>();
-  console.log({ type });
 
   const { id: loggedInUserId } = useGetUserId();
+  console.log({ type, userToChat, loggedInUserId });
 
   const { data: conversationData, isPending } = useTanstackQuery(
     convexQuery(api.conversation.getSingleConversationWithMessages, {

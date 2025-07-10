@@ -62,10 +62,22 @@ export const addUserToDb = mutation({
         pushToken: args.pushToken,
       });
     }
-    if (isUserInDb) return;
-    await ctx.db.insert('users', {
+    if (isUserInDb)
+      return {
+        id: isUserInDb._id!,
+        name: isUserInDb.name!,
+        pushToken: isUserInDb.pushToken,
+      };
+    const id = await ctx.db.insert('users', {
       ...args,
     });
+    const user = await ctx.db.get(id);
+
+    return {
+      id: user?._id!,
+      name: user?.name!,
+      pushToken: user?.pushToken,
+    };
   },
 });
 export const createStreamToken = internalAction({
