@@ -242,7 +242,7 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
   const handlePress = async () => {
     if (storedUser?.id === user?.clerkId) return;
     if (!workspace?.active || workspace?.leisure) {
-      toast.info('This workspace is currently inactive', {
+      toast.info('This workspace is currently inactive or on leisure', {
         description: 'Please try joining another workspace',
       });
       return;
@@ -315,39 +315,40 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
             </MyText>
           </View>
         )}
-        {item?.workspace && !item?.workspace?.active && (
-          <>
-            <View
-              style={{
-                backgroundColor: colors.closeBackgroundColor,
-                borderRadius: 20,
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: 3,
-              }}
-            >
-              <MyText poppins="Bold" style={{ color: colors.closeTextColor }}>
-                Inactive
-              </MyText>
-            </View>
-
-            {item?.user?.clerkId !== storedUser?.id && (
-              <Pressable
-                onPress={onMessage}
+        {item?.workspace &&
+          (!item?.workspace?.active || !item?.workspace?.leisure) && (
+            <>
+              <View
                 style={{
-                  backgroundColor: '#C0D1FE',
-                  padding: 7,
-                  marginTop: 5,
-                  borderRadius: 5,
+                  backgroundColor: colors.closeBackgroundColor,
+                  borderRadius: 20,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: 3,
                 }}
               >
-                <MyText poppins="Medium" style={{ color: colors.dialPad }}>
-                  Message
+                <MyText poppins="Bold" style={{ color: colors.closeTextColor }}>
+                  {!item?.workspace?.active ? 'Inactive' : 'Leisure'}
                 </MyText>
-              </Pressable>
-            )}
-          </>
-        )}
+              </View>
+
+              {item?.user?.clerkId !== storedUser?.id && (
+                <Pressable
+                  onPress={onMessage}
+                  style={{
+                    backgroundColor: '#C0D1FE',
+                    padding: 7,
+                    marginTop: 5,
+                    borderRadius: 5,
+                  }}
+                >
+                  <MyText poppins="Medium" style={{ color: colors.dialPad }}>
+                    Message
+                  </MyText>
+                </Pressable>
+              )}
+            </>
+          )}
       </VStack>
     </Pressable>
   );

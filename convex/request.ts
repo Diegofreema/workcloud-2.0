@@ -3,6 +3,7 @@ import { v } from 'convex/values';
 import { mutation, query } from '~/convex/_generated/server';
 import { getOrganizationByOwnerId } from '~/convex/organisation';
 import { getUserByUserId, getWorkerProfile } from '~/convex/users';
+import { internal } from './_generated/api';
 
 export const getPendingRequestsAsBoolean = query({
   args: {
@@ -10,7 +11,7 @@ export const getPendingRequestsAsBoolean = query({
     to: v.optional(v.id('users')),
   },
   handler: async (ctx, args) => {
-    if(!args.from || !args.to) return null
+    if (!args.from || !args.to) return null;
     return await ctx.db
       .query('requests')
       .filter((q) =>
@@ -28,7 +29,10 @@ export const getPendingStaffsWithoutOrganization = query({
     const res = await ctx.db
       .query('requests')
       .filter((q) =>
-        q.and(q.eq(q.field('from'), args.id), q.eq(q.field('pending'), true))
+        q.and(
+          q.eq(q.field('from'), args.id),
+          q.eq(q.field('status'), 'pending')
+        )
       )
       .collect();
 
@@ -89,23 +93,20 @@ export const createRequest = mutation({
     qualities: v.string(),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert('requests', {
+    const getOrganization = await getOrganizationByOwnerId(ctx, args.from);
+    if (!getOrganization) {
+      throw new Error('No organization found');
+    }
+    const id = await ctx.db.insert('requests', {
       ...args,
-      accepted: false,
-      unread: true,
-      pending: true,
+      status: 'pending',
     });
-  },
-});
 
-export const markRequestAsRead = mutation({
-  args: {
-    ids: v.array(v.id('requests')),
-  },
-  handler: async (ctx, args) => {
-    const updatePromises = args.ids.map((id) =>
-      ctx.db.patch(id, { unread: false })
-    );
-    await Promise.all(updatePromises);
+    await ctx.runMutation(internal.notifications.createNotification, {
+      title: 'New job offer',
+      message: `You have a new job offer from ${getOrganization.name}`,
+      userId: args.to,
+      requestId: id,
+    });
   },
 });

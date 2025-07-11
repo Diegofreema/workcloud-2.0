@@ -154,17 +154,7 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
     convexQuery(api.worker.checkIfWorkerIsEmployed, { id: item.request.to })
   );
   const {
-    request: {
-      qualities,
-      role,
-      salary,
-      responsibility,
-      to,
-      _id,
-      from,
-      pending,
-      accepted,
-    },
+    request: { qualities, role, salary, responsibility, to, _id, from, status },
     organisation,
   } = item;
   const {
@@ -245,6 +235,8 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
       setCancelling(false);
     }
   };
+  const accepted = status === 'accepted';
+  const pending = status === 'pending';
 
   return (
     <>

@@ -76,9 +76,12 @@ export const Request = {
   salary: v.string(),
   responsibility: v.string(),
   qualities: v.string(),
-  accepted: v.boolean(),
-  unread: v.boolean(),
-  pending: v.boolean(),
+  status: v.union(
+    v.literal('pending'),
+    v.literal('accepted'),
+    v.literal('declined'),
+    v.literal('cancelled')
+  ),
 };
 export const Workspace = {
   active: v.boolean(),
@@ -142,7 +145,8 @@ export const Notification = {
   title: v.string(),
   message: v.string(),
   seen: v.boolean(),
-  type: v.union(v.literal('review'), v.literal('offer')),
+  requestId: v.optional(v.id('requests')),
+  reviewerId: v.optional(v.id('users')),
 };
 
 export const Message = {
@@ -278,4 +282,5 @@ export default defineSchema({
     .index('by_member_id', ['memberId'])
     .index('by_member_id_conversation_id', ['memberId', 'conversationId']),
   replies: defineTable(ReplyToReview).index('by_review_id', ['reviewId']),
+  notifications: defineTable(Notification).index('by_user_id', ['userId']),
 });

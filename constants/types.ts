@@ -1,8 +1,8 @@
-import { Doc, Id } from "~/convex/_generated/dataModel";
-import { Infer, v } from "convex/values";
-import { ImagePickerAsset } from "expo-image-picker";
-export type ReviewType = Doc<"reviews"> & {
-  user: Doc<"users"> | null;
+import { Doc, Id } from '~/convex/_generated/dataModel';
+import { Infer, v } from 'convex/values';
+import { ImagePickerAsset } from 'expo-image-picker';
+export type ReviewType = Doc<'reviews'> & {
+  user: Doc<'users'> | null;
 };
 export type connections =
   | {
@@ -19,29 +19,29 @@ export type OwnerType = {
   name: string;
   organizationId?: string;
   phoneNumber?: string;
-  workerId?: Id<"workers">;
+  workerId?: Id<'workers'>;
   _creationTime: number;
-  _id: Id<"users">;
+  _id: Id<'users'>;
 };
 export type User = {
-  _id: Id<"users">;
+  _id: Id<'users'>;
   email: string;
   clerkId: string;
   imageUrl?: string | undefined | null;
   name: string;
   pushToken?: string;
-  organizationId?: Id<"organizations">;
-  workerId?: Id<"workers">;
+  organizationId?: Id<'organizations'>;
+  workerId?: Id<'workers'>;
   phoneNumber?: string;
   date_of_birth?: string;
-  userId?: string
+  userId?: string;
 };
 export type ProcessorType = {
   worker: Worker;
   user: User;
 };
 export type Organization = {
-  _id: Id<"organizations"> | undefined;
+  _id: Id<'organizations'> | undefined;
   avatar: string | null;
   category: string;
   _creationTime?: number;
@@ -49,11 +49,11 @@ export type Organization = {
   description: string;
   email: string;
   end: string;
-  followers?: Id<"users">[];
+  followers?: Id<'users'>[];
   followersCount: number;
   location: string;
   name: string;
-  ownerId: Id<"users">;
+  ownerId: Id<'users'>;
   start: string;
   website: string;
   workDays: string;
@@ -63,55 +63,55 @@ export type Organization = {
 };
 
 export type WorkSpace = {
-  _id: Id<"workspaces">;
+  _id: Id<'workspaces'>;
   organization: Organization;
   active: boolean;
   leisure: boolean;
-  organizationId: Id<"organizations">;
-  ownerId: Id<"users">;
+  organizationId: Id<'organizations'>;
+  ownerId: Id<'users'>;
   responsibility: string;
   salary: string;
   waitlistCount: number;
   role: string;
-  workerId: Id<"users">;
-  servicePointId: Id<"servicePoints">;
+  workerId: Id<'users'>;
+  servicePointId: Id<'servicePoints'>;
   locked: boolean;
   signedIn: boolean;
   personal: boolean;
   image?: string;
 };
 
-export type WorkspaceWithoutOrganization = Omit<WorkSpace, "organization">;
+export type WorkspaceWithoutOrganization = Omit<WorkSpace, 'organization'>;
 
 export type Connection = {
-  id: Id<"connections">;
+  id: Id<'connections'>;
   connectedAt: string;
   organisation: Organization | null;
 };
 export type FullOrgsType = {
-  _id: Id<"organizations">;
-  avatar: string | Id<"_storage">;
+  _id: Id<'organizations'>;
+  avatar: string | Id<'_storage'>;
   category: string;
   description: string;
   email: string;
   end: string;
-  followers?: Id<"users">[];
+  followers?: Id<'users'>[];
   followersCount: number;
   location: string;
   name: string;
-  ownerId: Id<"users">;
+  ownerId: Id<'users'>;
   start: string;
   website: string;
   workDays: string;
   workspaceCount: number;
   has_group: boolean;
-  workers?: Id<"workers">[];
+  workers?: Id<'workers'>[];
   searchCount: number;
 };
 export type SearchType = {
-  id: Id<"organizations">;
+  id: Id<'organizations'>;
   name: string;
-  ownerId: Id<"users">;
+  ownerId: Id<'users'>;
   avatar: string | null;
 };
 export type Org = {
@@ -137,8 +137,8 @@ export type Org = {
 
 export type PostType = {
   image: string | null;
-  _id: Id<"posts">;
-  organizationId: Id<"organizations">;
+  _id: Id<'posts'>;
+  organizationId: Id<'organizations'>;
   _creationTime: number;
 };
 export type Profile = {
@@ -198,25 +198,25 @@ export type Profile = {
 };
 
 export type Wks = {
-  _id: Id<"workspaces">;
+  _id: Id<'workspaces'>;
   active: boolean;
   leisure: boolean;
-  organizationId: Id<"organizations">;
-  ownerId: Id<"users">;
+  organizationId: Id<'organizations'>;
+  ownerId: Id<'users'>;
   responsibility?: string;
   salary?: string;
   waitlistCount: number;
   role: string;
-  workerId?: Id<"workers">;
-  servicePointId?: Id<"servicePoints">;
+  workerId?: Id<'workers'>;
+  servicePointId?: Id<'servicePoints'>;
   locked: boolean;
-  type: "personal" | "processor" | "front";
+  type: 'personal' | 'processor' | 'front';
 };
 
 export type Workers = {
   created_at: string;
   experience?: string;
-  id: Id<"workers">;
+  id: Id<'workers'>;
   location?: string;
   organizationId?: Organization;
   qualifications?: string;
@@ -227,23 +227,23 @@ export type Workers = {
   role: string;
   bossId: string;
   gender: string;
-  type?: "processor" | "normal" | undefined;
+  type?: 'processor' | 'normal' | undefined;
 };
 export type Worker = {
   _creationTime: number;
   experience?: string;
-  _id: Id<"workers">;
+  _id: Id<'workers'>;
   location?: string;
-  organizationId?: Id<"organizations">;
+  organizationId?: Id<'organizations'>;
   qualifications?: string;
-  servicePointId?: Id<"servicePoints">;
+  servicePointId?: Id<'servicePoints'>;
   skills: string;
-  userId: Id<"users">;
-  workspaceId?: Id<"workspaces">;
+  userId: Id<'users'>;
+  workspaceId?: Id<'workspaces'>;
   role?: string;
-  bossId?: Id<"users">;
+  bossId?: Id<'users'>;
   gender: string;
-  type?: "processor" | "front" | "personal"
+  type?: 'processor' | 'front' | 'personal';
 };
 // type UserWthWorkerProfile = {
 //   avatar: string;
@@ -264,28 +264,26 @@ export type Worker = {
 export type WorkerWithWorkspace = {
   _creationTime: number;
   experience?: string;
-  _id?: Id<"workers">;
+  _id?: Id<'workers'>;
   location?: string;
   qualifications?: string;
-  servicePointId?: Id<"servicePoints">;
+  servicePointId?: Id<'servicePoints'>;
   skills: string;
   user: User | null;
   workspace?: Wks | null | undefined;
   role?: string;
-  bossId?: Id<"users">;
+  bossId?: Id<'users'>;
 };
 export type Requests = {
   _creationTime: number;
-  from: Id<"users">;
-  _id: Id<"requests">;
+  from: Id<'users'>;
+  _id: Id<'requests'>;
   responsibility: string;
   role: string;
   salary: string;
-  to: Id<"users">;
-  pending: boolean;
+  to: Id<'users'>;
+  status: 'pending' | 'accepted' | 'declined' | 'cancelled';
   qualities: string;
-  accepted: boolean;
-  unread: boolean;
 };
 export type PendingRequests = {
   request: Requests;
@@ -338,18 +336,18 @@ export type Followers = {
 export type WorkType = {
   _creationTime?: number;
   experience?: string;
-  _id?: Id<"workers">;
+  _id?: Id<'workers'>;
   location?: string;
-  organizationId?: Id<"organizations">;
+  organizationId?: Id<'organizations'>;
   qualifications?: string;
-  servicePointId?: Id<"servicePoints">;
+  servicePointId?: Id<'servicePoints'>;
   skills?: string;
   user: User;
   organization: Organization | null;
   workspace: WorkspaceWithoutOrganization;
-  userId?: Id<"users">;
-  workspaceId?: Id<"workspaces">;
-  bossId: Id<"users">;
+  userId?: Id<'users'>;
+  workspaceId?: Id<'workspaces'>;
+  bossId: Id<'users'>;
   role: string;
 };
 
@@ -381,20 +379,20 @@ export type WorkspaceButtonProps = {
 };
 export type WaitList = {
   customer: User | null;
-  _id: Id<"waitlists">;
+  _id: Id<'waitlists'>;
   _creationTime: number;
-  workspaceId: Id<"workspaces">;
-  customerId: Id<"users">;
+  workspaceId: Id<'workspaces'>;
+  customerId: Id<'users'>;
   joinedAt: string;
-  type: "attending" | "waiting" | "next";
+  type: 'attending' | 'waiting' | 'next';
 };
 export type ServicePointType = {
-  _id: Id<"servicePoints">;
+  _id: Id<'servicePoints'>;
   _creationTime: number;
   externalLink?: string;
-  linkText?: string
+  linkText?: string;
   form?: boolean | undefined;
-  organizationId: Id<"organizations">;
+  organizationId: Id<'organizations'>;
   description?: string;
   name: string;
 };
@@ -402,8 +400,8 @@ export type ServicePointType = {
 export type SearchServicePoints = {
   name: string;
   avatar: string | null;
-  id: Id<"organizations">;
-  ownerId: Id<"users">;
+  id: Id<'organizations'>;
+  ownerId: Id<'users'>;
   description: string;
 };
 
@@ -419,32 +417,32 @@ export type MessageSection = {
   data: Message[];
 };
 export type SuggestionTypes = {
-  _id: Id<"suggestions">;
+  _id: Id<'suggestions'>;
   _creationTime: number;
   text: string;
 };
 export type MessageData = {
-  _id: Id<"messages">;
+  _id: Id<'messages'>;
   _creationTime: number;
   isEdited?: boolean | undefined;
-  parentMessageId?: Id<"messages"> | undefined;
-  senderId: Id<"users">;
-  recipient: Id<"users">;
-  conversationId: Id<"conversations">;
+  parentMessageId?: Id<'messages'> | undefined;
+  senderId: Id<'users'>;
+  recipient: Id<'users'>;
+  conversationId: Id<'conversations'>;
   content: string;
   contentType: string;
-  seenId: Id<"users">[];
+  seenId: Id<'users'>[];
 };
 
 export type Conversation = {
-  _id: Id<"conversations">;
+  _id: Id<'conversations'>;
   _creationTime: number;
   name?: string | undefined;
   lastMessage?: string | undefined;
   lastMessageTime?: number | undefined;
-  lastMessageSenderId?: Id<"users"> | undefined;
-  type?: "processor" | "single" | "group" | undefined;
-  participants: Id<"users">[];
+  lastMessageSenderId?: Id<'users'> | undefined;
+  type?: 'processor' | 'single' | 'group' | undefined;
+  participants: Id<'users'>[];
 };
 
 export type ConversationAndUserType = {
@@ -453,22 +451,22 @@ export type ConversationAndUserType = {
 };
 
 export type ResultType = {
-  id: Id<"conversations">;
+  id: Id<'conversations'>;
   lastMessage: string | undefined;
   name: string | undefined;
   lastMessageTime: number | undefined;
   otherUser: User | null;
-  lastMessageSenderId: Id<"users"> | undefined;
+  lastMessageSenderId: Id<'users'> | undefined;
 };
 
 export type DataType = {
-  _id: Id<"messages">;
+  _id: Id<'messages'>;
   _creationTime: number;
   isEdited?: boolean | undefined;
-  senderId: Id<"users">;
-  conversationId: Id<"conversations">;
+  senderId: Id<'users'>;
+  conversationId: Id<'conversations'>;
   content: string;
-  seenId: Id<"users">[];
+  seenId: Id<'users'>[];
   fileType?: FileType;
   audio?: string;
   fileUrl?: string;
@@ -490,18 +488,18 @@ export type ChatDateGroup = {
 };
 
 export type StatusType =
-  | "LoadingFirstPage"
-  | "CanLoadMore"
-  | "LoadingMore"
-  | "Exhausted";
+  | 'LoadingFirstPage'
+  | 'CanLoadMore'
+  | 'LoadingMore'
+  | 'Exhausted';
 
 export type GiftChatType = {
-  _id: number | Id<"messages">;
+  _id: number | Id<'messages'>;
   system?: boolean;
   text: string;
   _creationTime: Date;
   user: {
-    _id: number | Id<"users">;
+    _id: number | Id<'users'>;
     name?: string;
   };
 };
@@ -511,22 +509,22 @@ export type RatingPercentageType = {
   percentage: number;
   stars: number;
 };
-export type FileType = "pdf" | "image" | "audio";
+export type FileType = 'pdf' | 'image' | 'audio';
 export enum Reaction_Enum {
-  LIKE = "LIKE",
-  LOVE = "LOVE",
-  WOW = "WOW",
-  SAD = "SAD",
-  ANGRY = "ANGRY",
-  LAUGH = "LAUGH",
+  LIKE = 'LIKE',
+  LOVE = 'LOVE',
+  WOW = 'WOW',
+  SAD = 'SAD',
+  ANGRY = 'ANGRY',
+  LAUGH = 'LAUGH',
 }
 
 export interface IMessage {
-  _id: Id<"messages">;
+  _id: Id<'messages'>;
   text: string;
   createdAt: Date | number;
   user: {
-    _id: Id<"users">;
+    _id: Id<'users'>;
     name: string;
   };
   image?: string;
@@ -541,22 +539,22 @@ export type ReplyType = {
   fileType?: FileType;
   fileUrl?: string;
   message: string;
-  sender_id: Id<"users">;
+  sender_id: Id<'users'>;
   user: {
     name?: string;
-    id?: Id<"users">;
+    id?: Id<'users'>;
   };
 };
 export type EditType2 = {
   textToEdit: string;
-  messageId: Id<"messages">;
-  senderId: Id<"users">;
+  messageId: Id<'messages'>;
+  senderId: Id<'users'>;
   senderName: string;
 };
 
 export type MessageReactionsType = {
-  message_id: Id<"messages">;
-  user_id: Id<"users">;
+  message_id: Id<'messages'>;
+  user_id: Id<'users'>;
   emoji: EmojiType;
 };
 export interface SendIMessage {
@@ -566,17 +564,17 @@ export interface SendIMessage {
   fileType?: FileType;
   audio?: string;
   fileUrl?: string;
-  fileId?: Id<"_storage">;
-  replyTo?: Id<"messages">;
+  fileId?: Id<'_storage'>;
+  replyTo?: Id<'messages'>;
 }
 
 export const emojiType = v.union(
-  v.literal("LIKE"),
-  v.literal("SAD"),
-  v.literal("LOVE"),
-  v.literal("WOW"),
-  v.literal("ANGRY"),
-  v.literal("LAUGH"),
+  v.literal('LIKE'),
+  v.literal('SAD'),
+  v.literal('LOVE'),
+  v.literal('WOW'),
+  v.literal('ANGRY'),
+  v.literal('LAUGH')
 );
 export type EmojiType = Infer<typeof emojiType>;
 
