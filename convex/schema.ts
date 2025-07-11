@@ -146,7 +146,7 @@ export const Notification = {
   message: v.string(),
   seen: v.boolean(),
   requestId: v.optional(v.id('organizations')),
-  reviewerId: v.optional(v.id('users')),
+  reviewId: v.optional(v.id('reviews')),
 };
 
 export const Message = {

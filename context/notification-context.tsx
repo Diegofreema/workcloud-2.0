@@ -68,6 +68,11 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         if (data.type === 'notification') {
           router.push('/notification');
         }
+        if (data.type === 'review') {
+          router.push(
+            `/orgs/reviews/review?reviewId=${data.reviewId}&owner=true&orgId=${data.orgId}`
+          );
+        }
       });
 
     return () => {

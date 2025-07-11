@@ -120,6 +120,13 @@ export const Reply = ({ isOwner, reviewId }: Props) => {
             placeholder={'Reply this comment'}
             value={value}
             onChangeText={setValue}
+            style={{
+              borderWidth: 1,
+              borderColor: colors.gray,
+              borderRadius: 5,
+              padding: 10,
+              marginBottom: 50,
+            }}
           />
           <HStack gap={10} style={{ marginHorizontal: 20 }}>
             <Button

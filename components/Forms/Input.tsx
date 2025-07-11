@@ -32,7 +32,7 @@ export const Input = ({
   ...rest
 }: Props): JSX.Element => {
   return (
-    <View>
+    <View style={{ gap: 15 }}>
       <MyText poppins="Medium">{label}</MyText>
       <TextInput
         {...rest}
@@ -42,6 +42,7 @@ export const Input = ({
             fontFamily: 'NunitoRegular',
             fontSize: 15,
             color: colors.black,
+            minHeight: 50,
           },
           rest.style,
         ]}

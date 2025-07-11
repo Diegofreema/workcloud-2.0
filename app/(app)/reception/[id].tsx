@@ -297,26 +297,28 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
           {item?.role}
         </MyText>
 
-        {item?.workspace && item?.workspace?.active && (
-          <View
-            style={{
-              backgroundColor: colors.openTextColor,
-              borderRadius: 20,
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 3,
-            }}
-          >
-            <MyText
-              poppins="Bold"
-              style={{ color: colors.openBackgroundColor }}
-            >
-              Active
-            </MyText>
-          </View>
-        )}
         {item?.workspace &&
-          (!item?.workspace?.active || !item?.workspace?.leisure) && (
+          item?.workspace?.active &&
+          !item?.workspace?.leisure && (
+            <View
+              style={{
+                backgroundColor: colors.openTextColor,
+                borderRadius: 20,
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 3,
+              }}
+            >
+              <MyText
+                poppins="Bold"
+                style={{ color: colors.openBackgroundColor }}
+              >
+                Active
+              </MyText>
+            </View>
+          )}
+        {item?.workspace &&
+          (!item?.workspace?.active || item?.workspace?.leisure) && (
             <>
               <View
                 style={{

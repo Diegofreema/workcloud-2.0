@@ -17,8 +17,9 @@ export const getNotifications = query({
     const page = await Promise.all(
       notifications.page.map(async (n) => {
         let image = '';
-        if (n.reviewerId) {
-          const user = await ctx.db.get(n.reviewerId);
+        if (n.reviewId) {
+          const review = await ctx.db.get(n.reviewId);
+          const user = await ctx.db.get(review?.userId!);
           if (user) {
             image = user.imageUrl as string;
           }
@@ -65,7 +66,7 @@ export const createNotification = internalMutation({
     message: v.string(),
     title: v.string(),
     requestId: v.optional(v.id('organizations')),
-    reviewerId: v.optional(v.id('users')),
+    reviewId: v.optional(v.id('reviews')),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert('notifications', {
@@ -73,6 +74,7 @@ export const createNotification = internalMutation({
       message: args.message,
       title: args.title,
       requestId: args.requestId,
+      reviewId: args.reviewId,
       seen: false,
     });
   },

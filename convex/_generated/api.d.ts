@@ -16,6 +16,7 @@ import type {
 import type * as chat from "../chat.js";
 import type * as connection from "../connection.js";
 import type * as conversation from "../conversation.js";
+import type * as externalFuntions from "../externalFuntions.js";
 import type * as http from "../http.js";
 import type * as member from "../member.js";
 import type * as message from "../message.js";
@@ -43,6 +44,7 @@ declare const fullApi: ApiFromModules<{
   chat: typeof chat;
   connection: typeof connection;
   conversation: typeof conversation;
+  externalFuntions: typeof externalFuntions;
   http: typeof http;
   member: typeof member;
   message: typeof message;
