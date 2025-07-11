@@ -1,25 +1,46 @@
 import { v } from 'convex/values';
 
 import { internalMutation, mutation, query } from './_generated/server';
+import { paginationOptsValidator } from 'convex/server';
 
 export const getNotifications = query({
   args: {
     userId: v.id('users'),
+    paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
     const notifications = await ctx.db
       .query('notifications')
       .withIndex('by_user_id', (q) => q.eq('userId', args.userId))
-      .collect();
+      .paginate(args.paginationOpts);
 
-    const notificationsWithImages = notifications.map(async (n) => {
-      if (n.reviewerId) {
-      }
-      if (n.requestId) {
-      }
-    });
+    const page = await Promise.all(
+      notifications.page.map(async (n) => {
+        let image = '';
+        if (n.reviewerId) {
+          const user = await ctx.db.get(n.reviewerId);
+          if (user) {
+            image = user.imageUrl as string;
+          }
+        }
+        if (n.requestId) {
+          const org = await ctx.db.get(n.requestId);
+          if (org) {
+            image = org.avatar as string;
+          }
+        }
 
-    return await Promise.all(notificationsWithImages);
+        return {
+          ...n,
+          image,
+        };
+      })
+    );
+
+    return {
+      ...notifications,
+      page,
+    };
   },
 });
 
@@ -59,11 +80,17 @@ export const createNotification = internalMutation({
 
 export const markNotificationAsRead = mutation({
   args: {
-    id: v.array(v.id('notifications')),
+    id: v.id('users'),
   },
   handler: async (ctx, args) => {
-    for (const notificationId of args.id) {
-      await ctx.db.patch(notificationId, {
+    const notifications = await ctx.db
+      .query('notifications')
+      .withIndex('by_user_id_seen', (q) =>
+        q.eq('userId', args.id).eq('seen', false)
+      )
+      .collect();
+    for (const notificationId of notifications) {
+      await ctx.db.patch(notificationId._id, {
         seen: true,
       });
     }

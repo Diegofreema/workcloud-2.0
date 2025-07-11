@@ -123,6 +123,10 @@ export const acceptOffer = mutation({
       .query('workers')
       .withIndex('userId', (q) => q.eq('userId', args.to))
       .first();
+    const from = await ctx.db.get(args.from);
+    if (!from) {
+      throw new ConvexError('Failed to accept offer');
+    }
 
     const org = await ctx.db.get(args.organizationId);
     if (!worker || !org) {
@@ -144,6 +148,8 @@ export const acceptOffer = mutation({
         status: 'accepted',
       }),
     ]);
+
+    return from.pushToken;
   },
 });
 
@@ -171,6 +177,15 @@ export const resignFromOrganization = mutation({
     if (!user) {
       throw new ConvexError('User not found');
     }
+    if (worker?.workspaceId) {
+      const workspace = await ctx.db.get(worker?.workspaceId);
+      if (workspace) {
+        await ctx.db.patch(workspace._id, {
+          workerId: undefined,
+        });
+      }
+    }
+
     const conversationsAsync = filter(
       ctx.db
         .query('conversations')

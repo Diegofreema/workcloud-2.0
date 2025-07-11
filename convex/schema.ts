@@ -282,5 +282,7 @@ export default defineSchema({
     .index('by_member_id', ['memberId'])
     .index('by_member_id_conversation_id', ['memberId', 'conversationId']),
   replies: defineTable(ReplyToReview).index('by_review_id', ['reviewId']),
-  notifications: defineTable(Notification).index('by_user_id', ['userId']),
+  notifications: defineTable(Notification)
+    .index('by_user_id', ['userId'])
+    .index('by_user_id_seen', ['userId', 'seen']),
 });

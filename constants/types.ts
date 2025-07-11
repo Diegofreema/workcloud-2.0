@@ -584,3 +584,11 @@ export type SelectedMessage = {
 };
 
 export type EditType = { text: string; senderId: string; senderName: string };
+
+export type InfoType = {
+  to: Id<'users'> | null;
+  from: Id<'users'> | null;
+  _id: Id<'requests'> | null;
+  organizationId: Id<'organizations'> | null;
+  role: string;
+};

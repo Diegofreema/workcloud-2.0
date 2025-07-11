@@ -237,6 +237,8 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
   };
   const accepted = status === 'accepted';
   const pending = status === 'pending';
+  const declined = status === 'declined';
+  const cancelled = status === 'cancelled';
 
   return (
     <>
@@ -282,12 +284,17 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
               Accepted
             </MyText>
           )}
-          {!accepted && !pending && (
+          {declined && (
             <MyText style={{ color: 'red' }} poppins="Medium" fontSize={15}>
               Declined
             </MyText>
           )}
-          {!accepted && pending && (
+          {cancelled && (
+            <MyText style={{ color: 'red' }} poppins="Medium" fontSize={15}>
+              Cancelled
+            </MyText>
+          )}
+          {pending && (
             <HStack gap={10} mt={20}>
               <Button
                 buttonStyle={{
