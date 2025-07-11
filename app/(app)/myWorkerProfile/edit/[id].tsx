@@ -95,113 +95,106 @@ const CreateProfile = () => {
         >
           Enter your details below
         </MyText>
-        <View style={{ marginTop: 20, flex: 1 }}>
-          <View style={{ flex: 0.6, gap: 10 }}>
-            <>
-              <CustomInput
-                control={control}
-                errors={errors}
-                name="experience"
-                label="Experience"
-                value={experience}
-                placeholder="Write about your past work experience..."
-                keyboardType="default"
-                numberOfLines={5}
-                maxLength={max}
-                multiline
-                textarea
-              />
-              <MyText poppins="Medium" fontSize={15}>
-                {experience.length}/{max}
-              </MyText>
-            </>
+        <View style={{ marginTop: 20, flex: 1, gap: 20 }}>
+          <CustomInput
+            control={control}
+            errors={errors}
+            name="experience"
+            label="Experience"
+            value={experience}
+            placeholder="Write about your past work experience..."
+            keyboardType="default"
+            numberOfLines={5}
+            maxLength={max}
+            multiline
+            textarea
+          />
 
-            <CustomInput
-              control={control}
-              errors={errors}
-              name="qualifications"
-              label="Qualifications"
-              placeholder="Bsc. Computer Science, Msc. Computer Science"
-              keyboardType="default"
-              numberOfLines={5}
-              multiline
+          <CustomInput
+            control={control}
+            errors={errors}
+            name="qualifications"
+            label="Qualifications"
+            placeholder="Bsc. Computer Science, Msc. Computer Science"
+            keyboardType="default"
+            numberOfLines={5}
+            multiline
+          />
+
+          <CustomInput
+            label="Skills"
+            name="skills"
+            errors={errors}
+            control={control}
+            placeholder="e.g Customer service, marketing, sales"
+            keyboardType="default"
+            numberOfLines={5}
+            multiline
+          />
+
+          <CustomInput
+            label="Location"
+            control={control}
+            errors={errors}
+            name="location"
+            placeholder="Where do you reside?"
+            keyboardType="default"
+            numberOfLines={5}
+            multiline
+          />
+
+          <View style={{ marginHorizontal: 10 }}>
+            <Text
+              style={{
+                color: darkMode === 'dark' ? colors.white : colors.black,
+                fontWeight: 'bold',
+                fontSize: 15,
+                marginBottom: 10,
+              }}
+            >
+              Gender
+            </Text>
+
+            <SelectList
+              search={false}
+              boxStyles={{
+                ...styles2.border,
+                justifyContent: 'flex-start',
+                width: '100%',
+                alignItems: 'center',
+              }}
+              dropdownTextStyles={{
+                color: darkMode === 'dark' ? colors.white : colors.black,
+              }}
+              inputStyles={{
+                textAlign: 'left',
+                borderWidth: 0,
+                color: 'gray',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              fontFamily="PoppinsMedium"
+              setSelected={(value: string) => setValue('gender', value)}
+              data={genders}
+              defaultOption={{ key: gender, value: gender }}
+              save="value"
+              placeholder="Select your a gender"
             />
 
-            <CustomInput
-              label="Skills"
-              name="skills"
-              errors={errors}
-              control={control}
-              placeholder="e.g Customer service, marketing, sales"
-              keyboardType="default"
-              numberOfLines={5}
-              multiline
-            />
-
-            <CustomInput
-              label="Location"
-              control={control}
-              errors={errors}
-              name="location"
-              placeholder="Where do you reside?"
-              keyboardType="default"
-              numberOfLines={5}
-              multiline
-            />
-
-            <View style={{ marginHorizontal: 10 }}>
-              <Text
-                style={{
-                  color: darkMode === 'dark' ? colors.white : colors.black,
-                  fontWeight: 'bold',
-                  fontSize: 15,
-                  marginBottom: 10,
-                }}
-              >
-                Gender
+            {errors.gender && (
+              <Text style={{ color: 'red', fontWeight: 'bold' }}>
+                {errors.gender.message}
               </Text>
-
-              <SelectList
-                search={false}
-                boxStyles={{
-                  ...styles2.border,
-                  justifyContent: 'flex-start',
-                  width: '100%',
-                  alignItems: 'center',
-                }}
-                dropdownTextStyles={{
-                  color: darkMode === 'dark' ? colors.white : colors.black,
-                }}
-                inputStyles={{
-                  textAlign: 'left',
-                  borderWidth: 0,
-                  color: 'gray',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                fontFamily="PoppinsMedium"
-                setSelected={(value: string) => setValue('gender', value)}
-                data={genders}
-                defaultOption={{ key: gender, value: gender }}
-                save="value"
-                placeholder="Select your a gender"
-              />
-
-              {errors.gender && (
-                <Text style={{ color: 'red', fontWeight: 'bold' }}>
-                  {errors.gender.message}
-                </Text>
-              )}
-            </View>
+            )}
           </View>
-          <View style={{ flex: 0.4, marginTop: 30, marginHorizontal: 10 }}>
-            <Button
-              title={'Submit'}
-              onPress={handleSubmit(onSubmit)}
-              loadingTitle={'Submitting...'}
-              loading={isSubmitting}
-            />
-          </View>
+        </View>
+        <View style={{ marginTop: 30, marginHorizontal: 10 }}>
+          <Button
+            title={'Submit'}
+            onPress={handleSubmit(onSubmit)}
+            loadingTitle={'Submitting...'}
+            loading={isSubmitting}
+          />
         </View>
       </ScrollView>
     </Container>

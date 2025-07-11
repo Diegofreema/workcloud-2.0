@@ -44,6 +44,7 @@ export const CustomInput = ({
   onEditFinish,
   containerStyle,
   leftIcon,
+
   textarea,
   ...rest
 }: Props) => {
@@ -63,7 +64,13 @@ export const CustomInput = ({
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <View style={[styles.inputContainer, containerStyle]}>
+        <View
+          style={[
+            styles.inputContainer,
+            containerStyle,
+            { height: textarea ? 150 : 50 },
+          ]}
+        >
           {leftIcon && <View style={{ marginRight: 5 }}>{leftIcon}</View>}
           <Controller
             control={control}
@@ -76,6 +83,8 @@ export const CustomInput = ({
                     fontFamily: 'NunitoRegular',
                     fontSize: 15,
                     color: colors.black,
+                    height: textarea ? 150 : 50,
+                    textAlignVertical: textarea ? 'top' : 'center',
                   },
                   rest.style,
                 ]}

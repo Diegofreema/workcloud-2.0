@@ -1,6 +1,6 @@
 import { useCall } from '@stream-io/video-react-bindings';
 import { CallContent } from '@stream-io/video-react-native-sdk';
-import { useMutation, useQuery } from 'convex/react';
+import { useMutation } from 'convex/react';
 import { View } from 'react-native';
 import { CustomCallControls } from '~/components/custom-call-buttons';
 import { api } from '~/convex/_generated/api';
@@ -8,17 +8,11 @@ import { useCallStore } from '../hook/useCallStore';
 
 export const CallComponent = () => {
   const {
-    data: { workerId, workspaceId },
+    data: { workspaceId },
     clear,
   } = useCallStore();
 
   const deleteWaitlist = useMutation(api.workspace.deleteWaitlist);
-
-  const worker = useQuery(
-    api.worker.getWorker,
-    workerId ? { workerId: workerId } : 'skip'
-  );
-  console.log({ workerId, workspaceId, attendingTo: worker });
 
   const call = useCall();
   console.log(call?.state.members.map((m) => m.custom.currentUser));
@@ -36,13 +30,11 @@ export const CallComponent = () => {
   const onHangupCallHandler = async () => {
     try {
       await call.endCall();
-      if (workspaceId) {
-        await deleteWaitlist({ waitlistId: waitList });
-        console.log('Hanged up');
 
+      await deleteWaitlist({ waitlistId: waitList });
+
+      if (workspaceId) {
         clear();
-      } else {
-        await deleteWaitlist({ waitlistId: waitList });
       }
     } catch (e) {
       console.log(e);
@@ -51,10 +43,6 @@ export const CallComponent = () => {
 
   return (
     <>
-      {/* <StarredComponent
-        workspaceId={workspaceId!}
-        customerId={waitlist?.customerId!}
-      /> */}
       <View style={{ flex: 1 }}>
         <CallContent
           onHangupCallHandler={onHangupCallHandler}
