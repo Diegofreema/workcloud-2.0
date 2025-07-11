@@ -1,37 +1,37 @@
-import { EvilIcons } from "@expo/vector-icons";
-import { Text } from "@rneui/themed";
-import { useQuery } from "convex/react";
-import { useRouter } from "expo-router";
-import { Pressable, StyleSheet, View } from "react-native";
+import { EvilIcons } from '@expo/vector-icons';
+import { Text } from '@rneui/themed';
+import { useQuery } from 'convex/react';
+import { useRouter } from 'expo-router';
+import { Pressable, StyleSheet, View } from 'react-native';
 
-import { colors } from "~/constants/Colors";
-import { api } from "~/convex/_generated/api";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { usePendingRequestWithOrganization } from "~/features/home/api/use-pending-request-with-organization";
-import { useUnreadNotificationCount } from "~/features/home/hooks/use-unread-notification-count";
+import { colors } from '~/constants/Colors';
+import { api } from '~/convex/_generated/api';
+import { useDarkMode } from '~/hooks/useDarkMode';
+import { useGetUserId } from '~/hooks/useGetUserId';
 
 export const Header = () => {
   const { darkMode } = useDarkMode();
 
   const { id } = useGetUserId();
-  const data = usePendingRequestWithOrganization({ id });
 
+  const data = useQuery(api.notifications.getUnreadNotificationCount, {
+    userId: id,
+  });
   const router = useRouter();
   const onSearch = () => {
-    router.push("/search");
+    router.push('/search');
   };
   const onNotify = () => {
-    router.push("/notification");
+    router.push('/notification');
   };
 
-  const numberOfUnread = useUnreadNotificationCount({ data });
+  const numberOfUnread = data === undefined ? 0 : data;
 
   return (
     <View style={styles.container}>
       <Text
         style={{
-          fontFamily: "PoppinsBoldItalic",
+          fontFamily: 'PoppinsBoldItalic',
           color: colors.buttonBlue,
           fontSize: 15,
         }}
@@ -48,7 +48,7 @@ export const Header = () => {
           <EvilIcons
             name="search"
             size={30}
-            color={darkMode === "dark" ? "#fff" : "#000"}
+            color={darkMode === 'dark' ? '#fff' : '#000'}
           />
         </Pressable>
         <Pressable
@@ -58,11 +58,11 @@ export const Header = () => {
           <EvilIcons
             name="bell"
             size={30}
-            color={darkMode === "dark" ? "#fff" : "#000"}
+            color={darkMode === 'dark' ? '#fff' : '#000'}
           />
           {numberOfUnread > 0 && (
             <View style={styles.unread}>
-              <Text style={{ color: "white", fontWeight: "bold" }}>
+              <Text style={{ color: 'white', fontWeight: 'bold' }}>
                 {numberOfUnread}
               </Text>
             </View>
@@ -75,23 +75,23 @@ export const Header = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   subContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 20,
   },
   unread: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     right: 0,
-    backgroundColor: "red",
+    backgroundColor: 'red',
     width: 20,
     height: 20,
     borderRadius: 100,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

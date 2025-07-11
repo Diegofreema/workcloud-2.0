@@ -17,7 +17,14 @@ type Props = {
   isOpen: boolean;
   btnText?: string;
 };
-export const CustomModal = ({ onPress, title, isLoading, onClose, isOpen, btnText }: Props) => {
+export const CustomModal = ({
+  onPress,
+  title,
+  isLoading,
+  onClose,
+  isOpen,
+  btnText = 'Yes',
+}: Props) => {
   const { darkMode } = useDarkMode();
 
   return (
@@ -28,7 +35,8 @@ export const CustomModal = ({ onPress, title, isLoading, onClose, isOpen, btnTex
         animationIn="slideInDown"
         isVisible={isOpen}
         onBackButtonPress={onClose}
-        onBackdropPress={onClose}>
+        onBackdropPress={onClose}
+      >
         <View
           style={[
             styles.centeredView,
@@ -36,7 +44,8 @@ export const CustomModal = ({ onPress, title, isLoading, onClose, isOpen, btnTex
               backgroundColor: darkMode === 'dark' ? 'black' : 'white',
               shadowColor: darkMode === 'dark' ? '#fff' : '#000',
             },
-          ]}>
+          ]}
+        >
           <MyText
             poppins="Bold"
             fontSize={17}
@@ -44,11 +53,27 @@ export const CustomModal = ({ onPress, title, isLoading, onClose, isOpen, btnTex
               textAlign: 'center',
               marginBottom: 15,
               color: darkMode === 'dark' ? 'white' : 'black',
-            }}>
+            }}
+          >
             {title}
           </MyText>
 
           <HStack gap={10}>
+            <Button
+              titleStyle={{
+                fontFamily: 'PoppinsMedium',
+                color: colors.dialPad,
+              }}
+              buttonStyle={{
+                backgroundColor: colors.lightBlueButton,
+                borderRadius: 5,
+                width: 120,
+              }}
+              onPress={onClose}
+              color={colors.black}
+            >
+              No
+            </Button>
             <Button
               disabled={isLoading}
               loading={isLoading}
@@ -58,19 +83,9 @@ export const CustomModal = ({ onPress, title, isLoading, onClose, isOpen, btnTex
                 borderRadius: 5,
                 width: 120,
               }}
-              onPress={onPress}>
-              Yes
-            </Button>
-            <Button
-              titleStyle={{ fontFamily: 'PoppinsMedium', color: colors.dialPad }}
-              buttonStyle={{
-                backgroundColor: colors.lightBlueButton,
-                borderRadius: 5,
-                width: 120,
-              }}
-              onPress={onClose}
-              color={colors.black}>
-              No
+              onPress={onPress}
+            >
+              {btnText}
             </Button>
           </HStack>
         </View>

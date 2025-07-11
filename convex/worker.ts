@@ -8,6 +8,7 @@ import {
   getUserByWorkerId,
 } from '~/convex/users';
 import { User } from '~/constants/types';
+import { filter } from 'convex-helpers/server/filter';
 
 export const getAllOtherWorkers = query({
   args: {
@@ -140,8 +141,7 @@ export const acceptOffer = mutation({
         type: args.role === 'processor' ? 'processor' : 'front',
       }),
       ctx.db.patch(args._id, {
-        pending: false,
-        accepted: true,
+        status: 'accepted',
       }),
     ]);
   },
@@ -155,5 +155,48 @@ export const checkIfItMyStaff = query({
   handler: async (ctx, args) => {
     const worker = await ctx.db.get(args.workerId);
     return worker?.bossId === args.bossId;
+  },
+});
+
+export const resignFromOrganization = mutation({
+  args: {
+    workerId: v.id('workers'),
+  },
+  handler: async (ctx, args) => {
+    const worker = await ctx.db.get(args.workerId);
+    if (!worker) {
+      throw new ConvexError('Worker not found');
+    }
+    const user = await ctx.db.get(worker?.userId);
+    if (!user) {
+      throw new ConvexError('User not found');
+    }
+    const conversationsAsync = filter(
+      ctx.db
+        .query('conversations')
+        .withIndex('by_last_message_last_message_time'),
+      (conversation) =>
+        conversation.participants.includes(worker.userId) &&
+        conversation.type === 'group' &&
+        conversation.creatorId === worker.bossId
+    ).collect();
+
+    const conversationsToLeave = await conversationsAsync;
+
+    for (const conversation of conversationsToLeave) {
+      await ctx.db.patch(conversation._id, {
+        participants: conversation.participants.filter(
+          (participant) => participant !== worker.userId
+        ),
+        participantNames: conversation.participantNames.filter(
+          (participant) => participant !== user.name
+        ),
+      });
+    }
+    await ctx.db.patch(worker._id, {
+      bossId: undefined,
+      organizationId: undefined,
+      workspaceId: undefined,
+    });
   },
 });

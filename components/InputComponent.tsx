@@ -85,6 +85,7 @@ export const CustomInput = ({
                     color: colors.black,
                     height: textarea ? 150 : 50,
                     textAlignVertical: textarea ? 'top' : 'center',
+                    padding: textarea ? 10 : 5,
                   },
                   rest.style,
                 ]}

@@ -15,7 +15,11 @@ export const getPendingRequestsAsBoolean = query({
     return await ctx.db
       .query('requests')
       .filter((q) =>
-        q.and(q.eq(q.field('from'), args.from), q.eq(q.field('to'), args.to))
+        q.and(
+          q.eq(q.field('from'), args.from),
+          q.eq(q.field('to'), args.to),
+          q.eq(q.field('status'), 'pending')
+        )
       )
       .first();
   },
@@ -79,7 +83,13 @@ export const cancelPendingRequests = mutation({
     id: v.id('requests'),
   },
   handler: async (ctx, args) => {
-    await ctx.db.delete(args.id);
+    const request = await ctx.db.get(args.id);
+    if (!request) {
+      throw new Error('Request not found');
+    }
+    await ctx.db.patch(request._id, {
+      status: 'cancelled',
+    });
   },
 });
 
@@ -97,7 +107,7 @@ export const createRequest = mutation({
     if (!getOrganization) {
       throw new Error('No organization found');
     }
-    const id = await ctx.db.insert('requests', {
+    await ctx.db.insert('requests', {
       ...args,
       status: 'pending',
     });
@@ -106,7 +116,7 @@ export const createRequest = mutation({
       title: 'New job offer',
       message: `You have a new job offer from ${getOrganization.name}`,
       userId: args.to,
-      requestId: id,
+      requestId: getOrganization._id,
     });
   },
 });

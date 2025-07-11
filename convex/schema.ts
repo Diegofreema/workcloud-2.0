@@ -145,7 +145,7 @@ export const Notification = {
   title: v.string(),
   message: v.string(),
   seen: v.boolean(),
-  requestId: v.optional(v.id('requests')),
+  requestId: v.optional(v.id('organizations')),
   reviewerId: v.optional(v.id('users')),
 };
 

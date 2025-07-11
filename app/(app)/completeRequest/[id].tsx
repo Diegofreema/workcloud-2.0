@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMutation } from 'convex/react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { toast } from 'sonner-native';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,7 +15,6 @@ import { CustomInput } from '~/components/InputComponent';
 import { Container } from '~/components/Ui/Container';
 import { ErrorComponent } from '~/components/Ui/ErrorComponent';
 import { LoadingComponent } from '~/components/Ui/LoadingComponent';
-import { MyText } from '~/components/Ui/MyText';
 import { UserPreview } from '~/components/Ui/UserPreview';
 import VStack from '~/components/Ui/VStack';
 import { api } from '~/convex/_generated/api';
@@ -127,23 +126,9 @@ const CompleteRequest = () => {
           />
         </View>
 
-        <VStack mt={30}>
+        <VStack mt={30} gap={20}>
           <>
-            <MyText
-              style={{
-                fontSize: 15,
-                color: 'black',
-                marginBottom: 10,
-                marginLeft: 10,
-              }}
-              poppins="Bold"
-            >
-              Role
-            </MyText>
-            <TouchableOpacity
-              style={styles.press}
-              onPress={() => router.push('/staff-role')}
-            >
+            <TouchableOpacity onPress={() => router.push('/staff-role')}>
               <CustomInput
                 control={control}
                 errors={errors}
@@ -164,6 +149,7 @@ const CompleteRequest = () => {
             keyboardType="default"
             multiline
             numberOfLines={4}
+            textarea
           />
 
           <CustomInput
@@ -175,6 +161,7 @@ const CompleteRequest = () => {
             keyboardType="default"
             multiline
             numberOfLines={4}
+            textarea
           />
 
           <CustomInput
@@ -192,6 +179,7 @@ const CompleteRequest = () => {
           onPress={handleSubmit(onSubmit)}
           loadingTitle={'Sending...'}
           loading={isSubmitting}
+          style={{ marginTop: 20 }}
         />
       </ScrollView>
     </Container>
@@ -199,17 +187,3 @@ const CompleteRequest = () => {
 };
 
 export default CompleteRequest;
-
-const styles = StyleSheet.create({
-  press: {
-    borderBottomColor: 'transparent',
-    backgroundColor: '#E5E5E5',
-    borderBottomWidth: 0,
-    paddingHorizontal: 8,
-    borderRadius: 5,
-    height: 60,
-    marginHorizontal: 10,
-    justifyContent: 'center',
-    marginBottom: 10,
-  },
-});

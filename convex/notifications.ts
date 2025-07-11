@@ -7,10 +7,19 @@ export const getNotifications = query({
     userId: v.id('users'),
   },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const notifications = await ctx.db
       .query('notifications')
       .withIndex('by_user_id', (q) => q.eq('userId', args.userId))
       .collect();
+
+    const notificationsWithImages = notifications.map(async (n) => {
+      if (n.reviewerId) {
+      }
+      if (n.requestId) {
+      }
+    });
+
+    return await Promise.all(notificationsWithImages);
   },
 });
 
@@ -25,7 +34,7 @@ export const getUnreadNotificationCount = query({
       .filter((q) => q.eq(q.field('seen'), false))
       .collect();
 
-    return notifications.length;
+    return notifications.length || 0;
   },
 });
 
@@ -34,7 +43,8 @@ export const createNotification = internalMutation({
     userId: v.id('users'),
     message: v.string(),
     title: v.string(),
-    requestId: v.optional(v.id('requests')),
+    requestId: v.optional(v.id('organizations')),
+    reviewerId: v.optional(v.id('users')),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert('notifications', {
