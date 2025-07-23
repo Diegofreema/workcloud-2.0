@@ -1,8 +1,8 @@
 import { v } from 'convex/values';
 
-import { mutation, query } from '~/convex/_generated/server';
-import { getOrganizationByOwnerId } from '~/convex/organisation';
-import { getUserByUserId, getWorkerProfile } from '~/convex/users';
+import { mutation, query } from './_generated/server';
+import { getOrganizationByOwnerId } from './organisation';
+import { getUserByUserId, getWorkerProfile } from './users';
 import { internal } from './_generated/api';
 
 export const getPendingRequestsAsBoolean = query({

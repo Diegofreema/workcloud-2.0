@@ -10,37 +10,38 @@ import {
   Theme,
 } from '@stream-io/video-react-native-sdk';
 import { ErrorComponent } from '~/components/Ui/ErrorComponent';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { PermissionsAndroid, Platform } from 'react-native';
+import { colors } from '~/constants/Colors';
 import { useAuth } from '~/context/auth';
 import CallProvider from '~/context/call-provider';
 import { useDarkMode } from '~/hooks/useDarkMode';
-import { useGetUserId } from '~/hooks/useGetUserId';
-import { colors } from '~/constants/Colors';
-import { Platform } from 'react-native';
-import { PermissionsAndroid } from 'react-native';
-import { useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const apiKey = 'cnvc46pm8uq9';
 
+if (Platform.OS === 'android') {
+  PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+}
 export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
   return <ErrorComponent refetch={retry} text={error.message} />;
 }
 export default function AppLayout() {
   const { darkMode } = useDarkMode();
   const { user } = useAuth();
-  const { user: userData } = useGetUserId();
+
+  console.log(user, 'user in layout');
 
   const person = {
-    id: user?.id!,
-    name: userData?.name,
-    image: userData?.image!,
+    id: user?._id!,
+    name: user?.name,
+    image: user?.image!,
   };
-
   const tokenProvider = async () => {
     const values = JSON.stringify({
-      id: user?.id,
+      id: user?._id,
       name: user?.name,
-      image: user?.picture,
+      image: user?.image,
       email: user?.email,
     });
     await AsyncStorage.setItem('person', JSON.stringify(person));
@@ -55,6 +56,8 @@ export default function AppLayout() {
         body: values,
       });
       const data = await response.json();
+      console.log('🚀 ~ AppLayout ~ tokenProvider ~ data:', data);
+
       return data.token;
     } catch (error) {
       console.error('error', error);
@@ -67,7 +70,14 @@ export default function AppLayout() {
     user: person,
     options: {
       logger: (logLevel: LogLevel, message: string, ...args: unknown[]) => {
-        console.log(message, 'message', logLevel, 'level', ...args);
+        console.log(
+          message,
+          'message',
+          logLevel,
+          'level',
+          ...args,
+          'sadjbcjhhv'
+        );
       },
     },
     tokenProvider,
@@ -118,13 +128,7 @@ export default function AppLayout() {
       },
     },
   };
-  useEffect(() => {
-    if (Platform.OS === 'android') {
-      PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
-      );
-    }
-  }, []);
+
   return (
     <StreamVideo client={client} style={theme}>
       <CallProvider>

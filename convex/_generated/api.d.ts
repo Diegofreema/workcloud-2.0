@@ -13,6 +13,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as auth from "../auth.js";
 import type * as chat from "../chat.js";
 import type * as connection from "../connection.js";
 import type * as conversation from "../conversation.js";
@@ -41,6 +42,7 @@ import type * as workspace from "../workspace.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  auth: typeof auth;
   chat: typeof chat;
   connection: typeof connection;
   conversation: typeof conversation;

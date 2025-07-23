@@ -1,12 +1,7 @@
-import {
-  mutation,
-  MutationCtx,
-  query,
-  QueryCtx,
-} from '~/convex/_generated/server';
+import { mutation, MutationCtx, query, QueryCtx } from './_generated/server';
 import { ConvexError, v } from 'convex/values';
-import { Id } from '~/convex/_generated/dataModel';
-import { getUserByUserId } from '~/convex/users';
+import { Id } from './_generated/dataModel';
+import { getUserByUserId } from './users';
 
 export const reactToMessage = mutation({
   args: {

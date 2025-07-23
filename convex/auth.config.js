@@ -1,7 +1,7 @@
 export default {
   providers: [
     {
-      domain: 'https://huge-gazelle-29.clerk.accounts.dev/',
+      domain: process.env.CONVEX_SITE_URL,
       applicationID: 'convex',
     },
   ],

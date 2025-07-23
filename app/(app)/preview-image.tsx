@@ -8,7 +8,7 @@ type Props = {
   url: string;
 };
 
-export const PreviewChatImage = ({ url }: Props) => {
+const PreviewChatImage = ({ url }: Props) => {
   const router = useRouter();
   const onPress = () => {
     router.back();
@@ -31,3 +31,5 @@ export const PreviewChatImage = ({ url }: Props) => {
     </View>
   );
 };
+
+export default PreviewChatImage;

@@ -1,6 +1,6 @@
-import { Doc, Id } from '~/convex/_generated/dataModel';
 import { Infer, v } from 'convex/values';
 import { ImagePickerAsset } from 'expo-image-picker';
+import { Doc, Id } from '../convex/_generated/dataModel';
 export type ReviewType = Doc<'reviews'> & {
   user: Doc<'users'> | null;
 };
@@ -25,10 +25,9 @@ export type OwnerType = {
 };
 export type User = {
   _id: Id<'users'>;
-  email: string;
-  clerkId: string;
+  email?: string;
   imageUrl?: string | undefined | null;
-  name: string;
+  name?: string;
   pushToken?: string;
   organizationId?: Id<'organizations'>;
   workerId?: Id<'workers'>;

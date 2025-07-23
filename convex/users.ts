@@ -1,15 +1,16 @@
 import { v } from 'convex/values';
+import { User } from '../constants/types';
 
-import { User } from '~/constants/types';
-import { internal } from '~/convex/_generated/api';
-import { Id } from '~/convex/_generated/dataModel';
+import { internal } from './_generated/api';
+import { Id } from './_generated/dataModel';
 import {
   internalAction,
   internalMutation,
   mutation,
   query,
   QueryCtx,
-} from '~/convex/_generated/server';
+} from './_generated/server';
+import { getAuthUserId } from '@convex-dev/auth/server';
 
 export const getAllUsers = query({
   args: {},
@@ -18,14 +19,16 @@ export const getAllUsers = query({
   },
 });
 export const getUser = query({
-  args: {
-    userId: v.string(),
-  },
   handler: async (ctx, args) => {
-    return await ctx.db
-      .query('users')
-      .withIndex('clerkId', (q) => q.eq('clerkId', args.userId))
-      .first();
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return null;
+    }
+    const user = await ctx.db.get(userId);
+    if (!user) {
+      return null;
+    }
+    return user;
   },
 });
 export const createUser = internalMutation({
@@ -44,40 +47,22 @@ export const createUser = internalMutation({
     await ctx.scheduler.runAfter(0, internal.users.createStreamToken, { id });
   },
 });
-export const addUserToDb = mutation({
+
+export const updatePushToken = mutation({
   args: {
-    email: v.string(),
-    clerkId: v.string(),
-    imageUrl: v.optional(v.string()),
-    name: v.string(),
     pushToken: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const isUserInDb = await ctx.db
-      .query('users')
-      .withIndex('clerkId', (q) => q.eq('clerkId', args.clerkId))
-      .unique();
-    if (isUserInDb && !isUserInDb?.pushToken) {
-      await ctx.db.patch(isUserInDb?._id, {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+    const user = await ctx.db.get(userId);
+    if (user) {
+      await ctx.db.patch(user._id, {
         pushToken: args.pushToken,
       });
     }
-    if (isUserInDb)
-      return {
-        id: isUserInDb._id!,
-        name: isUserInDb.name!,
-        pushToken: isUserInDb.pushToken,
-      };
-    const id = await ctx.db.insert('users', {
-      ...args,
-    });
-    const user = await ctx.db.get(id);
-
-    return {
-      id: user?._id!,
-      name: user?.name!,
-      pushToken: user?.pushToken,
-    };
   },
 });
 export const createStreamToken = internalAction({
@@ -121,14 +106,12 @@ export const createToken = internalMutation({
 // });
 
 export const getUserByClerkId = query({
-  args: {
-    clerkId: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query('users')
-      .filter((q) => q.eq(q.field('clerkId'), args.clerkId))
-      .unique();
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return null;
+    }
+    const user = await ctx.db.get(userId);
     let workProfile;
     if (user?.workerId) {
       workProfile = await ctx.db.get(user?.workerId!);

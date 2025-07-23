@@ -1,7 +1,7 @@
 import { ConvexError, v } from 'convex/values';
-import { Id } from '~/convex/_generated/dataModel';
-import { mutation, query, QueryCtx } from '~/convex/_generated/server';
-import { getUserByUserId, getUserForWorker } from '~/convex/users';
+import { Id } from './_generated/dataModel';
+import { mutation, query, QueryCtx } from './_generated/server';
+import { getUserByUserId, getUserForWorker } from './users';
 
 export const getServicePoints = query({
   args: {},

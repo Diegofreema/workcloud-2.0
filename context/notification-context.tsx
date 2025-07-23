@@ -1,3 +1,4 @@
+import { useMutation } from 'convex/react';
 import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import React, {
@@ -7,6 +8,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { api } from '~/convex/_generated/api';
 
 import { registerForPushNotificationsAsync } from '~/utils/registerPushNotification';
 
@@ -38,6 +40,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   children,
 }) => {
   const [expoPushToken, setExpoPushToken] = useState<string | undefined>('');
+  const updatePushToken = useMutation(api.users.updatePushToken);
   const [notification, setNotification] =
     useState<Notifications.Notification | null>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -80,6 +83,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       responseListener.remove();
     };
   }, [router]);
+
+  useEffect(() => {
+    if (expoPushToken) {
+      updatePushToken({ pushToken: expoPushToken }).catch((err) => {
+        console.error('Failed to update push token:', err);
+      });
+    }
+  }, [expoPushToken, updatePushToken]);
 
   return (
     <NotificationContext.Provider

@@ -1,8 +1,8 @@
 import { paginationOptsValidator } from 'convex/server';
 import { ConvexError, v } from 'convex/values';
 
-import { mutation, query } from '~/convex/_generated/server';
-import { getUserByUserId } from '~/convex/users';
+import { mutation, query } from './_generated/server';
+import { getUserByUserId } from './users';
 import { internal } from './_generated/api';
 
 // mutation
@@ -62,9 +62,42 @@ export const addReply = mutation({
     reply: v.string(),
   },
   handler: async (ctx, args) => {
+    const review = await ctx.db.get(args.reviewId);
+    if (!review) {
+      throw new ConvexError('Review not found');
+    }
+    const replyTo = await ctx.db.get(review.userId);
+    const organization = await ctx.db.get(review.organizationId);
+
+    if (!replyTo || !organization) {
+      throw new ConvexError('Reply to not found');
+    }
+
     await ctx.db.insert('replies', {
       ...args,
     });
+    const title = `${organization.name}'s admin replied to your review`;
+    await ctx.runMutation(internal.notifications.createNotification, {
+      message: args.reply,
+      title,
+      userId: review.userId,
+      reviewId: review._id,
+      // reviewId: review._id,
+    });
+    if (replyTo.pushToken) {
+      await ctx.scheduler.runAfter(
+        0,
+        internal.externalFuntions.sendPushNotificationConvex,
+        {
+          title,
+          body: args.reply,
+          expoPushToken: replyTo.pushToken,
+          data: {
+            type: 'reply',
+          },
+        }
+      );
+    }
   },
 });
 export const deleteReply = mutation({

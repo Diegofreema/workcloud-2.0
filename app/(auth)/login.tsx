@@ -9,17 +9,16 @@ import {
 } from 'react-native';
 
 import { AuthTitle } from '~/components/AuthTitle';
+import { SignIn } from '~/components/Buttons/sign-in-button';
 import { Subtitle } from '~/components/Subtitle';
 import { Container } from '~/components/Ui/Container';
 import { useDarkMode } from '~/hooks/useDarkMode';
 import { useWarmUpBrowser } from '~/hooks/warmUpBrowser';
-import { useAuth } from '~/context/auth';
-import { Button } from '~/features/common/components/Button';
 
 export default function SignInScreen() {
   useWarmUpBrowser();
   const { height } = useWindowDimensions();
-  const { signIn, isLoading } = useAuth();
+
   const { darkMode } = useDarkMode();
 
   // const { signIn } = useSignIn();
@@ -76,12 +75,7 @@ export default function SignInScreen() {
           }}
         >
           <View style={{ marginTop: 'auto', marginBottom: 20 }}>
-            <Button
-              title={'Sign in with Google'}
-              loading={isLoading}
-              loadingTitle={'Signing in...'}
-              onPress={signIn}
-            />
+            <SignIn />
           </View>
         </LinearGradient>
       </ScrollView>

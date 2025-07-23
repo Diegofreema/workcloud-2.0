@@ -1,13 +1,13 @@
 import { ConvexError, v } from 'convex/values';
 
-import { Id } from '~/convex/_generated/dataModel';
-import { mutation, query } from '~/convex/_generated/server';
+import { Id } from './_generated/dataModel';
+import { mutation, query } from './_generated/server';
 import {
   getOrganisationWithoutImageByWorker,
   getUserByUserId,
   getUserByWorkerId,
-} from '~/convex/users';
-import { User } from '~/constants/types';
+} from './users';
+import { User } from '../constants/types';
 import { filter } from 'convex-helpers/server/filter';
 
 export const getAllOtherWorkers = query({

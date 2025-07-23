@@ -1,8 +1,8 @@
 import { ConvexError, v } from 'convex/values';
 
-import { Id } from '~/convex/_generated/dataModel';
-import { mutation, query, QueryCtx } from '~/convex/_generated/server';
-import { getImageUrl } from '~/convex/organisation';
+import { Id } from './_generated/dataModel';
+import { mutation, query, QueryCtx } from './_generated/server';
+import { getImageUrl } from './organisation';
 
 export const getServicePoints = query({
   args: {

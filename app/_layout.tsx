@@ -1,26 +1,34 @@
+import { ConvexAuthProvider } from '@convex-dev/auth/react';
 import { ConvexQueryClient } from '@convex-dev/react-query';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ConvexProvider, ConvexReactClient } from 'convex/react';
+import { ConvexReactClient } from 'convex/react';
 import { useFonts } from 'expo-font';
+import * as Notifications from 'expo-notifications';
 import { Stack, usePathname } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import * as Updates from 'expo-updates';
 import { useEffect } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Toaster } from 'sonner-native';
 import { useDarkMode } from '~/hooks/useDarkMode';
-import * as Notifications from 'expo-notifications';
+// import { Authenticated, Unauthenticated, AuthLoading } from 'convex/react';
 
 // import * as Sentry from "@sentry/react-native";
 // import { isRunningInExpoGo } from "expo";
 import { MenuProvider } from 'react-native-popup-menu';
 import { AuthProvider, useAuth } from '~/context/auth';
 import { NotificationProvider } from '~/context/notification-context';
+import { registerTask } from '~/lib/utils';
 
+const secureStorage = {
+  getItem: SecureStore.getItemAsync,
+  setItem: SecureStore.setItemAsync,
+  removeItem: SecureStore.deleteItemAsync,
+};
 // Construct a new integration instance. This is needed to communicate between the integration and React
 // const navigationIntegration = Sentry.reactNavigationIntegration({
 //   enableTimeToInitialDisplay: !isRunningInExpoGo(),
@@ -49,6 +57,7 @@ const queryClient = new QueryClient({
   },
 });
 convexQueryClient.connect(queryClient);
+registerTask();
 
 // Sentry.init({
 //   dsn: "https://3309f876b2a32501367ff526d4b77ca7@o4506898363318273.ingest.us.sentry.io/4507879223066624",
@@ -70,15 +79,14 @@ convexQueryClient.connect(queryClient);
 SplashScreen.preventAutoHideAsync();
 
 const InitialRouteLayout = () => {
-  const { user } = useAuth();
-  const isLoggedIn = !!user;
+  const { isAuthenticated } = useAuth();
 
   return (
     <Stack>
-      <Stack.Protected guard={isLoggedIn}>
+      <Stack.Protected guard={isAuthenticated}>
         <Stack.Screen name="(app)" options={{ headerShown: false }} />
       </Stack.Protected>
-      <Stack.Protected guard={!isLoggedIn}>
+      <Stack.Protected guard={!isAuthenticated}>
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       </Stack.Protected>
     </Stack>
@@ -116,22 +124,7 @@ export function RootLayout() {
       void SplashScreen.hideAsync();
     }
   }, [loaded]);
-  useEffect(() => {
-    async function onFetchUpdateAsync() {
-      try {
-        const update = await Updates.checkForUpdateAsync();
 
-        if (update.isAvailable) {
-          await Updates.fetchUpdateAsync();
-          await Updates.reloadAsync();
-        }
-      } catch (error) {
-        // You can also add an alert() to see the error message in case of an error when fetching updates.
-        console.log(error);
-      }
-    }
-    void onFetchUpdateAsync();
-  }, []);
   useEffect(() => {
     const run = async () => {
       if (Platform.OS === 'android') {
@@ -148,8 +141,15 @@ export function RootLayout() {
   }
 
   return (
-    <NotificationProvider>
-      <ConvexProvider client={convex}>
+    <ConvexAuthProvider
+      client={convex}
+      storage={
+        Platform.OS === 'android' || Platform.OS === 'ios'
+          ? secureStorage
+          : undefined
+      }
+    >
+      <NotificationProvider>
         <AuthProvider>
           <QueryClientProvider client={queryClient}>
             <GestureHandlerRootView style={{ flex: 1 }}>
@@ -171,8 +171,8 @@ export function RootLayout() {
             </GestureHandlerRootView>
           </QueryClientProvider>
         </AuthProvider>
-      </ConvexProvider>
-    </NotificationProvider>
+      </NotificationProvider>
+    </ConvexAuthProvider>
   );
 }
 

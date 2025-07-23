@@ -1,6 +1,6 @@
 import { ConvexError, v } from 'convex/values';
-import { mutation, query } from '~/convex/_generated/server';
-import { getOrganisations } from '~/convex/users';
+import { mutation, query } from './_generated/server';
+import { getOrganisations } from './users';
 
 export const getConnection = query({
   args: {
@@ -27,11 +27,21 @@ export const getUserConnections = query({
       .order('desc')
       .filter((q) => q.eq(q.field('ownerId'), args.ownerId))
       .take(10);
-    const c =   [...connections].sort((a, b) => {
-      const dateA = new Date(a.connectedAt.replace(/(\d+)\/(\d+)\/(\d+), (\d+):(\d+):(\d+)/, '$3-$2-$1T$4:$5:$6'));
-      const dateB = new Date(b.connectedAt.replace(/(\d+)\/(\d+)\/(\d+), (\d+):(\d+):(\d+)/, '$3-$2-$1T$4:$5:$6'));
+    const c = [...connections].sort((a, b) => {
+      const dateA = new Date(
+        a.connectedAt.replace(
+          /(\d+)\/(\d+)\/(\d+), (\d+):(\d+):(\d+)/,
+          '$3-$2-$1T$4:$5:$6'
+        )
+      );
+      const dateB = new Date(
+        b.connectedAt.replace(
+          /(\d+)\/(\d+)\/(\d+), (\d+):(\d+):(\d+)/,
+          '$3-$2-$1T$4:$5:$6'
+        )
+      );
       return dateB.getTime() - dateA.getTime();
-    })
+    });
     return await Promise.all(
       c.map(async (connection) => {
         const organisation = await getOrganisations(
