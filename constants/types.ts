@@ -13,10 +13,9 @@ export type connections =
     }[]
   | null;
 export type OwnerType = {
-  clerkId: string;
-  email: string;
+  email?: string;
   imageUrl?: string | null;
-  name: string;
+  name?: string;
   organizationId?: string;
   phoneNumber?: string;
   workerId?: Id<'workers'>;

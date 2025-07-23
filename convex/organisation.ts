@@ -152,13 +152,12 @@ export const getOrganizationByBossId = query({
   },
 });
 export const getOrganizationWithOwnerAndWorkspaces = query({
-  args: {
-    ownerId: v.id('users'),
-  },
   handler: async (ctx, args) => {
+    const user = await getLoggedInUser(ctx, 'query');
+    if (!user) return null;
     const result = await ctx.db
       .query('organizations')
-      .withIndex('ownerId', (q) => q.eq('ownerId', args.ownerId))
+      .withIndex('ownerId', (q) => q.eq('ownerId', user._id))
       .first();
 
     if (!result) return null;
@@ -522,15 +521,8 @@ export const handleFollow = mutation({
 export const getUserByOwnerId = async (ctx: QueryCtx, ownerId: Id<'users'>) => {
   const result = await ctx.db.get(ownerId);
   if (!result) return null;
-  if (result.imageUrl?.startsWith('http')) return result;
 
-  const userAvatarUrl = await ctx.storage.getUrl(
-    result.imageUrl as Id<'_storage'>
-  );
-  return {
-    ...result,
-    imageUrl: userAvatarUrl,
-  };
+  return result;
 };
 
 export const getWorkspacesByOrganizationId = async (
