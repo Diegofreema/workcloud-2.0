@@ -19,10 +19,8 @@ import { TabsHeader } from '~/features/common/components/tabs-header';
 import { Title } from '~/features/common/components/title';
 
 const Organization = () => {
-  const { id, worker } = useGetUserId();
-  const data = useQuery(api.organisation.getOrganisationsOrNull, {
-    ownerId: id!,
-  });
+  const { worker } = useGetUserId();
+  const data = useQuery(api.organisation.getOrganisationsOrNull, {});
   const { darkMode } = useDarkMode();
   const workspace = useQuery(api.workspace.getUserWorkspaceOrNull, {
     workerId: worker,
@@ -31,7 +29,6 @@ const Organization = () => {
   if (data === undefined || workspace === undefined) {
     return <LoadingComponent />;
   }
-  console.log('id', workspace?.workerId);
 
   return (
     <Container>

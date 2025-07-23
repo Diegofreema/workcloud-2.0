@@ -10,26 +10,32 @@ import { useOrganizationModal } from '../hooks/useOrganizationModal';
 import { MyText } from './Ui/MyText';
 
 import { useDarkMode } from '~/hooks/useDarkMode';
+import { useIsFirstTime } from '~/hooks/use-is-first-time';
 
 export const OrganizationModal = (): JSX.Element => {
   const { isOpen, onClose } = useOrganizationModal();
   const { height } = useWindowDimensions();
   const router = useRouter();
   const { darkMode } = useDarkMode();
-
+  const setIsFirstTimeToFalse = useIsFirstTime((state) => state.setIsFirstTime);
+  const handleClose = () => {
+    onClose();
+    setIsFirstTimeToFalse();
+  };
   const createOrganization = () => {
     router.push('/create-workspace');
-    onClose();
+    handleClose();
   };
   const connectToOrganization = () => {
     router.push('/search');
-    onClose();
+    handleClose();
   };
 
   const createWorkerProfile = () => {
     router.push('/create-worker-profile');
-    onClose();
+    handleClose();
   };
+
   return (
     <Modal
       hasBackdrop={false}
@@ -62,7 +68,7 @@ export const OrganizationModal = (): JSX.Element => {
             Hi, start your journey on workcloud
           </MyText>
           <Pressable
-            onPress={onClose}
+            onPress={handleClose}
             style={({ pressed }) => [
               { opacity: pressed ? 0.5 : 1 },
               { position: 'absolute', right: 15, top: -8 },
@@ -124,19 +130,6 @@ export const OrganizationModal = (): JSX.Element => {
               radius={10}
             />
           </View>
-        </View>
-        <View style={{ justifyContent: 'center' }}>
-          <Button
-            titleStyle={{
-              verticalAlign: 'middle',
-              fontFamily: 'PoppinsBold',
-              color: 'white',
-              fontSize: RFValue(14, height),
-            }}
-            radius={10}
-            onPress={onClose}
-            title="Cancel"
-          />
         </View>
       </View>
     </Modal>

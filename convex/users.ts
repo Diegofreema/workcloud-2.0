@@ -1,4 +1,4 @@
-import { v } from 'convex/values';
+import { ConvexError, v } from 'convex/values';
 import { User } from '../constants/types';
 
 import { internal } from './_generated/api';
@@ -7,6 +7,7 @@ import {
   internalAction,
   internalMutation,
   mutation,
+  MutationCtx,
   query,
   QueryCtx,
 } from './_generated/server';
@@ -321,4 +322,19 @@ export const getOrganisationWithoutImageByWorker = async (
 
 const helperToGetUser = async (ctx: QueryCtx, user: User) => {
   return user;
+};
+
+export const getLoggedInUser = async (
+  ctx: QueryCtx | MutationCtx,
+  type: 'query' | 'mutation'
+) => {
+  const userId = await getAuthUserId(ctx);
+
+  if (type === 'query' && !userId) return null;
+  if (type === 'mutation' && !userId) {
+    throw new ConvexError('Unauthorized');
+  }
+
+  if (!userId) return null;
+  return await ctx.db.get(userId);
 };

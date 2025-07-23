@@ -31,7 +31,6 @@ import { colors } from '~/constants/Colors';
 import { api } from '~/convex/_generated/api';
 import { useDarkMode } from '~/hooks/useDarkMode';
 import { useGetCat } from '~/hooks/useGetCat';
-import { useGetUserId } from '~/hooks/useGetUserId';
 import { generateErrorMessage, uploadProfilePicture } from '~/lib/helper';
 import {
   createOrganizationSchema,
@@ -49,7 +48,6 @@ const CreateWorkSpace = () => {
   const [selectedImage, setSelectedImage] =
     useState<ImagePicker.ImagePickerAsset | null>(null);
 
-  const { id } = useGetUserId();
   const [show, setShow] = useState(false);
   const [show2, setShow2] = useState(false);
   const { darkMode } = useDarkMode();
@@ -79,8 +77,6 @@ const CreateWorkSpace = () => {
   });
 
   const onSubmit = async (values: CreateOrganizationSchemaType) => {
-    if (!id) return;
-
     try {
       const res = await uploadProfilePicture(
         generateUploadUrl,
@@ -93,7 +89,6 @@ const CreateWorkSpace = () => {
         return;
       }
       await createOrganization({
-        ownerId: id,
         avatarId: res?.storageId,
         end: values.endTime,
         name: values.organizationName,
@@ -384,6 +379,7 @@ const CreateWorkSpace = () => {
               onPress={handleSubmit(onSubmit)}
               loadingTitle={'Creating...'}
               loading={isSubmitting}
+              disabled={isSubmitting}
             />
           </View>
         </View>

@@ -1,7 +1,7 @@
 import { ConvexError, v } from 'convex/values';
 import { Id } from './_generated/dataModel';
 import { mutation, query, QueryCtx } from './_generated/server';
-import { getUserByUserId, getUserForWorker } from './users';
+import { getLoggedInUser, getUserByUserId, getUserForWorker } from './users';
 
 export const getServicePoints = query({
   args: {},
@@ -37,14 +37,13 @@ export const getServicePoints = query({
 });
 
 export const getOrganisationsOrNull = query({
-  args: {
-    ownerId: v.optional(v.id('users')),
-  },
+  args: {},
   handler: async (ctx, args) => {
-    if (!args.ownerId) return null;
+    const user = await getLoggedInUser(ctx, 'query');
+    if (!user) return null;
     const orgs = await ctx.db
       .query('organizations')
-      .filter((q) => q.eq(q.field('ownerId'), args.ownerId))
+      .filter((q) => q.eq(q.field('ownerId'), user._id))
       .first();
     if (!orgs) return null;
     let orgsAvatarUrl = null;
@@ -380,13 +379,17 @@ export const createOrganization = mutation({
     end: v.string(),
     location: v.string(),
     name: v.string(),
-    ownerId: v.id('users'),
+
     start: v.string(),
     website: v.string(),
     workDays: v.string(),
     avatarId: v.id('_storage'),
   },
   handler: async (ctx, args) => {
+    const user = await getLoggedInUser(ctx, 'mutation');
+    if (!user) {
+      throw new ConvexError('Unauthorized');
+    }
     const organizationExist = await ctx.db
       .query('organizations')
       .withIndex('by_name', (q) => q.eq('name', args.name))
@@ -402,11 +405,12 @@ export const createOrganization = mutation({
       followersCount: 0,
       searchCount: 0,
       avatar: avatar!,
+      ownerId: user._id,
     });
     if (!organizationId) {
       throw new ConvexError('Failed to create organization');
     }
-    await ctx.db.patch(args.ownerId, {
+    await ctx.db.patch(user._id, {
       organizationId: organizationId,
     });
   },
