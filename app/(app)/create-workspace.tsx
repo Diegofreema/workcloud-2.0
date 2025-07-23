@@ -216,6 +216,7 @@ const CreateWorkSpace = () => {
               placeholder="Description"
               label="Description"
               numberOfLines={5}
+              multiline
               textarea
             />
             <Pressable

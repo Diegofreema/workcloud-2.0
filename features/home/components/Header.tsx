@@ -7,16 +7,11 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { colors } from '~/constants/Colors';
 import { api } from '~/convex/_generated/api';
 import { useDarkMode } from '~/hooks/useDarkMode';
-import { useGetUserId } from '~/hooks/useGetUserId';
 
 export const Header = () => {
   const { darkMode } = useDarkMode();
 
-  const { id } = useGetUserId();
-
-  const data = useQuery(api.notifications.getUnreadNotificationCount, {
-    userId: id,
-  });
+  const data = useQuery(api.notifications.getUnreadNotificationCount, {});
   const router = useRouter();
   const onSearch = () => {
     router.push('/search');

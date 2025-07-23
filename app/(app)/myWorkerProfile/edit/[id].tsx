@@ -15,10 +15,9 @@ import { LoadingComponent } from '~/components/Ui/LoadingComponent';
 import { MyText } from '~/components/Ui/MyText';
 import { colors } from '~/constants/Colors';
 import { api } from '~/convex/_generated/api';
-import { Id } from '~/convex/_generated/dataModel';
 import { Button } from '~/features/common/components/Button';
 import { useDarkMode } from '~/hooks/useDarkMode';
-import { useGetUserId } from '~/hooks/useGetUserId';
+import { generateErrorMessage } from '~/lib/helper';
 import { editWorkerSchema, EditWorkerSchemaType } from '~/schema';
 
 const max = 150;
@@ -35,10 +34,7 @@ const genders = [
 const CreateProfile = () => {
   const { darkMode } = useDarkMode();
 
-  const { id } = useGetUserId();
-  const data = useQuery(api.users.getWorkerProfileWithUser, {
-    id: id as Id<'users'>,
-  });
+  const data = useQuery(api.users.getWorkerProfileWithUser, {});
   const updateWorkerProfile = useMutation(api.users.updateWorkerProfile);
   const router = useRouter();
 
@@ -64,11 +60,16 @@ const CreateProfile = () => {
       if (!data?._id) return;
       await updateWorkerProfile({ _id: data?._id, ...values });
 
-      toast.success(`${data?.user?.name} your work profile has been updated`);
+      toast.success(
+        `${data?.user?.name?.split(' ')[0]} your work profile has been updated`
+      );
       reset();
       router.back();
-    } catch (error: any) {
-      toast.error(error?.response?.data.error);
+    } catch (error) {
+      const errorMessage = generateErrorMessage(error, 'Something went wrong');
+      toast.error('An error occurred', {
+        description: errorMessage,
+      });
       console.log(error, 'Error');
     }
   };

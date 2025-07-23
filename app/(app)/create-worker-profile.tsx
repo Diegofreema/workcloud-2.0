@@ -16,10 +16,8 @@ import { MyText } from '~/components/Ui/MyText';
 import { colors } from '~/constants/Colors';
 import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
-import { Id } from '~/convex/_generated/dataModel';
 import { Button } from '~/features/common/components/Button';
 import { useDarkMode } from '~/hooks/useDarkMode';
-import { useGetUserId } from '~/hooks/useGetUserId';
 import { createWorkerSchema, CreateWorkerSchemaType } from '~/schema';
 
 const max = 150;
@@ -36,12 +34,10 @@ const genders = [
 const CreateProfile = () => {
   const { darkMode } = useDarkMode();
   const { user } = useAuth();
-  const { id } = useGetUserId();
+
   const router = useRouter();
   const createWorkerProfile = useMutation(api.users.createWorkerProfile);
-  const updateWorkerIdOnUserTable = useMutation(
-    api.users.updateWorkerIdOnUserTable
-  );
+
   const {
     handleSubmit,
     control,
@@ -62,15 +58,12 @@ const CreateProfile = () => {
   });
   const onSubmit = async (values: CreateWorkerSchemaType) => {
     try {
-      const workerId = await createWorkerProfile({
+      const id = await createWorkerProfile({
         ...values,
-        userId: id as Id<'users'>,
       });
-      if (workerId && id) {
-        await updateWorkerIdOnUserTable({ workerId, _id: id });
-      }
+
       toast.success('Welcome  onboard', {
-        description: `${user?.name.split(' ')[0]} your work profile was created`,
+        description: `${user?.name?.split(' ')[0]} your work profile was created`,
       });
 
       router.replace(`/myWorkerProfile/${id}`);

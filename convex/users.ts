@@ -1,6 +1,7 @@
 import { ConvexError, v } from 'convex/values';
 import { User } from '../constants/types';
 
+import { getAuthUserId } from '@convex-dev/auth/server';
 import { internal } from './_generated/api';
 import { Id } from './_generated/dataModel';
 import {
@@ -11,7 +12,6 @@ import {
   query,
   QueryCtx,
 } from './_generated/server';
-import { getAuthUserId } from '@convex-dev/auth/server';
 
 export const getAllUsers = query({
   args: {},
@@ -192,7 +192,6 @@ export const updateImage = mutation({
 
 export const createWorkerProfile = mutation({
   args: {
-    userId: v.id('users'),
     experience: v.string(),
     location: v.string(),
     skills: v.string(),
@@ -201,19 +200,17 @@ export const createWorkerProfile = mutation({
     qualifications: v.string(),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.insert('workers', { ...args });
+    const user = await getLoggedInUser(ctx, 'mutation');
+    if (!user) throw new ConvexError('Unauthorized');
+    const workerId = await ctx.db.insert('workers', {
+      ...args,
+      userId: user._id,
+    });
+    await ctx.db.patch(user._id, { workerId });
+    return user._id;
   },
 });
 
-export const updateWorkerIdOnUserTable = mutation({
-  args: {
-    workerId: v.id('workers'),
-    _id: v.id('users'),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.patch(args._id, { workerId: args.workerId });
-  },
-});
 export const updateWorkerProfile = mutation({
   args: {
     _id: v.id('workers'),
@@ -234,14 +231,13 @@ export const updateWorkerProfile = mutation({
   },
 });
 export const getWorkerProfileWithUser = query({
-  args: {
-    id: v.id('users'),
-  },
   handler: async (ctx, args) => {
+    const loggedInUser = await getLoggedInUser(ctx, 'query');
+    if (!loggedInUser) return null;
     // Fetch worker
     const worker = await ctx.db
       .query('workers')
-      .filter((q) => q.eq(q.field('userId'), args.id))
+      .filter((q) => q.eq(q.field('userId'), loggedInUser._id))
       .first();
 
     if (!worker) return null;
@@ -251,37 +247,16 @@ export const getWorkerProfileWithUser = query({
     if (!user) return null;
 
     // Fetch and process organization
-    const organisation = await getOrganisations(ctx, worker?.organizationId!);
-    const processedOrganization = organisation
-      ? organisation.avatar.startsWith('http')
-        ? organisation
-        : {
-            ...organisation,
-            avatar: await ctx.storage.getUrl(
-              organisation.avatar as Id<'_storage'>
-            ),
-          }
-      : null;
+    const organization = await getOrganisations(ctx, worker?.organizationId!);
 
     // Process user image
-    const { _creationTime, imageUrl, ...userRest } = user;
-    const processedImageUrl = imageUrl?.startsWith('http')
-      ? imageUrl
-      : imageUrl
-        ? await ctx.storage.getUrl(imageUrl as Id<'_storage'>)
-        : null;
 
     // Return processed data
-    return processedImageUrl
-      ? {
-          user: {
-            imageUrl: processedImageUrl,
-            ...userRest,
-          },
-          ...worker,
-          organization: processedOrganization,
-        }
-      : null;
+    return {
+      user,
+      ...worker,
+      organization,
+    };
   },
 });
 

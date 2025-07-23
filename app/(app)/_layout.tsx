@@ -30,8 +30,6 @@ export default function AppLayout() {
   const { darkMode } = useDarkMode();
   const { user } = useAuth();
 
-  console.log(user, 'user in layout');
-
   const person = {
     id: user?._id!,
     name: user?.name,

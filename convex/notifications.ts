@@ -2,6 +2,7 @@ import { v } from 'convex/values';
 
 import { internalMutation, mutation, query } from './_generated/server';
 import { paginationOptsValidator } from 'convex/server';
+import { getLoggedInUser } from './users';
 
 export const getNotifications = query({
   args: {
@@ -46,13 +47,12 @@ export const getNotifications = query({
 });
 
 export const getUnreadNotificationCount = query({
-  args: {
-    userId: v.id('users'),
-  },
   handler: async (ctx, args) => {
+    const user = await getLoggedInUser(ctx, 'query');
+    if (!user) return 0;
     const notifications = await ctx.db
       .query('notifications')
-      .withIndex('by_user_id', (q) => q.eq('userId', args.userId))
+      .withIndex('by_user_id', (q) => q.eq('userId', user._id))
       .filter((q) => q.eq(q.field('seen'), false))
       .collect();
 
