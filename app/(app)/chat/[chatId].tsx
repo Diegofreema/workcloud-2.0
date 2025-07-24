@@ -53,7 +53,7 @@ const SingleChat = () => {
 
   return (
     <Container noPadding>
-      <ChatHeader name={otherUser?.name!} imageUrl={otherUser?.imageUrl!} />
+      <ChatHeader name={otherUser?.name!} imageUrl={otherUser?.image!} />
       <ChatComponentNative
         conversationId={conversationData?._id!}
         otherUserId={userToChat}
