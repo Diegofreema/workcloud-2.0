@@ -4,11 +4,11 @@ import { ConvexError, v } from 'convex/values';
 import { mutation, MutationCtx, query, QueryCtx } from './_generated/server';
 
 import { filter } from 'convex-helpers/server/filter';
+import { Id } from './_generated/dataModel';
 import { getMemberHelper } from './member';
-import { getLoggedInUser, getUserByUserId, getWorkerProfile } from './users';
 import { messageHelper, messageReactions } from './message';
 import { getImageUrl } from './organisation';
-import { Id } from './_generated/dataModel';
+import { getLoggedInUser, getUserByUserId, getWorkerProfile } from './users';
 
 export const getConversations = query({
   args: {
@@ -55,20 +55,19 @@ export const getConversationsSingleSearch = query({
 
 export const getConversationsGroupSearch = query({
   args: {
-    userId: v.id('users'),
     query: v.string(),
   },
   handler: async (ctx, args) => {
-    const me = await ctx.db.get(args.userId);
+    const me = await getLoggedInUser(ctx, 'query');
     if (!me) {
-      throw new ConvexError('Unable to fetch data');
+      return [];
     }
 
     return filter(
       ctx.db
         .query('conversations')
         .withSearchIndex('by_name', (q) => q.search('name', args.query)),
-      (conversation) => conversation.participants.includes(args.userId)
+      (conversation) => conversation.participants.includes(me._id)
     ).collect();
   },
 });
@@ -213,19 +212,18 @@ export const getGroupMember = query({
 });
 
 export const getGroupConversationThatIAmIn = query({
-  args: {
-    loggedInUserId: v.id('users'),
-    paginationOpts: paginationOptsValidator,
-  },
+  args: {},
   handler: async (ctx, args) => {
+    const me = await getLoggedInUser(ctx, 'query');
+    if (!me) return [];
     return filter(
       ctx.db
         .query('conversations')
         .withIndex('by_last_message_last_message_time'),
       (conversation) =>
-        conversation.participants.includes(args.loggedInUserId) &&
+        conversation.participants.includes(me._id) &&
         conversation.type === 'group'
-    ).paginate(args.paginationOpts);
+    ).take(100);
   },
 });
 
