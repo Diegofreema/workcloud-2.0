@@ -5,38 +5,35 @@ import { mutation, MutationCtx, query, QueryCtx } from './_generated/server';
 
 import { filter } from 'convex-helpers/server/filter';
 import { getMemberHelper } from './member';
-import { getUserByUserId, getWorkerProfile } from './users';
+import { getLoggedInUser, getUserByUserId, getWorkerProfile } from './users';
 import { messageHelper, messageReactions } from './message';
 import { getImageUrl } from './organisation';
 import { Id } from './_generated/dataModel';
 
 export const getConversations = query({
   args: {
-    userId: v.id('users'),
-    paginationOpts: paginationOptsValidator,
     type: v.union(v.literal('single'), v.literal('processor')),
   },
   handler: async (ctx, args) => {
+    const me = await getLoggedInUser(ctx, 'query');
     return filter(
       ctx.db
         .query('conversations')
-        .withIndex('by_last_message_last_message_time'),
+        .withIndex('type', (q) => q.eq('type', args.type)),
       (conversation) =>
-        conversation.participants.includes(args.userId) &&
-        conversation.type === args.type &&
+        conversation.participants.includes(me?._id!) &&
         conversation.lastMessage !== undefined
     )
       .order('asc')
-      .paginate(args.paginationOpts);
+      .take(50);
   },
 });
 export const getConversationsSingleSearch = query({
   args: {
-    userId: v.id('users'),
     query: v.string(),
   },
   handler: async (ctx, args) => {
-    const me = await ctx.db.get(args.userId);
+    const me = await getLoggedInUser(ctx, 'query');
     if (!me) {
       throw new ConvexError('Unable to fetch data');
     }
@@ -46,7 +43,7 @@ export const getConversationsSingleSearch = query({
         .query('conversations')
         .withIndex('by_last_message_last_message_time'),
       (conversation) =>
-        conversation.participants.includes(args.userId) &&
+        conversation.participants.includes(me._id) &&
         conversation.participantNames.some((p) =>
           p.toLowerCase().includes(args.query.toLowerCase())
         )
@@ -79,10 +76,11 @@ export const getConversationsGroupSearch = query({
 export const getUnreadMessages = query({
   args: {
     conversationId: v.id('conversations'),
-    userId: v.id('users'),
   },
   handler: async (ctx, args) => {
-    const member = await getMemberHelper(ctx, args.conversationId, args.userId);
+    const me = await getLoggedInUser(ctx, 'query');
+    if (!me) return 0;
+    const member = await getMemberHelper(ctx, args.conversationId, me._id);
     if (!member) return 0;
     const messages = await ctx.db
       .query('messages')
@@ -91,32 +89,26 @@ export const getUnreadMessages = query({
       )
       .filter((q) =>
         q.and(
-          q.neq(q.field('senderId'), args.userId),
+          q.neq(q.field('senderId'), me._id),
           q.gt(q.field('_creationTime'), member._creationTime)
         )
       )
       .collect();
-    const unseenMessages = messages.filter(
-      (m) => !m.seenId.includes(args.userId)
-    );
+    const unseenMessages = messages.filter((m) => !m.seenId.includes(me._id));
 
     return unseenMessages.length || 0;
   },
 });
 export const getUnreadAllMessages = query({
-  args: {
-    userId: v.id('users'),
-  },
+  args: {},
   handler: async (ctx, args) => {
-    const conversations = await getConversationIamIn(ctx, args.userId);
+    const me = await getLoggedInUser(ctx, 'query');
+    if (!me) return 0;
+    const conversations = await getConversationIamIn(ctx, me._id);
 
     const messagesThatIHaveNotRead = await Promise.all(
       conversations.map(async (conversation) => {
-        const member = await getMemberHelper(
-          ctx,
-          conversation._id,
-          args.userId
-        );
+        const member = await getMemberHelper(ctx, conversation._id, me._id);
         if (!member) return 0;
         const messages = await ctx.db
           .query('messages')
@@ -125,14 +117,14 @@ export const getUnreadAllMessages = query({
           )
           .filter((q) =>
             q.and(
-              q.neq(q.field('senderId'), args.userId),
+              q.neq(q.field('senderId'), me._id),
               q.gt(q.field('_creationTime'), member._creationTime)
             )
           )
           .collect();
 
         const messagesThatIHaveNotSeen = messages.filter(
-          (m) => !m.seenId.includes(args.userId)
+          (m) => !m.seenId.includes(me._id)
         );
 
         return messagesThatIHaveNotSeen.length;
@@ -143,19 +135,14 @@ export const getUnreadAllMessages = query({
   },
 });
 export const getUnreadProcessorMessages = query({
-  args: {
-    userId: v.id('users'),
-  },
   handler: async (ctx, args) => {
-    const conversations = await getProcessorConversationIamIn(ctx, args.userId);
+    const me = await getLoggedInUser(ctx, 'query');
+    if (!me) return 0;
+    const conversations = await getProcessorConversationIamIn(ctx, me._id);
 
     const messagesThatIHaveNotRead = await Promise.all(
       conversations.map(async (conversation) => {
-        const member = await getMemberHelper(
-          ctx,
-          conversation._id,
-          args.userId
-        );
+        const member = await getMemberHelper(ctx, conversation._id, me._id);
         if (!member) return 0;
         const messages = await ctx.db
           .query('messages')
@@ -164,14 +151,14 @@ export const getUnreadProcessorMessages = query({
           )
           .filter((q) =>
             q.and(
-              q.neq(q.field('senderId'), args.userId),
+              q.neq(q.field('senderId'), me._id),
               q.gt(q.field('_creationTime'), member._creationTime)
             )
           )
           .collect();
 
         const messagesThatIHaveNotSeen = messages.filter(
-          (m) => !m.seenId.includes(args.userId)
+          (m) => !m.seenId.includes(me._id)
         );
 
         return messagesThatIHaveNotSeen.length;
@@ -184,21 +171,20 @@ export const getUnreadProcessorMessages = query({
 
 export const getSingleConversationWithMessages = query({
   args: {
-    loggedInUserId: v.optional(v.id('users')),
     otherUserId: v.id('users'),
     type: v.union(v.literal('single'), v.literal('processor')),
   },
   handler: async (ctx, args) => {
-    if (!args.loggedInUserId) return null;
+    const me = await getLoggedInUser(ctx, 'query');
+    if (!me) return null;
     return filter(
       ctx.db
         .query('conversations')
         .withIndex('type', (q) => q.eq('type', args.type)),
       (c) =>
-        (c.participants[0] === args.loggedInUserId &&
+        (c.participants[0] === me._id &&
           c.participants[1] === args.otherUserId) ||
-        (c.participants[1] === args.loggedInUserId &&
-          c.participants[0] === args.otherUserId)
+        (c.participants[1] === me._id && c.participants[0] === args.otherUserId)
     ).first();
   },
 });
@@ -380,17 +366,15 @@ export const searchConversations = query({
 
 export const createSingleConversation = mutation({
   args: {
-    loggedInUserId: v.id('users'),
     otherUserId: v.id('users'),
     type: v.union(v.literal('processor'), v.literal('single')),
   },
   handler: async (ctx, args) => {
-    await createConversation(
-      ctx,
-      args.loggedInUserId,
-      args.otherUserId,
-      args.type
-    );
+    const me = await getLoggedInUser(ctx, 'mutation');
+    if (!me) {
+      return null;
+    }
+    await createConversation(ctx, me?._id, args.otherUserId, args.type);
   },
 });
 export const createGroupConversation = mutation({

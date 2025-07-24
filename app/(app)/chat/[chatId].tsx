@@ -8,10 +8,10 @@ import { ChatComponentNative } from '~/components/Ui/ChatComponent.native';
 import { ChatHeader } from '~/components/Ui/ChatHeader';
 import ChatSkeleton from '~/components/Ui/ChatSkeleton';
 import { Container } from '~/components/Ui/Container';
+import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
 import { useCreateConvo } from '~/hooks/useCreateConvo';
-import { useGetUserId } from '~/hooks/useGetUserId';
 import { useMarkRead } from '~/hooks/useMarkRead';
 
 const SingleChat = () => {
@@ -20,12 +20,10 @@ const SingleChat = () => {
     type: 'single' | 'processor';
   }>();
 
-  const { id: loggedInUserId } = useGetUserId();
-  console.log({ type, userToChat, loggedInUserId });
-
+  const { user } = useAuth();
+  const loggedInUserId = user?._id;
   const { data: conversationData, isPending } = useTanstackQuery(
     convexQuery(api.conversation.getSingleConversationWithMessages, {
-      loggedInUserId: loggedInUserId!,
       otherUserId: userToChat,
       type,
     })
@@ -43,14 +41,12 @@ const SingleChat = () => {
     { initialNumItems: 100 }
   );
   const loading = useCreateConvo({
-    loggedInUserId: loggedInUserId!,
     conversationData: conversationData!,
     id: userToChat!,
     type,
   });
   useMarkRead({
     conversationData: conversationData!,
-    loggedInUserId: loggedInUserId!,
   });
   const otherUser = useQuery(api.users.getUserById, { id: userToChat });
   if (otherUser === undefined || isPending || loading) return <ChatSkeleton />;

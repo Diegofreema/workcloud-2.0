@@ -2,7 +2,7 @@ import { v } from 'convex/values';
 
 import { mutation, query } from './_generated/server';
 import { getOrganizationByOwnerId } from './organisation';
-import { getUserByUserId, getWorkerProfile } from './users';
+import { getLoggedInUser, getUserByUserId, getWorkerProfile } from './users';
 import { internal } from './_generated/api';
 
 export const getPendingRequestsAsBoolean = query({
@@ -26,15 +26,14 @@ export const getPendingRequestsAsBoolean = query({
 });
 
 export const getPendingStaffsWithoutOrganization = query({
-  args: {
-    id: v.id('users'),
-  },
   handler: async (ctx, args) => {
+    const user = await getLoggedInUser(ctx, 'query');
+    if (!user) return [];
     const res = await ctx.db
       .query('requests')
       .filter((q) =>
         q.and(
-          q.eq(q.field('from'), args.id),
+          q.eq(q.field('from'), user._id),
           q.eq(q.field('status'), 'pending')
         )
       )
@@ -54,15 +53,13 @@ export const getPendingStaffsWithoutOrganization = query({
   },
 });
 export const getPendingRequestsWithOrganization = query({
-  args: {
-    id: v.optional(v.id('users')),
-  },
   handler: async (ctx, args) => {
-    if (!args.id) return [];
+    const user = await getLoggedInUser(ctx, 'query');
+    if (!user) return [];
 
     const res = await ctx.db
       .query('requests')
-      .filter((q) => q.eq(q.field('to'), args.id))
+      .filter((q) => q.eq(q.field('to'), user._id))
       .collect();
 
     return await Promise.all(

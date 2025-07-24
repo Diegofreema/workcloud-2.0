@@ -4,11 +4,12 @@ import {
   MaterialCommunityIcons,
   SimpleLineIcons,
 } from '@expo/vector-icons';
-import { useQuery } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { format } from 'date-fns';
 import { Redirect, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, View } from 'react-native';
+import { toast } from 'sonner-native';
 
 import { HStack } from '~/components/HStack';
 import { HeaderNav } from '~/components/HeaderNav';
@@ -20,10 +21,14 @@ import { UserPreview } from '~/components/Ui/UserPreview';
 import VStack from '~/components/Ui/VStack';
 import { colors } from '~/constants/Colors';
 import { api } from '~/convex/_generated/api';
+import { Button } from '~/features/common/components/Button';
 import { useDarkMode } from '~/hooks/useDarkMode';
+import { generateErrorMessage } from '~/lib/helper';
 
 const Profile = () => {
+  const [resigning, setResigning] = useState(false);
   const data = useQuery(api.users.getWorkerProfileWithUser, {});
+  const resign = useMutation(api.worker.resignFromOrganization);
   const { darkMode } = useDarkMode();
 
   const router = useRouter();
@@ -35,6 +40,23 @@ const Profile = () => {
   if (data === null) {
     return <Redirect href={'/'} />;
   }
+
+  const onResign = async () => {
+    setResigning(true);
+    try {
+      await resign({
+        workerId: data._id,
+      });
+      toast.success('Resigned successfully');
+    } catch (error) {
+      const errorMessage = generateErrorMessage(error, 'Something went wrong');
+      toast.error('An error occurred', {
+        description: errorMessage,
+      });
+    } finally {
+      setResigning(false);
+    }
+  };
 
   const formattedSkills = (text: string) => {
     const arrayOfSkills = text.split(',');
@@ -56,7 +78,15 @@ const Profile = () => {
         contentContainerStyle={{ paddingBottom: 50, flexGrow: 1 }}
       >
         <HeaderNav title="Profile" />
-        <View style={{ marginTop: 10, marginBottom: 20 }}>
+        <View
+          style={{
+            marginTop: 10,
+            marginBottom: 20,
+            flexDirection: 'row',
+            gap: 10,
+            justifyContent: 'space-between',
+          }}
+        >
           <UserPreview
             imageUrl={data?.user.imageUrl!}
             name={data?.user?.name}
@@ -64,6 +94,16 @@ const Profile = () => {
             workPlace={data?.organization?.name!}
             personal
           />
+          {data.bossId && (
+            <Button
+              onPress={onResign}
+              title="Resign"
+              style={{ paddingHorizontal: 20 }}
+              loading={resigning}
+              disabled={resigning}
+              loadingTitle="Resigning..."
+            />
+          )}
         </View>
 
         <VStack mt={20} gap={15}>

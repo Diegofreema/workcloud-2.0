@@ -1,17 +1,14 @@
-import {View} from "react-native";
-import {Doc} from "~/convex/_generated/dataModel";
-import {LegendList} from "@legendapp/list";
-import {constantStyles} from "~/constants/styles";
-import {EmptyText} from "~/components/EmptyText";
-import {RenderChat} from "~/features/chat/components/render-chat";
-import {SmallLoader} from "~/features/common/components/small-loader";
+import { LegendList } from '@legendapp/list';
+import { View } from 'react-native';
+import { EmptyText } from '~/components/EmptyText';
+import { constantStyles } from '~/constants/styles';
+import { Doc } from '~/convex/_generated/dataModel';
+import { RenderChat } from '~/features/chat/components/render-chat';
 
 type Props = {
-  chats: Doc<"conversations">[];
-  loadMore: () => void;
-  isLoading: boolean;
+  chats: Doc<'conversations'>[];
 };
-export const RenderChats = ({ chats, loadMore, isLoading }: Props) => {
+export const RenderChats = ({ chats }: Props) => {
   return (
     <View style={{ flex: 1 }}>
       <LegendList
@@ -19,11 +16,9 @@ export const RenderChats = ({ chats, loadMore, isLoading }: Props) => {
         renderItem={({ item }) => <RenderChat chat={item} />}
         contentContainerStyle={constantStyles.contentContainerStyle}
         recycleItems
-        ListEmptyComponent={<EmptyText text={"No conversation found"} />}
+        ListEmptyComponent={<EmptyText text={'No conversation found'} />}
         onEndReachedThreshold={0.5}
-        keyExtractor={(item, ) => item._id}
-        onEndReached={loadMore}
-        ListFooterComponent={isLoading ? <SmallLoader /> : null}
+        keyExtractor={(item) => item._id}
       />
     </View>
   );

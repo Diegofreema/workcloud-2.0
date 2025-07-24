@@ -1,37 +1,34 @@
-import { Container } from "~/components/Ui/Container";
-import { ChatComponent } from "~/features/chat/components/chat.component";
-import { TabsHeader } from "~/features/common/components/tabs-header";
-import { Title } from "~/features/common/components/title";
-import { IconBtn } from "~/features/common/components/icon-btn";
-import { Plus } from "lucide-react-native";
-import { colors } from "~/constants/Colors";
-import { router } from "expo-router";
-import { useQuery } from "convex/react";
-import { api } from "~/convex/_generated/api";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { GroupChats } from "~/features/chat/components/group-chats";
-import { TabsSelector } from "~/features/common/components/tabs";
-import { useState } from "react";
+import { useQuery } from 'convex/react';
+import { router } from 'expo-router';
+import { Plus } from 'lucide-react-native';
+import { useState } from 'react';
 import {
   Directions,
   Gesture,
   GestureDetector,
-} from "react-native-gesture-handler";
-import { runOnJS } from "react-native-reanimated";
-import {useUnreadProcessorMessageCount} from "~/features/common/hook/use-unread-message-count";
-import {UnreadProcessorMessage} from "~/components/processor-unread-message-banner";
+} from 'react-native-gesture-handler';
+import { runOnJS } from 'react-native-reanimated';
+import { UnreadProcessorMessage } from '~/components/processor-unread-message-banner';
+import { Container } from '~/components/Ui/Container';
+import { colors } from '~/constants/Colors';
+import { api } from '~/convex/_generated/api';
+import { ChatComponent } from '~/features/chat/components/chat.component';
+import { GroupChats } from '~/features/chat/components/group-chats';
+import { IconBtn } from '~/features/common/components/icon-btn';
+import { TabsSelector } from '~/features/common/components/tabs';
+import { TabsHeader } from '~/features/common/components/tabs-header';
+import { Title } from '~/features/common/components/title';
+import { useUnreadProcessorMessageCount } from '~/features/common/hook/use-unread-message-count';
 
 const Components = [ChatComponent, GroupChats];
 const MessageScreen = () => {
-  const { id } = useGetUserId();
+  // const {user} = useAuth();
+  // const id = user?._id
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const unreadProcessorMessagesCount = useUnreadProcessorMessageCount()
+  const unreadProcessorMessagesCount = useUnreadProcessorMessageCount();
   const ActiveComponents = Components[selectedIndex];
 
-  const staffs = useQuery(
-    api.organisation.getStaffsByBossId,
-    id ? { bossId: id } : "skip",
-  );
+  const staffs = useQuery(api.organisation.getStaffsByBossId);
 
   const staffCount = staffs === undefined ? 0 : staffs.length;
   const onSwipeLeft = () => {
@@ -53,17 +50,17 @@ const MessageScreen = () => {
       .direction(Directions.LEFT)
       .onEnd(() => {
         runOnJS(onSwipeRight)();
-      }),
+      })
   );
   return (
     <GestureDetector gesture={swipe}>
       <Container>
         {unreadProcessorMessagesCount > 0 && (
-            <UnreadProcessorMessage unreadCount={unreadProcessorMessagesCount} />
+          <UnreadProcessorMessage unreadCount={unreadProcessorMessagesCount} />
         )}
-        <TabsHeader leftContent={<Title title={"Messages"} />} />
+        <TabsHeader leftContent={<Title title={'Messages'} />} />
         <TabsSelector
-          data={["Single", "Group"]}
+          data={['Single', 'Group']}
           selectedIndex={selectedIndex}
           onSelectIndex={(index) => setSelectedIndex(index)}
         />
@@ -72,7 +69,7 @@ const MessageScreen = () => {
         {staffCount > 0 && (
           <IconBtn
             content={<Plus color={colors.white} />}
-            onPress={() => router.push("/new-group")}
+            onPress={() => router.push('/new-group')}
           />
         )}
       </Container>

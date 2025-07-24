@@ -1,26 +1,27 @@
-import { CustomPressable } from "~/components/Ui/CustomPressable";
-import { useQuery } from "convex/react";
-import { api } from "~/convex/_generated/api";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { Doc } from "~/convex/_generated/dataModel";
-import { StyleSheet } from "react-native";
-import { HStack } from "~/components/HStack";
-import { Avatar } from "~/features/common/components/avatar";
-import { ChatPreviewSkeleton } from "~/components/ChatPreviewSkeleton";
-import { router, usePathname } from "expo-router";
-import VStack from "~/components/Ui/VStack";
-import { MyText } from "~/components/Ui/MyText";
-import { CheckCheck, File } from "lucide-react-native";
-import { colors } from "~/constants/Colors";
-import { formatMessageTime, trimText } from "~/lib/helper";
-import { UnreadCount } from "~/components/Unread";
+import { useQuery } from 'convex/react';
+import { router, usePathname } from 'expo-router';
+import { CheckCheck, File } from 'lucide-react-native';
+import { StyleSheet } from 'react-native';
+import { ChatPreviewSkeleton } from '~/components/ChatPreviewSkeleton';
+import { HStack } from '~/components/HStack';
+import { CustomPressable } from '~/components/Ui/CustomPressable';
+import { MyText } from '~/components/Ui/MyText';
+import VStack from '~/components/Ui/VStack';
+import { UnreadCount } from '~/components/Unread';
+import { colors } from '~/constants/Colors';
+import { useAuth } from '~/context/auth';
+import { api } from '~/convex/_generated/api';
+import { Doc } from '~/convex/_generated/dataModel';
+import { Avatar } from '~/features/common/components/avatar';
+import { formatMessageTime, trimText } from '~/lib/helper';
 
 type Props = {
-  chat: Doc<"conversations">;
+  chat: Doc<'conversations'>;
 };
 
 export const RenderChat = ({ chat }: Props) => {
-  const { id } = useGetUserId();
+  const { user } = useAuth();
+  const id = user?._id;
 
   const otherUserId = chat.participants.find((p) => p !== id);
   const getTypingUsers = useQuery(api.message.getTypingUsers, {
@@ -29,15 +30,14 @@ export const RenderChat = ({ chat }: Props) => {
 
   const otherUser = useQuery(
     api.users.getUserById,
-    otherUserId ? { id: otherUserId } : "skip",
+    otherUserId ? { id: otherUserId } : 'skip'
   );
   const { _id, lastMessageSenderId, lastMessage, lastMessageTime } = chat;
   const unread = useQuery(api.conversation.getUnreadMessages, {
     conversationId: _id,
-    userId: id!,
   });
   const pathname = usePathname();
-  const type = pathname === "/message" ? "single" : "processor";
+  const type = pathname === '/message' ? 'single' : 'processor';
 
   if (
     otherUser === undefined ||
@@ -55,8 +55,8 @@ export const RenderChat = ({ chat }: Props) => {
   const isMine = lastMessageSenderId === id;
   const isTyping =
     getTypingUsers.length > 0 && getTypingUsers.includes(otherUser?._id!);
-  const isImage = lastMessage?.startsWith("https");
-  const firstName = otherUser?.name?.split(" ")[0];
+  const isImage = lastMessage?.startsWith('https');
+  const firstName = otherUser?.name?.split(' ')[0];
   return (
     <CustomPressable onPress={onPress} style={styles.pressable}>
       <HStack justifyContent="space-between" alignItems="flex-start">
@@ -77,7 +77,7 @@ export const RenderChat = ({ chat }: Props) => {
                   <File color={colors.grayText} size={25} />
                 ) : (
                   <MyText poppins="Medium" fontSize={14}>
-                    {trimText(lastMessage || "", 20)}
+                    {trimText(lastMessage || '', 20)}
                   </MyText>
                 )}
               </HStack>
@@ -103,8 +103,6 @@ export const RenderChat = ({ chat }: Props) => {
 
 const styles = StyleSheet.create({
   pressable: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
     borderRadius: 10,
     paddingVertical: 15,
   },

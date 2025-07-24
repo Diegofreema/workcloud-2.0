@@ -21,7 +21,6 @@ import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
 import { Button } from '~/features/common/components/Button';
 import { useCreateStaffState } from '~/features/staff/hooks/use-create-staff-state';
-import { useGetUserId } from '~/hooks/useGetUserId';
 import { offerSchema, OfferSchemaType } from '~/schema';
 import { sendPushNotification } from '~/utils/sendPushNotification';
 
@@ -32,7 +31,6 @@ const CompleteRequest = () => {
   const finalRole =
     staffData?.type === 'processor' ? staffData.type : staffData.role;
 
-  const { id: senderId } = useGetUserId();
   const router = useRouter();
   const { data, isPaused, isPending, isError, refetch, isRefetchError, error } =
     useQuery(convexQuery(api.worker.getSingleWorkerProfile, { id }));
@@ -40,16 +38,7 @@ const CompleteRequest = () => {
     data: orgData,
     isPending: orgPending,
     isError: orgError,
-  } = useQuery(
-    convexQuery(
-      api.organisation.getOrganizationByBossId,
-      senderId
-        ? {
-            bossId: senderId,
-          }
-        : 'skip'
-    )
-  );
+  } = useQuery(convexQuery(api.organisation.getOrganizationByBossId, {}));
   const sendRequest = useMutation(api.request.createRequest);
   const {
     handleSubmit,
@@ -68,14 +57,14 @@ const CompleteRequest = () => {
   });
   const onSubmit = async (values: OfferSchemaType) => {
     const { responsibility, salary, qualities, role } = values;
-    if (!senderId || !data?.user) return;
+    if (!data?.user) return;
     try {
       await sendRequest({
         role,
         salary,
         qualities,
         responsibility,
-        from: senderId,
+        from: orgData?.ownerId!,
         to: data?.user?._id,
       });
       await sendPushNotification({

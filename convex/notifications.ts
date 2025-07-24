@@ -3,16 +3,18 @@ import { v } from 'convex/values';
 import { internalMutation, mutation, query } from './_generated/server';
 import { paginationOptsValidator } from 'convex/server';
 import { getLoggedInUser } from './users';
+import { Id } from './_generated/dataModel';
 
 export const getNotifications = query({
   args: {
-    userId: v.id('users'),
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
+    const user = await getLoggedInUser(ctx, 'query');
+
     const notifications = await ctx.db
       .query('notifications')
-      .withIndex('by_user_id', (q) => q.eq('userId', args.userId))
+      .withIndex('by_user_id', (q) => q.eq('userId', user?._id as Id<'users'>))
       .paginate(args.paginationOpts);
 
     const page = await Promise.all(
@@ -81,14 +83,13 @@ export const createNotification = internalMutation({
 });
 
 export const markNotificationAsRead = mutation({
-  args: {
-    id: v.id('users'),
-  },
   handler: async (ctx, args) => {
+    const user = await getLoggedInUser(ctx, 'mutation');
+    if (!user) return;
     const notifications = await ctx.db
       .query('notifications')
       .withIndex('by_user_id_seen', (q) =>
-        q.eq('userId', args.id).eq('seen', false)
+        q.eq('userId', user._id).eq('seen', false)
       )
       .collect();
     for (const notificationId of notifications) {

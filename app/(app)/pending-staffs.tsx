@@ -10,12 +10,18 @@ import { ErrorComponent } from '~/components/Ui/ErrorComponent';
 import { LoadingComponent } from '~/components/Ui/LoadingComponent';
 import { UserPreview } from '~/components/Ui/UserPreview';
 import { api } from '~/convex/_generated/api';
-import { useGetUserId } from '~/hooks/useGetUserId';
 
 const PendingStaffs = () => {
-  const { id: bossId } = useGetUserId();
-  const { data, isPaused, isPending, isError, refetch, isRefetching, isRefetchError } = useQuery(
-    convexQuery(api.request.getPendingStaffsWithoutOrganization, { id: bossId! })
+  const {
+    data,
+    isPaused,
+    isPending,
+    isError,
+    refetch,
+    isRefetching,
+    isRefetchError,
+  } = useQuery(
+    convexQuery(api.request.getPendingStaffsWithoutOrganization, {})
   );
 
   if (isError || isRefetchError || isPaused) {
@@ -43,7 +49,7 @@ const PendingStaffs = () => {
             imageUrl={item?.user?.imageUrl!}
             name={item?.user?.name}
             navigate
-            subText={item?.request.pending}
+            subText={'Pending'}
             id={item?.worker?._id}
           />
         )}

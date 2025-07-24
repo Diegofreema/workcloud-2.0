@@ -1,12 +1,12 @@
-import { Avatar } from "@rneui/themed";
-import { router } from "expo-router";
-import { ChevronLeft } from "lucide-react-native";
-import { TouchableOpacity } from "react-native";
+import { Avatar } from '@rneui/themed';
+import { router } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
+import { TouchableOpacity } from 'react-native';
 
-import { HStack } from "~/components/HStack";
-import { MyText } from "~/components/Ui/MyText";
-import { colors } from "~/constants/Colors";
-import { ReactNode } from "react";
+import { HStack } from '~/components/HStack';
+import { MyText } from '~/components/Ui/MyText';
+import { colors } from '~/constants/Colors';
+import { ReactNode } from 'react';
 
 type Props = {
   imageUrl: string;
@@ -20,8 +20,8 @@ export const ChatHeader = ({ imageUrl, name, rightContent }: Props) => {
   };
   return (
     <HStack
-      alignItems={"center"}
-      justifyContent={"space-between"}
+      alignItems={'center'}
+      justifyContent={'space-between'}
       style={{ paddingRight: 10 }}
     >
       <HStack alignItems="center" gap={10} bg="transparent" py={15} px={2}>
@@ -32,7 +32,15 @@ export const ChatHeader = ({ imageUrl, name, rightContent }: Props) => {
             style={{ marginRight: -10 }}
           />
         </TouchableOpacity>
-        <Avatar rounded source={{ uri: imageUrl }} size={60} />
+        <Avatar
+          rounded
+          source={{ uri: imageUrl }}
+          imageProps={{
+            defaultSource: require('../../assets/images/boy.png'),
+            resizeMode: 'cover',
+          }}
+          size={60}
+        />
         <MyText poppins="Medium" fontSize={20} style={{ color: colors.black }}>
           {name}
         </MyText>

@@ -178,7 +178,7 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
     return null;
   }
   const acceptRequest = async () => {
-    if (!user?.id || isPending || isError || !organisation?._id) return;
+    if (!user?._id || isPending || isError || !organisation?._id) return;
     setAccepting(true);
     try {
       if (isEmployed) {

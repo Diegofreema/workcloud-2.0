@@ -12,10 +12,8 @@ import { LoadingComponent } from '~/components/Ui/LoadingComponent';
 import { WorkPreview } from '~/components/Ui/UserPreview';
 import { api } from '~/convex/_generated/api';
 import { useDarkMode } from '~/hooks/useDarkMode';
-import { useGetUserId } from '~/hooks/useGetUserId';
 
 const RequestScreen = () => {
-  const { id } = useGetUserId();
   // const info = useInfos((state) => state.infoIds);
 
   const { darkMode } = useDarkMode();
@@ -28,9 +26,7 @@ const RequestScreen = () => {
     isRefetching,
     isRefetchError,
     error,
-  } = useQuery(
-    convexQuery(api.request.getPendingRequestsWithOrganization, { id: id! })
-  );
+  } = useQuery(convexQuery(api.request.getPendingRequestsWithOrganization, {}));
 
   if (isError || isRefetchError || isPaused || error) {
     return <ErrorComponent refetch={refetch} text={error?.message as string} />;

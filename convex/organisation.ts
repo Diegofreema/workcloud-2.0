@@ -141,13 +141,12 @@ export const getOrganisationById = query({
 });
 
 export const getOrganizationByBossId = query({
-  args: {
-    bossId: v.id('users'),
-  },
   handler: async (ctx, args) => {
+    const user = await getLoggedInUser(ctx, 'query');
+    if (!user) return null;
     return await ctx.db
       .query('organizations')
-      .withIndex('ownerId', (q) => q.eq('ownerId', args.bossId))
+      .withIndex('ownerId', (q) => q.eq('ownerId', user._id))
       .first();
   },
 });
@@ -286,14 +285,14 @@ export const getOrganisationsBySearchQuery = query({
   },
 });
 export const getStaffsByBossId = query({
-  args: {
-    bossId: v.id('users'),
-  },
+  args: {},
   handler: async (ctx, args) => {
+    const me = await getLoggedInUser(ctx, 'query');
+    if (!me) return [];
     const res = await ctx.db
       .query('workers')
-      .withIndex('boss_Id', (q) => q.eq('bossId', args.bossId))
-      .filter((q) => q.neq(q.field('userId'), args.bossId))
+      .withIndex('boss_Id', (q) => q.eq('bossId', me._id))
+      .filter((q) => q.neq(q.field('userId'), me._id))
       .collect();
     return await Promise.all(
       res.map(async (worker) => {

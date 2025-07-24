@@ -5,16 +5,17 @@ import { toast } from 'sonner-native';
 import { ChatHeader } from '~/components/Ui/ChatHeader';
 import ChatSkeleton from '~/components/Ui/ChatSkeleton';
 import { Container } from '~/components/Ui/Container';
+import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
 import { ChatMenu } from '~/features/chat/components/chat-menu';
 import { ChatGroupComponent } from '~/features/chat/components/group-gifted-chat.native';
-import { useGetUserId } from '~/hooks/useGetUserId';
 import { useMarkRead } from '~/hooks/useMarkRead';
 
 const GroupChatScreen = () => {
   const { groupId } = useLocalSearchParams<{ groupId: Id<'conversations'> }>();
-  const { id: loggedInUserId } = useGetUserId();
+  const { user } = useAuth();
+  const loggedInUserId = user?._id;
   const group = useQuery(api.conversation.getGroup, { groupId });
   const {
     status,
@@ -33,7 +34,6 @@ const GroupChatScreen = () => {
   );
   useMarkRead({
     conversationData: group!,
-    loggedInUserId: loggedInUserId!,
   });
   if (group === undefined) {
     return <ChatSkeleton />;

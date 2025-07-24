@@ -7,12 +7,12 @@ import { Doc, Id } from '~/convex/_generated/dataModel';
 type Props = {
   conversationData: Doc<'conversations'>;
   id: Id<'users'>;
-  loggedInUserId: Id<'users'>;
+
   type: 'single' | 'processor';
 };
 export const useCreateConvo = ({
   conversationData,
-  loggedInUserId,
+
   id,
   type,
 }: Props) => {
@@ -28,7 +28,6 @@ export const useCreateConvo = ({
         setLoading(true);
         try {
           await createSingleConversation({
-            loggedInUserId,
             otherUserId: id,
             type,
           });
@@ -42,6 +41,6 @@ export const useCreateConvo = ({
 
       void createConvo();
     }
-  }, [conversationData, createSingleConversation, loggedInUserId, id, type]);
+  }, [conversationData, createSingleConversation, id, type]);
   return loading;
 };

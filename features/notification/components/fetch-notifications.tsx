@@ -4,27 +4,24 @@ import { useEffect } from 'react';
 import { Text, View } from 'react-native';
 import { LoadingComponent } from '~/components/Ui/LoadingComponent';
 import { api } from '~/convex/_generated/api';
-import { useGetUserId } from '~/hooks/useGetUserId';
 import { Notification } from './notification';
 
 export const FetchNotifications = () => {
   const markedNotificationsAsSeen = useMutation(
     api.notifications.markNotificationAsRead
   );
-  const { id } = useGetUserId();
+
   const notifications = usePaginatedQuery(
     api.notifications.getNotifications,
-    {
-      userId: id,
-    },
+    {},
     { initialNumItems: 100 }
   );
   useEffect(() => {
     const markAsSeen = async () => {
-      await markedNotificationsAsSeen({ id });
+      await markedNotificationsAsSeen({});
     };
     markAsSeen();
-  }, [markedNotificationsAsSeen, id]);
+  }, [markedNotificationsAsSeen]);
   if (notifications === undefined) {
     return <LoadingComponent />;
   }

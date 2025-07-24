@@ -1,27 +1,31 @@
-
-import {AntDesign, EvilIcons, MaterialCommunityIcons, SimpleLineIcons,} from "@expo/vector-icons";
-import {Button} from "@rneui/themed";
-import {format} from "date-fns";
-import {useLocalSearchParams} from "expo-router";
-import React from "react";
-import {ScrollView, View} from "react-native";
+import {
+  AntDesign,
+  EvilIcons,
+  MaterialCommunityIcons,
+  SimpleLineIcons,
+} from '@expo/vector-icons';
+import { Button } from '@rneui/themed';
+import { format } from 'date-fns';
+import { useLocalSearchParams } from 'expo-router';
+import React from 'react';
+import { ScrollView, View } from 'react-native';
 // import { useChatContext } from 'stream-chat-expo';
-import {HStack} from "~/components/HStack";
-import {HeaderNav} from "~/components/HeaderNav";
-import {Container} from "~/components/Ui/Container";
-import {LoadingComponent} from "~/components/Ui/LoadingComponent";
-import {MyText} from "~/components/Ui/MyText";
-import {UserPreview} from "~/components/Ui/UserPreview";
-import VStack from "~/components/Ui/VStack";
-import {colors} from "~/constants/Colors";
-import {Id} from "~/convex/_generated/dataModel";
-import {useDarkMode} from "~/hooks/useDarkMode";
-import {useGetUserId} from "~/hooks/useGetUserId";
-import {useWorkerActions} from "~/features/staff/hooks/use-worker-actions";
-import {useAuth} from "~/context/auth";
+import { HStack } from '~/components/HStack';
+import { HeaderNav } from '~/components/HeaderNav';
+import { Container } from '~/components/Ui/Container';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { MyText } from '~/components/Ui/MyText';
+import { UserPreview } from '~/components/Ui/UserPreview';
+import VStack from '~/components/Ui/VStack';
+import { colors } from '~/constants/Colors';
+import { Id } from '~/convex/_generated/dataModel';
+import { useDarkMode } from '~/hooks/useDarkMode';
+import { useGetUserId } from '~/hooks/useGetUserId';
+import { useWorkerActions } from '~/features/staff/hooks/use-worker-actions';
+import { useAuth } from '~/context/auth';
 
 const Profile = () => {
-  const { profileId } = useLocalSearchParams<{ profileId: Id<"workers"> }>();
+  const { profileId } = useLocalSearchParams<{ profileId: Id<'workers'> }>();
 
   const { user } = useAuth();
   const { id } = useGetUserId();
@@ -42,7 +46,7 @@ const Profile = () => {
   }
 
   const showRequestBtn =
-    data?.worker.bossId !== user?.id && !pendingData?.accepted;
+    data?.worker.bossId !== user?._id && pendingData?.status !== 'pending';
   return (
     <Container>
       <ScrollView>
@@ -63,14 +67,14 @@ const Profile = () => {
             <Button
               onPress={handleRequest}
               loading={cancelling}
-              titleStyle={{ fontFamily: "PoppinsMedium", fontSize: 12 }}
+              titleStyle={{ fontFamily: 'PoppinsMedium', fontSize: 12 }}
               buttonStyle={{
                 backgroundColor: colors.dialPad,
                 borderRadius: 5,
                 minWidth: 120,
               }}
             >
-              {isInPending ? "Cancel Request" : "Send Request"}
+              {isInPending ? 'Cancel Request' : 'Send Request'}
             </Button>
           )}
 
@@ -78,8 +82,8 @@ const Profile = () => {
             onPress={onMessage}
             loading={cancelling}
             titleStyle={{
-              fontFamily: "PoppinsMedium",
-              color: "blue",
+              fontFamily: 'PoppinsMedium',
+              color: 'blue',
               fontSize: 12,
             }}
             buttonStyle={{
@@ -100,8 +104,8 @@ const Profile = () => {
               poppins="Medium"
               style={{ color: colors.grayText }}
             >
-              Joined since{" "}
-              {format(data?.worker?._creationTime!, "do MMMM yyyy")}
+              Joined since{' '}
+              {format(data?.worker?._creationTime!, 'do MMMM yyyy')}
             </MyText>
           </HStack>
           <HStack gap={5} alignItems="center">
@@ -130,7 +134,7 @@ const Profile = () => {
             <SimpleLineIcons
               name="graduation"
               size={24}
-              color={darkMode === "dark" ? "white" : "black"}
+              color={darkMode === 'dark' ? 'white' : 'black'}
             />
             <MyText poppins="Medium" fontSize={12}>
               {data?.worker?.qualifications}
@@ -151,7 +155,7 @@ const Profile = () => {
             <SimpleLineIcons
               name="graduation"
               size={24}
-              color={darkMode === "dark" ? "white" : "black"}
+              color={darkMode === 'dark' ? 'white' : 'black'}
             />
             <MyText poppins="Medium" fontSize={12}>
               {data?.worker?.experience}
@@ -172,10 +176,10 @@ const Profile = () => {
             <MaterialCommunityIcons
               name="clipboard-list-outline"
               size={24}
-              color={darkMode === "dark" ? "white" : "black"}
+              color={darkMode === 'dark' ? 'white' : 'black'}
             />
             <VStack gap={5}>
-              {formattedSkills(data?.worker?.skills || "")}
+              {formattedSkills(data?.worker?.skills || '')}
             </VStack>
           </HStack>
         </VStack>
@@ -187,7 +191,7 @@ const Profile = () => {
 export default Profile;
 
 export const formattedSkills = (text: string) => {
-  const arrayOfSkills = text?.split(",");
+  const arrayOfSkills = text?.split(',');
 
   return arrayOfSkills?.map((skill, index) => (
     <MyText poppins="Bold" key={index} style={{ color: colors.nine }}>
