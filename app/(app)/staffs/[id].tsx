@@ -48,7 +48,7 @@ const Staffs = () => {
   const [role, setRole] = useState('All');
   const router = useRouter();
   const roles = useQuery(api.staff.getStaffRoles, { bossId: id });
-  const data = useQuery(api.organisation.getStaffsByBossId, { bossId: id! });
+  const data = useQuery(api.organisation.getStaffsByBossId, {});
   const workspaces = useQuery(api.workspace.freeWorkspaces, { ownerId: id });
   const { darkMode } = useDarkMode();
   const { onGetData } = useCreateStaffState();
@@ -174,7 +174,7 @@ const Staffs = () => {
     ({ user, role, organizationId, workspace, workspaceId, _id }) => ({
       id: user?._id!,
       name: user?.name!,
-      image: user?.imageUrl!,
+      image: user?.image!,
       role: role!,
       organizationId,
       workspace,

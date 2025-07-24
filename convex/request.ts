@@ -60,6 +60,7 @@ export const getPendingRequestsWithOrganization = query({
     const res = await ctx.db
       .query('requests')
       .filter((q) => q.eq(q.field('to'), user._id))
+      .order('desc')
       .collect();
 
     return await Promise.all(

@@ -3,6 +3,7 @@ import { ConvexError, v } from 'convex/values';
 import { Id } from './_generated/dataModel';
 import { mutation, query } from './_generated/server';
 import {
+  getLoggedInUser,
   getOrganisationWithoutImageByWorker,
   getUserByUserId,
   getUserByWorkerId,
@@ -11,15 +12,14 @@ import { User } from '../constants/types';
 import { filter } from 'convex-helpers/server/filter';
 
 export const getAllOtherWorkers = query({
-  args: {
-    bossId: v.id('users'),
-  },
   handler: async (ctx, args) => {
+    const boss = await getLoggedInUser(ctx, 'query');
+    if (!boss) return [];
     const res = await ctx.db
       .query('workers')
       .filter((q) =>
         q.and(
-          q.neq(q.field('userId'), args.bossId),
+          q.neq(q.field('userId'), boss._id),
           q.eq(q.field('bossId'), undefined),
           q.neq(q.field('type'), 'personal')
         )

@@ -107,7 +107,7 @@ const CompleteRequest = () => {
       >
         <View style={{ marginVertical: 10 }}>
           <UserPreview
-            imageUrl={data?.user?.imageUrl!}
+            imageUrl={data?.user?.image!}
             name={data?.user?.name}
             roleText={data?.worker?.role}
             workPlace={data?.organization?.name}

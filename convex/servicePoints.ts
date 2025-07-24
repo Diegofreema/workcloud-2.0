@@ -2,7 +2,6 @@ import { ConvexError, v } from 'convex/values';
 
 import { Id } from './_generated/dataModel';
 import { mutation, query, QueryCtx } from './_generated/server';
-import { getImageUrl } from './organisation';
 
 export const getServicePoints = query({
   args: {
@@ -125,15 +124,9 @@ export const getUserProfileByWorkerId = async (
   const worker = await ctx.db.get(userId);
   if (!worker) return null;
   if (!user) return null;
-  if (user?.imageUrl && user?.imageUrl.startsWith('http'))
-    return {
-      ...user,
-      role: worker.role,
-    };
-  const imageUrl = await getImageUrl(ctx, user.imageUrl as Id<'_storage'>);
+
   return {
     ...user,
-    imageUrl,
     role: worker.role,
   };
 };

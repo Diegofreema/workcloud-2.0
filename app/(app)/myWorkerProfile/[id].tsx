@@ -88,7 +88,7 @@ const Profile = () => {
           }}
         >
           <UserPreview
-            imageUrl={data?.user.imageUrl!}
+            imageUrl={data?.user.image!}
             name={data?.user?.name}
             roleText={data?.role}
             workPlace={data?.organization?.name!}

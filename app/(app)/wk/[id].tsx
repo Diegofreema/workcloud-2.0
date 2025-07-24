@@ -1,10 +1,11 @@
+import { useStreamVideoClient } from '@stream-io/video-react-bindings';
 import { useMutation, useQuery } from 'convex/react';
 import { format } from 'date-fns';
+import * as Crypto from 'expo-crypto';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { toast } from 'sonner-native';
-import * as Crypto from 'expo-crypto';
 import { WaitListModal } from '~/components/Dialogs/WaitListModal';
 import { HeaderNav } from '~/components/HeaderNav';
 import { BottomActive } from '~/components/Ui/BottomActive';
@@ -13,25 +14,22 @@ import { LoadingComponent } from '~/components/Ui/LoadingComponent';
 import { UserPreview } from '~/components/Ui/UserPreview';
 import { Waitlists } from '~/components/Ui/Waitlists';
 import { WorkspaceButtons } from '~/components/Ui/WorkspaceButtons';
+import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
-import { useGetUserId } from '~/hooks/useGetUserId';
-import { useGetWaitlistIdForCustomer } from '~/hooks/useGetWorkspaceIdForCustomer';
-import { useWaitlistId } from '~/hooks/useWaitlistId';
-import { useGetCustomerId } from '~/hooks/useCustomerId';
-import { MessageBtn } from '~/features/common/components/message-btn';
-import { useAuth } from '~/context/auth';
-import { useStreamVideoClient } from '@stream-io/video-react-bindings';
-import { Button } from '~/features/common/components/Button';
 import { useCallStore } from '~/features/calls/hook/useCallStore';
+import { Button } from '~/features/common/components/Button';
+import { MessageBtn } from '~/features/common/components/message-btn';
+import { useGetWaitlistIdForCustomer } from '~/hooks/useGetWorkspaceIdForCustomer';
 
 const today = format(new Date(), 'dd-MM-yyyy');
 
 const Work = () => {
   const { id } = useLocalSearchParams<{ id: Id<'workspaces'> }>();
   const [showMenu, setShowMenu] = useState(false);
-  const { id: loggedInUser, user: convexUser } = useGetUserId();
+
   const { user } = useAuth();
+  const loggedInUser = user?._id;
   const client = useStreamVideoClient();
   const [leaving, setLeaving] = useState(false);
   const [customerLeaving, setCustomerLeaving] = useState(false);
@@ -41,11 +39,11 @@ const Work = () => {
   const getData = useCallStore((state) => state.getData);
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [addingToCall, setAddingToCall] = useState(false);
+  // const [addingToCall, setAddingToCall] = useState(false);
   const [isLoading] = useState(false);
-  const getCustomerId = useGetCustomerId((state) => state.getIds);
+  // const getCustomerId = useGetCustomerId((state) => state.getIds);
   const updateWaitlistType = useMutation(api.workspace.attendToCustomer);
-  const setId = useWaitlistId((state) => state.setId);
+  // const setId = useWaitlistId((state) => state.setId);
   const data = useQuery(api.workspace.getWorkspaceWithWaitingList, {
     workspaceId: id,
   });
@@ -209,7 +207,7 @@ const Work = () => {
       data: {
         members: [
           {
-            user_id: user?.id!,
+            user_id: user?._id!,
             custom: { convexId: loggedInUser, currentUser },
           },
           {
@@ -219,11 +217,11 @@ const Work = () => {
         ],
       },
     });
-    // await updateWaitlistType({
-    //   waitlistId: currentUser,
-    //   nextWaitListId: nextUser,
-    //   workerId: data?.workspace.workerId,
-    // });
+    await updateWaitlistType({
+      waitlistId: currentUser,
+      nextWaitListId: nextUser,
+      workerId: data?.workspace.workerId,
+    });
     getData({ callId, workerId: data?.workspace.workerId, workspaceId: id });
     // router.push(`/call/${callId}`);
   };

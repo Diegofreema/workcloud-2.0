@@ -23,7 +23,7 @@ export const getUserWorkspaceOrNull = query({
     return {
       ...res,
       organization,
-      image: workerProfile?.imageUrl,
+      image: workerProfile?.image,
     };
   },
 });

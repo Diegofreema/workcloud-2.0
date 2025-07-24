@@ -46,7 +46,7 @@ const PendingStaffs = () => {
         data={data}
         renderItem={({ item }) => (
           <UserPreview
-            imageUrl={item?.user?.imageUrl!}
+            imageUrl={item?.user?.image!}
             name={item?.user?.name}
             navigate
             subText={'Pending'}

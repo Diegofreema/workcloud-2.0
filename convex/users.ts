@@ -1,9 +1,8 @@
 import { ConvexError, v } from 'convex/values';
-import { User } from '../constants/types';
 
 import { getAuthUserId } from '@convex-dev/auth/server';
 import { internal } from './_generated/api';
-import { Id } from './_generated/dataModel';
+import { Doc, Id } from './_generated/dataModel';
 import {
   internalAction,
   internalMutation,
@@ -131,15 +130,9 @@ export const getUserById = query({
   },
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.id);
-    if (!user?.imageUrl || user.imageUrl.startsWith('http')) {
-      return user;
-    }
-
-    const url = await ctx.storage.getUrl(user.imageUrl as Id<'_storage'>);
 
     return {
       ...user,
-      imageUrl: url,
     };
   },
 });
@@ -166,7 +159,7 @@ export const updateUserById = mutation({
       await ctx.db.patch(args._id, {
         name: args.name,
         phoneNumber: args.phoneNumber,
-        imageUrl: img!,
+        image: img!,
       });
     } else {
       await ctx.db.patch(args._id, {
@@ -295,7 +288,7 @@ export const getOrganisationWithoutImageByWorker = async (
   return await ctx.db.get(organizationId);
 };
 
-const helperToGetUser = async (ctx: QueryCtx, user: User) => {
+const helperToGetUser = async (ctx: QueryCtx, user: Doc<'users'>) => {
   return user;
 };
 

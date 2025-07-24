@@ -20,14 +20,14 @@ import VStack from '../Ui/VStack';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { User } from '~/constants/types';
 import { api } from '~/convex/_generated/api';
+import { Doc } from '~/convex/_generated/dataModel';
 import { Button } from '~/features/common/components/Button';
 import { useDarkMode } from '~/hooks/useDarkMode';
 import { uploadProfilePicture } from '~/lib/helper';
 import { profileUpdateSchema, ProfileUpdateSchemaType } from '~/schema';
 
-export const ProfileUpdateForm = ({ person }: { person: User }) => {
+export const ProfileUpdateForm = ({ person }: { person: Doc<'users'> }) => {
   const [loading, setLoading] = useState(false);
   const updateUser = useMutation(api.users.updateUserById);
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
@@ -44,7 +44,7 @@ export const ProfileUpdateForm = ({ person }: { person: User }) => {
       firstName: person?.name?.split(' ')[0] || '',
       lastName: person?.name?.split(' ')[1] || '',
       phoneNumber: person?.phoneNumber || '',
-      avatar: person.imageUrl || '',
+      avatar: person.image || '',
     },
     resolver: zodResolver(profileUpdateSchema),
   });
@@ -116,7 +116,7 @@ export const ProfileUpdateForm = ({ person }: { person: User }) => {
           <Image
             contentFit="cover"
             style={{ width: 100, height: 100, borderRadius: 50 }}
-            source={{ uri: selectedImage?.uri || person.imageUrl! }}
+            source={{ uri: selectedImage?.uri || person.image! }}
           />
 
           {loading ? (

@@ -57,11 +57,13 @@ export const RenderChat = ({ chat }: Props) => {
     getTypingUsers.length > 0 && getTypingUsers.includes(otherUser?._id!);
   const isImage = lastMessage?.startsWith('https');
   const firstName = otherUser?.name?.split(' ')[0];
+  console.log({ image: otherUser?.imageUrl });
+
   return (
     <CustomPressable onPress={onPress} style={styles.pressable}>
       <HStack justifyContent="space-between" alignItems="flex-start">
         <HStack gap={10} alignItems="center">
-          <Avatar url={otherUser?.imageUrl!} />
+          <Avatar url={otherUser?.image!} />
           <VStack>
             <MyText poppins="Medium" fontSize={12}>
               {firstName}
