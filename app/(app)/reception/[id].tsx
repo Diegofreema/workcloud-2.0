@@ -238,9 +238,9 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
   const handleWaitlist = useMutation(api.workspace.handleWaitlist);
   const { setId } = useWaitlistId();
   const { workspace, user, role } = item;
-  console.log({ role });
+
   const handlePress = async () => {
-    if (storedUser?.id === user?.clerkId) return;
+    if (storedUser?._id) return;
     if (!workspace?.active || workspace?.leisure) {
       toast.info('This workspace is currently inactive or on leisure', {
         description: 'Please try joining another workspace',
@@ -334,7 +334,7 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
                 </MyText>
               </View>
 
-              {item?.user?.clerkId !== storedUser?.id && (
+              {item?.user?._id !== storedUser?._id && (
                 <Pressable
                   onPress={onMessage}
                   style={{

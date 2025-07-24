@@ -1,6 +1,6 @@
 import { ConvexError, v } from 'convex/values';
 import { mutation, query } from './_generated/server';
-import { getOrganisations } from './users';
+import { getLoggedInUser, getOrganisations } from './users';
 
 export const getConnection = query({
   args: {
@@ -17,15 +17,15 @@ export const getConnection = query({
   },
 });
 export const getUserConnections = query({
-  args: {
-    ownerId: v.optional(v.id('users')),
-  },
+  args: {},
   handler: async (ctx, args) => {
+    const me = await getLoggedInUser(ctx, 'query');
+    if (!me) return [];
     const connections = await ctx.db
       .query('connections')
       .withIndex('by_creation_time')
       .order('desc')
-      .filter((q) => q.eq(q.field('ownerId'), args.ownerId))
+      .filter((q) => q.eq(q.field('ownerId'), me._id))
       .take(10);
     const c = [...connections].sort((a, b) => {
       const dateA = new Date(

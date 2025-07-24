@@ -23,9 +23,7 @@ const ProfileEdit = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
   const user = useQuery(api.users.getUserById, { id: id as Id<'users'> });
-  const connections = useQuery(api.connection.getUserConnections, {
-    ownerId: id as Id<'users'>,
-  });
+  const connections = useQuery(api.connection.getUserConnections, {});
   const { darkMode } = useDarkMode();
 
   if (user === undefined || connections === undefined) {

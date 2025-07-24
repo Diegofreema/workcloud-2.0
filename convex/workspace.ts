@@ -1,9 +1,9 @@
-import { v } from 'convex/values';
+import { ConvexError, v } from 'convex/values';
 
 import { Id } from './_generated/dataModel';
 import { mutation, query, QueryCtx } from './_generated/server';
 import { getOrganizationByOrganizationId } from './organisation';
-import { getUserByUserId, getUserByWorkerId } from './users';
+import { getLoggedInUser, getUserByUserId, getUserByWorkerId } from './users';
 
 export const getUserWorkspaceOrNull = query({
   args: { workerId: v.optional(v.id('workers')) },
@@ -180,17 +180,20 @@ export const createAndAssignWorkspace = mutation({
 });
 export const createWorkspace = mutation({
   args: {
-    ownerId: v.id('users'),
     organizationId: v.id('organizations'),
     role: v.string(),
     type: v.literal('personal'),
     workerId: v.id('workers'),
   },
   handler: async (ctx, args) => {
+    const owner = await getLoggedInUser(ctx, 'mutation');
+    if (!owner) {
+      throw new ConvexError('Unauthorized');
+    }
     const id = await ctx.db.insert('workspaces', {
       type: args.type,
       role: args.role,
-      ownerId: args.ownerId,
+      ownerId: owner._id,
       organizationId: args.organizationId,
       locked: args.type !== 'personal',
       active: false,

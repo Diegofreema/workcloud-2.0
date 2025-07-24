@@ -2,14 +2,11 @@ import { useQuery } from 'convex/react';
 
 import { api } from '~/convex/_generated/api';
 import { useAuth } from '~/context/auth';
-import { useUser } from './use-id';
 
 export const useGetUserId = () => {
   const { user: storedUser } = useAuth();
-  const { user: authUser } = useUser();
-  const data = useQuery(api.users.getUserByClerkId, {
-    clerkId: storedUser?.id!,
-  });
+
+  const data = useQuery(api.users.getUserByClerkId, {});
   const user = {
     image: data?.imageUrl,
     name: data?.name,
@@ -17,11 +14,10 @@ export const useGetUserId = () => {
 
   const isLoading = data === undefined;
   return {
-    id: authUser?.id!,
+    id: storedUser?._id!,
     organizationId: data?.organizationId,
     worker: data?.workerId,
     bossId: data?.worker?.bossId,
-    clerkId: storedUser?.id,
     user,
     isLoading,
     workspaceId: data?.worker?.workspaceId,
