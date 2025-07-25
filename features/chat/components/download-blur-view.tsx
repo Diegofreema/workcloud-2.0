@@ -1,5 +1,3 @@
-
-
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -8,8 +6,8 @@ import {
   View,
 } from "react-native";
 import { toast } from "sonner-native";
-import {DownloadIcon} from "lucide-react-native";
-import {downloadAndSaveFile, downloadPdf} from "~/lib/helper";
+import { DownloadIcon } from "lucide-react-native";
+import { downloadAndSaveFile, downloadPdf } from "~/lib/helper";
 
 type Props = {
   url: string;

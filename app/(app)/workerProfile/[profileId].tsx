@@ -53,7 +53,7 @@ const Profile = () => {
         <HeaderNav title="Profile" />
         <View style={{ marginTop: 10, marginBottom: 20 }}>
           <UserPreview
-            imageUrl={data?.user?.imageUrl!}
+            imageUrl={data?.user?.image!}
             name={data?.user?.name}
             roleText={data?.worker.role}
             workPlace={data?.organization?.name}

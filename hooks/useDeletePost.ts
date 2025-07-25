@@ -1,13 +1,13 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
-import { Id } from '~/convex/_generated/dataModel';
+import { Id } from "~/convex/_generated/dataModel";
 
 type State = {
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
-  id: Id<'posts'> | null;
-  getId: (id: Id<'posts'>) => void;
+  id: Id<"posts"> | null;
+  getId: (id: Id<"posts">) => void;
 };
 
 export const useDeletePost = create<State>((set) => ({
@@ -15,5 +15,5 @@ export const useDeletePost = create<State>((set) => ({
   onOpen: () => set({ isOpen: true }),
   onClose: () => set({ isOpen: false }),
   id: null,
-  getId: (id: Id<'posts'>) => set({ id }),
+  getId: (id: Id<"posts">) => set({ id }),
 }));

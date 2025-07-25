@@ -15,6 +15,10 @@ import {
 
 import { StyleSheet, View } from 'react-native';
 import { colors } from '~/constants/Colors';
+import { useCallStore } from '~/features/calls/hook/useCallStore';
+import { CustomPressable } from './Ui/CustomPressable';
+import { Star } from 'lucide-react-native';
+import { useStar } from '~/hooks/useStar';
 
 /**
  * CustomCallControls component that renders a styled control bar for video calls
@@ -24,13 +28,20 @@ import { colors } from '~/constants/Colors';
  */
 export const CustomCallControls = (props: CallControlProps) => {
   // Get user role information to conditionally render controls
-
+  const {
+    data: { workspaceId },
+  } = useCallStore();
+  const setOpen = useStar((state) => state.setIsOpen);
   return (
     <View style={styles.container}>
       <HangUpCallButton onHangupCallHandler={props.onHangupCallHandler} />
       {/* Toggle microphone on/off */}
       <ToggleMic />
-
+      {workspaceId && (
+        <CustomPressable style={styles.button} onPress={() => setOpen(true)}>
+          <Star color="white" />
+        </CustomPressable>
+      )}
       {/* Switch between front and back camera */}
       <ToggleCameraFaceButton />
       <ToggleCamera />
@@ -46,15 +57,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.dialPad,
     borderRadius: 10,
     padding: 10,
-    marginHorizontal: 30,
   },
   button: {
     backgroundColor: colors.callButtonBlue,
-    borderRadius: 50,
+    borderRadius: 60,
     padding: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
   },
 });

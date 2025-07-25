@@ -5,10 +5,10 @@ import React from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 
 import { useDarkMode } from "~/hooks/useDarkMode";
-import {RFPercentage} from "react-native-responsive-fontsize";
+import { RFPercentage } from "react-native-responsive-fontsize";
 type Props = {
   value?: string;
-  setValue?: (text: string) => void
+  setValue?: (text: string) => void;
   placeholder?: string;
   customStyles?: StyleProp<ViewStyle>;
   show?: boolean;
@@ -56,7 +56,7 @@ export const SearchComponent = ({
 const styles = StyleSheet.create({
   inputStyle: {
     color: "black",
-    fontSize: RFPercentage(2)
+    fontSize: RFPercentage(2),
   },
   containerStyle: {
     backgroundColor: "transparent",
@@ -69,7 +69,6 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     backgroundColor: "transparent",
-  borderWidth: 0
-
+    borderWidth: 0,
   },
 });

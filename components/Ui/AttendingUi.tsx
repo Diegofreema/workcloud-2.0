@@ -43,15 +43,21 @@ const styles = StyleSheet.create({
   },
 });
 
-const AttendingUser = ({ waitlist, actionText }: { waitlist: WaitList; actionText: string }) => {
+const AttendingUser = ({
+  waitlist,
+  actionText,
+}: {
+  waitlist: WaitList;
+  actionText: string;
+}) => {
   return (
     <VStack justifyContent="center" alignItems="center" gap={5}>
-      <Avatar image={waitlist.customer?.imageUrl!} height={50} width={50} />
+      <Avatar image={waitlist.customer?.image!} height={50} width={50} />
       <MyText poppins="Medium" style={styles.text2}>
         {actionText}
       </MyText>
       <MyText poppins="Medium" style={styles.text}>
-        {waitlist.customer?.name.split(' ')[0]}
+        {waitlist.customer?.name?.split(' ')[0]}
       </MyText>
     </VStack>
   );

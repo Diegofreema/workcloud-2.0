@@ -1,5 +1,5 @@
-import { AuthHeader } from '~/components/AuthHeader';
-import { Container } from '~/components/Ui/Container';
+import { AuthHeader } from "~/components/AuthHeader";
+import { Container } from "~/components/Ui/Container";
 
 const ServicePoint = () => {
   return (

@@ -1,11 +1,11 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
-import { Id } from '~/convex/_generated/dataModel';
+import { Id } from "~/convex/_generated/dataModel";
 type InfoType = {
-  to: Id<'users'> | null;
-  from: Id<'users'> | null;
-  _id: Id<'requests'> | null;
-  organizationId: Id<'organizations'> | null;
+  to: Id<"users"> | null;
+  from: Id<"users"> | null;
+  _id: Id<"requests"> | null;
+  organizationId: Id<"organizations"> | null;
   role: string;
 };
 type Store = {
@@ -19,7 +19,7 @@ export const useInfos = create<Store>((set) => ({
     _id: null,
     from: null,
     organizationId: null,
-    role: '',
+    role: "",
     to: null,
   },
   getInfoIds: ({ _id, organizationId, to, role, from }: InfoType) => {
@@ -31,7 +31,7 @@ export const useInfos = create<Store>((set) => ({
         organizationId: null,
         to: null,
         from: null,
-        role: '',
+        role: "",
         _id: null,
       },
     });

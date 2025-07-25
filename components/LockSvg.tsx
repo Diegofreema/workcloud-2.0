@@ -1,4 +1,4 @@
-import Svg, { Circle, Path, SvgProps } from 'react-native-svg';
+import Svg, { Circle, Path, SvgProps } from "react-native-svg";
 
 type Props = SvgProps & {
   height: number;
@@ -7,7 +7,13 @@ type Props = SvgProps & {
 
 export const LockSvg = ({ height, width, ...props }: Props): JSX.Element => {
   return (
-    <Svg height={height} width={width} viewBox="0 0 42 43" fill="none" {...props}>
+    <Svg
+      height={height}
+      width={width}
+      viewBox="0 0 42 43"
+      fill="none"
+      {...props}
+    >
       <Circle cx="21" cy="21.5" r="21" fill="#E7EDFF" />
       <Path
         d="M11 26C11 23.172 11 21.757 11.879 20.879C12.757 20 14.172 20 17 20H25C27.828 20 29.243 20 30.121 20.879C31 21.757 31 23.172 31 26C31 28.828 31 30.243 30.121 31.121C29.243 32 27.828 32 25 32H17C14.172 32 12.757 32 11.879 31.121C11 30.243 11 28.828 11 26Z"
@@ -26,7 +32,13 @@ export const LockSvg = ({ height, width, ...props }: Props): JSX.Element => {
 
 export const HelpSvg = ({ height, width, ...props }: Props): JSX.Element => {
   return (
-    <Svg height={height} width={width} viewBox="0 0 42 43" fill="none" {...props}>
+    <Svg
+      height={height}
+      width={width}
+      viewBox="0 0 42 43"
+      fill="none"
+      {...props}
+    >
       <Circle cx="21" cy="21.5" r="21" fill="#E7EDFF" />
       <Path
         d="M20.6667 11C18.557 11 16.4947 11.6256 14.7406 12.7977C12.9865 13.9697 11.6193 15.6356 10.812 17.5847C10.0046 19.5338 9.79339 21.6785 10.205 23.7476C10.6165 25.8168 11.6324 27.7174 13.1242 29.2091C14.616 30.7009 16.5166 31.7168 18.5857 32.1284C20.6548 32.54 22.7995 32.3287 24.7486 31.5214C26.6977 30.714 28.3636 29.3469 29.5357 27.5927C30.7077 25.8386 31.3333 23.7763 31.3333 21.6667C31.3333 18.8377 30.2095 16.1246 28.2091 14.1242C26.2088 12.1238 23.4956 11 20.6667 11ZM20.6667 31C18.8207 31 17.0162 30.4526 15.4813 29.427C13.9465 28.4015 12.7502 26.9438 12.0438 25.2384C11.3374 23.5329 11.1525 21.6563 11.5127 19.8458C11.8728 18.0353 12.7617 16.3723 14.067 15.067C15.3723 13.7617 17.0353 12.8728 18.8458 12.5127C20.6563 12.1525 22.5329 12.3374 24.2384 13.0438C25.9438 13.7502 27.4015 14.9465 28.4271 16.4813C29.4526 18.0162 30 19.8207 30 21.6667C30 24.142 29.0167 26.516 27.2663 28.2663C25.516 30.0167 23.142 31 20.6667 31Z"
@@ -45,7 +57,13 @@ export const HelpSvg = ({ height, width, ...props }: Props): JSX.Element => {
 };
 export const LogOutSvg = ({ height, width, ...props }: Props): JSX.Element => {
   return (
-    <Svg height={height} width={width} viewBox="0 0 24 24" fill="none" {...props}>
+    <Svg
+      height={height}
+      width={width}
+      viewBox="0 0 24 24"
+      fill="none"
+      {...props}
+    >
       <Path
         d="M8.00195 7C8.01395 4.825 8.11095 3.647 8.87895 2.879C9.75795 2 11.172 2 14 2H15C17.829 2 19.243 2 20.122 2.879C21 3.757 21 5.172 21 8V16C21 18.828 21 20.243 20.122 21.121C19.242 22 17.829 22 15 22H14C11.172 22 9.75795 22 8.87895 21.121C8.11095 20.353 8.01395 19.175 8.00195 17"
         stroke="#FF0000"
@@ -70,7 +88,13 @@ export const LogOutSvg = ({ height, width, ...props }: Props): JSX.Element => {
 
 export const UserSvg = ({ height, width, ...props }: Props): JSX.Element => {
   return (
-    <Svg height={height} width={width} viewBox="0 0 42 42" fill="none" {...props}>
+    <Svg
+      height={height}
+      width={width}
+      viewBox="0 0 42 42"
+      fill="none"
+      {...props}
+    >
       <Circle cx="21" cy="21" r="21" fill="#E7EDFF" />
       <Path
         d="M29 31v-2a4 4 0 0 0-4-4H17a4 4 0 0 0-4 4v2"

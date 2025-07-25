@@ -1,11 +1,11 @@
 import React from "react";
-import {StyleSheet, View} from "react-native";
+import { StyleSheet, View } from "react-native";
 
-import {RFPercentage} from "react-native-responsive-fontsize";
-import {Doc} from "~/convex/_generated/dataModel";
-import {Avatar} from "~/features/common/components/avatar";
-import {colors} from "~/constants/Colors";
-import {MyText} from "~/components/Ui/MyText";
+import { RFPercentage } from "react-native-responsive-fontsize";
+import { Doc } from "~/convex/_generated/dataModel";
+import { Avatar } from "~/features/common/components/avatar";
+import { colors } from "~/constants/Colors";
+import { MyText } from "~/components/Ui/MyText";
 
 type Props = {
   data: Doc<"conversations">;

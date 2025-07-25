@@ -1,6 +1,6 @@
-import { Suggestion } from '~/components/Ui/Suggestion';
-import VStack from '~/components/Ui/VStack';
-import { SuggestionTypes } from '~/constants/types';
+import { Suggestion } from "~/components/Ui/Suggestion";
+import VStack from "~/components/Ui/VStack";
+import { SuggestionTypes } from "~/constants/types";
 
 type Props = {
   suggestions: SuggestionTypes[] | undefined;

@@ -1,5 +1,5 @@
-import { Feather } from '@expo/vector-icons';
-import { Control, Controller, FieldErrors } from 'react-hook-form';
+import { Feather } from "@expo/vector-icons";
+import { Control, Controller, FieldErrors } from "react-hook-form";
 import {
   KeyboardAvoidingView,
   KeyboardTypeOptions,
@@ -12,9 +12,9 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
-} from 'react-native';
-import { MyText } from './Ui/MyText';
-import { colors } from '~/constants/Colors';
+} from "react-native";
+import { MyText } from "./Ui/MyText";
+import { colors } from "~/constants/Colors";
 
 type Props = TextInputProps & {
   label: string;
@@ -40,7 +40,7 @@ export const CustomInput = ({
   errors,
   name,
   control,
-  type = 'default',
+  type = "default",
   onEditFinish,
   containerStyle,
   leftIcon,
@@ -58,11 +58,11 @@ export const CustomInput = ({
   };
   return (
     <View style={{ gap: 10 }}>
-      <MyText poppins="Bold" style={{ fontFamily: 'NunitoBold' }}>
+      <MyText poppins="Bold" style={{ fontFamily: "NunitoBold" }}>
         {label}
       </MyText>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <View
           style={[
@@ -80,11 +80,11 @@ export const CustomInput = ({
                 style={[
                   {
                     flex: 1,
-                    fontFamily: 'NunitoRegular',
+                    fontFamily: "NunitoRegular",
                     fontSize: 15,
                     color: colors.black,
                     height: textarea ? 150 : 50,
-                    textAlignVertical: textarea ? 'top' : 'center',
+                    textAlignVertical: textarea ? "top" : "center",
                     padding: textarea ? 10 : 5,
                   },
                   rest.style,
@@ -105,9 +105,9 @@ export const CustomInput = ({
           {password && (
             <TouchableOpacity onPress={onPress} style={{ marginRight: 10 }}>
               <Feather
-                name={secureTextEntry ? 'eye' : 'eye-off'}
+                name={secureTextEntry ? "eye" : "eye-off"}
                 size={25}
-                color={'grey'}
+                color={"grey"}
               />
             </TouchableOpacity>
           )}
@@ -123,10 +123,10 @@ export const CustomInput = ({
 
 const styles = StyleSheet.create({
   inputContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     borderWidth: 1,
     borderColor: colors.gray,
     borderRadius: 8,
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   },
   error: {
     fontSize: 15,
-    fontFamily: 'NunitoBold',
-    color: 'red',
+    fontFamily: "NunitoBold",
+    color: "red",
   },
 });

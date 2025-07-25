@@ -1,7 +1,7 @@
-import { View } from 'react-native';
+import { View } from "react-native";
 
-import { AuthHeader } from './AuthHeader';
-import { MyText } from './Ui/MyText';
+import { AuthHeader } from "./AuthHeader";
+import { MyText } from "./Ui/MyText";
 
 export const Privacy = (): JSX.Element => {
   return (
@@ -10,7 +10,7 @@ export const Privacy = (): JSX.Element => {
       <MyText
         poppins="Medium"
         fontSize={20}
-        style={{ marginTop: 20, textAlign: 'justify' }}
+        style={{ marginTop: 20, textAlign: "justify" }}
       >
         At Workcloud, we prioritize your privacy and the security of your
         personal data. We collect only the necessary information to provide and

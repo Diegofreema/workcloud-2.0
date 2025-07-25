@@ -10,7 +10,7 @@ import { calculateRatingStats } from "~/lib/helper";
 import ReviewStar from "~/features/common/components/ReviewStars";
 import { EmptyText } from "~/components/EmptyText";
 import { Button } from "~/features/common/components/Button";
-import {router, usePathname} from "expo-router";
+import { router, usePathname } from "expo-router";
 
 type ReviewProps = {
   organizationId: Id<"organizations">;
@@ -29,8 +29,8 @@ export const Review = ({
   hide,
 }: ReviewProps) => {
   const reviews = useQuery(api.reviews.fetchReviews, { organizationId });
-  const pathname = usePathname()
-    const isReviewPage = pathname.includes("reviews")
+  const pathname = usePathname();
+  const isReviewPage = pathname.includes("reviews");
   if (reviews === undefined) return null;
   if (reviews.length === 0) return <EmptyText text="No reviews yet" />;
   const counts: RatingCounts = {
@@ -82,7 +82,7 @@ export const Review = ({
           hide={hide}
         />
       )}
-        {!isReviewPage && <Button title={"See all"} onPress={onSeeReview}/>}
+      {!isReviewPage && <Button title={"See all"} onPress={onSeeReview} />}
     </View>
   );
 };

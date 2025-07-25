@@ -1,13 +1,13 @@
-import {Pressable, View} from "react-native";
-import {HStack} from "~/components/HStack";
-import {UserPreview} from "~/components/Ui/UserPreview";
-import {capitaliseFirstLetter} from "~/lib/helper";
-import {EmptyText} from "~/components/EmptyText";
+import { Pressable, View } from "react-native";
+import { HStack } from "~/components/HStack";
+import { UserPreview } from "~/components/Ui/UserPreview";
+import { capitaliseFirstLetter } from "~/lib/helper";
+import { EmptyText } from "~/components/EmptyText";
 import React from "react";
-import {LegendList} from "@legendapp/list";
-import {ProcessorType} from "~/features/staff/type";
-import {MaterialCommunityIcons} from "@expo/vector-icons";
-import {useDarkMode} from "~/hooks/useDarkMode";
+import { LegendList } from "@legendapp/list";
+import { ProcessorType } from "~/features/staff/type";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useDarkMode } from "~/hooks/useDarkMode";
 
 type Props = {
   data: ProcessorType[];

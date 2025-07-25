@@ -1,18 +1,18 @@
-import { FlatList } from 'react-native';
+import { FlatList } from "react-native";
 
-import { Conversation } from '~/components/Conversation';
-import { EmptyText } from '~/components/EmptyText';
-import { Container } from '~/components/Ui/Container';
-import { ResultType } from '~/constants/types';
+import { Conversation } from "~/components/Conversation";
+import { EmptyText } from "~/components/EmptyText";
+import { Container } from "~/components/Ui/Container";
+import { ResultType } from "~/constants/types";
 
 type Props = {
   conversations: ResultType[];
-  status: 'LoadingFirstPage' | 'CanLoadMore' | 'LoadingMore' | 'Exhausted';
+  status: "LoadingFirstPage" | "CanLoadMore" | "LoadingMore" | "Exhausted";
   loadMore: (numOfItems: number) => void;
 };
 export const Conversations = ({ conversations, loadMore, status }: Props) => {
   const onLoadMore = async () => {
-    if (status === 'CanLoadMore') {
+    if (status === "CanLoadMore") {
       loadMore(20);
     }
   };

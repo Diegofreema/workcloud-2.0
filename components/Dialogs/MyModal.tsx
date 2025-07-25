@@ -1,14 +1,14 @@
-import { Button } from '@rneui/themed';
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import Modal from 'react-native-modal';
+import { Button } from "@rneui/themed";
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import Modal from "react-native-modal";
 
-import { HStack } from '../HStack';
-import { MyText } from '../Ui/MyText';
+import { HStack } from "../HStack";
+import { MyText } from "../Ui/MyText";
 
-import { colors } from '~/constants/Colors';
-import { useDarkMode } from '~/hooks/useDarkMode';
-import { useOpen } from '~/hooks/useOpen';
+import { colors } from "~/constants/Colors";
+import { useDarkMode } from "~/hooks/useDarkMode";
+import { useOpen } from "~/hooks/useOpen";
 
 type Props = {
   onPress: () => void;
@@ -31,46 +31,55 @@ export const MyModal = ({ onPress, title, isLoading }: Props) => {
         animationIn="slideInDown"
         isVisible={isOpen}
         onBackButtonPress={onClose}
-        onBackdropPress={onClose}>
+        onBackdropPress={onClose}
+      >
         <View
           style={[
             styles.centeredView,
             {
-              backgroundColor: darkMode === 'dark' ? 'black' : 'white',
-              shadowColor: darkMode === 'dark' ? '#fff' : '#000',
+              backgroundColor: darkMode === "dark" ? "black" : "white",
+              shadowColor: darkMode === "dark" ? "#fff" : "#000",
             },
-          ]}>
-          <MyText poppins="Bold" fontSize={17} style={{ textAlign: 'center', marginBottom: 15 }}>
+          ]}
+        >
+          <MyText
+            poppins="Bold"
+            fontSize={17}
+            style={{ textAlign: "center", marginBottom: 15 }}
+          >
             Are you sure you want to this?
           </MyText>
           <MyText
             poppins="Bold"
             fontSize={20}
-            style={{ textAlign: 'center', marginBottom: 15, color: 'red' }}>
+            style={{ textAlign: "center", marginBottom: 15, color: "red" }}
+          >
             {title}
           </MyText>
 
           <HStack gap={10}>
             <Button
               disabled={isLoading}
-              titleStyle={{ fontFamily: 'PoppinsMedium' }}
+              titleStyle={{ fontFamily: "PoppinsMedium" }}
               buttonStyle={{
                 backgroundColor: colors.closeTextColor,
                 borderRadius: 5,
                 width: 120,
               }}
-              onPress={handlePress}>
+              onPress={handlePress}
+            >
               Proceed
             </Button>
 
             <Button
-              titleStyle={{ fontFamily: 'PoppinsMedium' }}
+              titleStyle={{ fontFamily: "PoppinsMedium" }}
               buttonStyle={{
                 backgroundColor: colors.dialPad,
                 borderRadius: 5,
                 width: 120,
               }}
-              onPress={onClose}>
+              onPress={onClose}
+            >
               Cancel
             </Button>
           </HStack>
@@ -82,10 +91,10 @@ export const MyModal = ({ onPress, title, isLoading }: Props) => {
 
 const styles = StyleSheet.create({
   centeredView: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 30,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -97,8 +106,8 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   trash: {
-    backgroundColor: 'white',
-    shadowColor: '#000',
+    backgroundColor: "white",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -111,11 +120,11 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -125,20 +134,20 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   button: {
-    position: 'absolute',
+    position: "absolute",
     top: 10,
     right: 15,
     padding: 4,
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
     marginTop: 20,
     borderWidth: 1,
     borderColor: colors.gray10,
     padding: 10,
     borderRadius: 10,
-    borderStyle: 'dashed',
+    borderStyle: "dashed",
   },
 });

@@ -1,13 +1,17 @@
-import { Avatar } from '@rneui/themed';
-import { useRouter } from 'expo-router';
-import { FlatList, Pressable, View } from 'react-native';
+import { Avatar } from "@rneui/themed";
+import { useRouter } from "expo-router";
+import { FlatList, Pressable, View } from "react-native";
 
-import { EmptyText } from '../EmptyText';
-import { HeadingText } from '../Ui/HeadingText';
+import { EmptyText } from "../EmptyText";
+import { HeadingText } from "../Ui/HeadingText";
 
-import { Connection } from '~/constants/types';
+import { Connection } from "~/constants/types";
 
-export const MiddleCard = ({ connections }: { connections: Connection[] }): JSX.Element => {
+export const MiddleCard = ({
+  connections,
+}: {
+  connections: Connection[];
+}): JSX.Element => {
   const firstSix = (connections?.length && connections?.slice(0, 6)) || [];
   return (
     <View>

@@ -1,16 +1,19 @@
-import { StyleSheet, Image } from 'react-native';
+import { StyleSheet, Image } from "react-native";
 
-import { MyText } from './MyText';
-import VStack from './VStack';
-import { colors } from '../../constants/Colors';
-import { call } from '../LoggedInuser/BottomCard';
+import { MyText } from "./MyText";
+import VStack from "./VStack";
+import { colors } from "../../constants/Colors";
+import { call } from "../LoggedInuser/BottomCard";
 
 type Props = typeof call;
 
 export const VideoPreview = (call: Props): JSX.Element => {
   return (
     <VStack justifyContent="center" alignItems="center">
-      <Image source={require('../../assets/images/video.png')} style={styles.image} />
+      <Image
+        source={require("../../assets/images/video.png")}
+        style={styles.image}
+      />
       <MyText poppins="Bold">{call.name}</MyText>
       <MyText fontSize={7} poppins="Medium">
         {call.from}

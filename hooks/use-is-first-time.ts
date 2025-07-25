@@ -1,7 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { create } from 'zustand';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { create } from "zustand";
 
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { persist, createJSONStorage } from "zustand/middleware";
 
 type State = {
   isFirstTime: boolean;
@@ -15,8 +15,8 @@ export const useIsFirstTime = create<State>()(
       setIsFirstTime: () => set({ isFirstTime: false }),
     }),
     {
-      name: 'is-first-time',
+      name: "is-first-time",
       storage: createJSONStorage(() => AsyncStorage),
-    }
-  )
+    },
+  ),
 );

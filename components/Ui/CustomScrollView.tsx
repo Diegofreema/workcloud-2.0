@@ -1,7 +1,7 @@
-import { PropsWithChildren } from 'react';
-import { ScrollView, StyleProp, ViewStyle } from 'react-native';
+import { PropsWithChildren } from "react";
+import { ScrollView, StyleProp, ViewStyle } from "react-native";
 
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { useDarkMode } from "~/hooks/useDarkMode";
 
 type Props = {
   contentContainerStyle?: StyleProp<ViewStyle>;
@@ -16,7 +16,7 @@ export const CustomScrollView = ({
     <ScrollView
       style={{
         flex: 1,
-        backgroundColor: darkMode === 'dark' ? 'black' : 'white',
+        backgroundColor: darkMode === "dark" ? "black" : "white",
       }}
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}

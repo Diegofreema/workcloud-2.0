@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import React from "react";
+import { View, Text, StyleSheet, StyleProp, ViewStyle } from "react-native";
 
-import { colors } from '~/constants/Colors';
+import { colors } from "~/constants/Colors";
 
 export const UnreadCount = ({
   unread,
@@ -12,20 +12,20 @@ export const UnreadCount = ({
 }) => {
   return (
     <View style={[styles.unread, style]}>
-      <Text style={{ color: 'white', fontFamily: 'NunitoBold' }}>{unread}</Text>
+      <Text style={{ color: "white", fontFamily: "NunitoBold" }}>{unread}</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   unread: {
-    alignSelf: 'flex-end',
-    marginTop: 'auto',
+    alignSelf: "flex-end",
+    marginTop: "auto",
     backgroundColor: colors.dialPad,
     borderRadius: 20,
     width: 20,
     height: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

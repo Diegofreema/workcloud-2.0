@@ -17,9 +17,7 @@ export const RenderMessageImage = ({
         <TouchableOpacity
           style={{ padding: 5 }}
           onPress={() =>
-            router.push(
-              `/preview-image?url=${props.currentMessage?.image}`,
-            )
+            router.push(`/preview-image?url=${props.currentMessage?.image}`)
           }
         >
           <Image

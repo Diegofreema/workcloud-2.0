@@ -1,7 +1,7 @@
-import {useQuery} from "convex/react";
-import {api} from "~/convex/_generated/api";
-import {LoadingComponent} from "~/components/Ui/LoadingComponent";
-import {RenderOrgsByServicePoints} from "~/features/organization/components/render-orgs-by-service-points";
+import { useQuery } from "convex/react";
+import { api } from "~/convex/_generated/api";
+import { LoadingComponent } from "~/components/Ui/LoadingComponent";
+import { RenderOrgsByServicePoints } from "~/features/organization/components/render-orgs-by-service-points";
 
 type Props = {
   query: string;

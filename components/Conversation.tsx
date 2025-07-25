@@ -24,7 +24,6 @@ export const Conversation = ({ conversation }: Props) => {
   const { otherUser, lastMessage, lastMessageTime } = conversation;
   const unread = useQuery(api.conversation.getUnreadMessages, {
     conversationId: conversation.id,
-    userId: id!,
   });
   const onPress = () => {
     router.push(`/chat/${otherUser?._id}`);
@@ -40,7 +39,7 @@ export const Conversation = ({ conversation }: Props) => {
     <TouchableOpacity onPress={onPress} style={styles.pressable}>
       <HStack justifyContent="space-between" alignItems="flex-start">
         <HStack gap={10} alignItems="center">
-          <Avatar image={otherUser?.imageUrl!} />
+          <Avatar image={otherUser?.image!} />
           <VStack>
             <MyText poppins="Medium" fontSize={12}>
               {otherUser?.name}

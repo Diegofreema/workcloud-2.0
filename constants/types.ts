@@ -33,6 +33,7 @@ export type User = {
   phoneNumber?: string;
   date_of_birth?: string;
   userId?: string;
+  image?: string;
 };
 export type ProcessorType = {
   worker: Worker;
@@ -267,7 +268,7 @@ export type WorkerWithWorkspace = {
   qualifications?: string;
   servicePointId?: Id<'servicePoints'>;
   skills: string;
-  user: User | null;
+  user: Doc<'users'> | null;
   workspace?: Wks | null | undefined;
   role?: string;
   bossId?: Id<'users'>;
@@ -376,7 +377,7 @@ export type WorkspaceButtonProps = {
   processorCount: number;
 };
 export type WaitList = {
-  customer: User | null;
+  customer: Doc<'users'> | null;
   _id: Id<'waitlists'>;
   _creationTime: number;
   workspaceId: Id<'workspaces'>;

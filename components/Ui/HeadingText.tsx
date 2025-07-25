@@ -1,11 +1,11 @@
-import { Link } from 'expo-router';
-import { Text } from 'react-native';
-import { RFValue } from 'react-native-responsive-fontsize';
+import { Link } from "expo-router";
+import { Text } from "react-native";
+import { RFValue } from "react-native-responsive-fontsize";
 
-import { MyText } from './MyText';
-import { HStack } from '../HStack';
+import { MyText } from "./MyText";
+import { HStack } from "../HStack";
 
-import { colors } from '~/constants/Colors';
+import { colors } from "~/constants/Colors";
 
 type Props = {
   link: any;
@@ -13,7 +13,11 @@ type Props = {
   rightText?: string;
 };
 
-export const HeadingText = ({ leftText = 'Connections', rightText, link }: Props): JSX.Element => {
+export const HeadingText = ({
+  leftText = "Connections",
+  rightText,
+  link,
+}: Props): JSX.Element => {
   return (
     <HStack alignItems="center" justifyContent="space-between">
       <MyText poppins="Bold" style={{ fontSize: RFValue(13) }}>
@@ -24,8 +28,9 @@ export const HeadingText = ({ leftText = 'Connections', rightText, link }: Props
           style={{
             color: colors.dialPad,
             fontSize: RFValue(9),
-            fontFamily: 'PoppinsBold',
-          }}>
+            fontFamily: "PoppinsBold",
+          }}
+        >
           {rightText}
         </Text>
       </Link>

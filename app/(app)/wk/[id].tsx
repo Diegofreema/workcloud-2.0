@@ -19,8 +19,10 @@ import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
 import { useCallStore } from '~/features/calls/hook/useCallStore';
 import { Button } from '~/features/common/components/Button';
+import { LoadingModal } from '~/features/common/components/loading-modal';
 import { MessageBtn } from '~/features/common/components/message-btn';
 import { useGetWaitlistIdForCustomer } from '~/hooks/useGetWorkspaceIdForCustomer';
+import { generateErrorMessage } from '~/lib/helper';
 
 const today = format(new Date(), 'dd-MM-yyyy');
 
@@ -32,6 +34,7 @@ const Work = () => {
   const loggedInUser = user?._id;
   const client = useStreamVideoClient();
   const [leaving, setLeaving] = useState(false);
+  const [addingToCall, setAddingToCall] = useState(false);
   const [customerLeaving, setCustomerLeaving] = useState(false);
   const [customerToRemove, setCustomerToRemove] = useState<Id<'users'> | null>(
     null
@@ -111,7 +114,7 @@ const Work = () => {
   ) {
     return <LoadingComponent />;
   }
-  const modalText = customerLeaving ? 'Exist lobby' : 'Remove from lobby';
+  const modalText = customerLeaving ? 'Exit lobby' : 'Remove from lobby';
   const hasSignedInToday = checkIfSignedInToday.signedInToday;
   const hasSignedOutToday = checkIfSignedInToday.signedOutToday;
   const attendanceText = hasSignedInToday ? 'Sign out' : 'Sign in';
@@ -198,31 +201,48 @@ const Work = () => {
     customerCallId: string
   ) => {
     if (!client || !data?.workspace.workerId) return;
+    setAddingToCall(true);
+    try {
+      const customer = await updateWaitlistType({
+        waitlistId: currentUser,
+        nextWaitListId: nextUser,
+        workerId: data?.workspace.workerId,
+      });
+      const callId = Crypto.randomUUID();
+      getData({
+        callId,
+        workerId: data?.workspace.workerId,
+        workspaceId: id,
+        customerId: customer._id,
+        customerImage: customer.image as string,
+        customerName: customer.name as string,
+      });
+      await client.call('default', callId).getOrCreate({
+        ring: true,
+        video: true,
+        // notify: true,
+        data: {
+          members: [
+            {
+              user_id: user?._id!,
+              custom: { convexId: loggedInUser, currentUser },
+            },
+            {
+              user_id: customerCallId,
+              custom: { convexId: customerId, currentUser },
+            },
+          ],
+        },
+      });
+    } catch (error) {
+      const errorMessage = generateErrorMessage(error, 'Something went wrong');
+      toast.error('Something went wrong', {
+        description: errorMessage,
+      });
+    } finally {
+      setAddingToCall(false);
+    }
 
-    const callId = Crypto.randomUUID();
-    await client.call('default', callId).getOrCreate({
-      ring: true,
-      video: true,
-      // notify: true,
-      data: {
-        members: [
-          {
-            user_id: user?._id!,
-            custom: { convexId: loggedInUser, currentUser },
-          },
-          {
-            user_id: customerCallId,
-            custom: { convexId: customerId, currentUser },
-          },
-        ],
-      },
-    });
-    await updateWaitlistType({
-      waitlistId: currentUser,
-      nextWaitListId: nextUser,
-      workerId: data?.workspace.workerId,
-    });
-    getData({ callId, workerId: data?.workspace.workerId, workspaceId: id });
     // router.push(`/call/${callId}`);
   };
   const handleExit = async () => {
@@ -239,6 +259,7 @@ const Work = () => {
 
   return (
     <>
+      <LoadingModal isOpen={addingToCall} />
       <WaitListModal
         showMenu={showMenu}
         onClose={onHideWaitList}
@@ -260,7 +281,7 @@ const Work = () => {
           <View style={{ marginTop: 20 }} />
           <UserPreview
             name={worker?.name}
-            imageUrl={worker?.imageUrl!}
+            imageUrl={worker?.image!}
             subText={workspace?.role}
             workspace
             active={workspace?.active}

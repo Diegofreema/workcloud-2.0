@@ -1,11 +1,11 @@
-import messaging from '@react-native-firebase/messaging';
+import messaging from "@react-native-firebase/messaging";
 import {
   firebaseDataHandler,
   isFirebaseStreamVideoMessage,
   isNotifeeStreamVideoEvent,
   onAndroidNotifeeEvent,
-} from '@stream-io/video-react-native-sdk';
-import notifee from '@notifee/react-native';
+} from "@stream-io/video-react-native-sdk";
+import notifee from "@notifee/react-native";
 
 export const setFirebaseListeners = () => {
   // Set up the background message handlers

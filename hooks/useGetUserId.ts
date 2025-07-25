@@ -8,7 +8,7 @@ export const useGetUserId = () => {
 
   const data = useQuery(api.users.getUserByClerkId, {});
   const user = {
-    image: data?.imageUrl,
+    image: data?.image,
     name: data?.name,
   };
 

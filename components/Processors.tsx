@@ -1,8 +1,8 @@
-import { FlatList } from 'react-native';
+import { FlatList } from "react-native";
 
-import { EmptyText } from '~/components/EmptyText';
-import { Processor } from '~/components/Processor';
-import { ProcessorType } from '~/constants/types';
+import { EmptyText } from "~/components/EmptyText";
+import { Processor } from "~/components/Processor";
+import { ProcessorType } from "~/constants/types";
 
 type Props = {
   processor: ProcessorType[];

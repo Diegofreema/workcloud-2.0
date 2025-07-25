@@ -24,8 +24,9 @@ export const SearchConversation = ({ user }: Props) => {
         flexDirection: 'row',
         gap: 10,
         alignItems: 'center',
-      }}>
-      <Avatar rounded size={60} source={{ uri: user?.imageUrl! }} />
+      }}
+    >
+      <Avatar rounded size={60} source={{ uri: user?.image! }} />
       <MyText poppins="Bold" fontSize={RFPercentage(2)}>
         {user?.name}
       </MyText>

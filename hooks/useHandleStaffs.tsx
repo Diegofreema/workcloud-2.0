@@ -1,5 +1,5 @@
-import {create} from 'zustand';
-import {ProcessorType} from "~/features/staff/type";
+import { create } from "zustand";
+import { ProcessorType } from "~/features/staff/type";
 
 type ItemType = {
   item: ProcessorType | null;

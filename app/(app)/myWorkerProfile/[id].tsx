@@ -24,9 +24,11 @@ import { api } from '~/convex/_generated/api';
 import { Button } from '~/features/common/components/Button';
 import { useDarkMode } from '~/hooks/useDarkMode';
 import { generateErrorMessage } from '~/lib/helper';
-
+import { CustomModal } from '~/components/Dialogs/CustomModal';
 const Profile = () => {
   const [resigning, setResigning] = useState(false);
+  const [open, setIsOpen] = useState(false);
+
   const data = useQuery(api.users.getWorkerProfileWithUser, {});
   const resign = useMutation(api.worker.resignFromOrganization);
   const { darkMode } = useDarkMode();
@@ -72,6 +74,14 @@ const Profile = () => {
 
   return (
     <Container>
+      <CustomModal
+        title="Are you sure you want to resign from this organization?"
+        btnText="Resign"
+        onPress={onResign}
+        isOpen={open}
+        onClose={() => setIsOpen(false)}
+        isLoading={resigning}
+      />
       <ScrollView
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
@@ -94,16 +104,6 @@ const Profile = () => {
             workPlace={data?.organization?.name!}
             personal
           />
-          {data.bossId && (
-            <Button
-              onPress={onResign}
-              title="Resign"
-              style={{ paddingHorizontal: 20 }}
-              loading={resigning}
-              disabled={resigning}
-              loadingTitle="Resigning..."
-            />
-          )}
         </View>
 
         <VStack mt={20} gap={15}>
@@ -193,7 +193,7 @@ const Profile = () => {
             </VStack>
           </HStack>
         </VStack>
-        <View style={{ marginTop: 'auto', gap: 10 }}>
+        <View style={{ marginTop: 'auto', gap: 10, marginBottom: 20 }}>
           <MyButton
             onPress={() =>
               router.push(`/myWorkerProfile/edit/${data.user._id}`)
@@ -213,6 +213,19 @@ const Profile = () => {
             </MyText>
           </MyButton>
         </View>
+        {data.bossId && (
+          <Button
+            onPress={() => setIsOpen(true)}
+            title="Resign"
+            style={{
+              paddingHorizontal: 20,
+              backgroundColor: colors.closeTextColor,
+            }}
+            loading={resigning}
+            disabled={resigning}
+            loadingTitle="Resigning..."
+          />
+        )}
       </ScrollView>
     </Container>
   );

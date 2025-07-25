@@ -1,16 +1,16 @@
-import { useEffect } from 'react';
-import { View } from 'react-native';
+import { useEffect } from "react";
+import { View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-} from 'react-native-reanimated';
+} from "react-native-reanimated";
 
-import { HStack } from '~/components/HStack';
-import { MyText } from '~/components/Ui/MyText';
-import VStack from '~/components/Ui/VStack';
-import { colors } from '~/constants/Colors';
-import { RatingPercentageType } from '~/constants/types';
+import { HStack } from "~/components/HStack";
+import { MyText } from "~/components/Ui/MyText";
+import VStack from "~/components/Ui/VStack";
+import { colors } from "~/constants/Colors";
+import { RatingPercentageType } from "~/constants/types";
 
 type RatingPercentageProps = {
   data: RatingPercentageType[];
@@ -43,7 +43,7 @@ const Percentage = ({ percentage, stars }: RatingPercentageType) => {
       <View
         style={{
           flex: 1,
-          backgroundColor: '#f6f6f6',
+          backgroundColor: "#f6f6f6",
           height: 10,
           borderRadius: 9,
         }}
@@ -52,7 +52,7 @@ const Percentage = ({ percentage, stars }: RatingPercentageType) => {
           style={[
             {
               backgroundColor: colors.dialPad,
-              height: '100%',
+              height: "100%",
               borderRadius: 9,
             },
             animatedStyle,

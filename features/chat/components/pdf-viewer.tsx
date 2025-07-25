@@ -1,14 +1,14 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
   ActivityIndicator,
   Platform,
+  StyleSheet,
+  Text,
+  View,
   ViewStyle,
-} from 'react-native';
-import { WebView } from 'react-native-webview';
-import type { WebViewErrorEvent, WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
+} from "react-native";
+import { WebView } from "react-native-webview";
+import type { WebViewErrorEvent } from "react-native-webview/lib/WebViewTypes";
 
 interface PDFViewerProps {
   pdfUrl: string;
@@ -30,17 +30,17 @@ interface PDFViewerState {
 }
 
 const PDFViewer: React.FC<PDFViewerProps> = ({
-                                               pdfUrl,
-                                               style,
-                                               onLoadStart,
-                                               onLoadEnd,
-                                               onError,
-                                               showLoader = true,
-                                               loaderColor = '#007AFF',
-                                               errorMessage = 'Failed to load PDF',
-                                               retryText = 'Tap to retry',
-                                               backgroundColor = '#f5f5f5',
-                                             }) => {
+  pdfUrl,
+  style,
+  onLoadStart,
+  onLoadEnd,
+  onError,
+  showLoader = true,
+  loaderColor = "#007AFF",
+  errorMessage = "Failed to load PDF",
+  retryText = "Tap to retry",
+  backgroundColor = "#f5f5f5",
+}) => {
   const [state, setState] = useState<PDFViewerState>({
     loading: true,
     error: null,
@@ -60,7 +60,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
   // Generate HTML content with embedded PDF.js viewer
   const htmlContent = useMemo(() => {
     if (!isValidUrl(pdfUrl)) {
-      return '<html><body><h3>Invalid PDF URL</h3></body></html>';
+      return "<html><body><h3>Invalid PDF URL</h3></body></html>";
     }
 
     return `
@@ -277,188 +277,176 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
 
   // Handle WebView load start
   const handleLoadStart = useCallback(() => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
+    setState((prev) => ({ ...prev, loading: true, error: null }));
     onLoadStart?.();
   }, [onLoadStart]);
 
   // Handle WebView load end
   const handleLoadEnd = useCallback(() => {
-    setState(prev => ({ ...prev, loading: false }));
+    setState((prev) => ({ ...prev, loading: false }));
     onLoadEnd?.();
   }, [onLoadEnd]);
 
   // Handle WebView errors
-  const handleError = useCallback((event: WebViewErrorEvent) => {
-    const errorMsg = event.nativeEvent.description || 'Unknown error occurred';
-    setState(prev => ({
-      ...prev,
-      loading: false,
-      error: errorMsg,
-      retryCount: prev.retryCount + 1
-    }));
-    onError?.(errorMsg);
-  }, [onError]);
+  const handleError = useCallback(
+    (event: WebViewErrorEvent) => {
+      const errorMsg =
+        event.nativeEvent.description || "Unknown error occurred";
+      setState((prev) => ({
+        ...prev,
+        loading: false,
+        error: errorMsg,
+        retryCount: prev.retryCount + 1,
+      }));
+      onError?.(errorMsg);
+    },
+    [onError],
+  );
 
   // Handle messages from WebView
-  const handleMessage = useCallback((event: any) => {
-    try {
-      const data = JSON.parse(event.nativeEvent.data);
+  const handleMessage = useCallback(
+    (event: any) => {
+      try {
+        const data = JSON.parse(event.nativeEvent.data);
 
-      switch (data.type) {
-        case 'PDF_LOADED':
-          setState(prev => ({ ...prev, loading: false, error: null }));
-          onLoadEnd?.();
-          break;
+        switch (data.type) {
+          case "PDF_LOADED":
+            setState((prev) => ({ ...prev, loading: false, error: null }));
+            onLoadEnd?.();
+            break;
 
-        case 'PDF_ERROR':
-          setState(prev => ({
-            ...prev,
-            loading: false,
-            error: data.error || 'Failed to load PDF',
-            retryCount: prev.retryCount + 1
-          }));
-          onError?.(data.error || 'Failed to load PDF');
-          break;
+          case "PDF_ERROR":
+            setState((prev) => ({
+              ...prev,
+              loading: false,
+              error: data.error || "Failed to load PDF",
+              retryCount: prev.retryCount + 1,
+            }));
+            onError?.(data.error || "Failed to load PDF");
+            break;
 
-        case 'PDF_RETRY':
-          setState(prev => ({
-            ...prev,
-            loading: true,
-            error: null,
-            retryCount: data.retryCount || prev.retryCount + 1
-          }));
-          onLoadStart?.();
-          break;
+          case "PDF_RETRY":
+            setState((prev) => ({
+              ...prev,
+              loading: true,
+              error: null,
+              retryCount: data.retryCount || prev.retryCount + 1,
+            }));
+            onLoadStart?.();
+            break;
+        }
+      } catch (error) {
+        console.error("Error parsing WebView message:", error);
       }
-    } catch (error) {
-      console.error('Error parsing WebView message:', error);
-    }
-  }, [onLoadStart, onLoadEnd, onError]);
-
-  // Retry loading the PDF
-  const retryLoad = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      loading: true,
-      error: null,
-      retryCount: prev.retryCount + 1
-    }));
-  }, []);
+    },
+    [onLoadStart, onLoadEnd, onError],
+  );
 
   // Error view component
-  const renderError = () => (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{errorMessage}</Text>
-        <Text style={styles.errorDetails}>{state.error}</Text>
-        <Text style={styles.retryText} onPress={retryLoad}>
-          {retryText}
-        </Text>
-      </View>
-  );
 
   // Loading view component
-  const renderLoader = () => (
-      showLoader && state.loading && (
-          <View style={styles.loaderContainer}>
-            <ActivityIndicator size="large" color={loaderColor} />
-            <Text style={styles.loadingText}>Loading PDF...</Text>
-          </View>
-      )
-  );
+  const renderLoader = () =>
+    showLoader &&
+    state.loading && (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color={loaderColor} />
+        <Text style={styles.loadingText}>Loading PDF...</Text>
+      </View>
+    );
 
   return (
-      <View style={[styles.container, style]}>
-        <WebView
-            key={`pdf-viewer-${state.retryCount}`}
-            source={{ html: htmlContent }}
-            style={styles.webview}
-            onLoadStart={handleLoadStart}
-            onLoadEnd={handleLoadEnd}
-            onError={handleError}
-            onMessage={handleMessage}
-            javaScriptEnabled={true}
-            domStorageEnabled={true}
-            startInLoadingState={false}
-            scalesPageToFit={Platform.OS === 'android'}
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
-            allowsInlineMediaPlayback={true}
-            mediaPlaybackRequiresUserAction={false}
-            // Web-specific props
-            {...(Platform.OS === 'web' && {
-              containerStyle: styles.webContainer,
-            })}
-            // iOS-specific props
-            {...(Platform.OS === 'ios' && {
-              allowsBackForwardNavigationGestures: false,
-              bounces: false,
-              scrollEnabled: true,
-            })}
-            // Android-specific props
-            {...(Platform.OS === 'android' && {
-              mixedContentMode: 'compatibility',
-              thirdPartyCookiesEnabled: true,
-              cacheEnabled: true,
-            })}
-        />
-        {renderLoader()}
-      </View>
+    <View style={[styles.container, style]}>
+      <WebView
+        key={`pdf-viewer-${state.retryCount}`}
+        source={{ html: htmlContent }}
+        style={styles.webview}
+        onLoadStart={handleLoadStart}
+        onLoadEnd={handleLoadEnd}
+        onError={handleError}
+        onMessage={handleMessage}
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        startInLoadingState={false}
+        scalesPageToFit={Platform.OS === "android"}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        allowsInlineMediaPlayback={true}
+        mediaPlaybackRequiresUserAction={false}
+        // Web-specific props
+        {...(Platform.OS === "web" && {
+          containerStyle: styles.webContainer,
+        })}
+        // iOS-specific props
+        {...(Platform.OS === "ios" && {
+          allowsBackForwardNavigationGestures: false,
+          bounces: false,
+          scrollEnabled: true,
+        })}
+        // Android-specific props
+        {...(Platform.OS === "android" && {
+          mixedContentMode: "compatibility",
+          thirdPartyCookiesEnabled: true,
+          cacheEnabled: true,
+        })}
+      />
+      {renderLoader()}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
   webview: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   webContainer: {
     flex: 1,
   },
   loaderContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
     zIndex: 1000,
   },
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#666',
-    fontWeight: '500',
+    color: "#666",
+    fontWeight: "500",
   },
   errorContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   errorText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#d32f2f',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#d32f2f",
+    textAlign: "center",
     marginBottom: 10,
   },
   errorDetails: {
     fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
+    color: "#666",
+    textAlign: "center",
     marginBottom: 20,
   },
   retryText: {
     fontSize: 16,
-    color: '#007AFF',
-    textAlign: 'center',
-    textDecorationLine: 'underline',
+    color: "#007AFF",
+    textAlign: "center",
+    textDecorationLine: "underline",
     padding: 10,
   },
 });

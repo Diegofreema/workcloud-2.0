@@ -1,7 +1,7 @@
-import { useMutation, useQuery } from 'convex/react';
-import * as DocumentPicker from 'expo-document-picker';
-import * as ImagePicker from 'expo-image-picker';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useMutation, useQuery } from "convex/react";
+import * as DocumentPicker from "expo-document-picker";
+import * as ImagePicker from "expo-image-picker";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -9,17 +9,17 @@ import {
   StyleSheet,
   Text,
   View,
-} from 'react-native';
-import { GiftedChat, SystemMessage } from 'react-native-gifted-chat';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "react-native";
+import { GiftedChat, SystemMessage } from "react-native-gifted-chat";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import * as Clipboard from 'expo-clipboard';
-import { RenderActions } from '~/components/chat/RenderActions';
-import { RenderBubble } from '~/components/chat/RenderBubble';
-import { RenderComposer } from '~/components/chat/RenderComposer';
-import { RenderMessageImage } from '~/components/chat/RenderMessageImage';
-import { RenderSend } from '~/components/chat/RenderSend';
-import { colors } from '~/constants/Colors';
+import * as Clipboard from "expo-clipboard";
+import { RenderActions } from "~/components/chat/RenderActions";
+import { RenderBubble } from "~/components/chat/RenderBubble";
+import { RenderComposer } from "~/components/chat/RenderComposer";
+import { RenderMessageImage } from "~/components/chat/RenderMessageImage";
+import { RenderSend } from "~/components/chat/RenderSend";
+import { colors } from "~/constants/Colors";
 import {
   DataType,
   EditType,
@@ -29,21 +29,21 @@ import {
   ReplyType,
   SendIMessage,
   StatusType,
-} from '~/constants/types';
-import { api } from '~/convex/_generated/api';
-import { Id } from '~/convex/_generated/dataModel';
-import { generateErrorMessage, uploadProfilePicture } from '~/lib/helper';
-import { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
-import { toast } from 'sonner-native';
-import { useDebounce } from '~/features/chat/hook/use-debounce';
-import ReplyMessageBar from '~/features/chat/components/render-message';
-import { sendPushNotification } from '~/utils/sendPushNotification';
-import { useGetUserId } from '~/hooks/useGetUserId';
+} from "~/constants/types";
+import { api } from "~/convex/_generated/api";
+import { Id } from "~/convex/_generated/dataModel";
+import { generateErrorMessage, uploadProfilePicture } from "~/lib/helper";
+import { SwipeableMethods } from "react-native-gesture-handler/ReanimatedSwipeable";
+import { toast } from "sonner-native";
+import { useDebounce } from "~/features/chat/hook/use-debounce";
+import ReplyMessageBar from "~/features/chat/components/render-message";
+import { sendPushNotification } from "~/utils/sendPushNotification";
+import { useGetUserId } from "~/hooks/useGetUserId";
 
 type Props = {
-  loggedInUserId: Id<'users'>;
-  otherUserId: Id<'users'>;
-  conversationId: Id<'conversations'>;
+  loggedInUserId: Id<"users">;
+  otherUserId: Id<"users">;
+  conversationId: Id<"conversations">;
   data: DataType[];
   status: StatusType;
   loadMore: (numItems: number) => void;
@@ -51,7 +51,7 @@ type Props = {
   createdAt: number;
   isLoading: boolean;
   pushToken?: string;
-  type: 'single' | 'processor';
+  type: "single" | "processor";
 };
 export const ChatComponentNative = ({
   loggedInUserId,
@@ -66,14 +66,14 @@ export const ChatComponentNative = ({
   pushToken,
   type,
 }: Props) => {
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
   const { user } = useGetUserId();
   const [isTypingLocally, setIsTypingLocally] = useState(false);
   const setTypingState = useMutation(api.message.setTypingState);
   const [edit, setEdit] = useState<{
-    messageId: Id<'messages'>;
-    senderId: Id<'users'>;
+    messageId: Id<"messages">;
+    senderId: Id<"users">;
   } | null>(null);
   const getTypingUsers = useQuery(
     api.message.getTypingUsers,
@@ -81,7 +81,7 @@ export const ChatComponentNative = ({
       ? {
           conversationId,
         }
-      : 'skip'
+      : "skip",
   );
   const insets = useSafeAreaInsets();
   const [replyMessage, setReplyMessage] = useState<IMessage | null>(null);
@@ -103,7 +103,7 @@ export const ChatComponentNative = ({
         updateTypingState(isTyping);
       }
     },
-    [isTypingLocally, updateTypingState]
+    [isTypingLocally, updateTypingState],
   );
 
   const onSend = useCallback(
@@ -132,7 +132,7 @@ export const ChatComponentNative = ({
               fileId: message.fileId,
               replyTo: replyMessage?._id,
             });
-            const body = message.text ? message.text : 'File';
+            const body = message.text ? message.text : "File";
             if (pushToken) {
               await sendPushNotification({
                 title: user.name!,
@@ -144,7 +144,7 @@ export const ChatComponentNative = ({
           }
         }
       } catch (e) {
-        console.log('Error message', e);
+        console.log("Error message", e);
       } finally {
         setProcessing(false);
       }
@@ -160,12 +160,12 @@ export const ChatComponentNative = ({
       user,
       pushToken,
       type,
-    ]
+    ],
   );
   const handleFilePick = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: ['application/pdf'],
+        type: ["application/pdf"],
         copyToCacheDirectory: true,
         multiple: true,
       });
@@ -176,7 +176,7 @@ export const ChatComponentNative = ({
         const filePromises = assets.map(async (asset) => {
           const res = await uploadProfilePicture(generateUploadUrl, asset.uri);
           return {
-            id: res?.storageId as Id<'_storage'>,
+            id: res?.storageId as Id<"_storage">,
           };
         });
 
@@ -184,16 +184,16 @@ export const ChatComponentNative = ({
 
         const messages = fileUrls.map((file) => {
           return {
-            text: '',
+            text: "",
             user: { _id: loggedInUserId },
             fileId: file.id,
-            fileType: 'pdf' as FileType,
+            fileType: "pdf" as FileType,
           };
         });
         void onSend(messages);
       }
     } catch (error) {
-      console.error('Error picking file:', error);
+      console.error("Error picking file:", error);
     } finally {
       setSending(false);
     }
@@ -201,7 +201,7 @@ export const ChatComponentNative = ({
   const handleImagePick = async () => {
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
+        mediaTypes: ["images"],
         quality: 0.5,
         allowsMultipleSelection: true,
         base64: false,
@@ -214,24 +214,24 @@ export const ChatComponentNative = ({
         const filePromises = assets.map(async (asset) => {
           const res = await uploadProfilePicture(generateUploadUrl, asset.uri);
           return {
-            id: res?.storageId as Id<'_storage'>,
+            id: res?.storageId as Id<"_storage">,
           };
         });
         const fileUrls = await Promise.all(filePromises);
 
         const messages = fileUrls.map((file) => {
           return {
-            text: '',
+            text: "",
             user: { _id: loggedInUserId },
             fileId: file.id,
-            fileType: 'image' as FileType,
+            fileType: "image" as FileType,
           };
         });
         await onSend(messages);
       }
     } catch (error) {
-      console.error('Error picking image:', error);
-      toast.error('Error picking image');
+      console.error("Error picking image:", error);
+      toast.error("Error picking image");
     } finally {
       setSending(false);
     }
@@ -253,7 +253,7 @@ export const ChatComponentNative = ({
         }
       }
     },
-    [replyMessage, editText, setEditText]
+    [replyMessage, editText, setEditText],
   );
   useEffect(() => {
     if (replyMessage && swipeableRowRef.current) {
@@ -267,15 +267,15 @@ export const ChatComponentNative = ({
     ? [
         ...data?.map((message) => {
           return {
-            _id: message?._id as Id<'messages'>,
+            _id: message?._id as Id<"messages">,
             text: message?.content,
             createdAt: new Date(message?._creationTime),
             user: {
-              _id: message?.senderId as Id<'users'>,
+              _id: message?.senderId as Id<"users">,
               name:
                 message.senderId === loggedInUserId
-                  ? 'You'
-                  : otherUserName?.split(' ')[0],
+                  ? "You"
+                  : otherUserName?.split(" ")[0],
             },
             reactions: message.reactions,
             fileType: message.fileType,
@@ -286,11 +286,11 @@ export const ChatComponentNative = ({
         {
           _id: 0,
           system: true,
-          text: '',
+          text: "",
           createdAt: new Date(createdAt),
           user: {
             _id: 0,
-            name: 'Bot',
+            name: "Bot",
           },
         },
       ]
@@ -299,19 +299,19 @@ export const ChatComponentNative = ({
   const onCopy = useCallback(async (textToCopy: string) => {
     const copied = await Clipboard.setStringAsync(textToCopy);
     if (copied) {
-      toast.success('Copied to clipboard');
+      toast.success("Copied to clipboard");
     }
   }, []);
   const onDelete = useCallback(
-    async (messageId: Id<'messages'>) => {
-      Alert.alert('This is irreversible', 'Delete this message for everyone?', [
+    async (messageId: Id<"messages">) => {
+      Alert.alert("This is irreversible", "Delete this message for everyone?", [
         {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
         },
         {
-          text: 'Delete',
+          text: "Delete",
           onPress: () => {
             setProcessing(true);
             try {
@@ -319,18 +319,18 @@ export const ChatComponentNative = ({
                 message_id: messageId,
                 sender_id: loggedInUserId,
               });
-              toast.success('Message deleted');
+              toast.success("Message deleted");
             } catch (e) {
-              toast.error(generateErrorMessage(e, 'Failed to delete message'));
+              toast.error(generateErrorMessage(e, "Failed to delete message"));
             } finally {
               setProcessing(false);
             }
           },
-          style: 'destructive',
+          style: "destructive",
         },
       ]);
     },
-    [loggedInUserId, deleteMessage]
+    [loggedInUserId, deleteMessage],
   );
   const onEdit = useCallback(
     async ({ textToEdit, messageId, senderId, senderName }: EditType2) => {
@@ -338,10 +338,10 @@ export const ChatComponentNative = ({
       setEdit({ messageId, senderId });
       setText(textToEdit);
     },
-    []
+    [],
   );
 
-  const loadEarlier = status === 'CanLoadMore' && !isLoading;
+  const loadEarlier = status === "CanLoadMore" && !isLoading;
   const onLoadMore = () => {
     if (loadEarlier) {
       loadMore(100);
@@ -419,7 +419,7 @@ export const ChatComponentNative = ({
         // renderFooter={renderFooter}
         isTyping={isTyping}
       />
-      {Platform.OS === 'android' && <KeyboardAvoidingView behavior="height" />}
+      {Platform.OS === "android" && <KeyboardAvoidingView behavior="height" />}
     </View>
   );
 };
@@ -427,24 +427,24 @@ export const ChatComponentNative = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: "#F5F5F5",
   },
   messagesContainer: {
     padding: 10,
   },
 
   messageBubble: {
-    maxWidth: '80%',
+    maxWidth: "80%",
     padding: 10,
     marginVertical: 5,
     borderRadius: 10,
   },
 
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 10,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   input: {
     flex: 1,
@@ -453,13 +453,13 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     paddingHorizontal: 15,
     marginRight: 10,
-    backgroundColor: 'transparent',
-    justifyContent: 'center',
-    textAlignVertical: 'center',
-    paddingTop: Platform.OS === 'ios' ? 10 : 0,
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    textAlignVertical: "center",
+    paddingTop: Platform.OS === "ios" ? 10 : 0,
   },
   sendButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: "#007AFF",
     borderRadius: 7777,
     padding: 15,
   },

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 import {
   format,
   formatDistanceToNow,
@@ -7,21 +7,21 @@ import {
   isYesterday,
   parse,
   parseISO,
-} from 'date-fns';
-import { DocumentPickerResult } from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
-import * as MediaLibrary from 'expo-media-library';
+} from "date-fns";
+import { DocumentPickerResult } from "expo-document-picker";
+import * as FileSystem from "expo-file-system";
+import * as MediaLibrary from "expo-media-library";
 
-import { ChatDateGroup, DataType } from '~/constants/types';
-import { Id } from '~/convex/_generated/dataModel';
+import { ChatDateGroup, DataType } from "~/constants/types";
+import { Id } from "~/convex/_generated/dataModel";
 
-import { ConvexError } from 'convex/values';
-import * as Sharing from 'expo-sharing';
-import { Platform } from 'react-native';
+import { ConvexError } from "convex/values";
+import * as Sharing from "expo-sharing";
+import { Platform } from "react-native";
 
 export const generateErrorMessage = (
   error: unknown,
-  message: string
+  message: string,
 ): string => {
   return error instanceof ConvexError ? (error.data as string) : message;
 };
@@ -93,10 +93,10 @@ export const generateErrorMessage = (
 export const createToken = async (userId: string) => {
   try {
     const { data: axiosData } = await axios.post(
-      'https://workcloud-server-1.onrender.com/create-token',
+      "https://workcloud-server-1.onrender.com/create-token",
       {
         id: userId,
-      }
+      },
     );
 
     return axiosData.streamToken;
@@ -106,9 +106,9 @@ export const createToken = async (userId: string) => {
 };
 
 export const checkLength = (value: string) => {
-  if (!value) return '';
+  if (!value) return "";
   if (value.length > 25) {
-    return value.substring(0, 25) + '...';
+    return value.substring(0, 25) + "...";
   } else {
     return value;
   }
@@ -116,7 +116,7 @@ export const checkLength = (value: string) => {
 
 export const trimText = (text: string, maxLength: number = 20) => {
   if (text.length > maxLength) {
-    return text.substring(0, maxLength) + '...';
+    return text.substring(0, maxLength) + "...";
   }
 
   return text;
@@ -124,8 +124,8 @@ export const trimText = (text: string, maxLength: number = 20) => {
 
 export const uploadProfilePicture = async (
   generateUploadUrl: any,
-  selectedImage?: string
-): Promise<{ storageId: Id<'_storage'>; uploadUrl: string } | undefined> => {
+  selectedImage?: string,
+): Promise<{ storageId: Id<"_storage">; uploadUrl: string } | undefined> => {
   if (!selectedImage) return;
   const uploadUrl = await generateUploadUrl();
 
@@ -133,9 +133,9 @@ export const uploadProfilePicture = async (
   const blob = await response.blob();
 
   const result = await fetch(uploadUrl, {
-    method: 'POST',
+    method: "POST",
     body: blob,
-    headers: { 'Content-Type': 'image/jpeg' },
+    headers: { "Content-Type": "image/jpeg" },
   });
   const { storageId } = await result.json();
 
@@ -143,16 +143,16 @@ export const uploadProfilePicture = async (
 };
 export const uploadDoc = async (
   selectedDoc: DocumentPickerResult | null,
-  generateUploadUrl: any
-): Promise<{ storageId: Id<'_storage'>; uploadUrl: string }> => {
+  generateUploadUrl: any,
+): Promise<{ storageId: Id<"_storage">; uploadUrl: string }> => {
   const uploadUrl = await generateUploadUrl();
 
   const response = await fetch(selectedDoc?.assets?.[0]?.uri!);
   const blob = await response.blob();
   const result = await fetch(uploadUrl, {
-    method: 'POST',
+    method: "POST",
     body: blob,
-    headers: { 'Content-Type': selectedDoc?.assets?.[0]?.mimeType! },
+    headers: { "Content-Type": selectedDoc?.assets?.[0]?.mimeType! },
   });
   const { storageId } = await result.json();
 
@@ -163,13 +163,13 @@ export function convertTimeToDateTime(timeString: string) {
   // Use current date as base, then parse the time
   const currentDate = new Date();
   return parse(
-    `${currentDate.toISOString().split('T')[0]} ${timeString}`,
-    'yyyy-MM-dd HH:mm',
-    currentDate
+    `${currentDate.toISOString().split("T")[0]} ${timeString}`,
+    "yyyy-MM-dd HH:mm",
+    currentDate,
   );
 }
 export const convertStringToDate = (dateString: string): string => {
-  const date = parse(dateString, 'dd/MM/yyyy, HH:mm:ss', new Date());
+  const date = parse(dateString, "dd/MM/yyyy, HH:mm:ss", new Date());
   return formatDateToNowHelper(date);
 };
 
@@ -180,23 +180,23 @@ export const formatDate = (dateString: string) => {
   yesterday.setDate(today.getDate() - 1);
 
   if (date.toDateString() === today.toDateString()) {
-    return 'Today';
+    return "Today";
   }
 
   if (date.toDateString() === yesterday.toDateString()) {
-    return 'Yesterday';
+    return "Yesterday";
   }
 
-  return date.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
   });
 };
 
 export function transformChatData(
   messages: DataType[],
-  currentUserId: Id<'users'>
+  currentUserId: Id<"users">,
 ): ChatDateGroup[] {
   // Sort messages by creation time in descending order
   const groupedMessages: Record<string, ChatDateGroup> = {};
@@ -204,7 +204,7 @@ export function transformChatData(
   messages.forEach((message) => {
     // Convert creation time to Date object
     const messageDate = new Date(message._creationTime);
-    const formattedDate = messageDate.toISOString().split('T')[0];
+    const formattedDate = messageDate.toISOString().split("T")[0];
 
     // Determine if the message is from the current user
     const isCurrentUser = message.senderId === currentUserId;
@@ -243,26 +243,26 @@ export const formatDateToNowHelper = (date: Date): string => {
   const formattedDistance = formatDistanceToNow(date);
 
   const replacements: Record<string, string> = {
-    'less than a minute': '1 min',
-    '1 minute': '1 min',
-    minutes: 'mins',
-    '1 hour': '1 hr',
-    hours: 'hrs',
+    "less than a minute": "1 min",
+    "1 minute": "1 min",
+    minutes: "mins",
+    "1 hour": "1 hr",
+    hours: "hrs",
   };
 
   return Object.entries(replacements).reduce(
     (result, [search, replace]) => result.replace(search, replace),
-    formattedDistance
+    formattedDistance,
   );
 };
-export const now = format(Date.now(), 'dd/MM/yyyy, HH:mm:ss');
+export const now = format(Date.now(), "dd/MM/yyyy, HH:mm:ss");
 
 export const checkIfOpen = (open: string, end: string): boolean => {
   const now = new Date();
 
-  const openTime = parse(open, 'HH:mm', now);
+  const openTime = parse(open, "HH:mm", now);
 
-  const closeTime = parse(end, 'HH:mm', now);
+  const closeTime = parse(end, "HH:mm", now);
 
   return isWithinInterval(now, {
     start: openTime,
@@ -271,7 +271,7 @@ export const checkIfOpen = (open: string, end: string): boolean => {
 };
 
 export const calculateRatingStats = (
-  reviews: { stars: number; count: number }[]
+  reviews: { stars: number; count: number }[],
 ) => {
   // Calculate total ratings
   const totalRatings = reviews.reduce((acc, curr) => acc + curr.count, 0);
@@ -308,12 +308,12 @@ export const filterChannels = async (channels: any[], query: string) => {
       const isNameMatch = channel.data?.name?.includes(query);
       const isMemberMatch = memberResponse.members.some(
         (member: { user: { name: string | string[] } }) =>
-          member.user?.name?.includes(query)
+          member.user?.name?.includes(query),
       );
 
       // Return the channel if it matches the query
       return isNameMatch || isMemberMatch ? channel : null;
-    })
+    }),
   );
 
   // Filter out null values (channels that didn't match the query)
@@ -326,59 +326,59 @@ export const sliceArray = <T>(array: T[], length = 10): T[] => {
 
 export const downloadPdf = async (fileUrl: string) => {
   const filename = `${new Date().getTime()}.pdf`;
-  const fileType = 'pdf';
+  const fileType = "pdf";
   try {
     const { status } = await MediaLibrary.requestPermissionsAsync();
-    if (status !== 'granted') {
+    if (status !== "granted") {
       new Error(
-        status === 'denied'
-          ? 'Please allow permissions to save files'
-          : 'Permission request failed'
+        status === "denied"
+          ? "Please allow permissions to save files"
+          : "Permission request failed",
       );
     }
     const result = await FileSystem.downloadAsync(
       fileUrl,
-      FileSystem.documentDirectory + filename
+      FileSystem.documentDirectory + filename,
     );
     if (result.status !== 200) {
       new Error(
         `Download failed with status ${result.status}: ${
-          result.headers['Status-Message'] || 'Unknown error'
-        }`
+          result.headers["Status-Message"] || "Unknown error"
+        }`,
       );
     }
-    await save(result.uri, filename, 'application/pdf');
-    return 'saved';
+    await save(result.uri, filename, "application/pdf");
+    return "saved";
   } catch (error) {
     console.error(`Download Error (${fileType}):`, error);
     throw new Error(
       `Failed to download ${fileType}: ${
-        error instanceof Error ? error.message : 'Unknown error'
-      }`
+        error instanceof Error ? error.message : "Unknown error"
+      }`,
     );
   }
 };
 
 export const downloadAndSaveFile = async (
   fileUrl: string,
-  fileType: 'image' | 'pdf'
+  fileType: "image" | "pdf",
 ): Promise<string> => {
-  const extension = fileType === 'image' ? 'jpg' : 'pdf';
-  const mimeType = fileType === 'image' ? 'image/jpeg' : 'application/pdf';
+  const extension = fileType === "image" ? "jpg" : "pdf";
+  const mimeType = fileType === "image" ? "image/jpeg" : "application/pdf";
   const fileName = `${new Date().getTime()}.${extension}`;
   const fileUri = `${FileSystem.cacheDirectory}${fileName}`; // Use cache for temporary storage
 
   // Remove mode=admin from URL
-  const cleanUrl = fileUrl.replace(/&mode=admin/, '');
+  const cleanUrl = fileUrl.replace(/&mode=admin/, "");
 
   try {
     // Request permissions for both image and PDF
     const { status } = await MediaLibrary.requestPermissionsAsync();
-    if (status !== 'granted') {
+    if (status !== "granted") {
       new Error(
-        status === 'denied'
-          ? 'Please allow permissions to save files'
-          : 'Permission request failed'
+        status === "denied"
+          ? "Please allow permissions to save files"
+          : "Permission request failed",
       );
     }
 
@@ -390,7 +390,7 @@ export const downloadAndSaveFile = async (
       },
     });
 
-    console.log('Download Response:', {
+    console.log("Download Response:", {
       status: res.status,
       headers: res.headers,
       uri: fileUri,
@@ -399,34 +399,34 @@ export const downloadAndSaveFile = async (
     if (res.status !== 200) {
       new Error(
         `Download failed with status ${res.status}: ${
-          res.headers['Status-Message'] || 'Unknown error'
-        }`
+          res.headers["Status-Message"] || "Unknown error"
+        }`,
       );
     }
 
     // Verify file exists and has content
     const fileInfo = await FileSystem.getInfoAsync(fileUri);
-    console.log('File Info:', fileInfo);
+    console.log("File Info:", fileInfo);
     if (!fileInfo.exists || fileInfo.size === 0) {
       new Error(`Downloaded file is empty or missing: ${fileUri}`);
     }
 
     // Verify MIME type
     if (
-      fileType === 'pdf' &&
-      res.headers['Content-Type'] &&
-      !res.headers['Content-Type'].includes('application/pdf')
+      fileType === "pdf" &&
+      res.headers["Content-Type"] &&
+      !res.headers["Content-Type"].includes("application/pdf")
     ) {
       new Error(
-        `Downloaded file is not a PDF: Content-Type=${res.headers['Content-Type']}`
+        `Downloaded file is not a PDF: Content-Type=${res.headers["Content-Type"]}`,
       );
     } else if (
-      fileType === 'image' &&
-      res.headers['Content-Type'] &&
-      !res.headers['Content-Type'].includes('image/jpeg')
+      fileType === "image" &&
+      res.headers["Content-Type"] &&
+      !res.headers["Content-Type"].includes("image/jpeg")
     ) {
       new Error(
-        `Downloaded file is not an image: Content-Type=${res.headers['Content-Type']}`
+        `Downloaded file is not an image: Content-Type=${res.headers["Content-Type"]}`,
       );
     }
 
@@ -439,7 +439,7 @@ export const downloadAndSaveFile = async (
       await Sharing.shareAsync(fileUri, {
         mimeType,
         dialogTitle: `Open ${fileType}`,
-        UTI: fileType === 'pdf' ? 'com.adobe.pdf' : 'public.jpeg', // iOS-specific UTI
+        UTI: fileType === "pdf" ? "com.adobe.pdf" : "public.jpeg", // iOS-specific UTI
       });
     }
 
@@ -448,8 +448,8 @@ export const downloadAndSaveFile = async (
     console.error(`Download Error (${fileType}):`, err);
     throw new Error(
       `Failed to download ${fileType}: ${
-        err instanceof Error ? err.message : 'Unknown error'
-      }`
+        err instanceof Error ? err.message : "Unknown error"
+      }`,
     );
   }
 };
@@ -457,31 +457,31 @@ export const downloadAndSaveFile = async (
 const saveFile = async (
   tempUri: string,
   mimeType: string,
-  fileType: 'image' | 'pdf',
-  fileName: string
+  fileType: "image" | "pdf",
+  fileName: string,
 ): Promise<string> => {
   try {
-    if (fileType === 'image') {
+    if (fileType === "image") {
       // Save images to MediaLibrary
-      const assetUri = tempUri.startsWith('file://')
+      const assetUri = tempUri.startsWith("file://")
         ? tempUri
         : `file://${tempUri}`;
       const asset = await MediaLibrary.createAssetAsync(assetUri);
-      console.log('Asset Created:', asset);
+      console.log("Asset Created:", asset);
 
-      const albumName = 'MyAppImages';
+      const albumName = "MyAppImages";
       let album = await MediaLibrary.getAlbumAsync(albumName);
 
       if (album == null) {
         await MediaLibrary.createAlbumAsync(albumName, asset, false);
-        console.log('Album Created:', albumName);
+        console.log("Album Created:", albumName);
       } else {
         await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
-        console.log('Asset Added to Album:', albumName);
+        console.log("Asset Added to Album:", albumName);
       }
 
       console.log(`Image saved to ${albumName}: ${fileName}`);
-      return 'saved';
+      return "saved";
     } else {
       // Save PDFs to documentDirectory (Downloads folder)
       const downloadsDir = `${FileSystem.documentDirectory}Downloads/`;
@@ -499,26 +499,26 @@ const saveFile = async (
 
       // Verify the file was moved
       const targetInfo = await FileSystem.getInfoAsync(targetUri);
-      console.log('Target File Info:', targetInfo);
+      console.log("Target File Info:", targetInfo);
       if (!targetInfo.exists || targetInfo.size === 0) {
         new Error(`Failed to move PDF to ${targetUri}`);
       }
 
       console.log(`PDF saved to ${downloadsDir}: ${fileName}`);
-      return 'saved';
+      return "saved";
     }
   } catch (err) {
     console.error(`Save Error (${fileType}):`, err);
     throw new Error(
       `Failed to save ${fileType}: ${
-        err instanceof Error ? err.message : 'Unknown error'
-      }`
+        err instanceof Error ? err.message : "Unknown error"
+      }`,
     );
   }
 };
 
 const save = async (uri: string, filename: string, mimeType: string) => {
-  if (Platform.OS === 'android') {
+  if (Platform.OS === "android") {
     try {
       const permissions =
         await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
@@ -531,7 +531,7 @@ const save = async (uri: string, filename: string, mimeType: string) => {
           await FileSystem.StorageAccessFramework.createFileAsync(
             permissions.directoryUri,
             filename,
-            mimeType
+            mimeType,
           );
 
         // Write the base64 content to the NEW file URI, not the original URI
@@ -540,7 +540,7 @@ const save = async (uri: string, filename: string, mimeType: string) => {
         });
       }
     } catch (error) {
-      console.error('Error saving file:', error);
+      console.error("Error saving file:", error);
     }
   } else {
     await Sharing.shareAsync(uri);
@@ -548,27 +548,27 @@ const save = async (uri: string, filename: string, mimeType: string) => {
 };
 
 export const capitaliseFirstLetter = (string?: string) => {
-  return string ? string.charAt(0).toUpperCase() + string.slice(1) : '';
+  return string ? string.charAt(0).toUpperCase() + string.slice(1) : "";
 };
 
 export const formatMessageTime = (timestamp: string | Date): string => {
   try {
     // Parse timestamp if it's a string
     const date =
-      typeof timestamp === 'string' ? parseISO(timestamp) : timestamp;
+      typeof timestamp === "string" ? parseISO(timestamp) : timestamp;
 
     if (isToday(date)) {
       // Today: Show time like "12:34 PM"
-      return format(date, 'h:mm a');
+      return format(date, "h:mm a");
     } else if (isYesterday(date)) {
       // Yesterday: Show "Yesterday"
-      return 'Yesterday';
+      return "Yesterday";
     } else {
       // Older: Show date like "MM/DD/YY"
-      return format(date, 'MM/dd/yy');
+      return format(date, "MM/dd/yy");
     }
   } catch (error) {
-    console.error('Error formatting timestamp:', error);
-    return 'Invalid date';
+    console.error("Error formatting timestamp:", error);
+    return "Invalid date";
   }
 };

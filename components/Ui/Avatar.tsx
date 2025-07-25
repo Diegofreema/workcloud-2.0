@@ -1,5 +1,5 @@
-import { Image } from 'expo-image';
-import { ImageSourcePropType } from 'react-native';
+import { Image } from "expo-image";
+import { ImageSourcePropType } from "react-native";
 
 type AvatarProps = {
   image: string;
@@ -9,7 +9,7 @@ type AvatarProps = {
 };
 export const Avatar = ({
   image,
-  placeholder = require('~/assets/images/boy.png'),
+  placeholder = require("~/assets/images/boy.png"),
   width = 60,
   height = 60,
 }: AvatarProps) => {

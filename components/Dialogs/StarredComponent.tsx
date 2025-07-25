@@ -1,35 +1,34 @@
-import { useMutation, useQuery } from 'convex/react';
-import { useState } from 'react';
-import { Pressable, StyleSheet, TextInput } from 'react-native';
-import { toast } from 'sonner-native';
+import { useMutation, useQuery } from "convex/react";
+import { useState } from "react";
+import { Pressable, StyleSheet, TextInput } from "react-native";
+import { toast } from "sonner-native";
 
-import { HStack } from '../HStack';
-import { MyButton } from '../Ui/MyButton';
-import { MyText } from '../Ui/MyText';
+import { HStack } from "../HStack";
+import { MyButton } from "../Ui/MyButton";
+import { MyText } from "../Ui/MyText";
 
-import { Avatar } from '~/components/Ui/Avatar';
-import { LoadingComponent } from '~/components/Ui/LoadingComponent';
-import VStack from '~/components/Ui/VStack';
-import { colors } from '~/constants/Colors';
-import { api } from '~/convex/_generated/api';
-import { Id } from '~/convex/_generated/dataModel';
-import { useStarredModal } from '~/hooks/useStarredModal';
-import Modal from 'react-native-modal';
+import Modal from "react-native-modal";
+import { Avatar } from "~/components/Ui/Avatar";
+import VStack from "~/components/Ui/VStack";
+import { colors } from "~/constants/Colors";
+import { api } from "~/convex/_generated/api";
+import { Id } from "~/convex/_generated/dataModel";
+import { useStarredModal } from "~/hooks/useStarredModal";
 type Props = {
-  customerId: Id<'users'>;
-  workspaceId: Id<'workspaces'>;
+  customerId: Id<"users">;
+  workspaceId: Id<"workspaces">;
 };
 const MAXLENGTH = 255;
 export const StarredComponent = ({ customerId, workspaceId }: Props) => {
   const { isOpen, onClose } = useStarredModal();
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   console.log({ customerId, workspaceId });
   console.log({ isOpen });
 
   const user = useQuery(
     api.users.getUserById,
-    customerId ? { id: customerId } : 'skip'
+    customerId ? { id: customerId } : "skip",
   );
   console.log({ user });
 
@@ -42,12 +41,12 @@ export const StarredComponent = ({ customerId, workspaceId }: Props) => {
     setIsLoading(true);
     try {
       await starCustomer({ customerId, text: value, workspaceId });
-      toast.success('Success', {
-        description: 'You have starred this customer',
+      toast.success("Success", {
+        description: "You have starred this customer",
       });
     } catch {
-      toast.error('Failed to star customer', {
-        description: 'Please try again later',
+      toast.error("Failed to star customer", {
+        description: "Please try again later",
       });
     }
   };
@@ -98,7 +97,7 @@ export const StarredComponent = ({ customerId, workspaceId }: Props) => {
                 height: 50,
               }}
               textColor={colors.dialPad}
-              buttonStyle={{ backgroundColor: 'transparent', flex: 1 }}
+              buttonStyle={{ backgroundColor: "transparent", flex: 1 }}
               containerStyle={{ flex: 1, height: 50 }}
               contentStyle={{ height: 50 }}
             >
@@ -112,7 +111,7 @@ export const StarredComponent = ({ customerId, workspaceId }: Props) => {
                 height: 50,
               }}
               disabled={disable}
-              buttonStyle={{ width: '100%' }}
+              buttonStyle={{ width: "100%" }}
               containerStyle={{ flex: 1 }}
               textColor={colors.white}
             >
@@ -127,16 +126,16 @@ export const StarredComponent = ({ customerId, workspaceId }: Props) => {
 
 const styles = StyleSheet.create({
   centeredView: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginHorizontal: 20,
   },
   modalView: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 20,
     paddingVertical: 20,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,

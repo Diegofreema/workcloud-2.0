@@ -1,26 +1,26 @@
-import { convexQuery } from '@convex-dev/react-query';
-import { Button } from '@rneui/themed';
-import { useQuery } from '@tanstack/react-query';
-import { useMutation } from 'convex/react';
-import { Image } from 'expo-image';
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { Pressable, View } from 'react-native';
-import { toast } from 'sonner-native';
+import { convexQuery } from "@convex-dev/react-query";
+import { Button } from "@rneui/themed";
+import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "convex/react";
+import { Image } from "expo-image";
+import { router } from "expo-router";
+import { useState } from "react";
+import { Pressable, View } from "react-native";
+import { toast } from "sonner-native";
 
-import { HStack } from '../HStack';
-import { MyText } from './MyText';
-import VStack from './VStack';
+import { HStack } from "../HStack";
+import { MyText } from "./MyText";
+import VStack from "./VStack";
 
-import { CustomModal } from '~/components/Dialogs/CustomModal';
-import { Avatar } from '~/components/Ui/Avatar';
-import { colors } from '~/constants/Colors';
-import { PendingRequests } from '~/constants/types';
-import { api } from '~/convex/_generated/api';
-import { useDecline } from '~/hooks/useDecline';
-import { useOpen } from '~/hooks/useOpen';
-import { useAuth } from '~/context/auth';
-import { sendPushNotification } from '~/utils/sendPushNotification';
+import { CustomModal } from "~/components/Dialogs/CustomModal";
+import { Avatar } from "~/components/Ui/Avatar";
+import { colors } from "~/constants/Colors";
+import { PendingRequests } from "~/constants/types";
+import { api } from "~/convex/_generated/api";
+import { useDecline } from "~/hooks/useDecline";
+import { useOpen } from "~/hooks/useOpen";
+import { useAuth } from "~/context/auth";
+import { sendPushNotification } from "~/utils/sendPushNotification";
 
 type PreviewWorker = {
   name?: string;
@@ -67,7 +67,7 @@ export const UserPreview = ({
           <Avatar image={imageUrl} width={size} height={size} />
         ) : (
           <Image
-            source={require('~/assets/images/boy.png')}
+            source={require("~/assets/images/boy.png")}
             style={{ width: 60, height: 60, borderRadius: 9999 }}
             contentFit="cover"
           />
@@ -80,7 +80,7 @@ export const UserPreview = ({
           )}
           {subText && (
             <MyText poppins="Medium" fontSize={14}>
-              {subText === true ? 'pending' : subText}
+              {subText === true ? "pending" : subText}
             </MyText>
           )}
           {roleText && (
@@ -99,8 +99,8 @@ export const UserPreview = ({
               style={{
                 backgroundColor: colors.openTextColor,
                 borderRadius: 20,
-                alignItems: 'center',
-                justifyContent: 'center',
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
               <MyText
@@ -118,8 +118,8 @@ export const UserPreview = ({
               style={{
                 backgroundColor: colors.closeTextColor,
                 borderRadius: 20,
-                alignItems: 'center',
-                justifyContent: 'center',
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
               <MyText
@@ -151,7 +151,7 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
     isPending,
     isError,
   } = useQuery(
-    convexQuery(api.worker.checkIfWorkerIsEmployed, { id: item.request.to })
+    convexQuery(api.worker.checkIfWorkerIsEmployed, { id: item.request.to }),
   );
   const {
     request: { qualities, role, salary, responsibility, to, _id, from, status },
@@ -161,17 +161,17 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
     data: toData,
     isError: toError,
     isPending: toPending,
-  } = useQuery(convexQuery(api.users.getUser, to ? { userId: to } : 'skip'));
+  } = useQuery(convexQuery(api.users.getUser, to ? { userId: to } : "skip"));
   const {
     data: fromData,
     isError: fromError,
     isPending: fromPending,
   } = useQuery(
-    convexQuery(api.users.getUser, from ? { userId: from } : 'skip')
+    convexQuery(api.users.getUser, from ? { userId: from } : "skip"),
   );
 
   if (toError || fromError) {
-    throw new Error('Something went wrong');
+    throw new Error("Something went wrong");
   }
 
   if (toPending || fromPending) {
@@ -193,21 +193,21 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
         role,
       });
       await sendPushNotification({
-        title: 'Offer accepted',
+        title: "Offer accepted",
         body: `${toData?.name} accepted the ${role} in your organization`,
         data: {
-          type: 'notification',
+          type: "notification",
         },
         expoPushToken: fromData?.pushToken!,
       });
       // logic to accept organisation if not employed;
 
-      toast.success('You have accepted the offer', {
+      toast.success("You have accepted the offer", {
         description: `From ${organisation.name} as an ${role}`,
       });
     } catch (error) {
       console.log(error);
-      toast.error('Something went wrong');
+      toast.error("Something went wrong");
     } finally {
       setAccepting(false);
     }
@@ -217,12 +217,12 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
     setCancelling(true);
     try {
       await cancelRequest({ id: _id });
-      toast.success('Request has been declined');
+      toast.success("Request has been declined");
       await sendPushNotification({
-        title: 'Offer rejected',
+        title: "Offer rejected",
         body: `${toData?.name} rejected the ${role} in your organization`,
         data: {
-          type: 'notification',
+          type: "notification",
         },
         expoPushToken: fromData?.pushToken!,
       });
@@ -230,15 +230,15 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
     } catch (error) {
       console.log(error);
 
-      toast.error('Something went wrong');
+      toast.error("Something went wrong");
     } finally {
       setCancelling(false);
     }
   };
-  const accepted = status === 'accepted';
-  const pending = status === 'pending';
-  const declined = status === 'declined';
-  const cancelled = status === 'cancelled';
+  const accepted = status === "accepted";
+  const pending = status === "pending";
+  const declined = status === "declined";
+  const cancelled = status === "cancelled";
 
   return (
     <>
@@ -252,15 +252,15 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
       <HStack pr={20} py={10} gap={6}>
         <Image
           source={{
-            uri: organisation?.avatar || 'https://placehold.co/100x100',
+            uri: organisation?.avatar || "https://placehold.co/100x100",
           }}
-          placeholder={require('~/assets/images/pl.png')}
+          placeholder={require("~/assets/images/pl.png")}
           style={{ width: 60, height: 60, borderRadius: 9999 }}
           contentFit="cover"
         />
         <VStack mr={10} width="90%" justifyContent="space-between" gap={10}>
           <MyText
-            style={{ width: '100%', paddingRight: 5 }}
+            style={{ width: "100%", paddingRight: 5 }}
             poppins="Medium"
             fontSize={14}
           >
@@ -280,17 +280,17 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
             Payment: {salary} naira
           </MyText>
           {accepted && (
-            <MyText style={{ color: 'green' }} poppins="Medium" fontSize={15}>
+            <MyText style={{ color: "green" }} poppins="Medium" fontSize={15}>
               Accepted
             </MyText>
           )}
           {declined && (
-            <MyText style={{ color: 'red' }} poppins="Medium" fontSize={15}>
+            <MyText style={{ color: "red" }} poppins="Medium" fontSize={15}>
               Declined
             </MyText>
           )}
           {cancelled && (
-            <MyText style={{ color: 'red' }} poppins="Medium" fontSize={15}>
+            <MyText style={{ color: "red" }} poppins="Medium" fontSize={15}>
               Cancelled
             </MyText>
           )}
@@ -298,23 +298,23 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
             <HStack gap={10} mt={20}>
               <Button
                 buttonStyle={{
-                  backgroundColor: '#C0D1FE',
+                  backgroundColor: "#C0D1FE",
                   borderRadius: 5,
                   minWidth: 100,
                 }}
                 style={{ borderRadius: 5 }}
                 loading={cancelling}
                 onPress={openDecline}
-                titleStyle={{ color: '#0047FF', fontFamily: 'PoppinsMedium' }}
+                titleStyle={{ color: "#0047FF", fontFamily: "PoppinsMedium" }}
               >
                 Decline
               </Button>
               <Button
-                buttonStyle={{ backgroundColor: '#0047FF', borderRadius: 5 }}
+                buttonStyle={{ backgroundColor: "#0047FF", borderRadius: 5 }}
                 style={{ borderRadius: 5 }}
                 loading={accepting}
                 onPress={acceptRequest}
-                titleStyle={{ color: 'white', fontFamily: 'PoppinsMedium' }}
+                titleStyle={{ color: "white", fontFamily: "PoppinsMedium" }}
               >
                 Accept
               </Button>

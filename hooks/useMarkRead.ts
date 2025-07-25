@@ -1,20 +1,20 @@
-import { convexQuery } from '@convex-dev/react-query';
-import { useQuery } from '@tanstack/react-query';
-import { useMutation } from 'convex/react';
-import { useEffect } from 'react';
-import { useAuth } from '~/context/auth';
-import { api } from '~/convex/_generated/api';
-import { Doc } from '~/convex/_generated/dataModel';
+import { convexQuery } from "@convex-dev/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "convex/react";
+import { useEffect } from "react";
+import { useAuth } from "~/context/auth";
+import { api } from "~/convex/_generated/api";
+import { Doc } from "~/convex/_generated/dataModel";
 
 type Props = {
-  conversationData: Doc<'conversations'>;
+  conversationData: Doc<"conversations">;
 };
 
 export const useMarkRead = ({ conversationData }: Props) => {
   const { data } = useQuery(
     convexQuery(api.conversation.getMessagesTanstack, {
       conversationId: conversationData?._id,
-    })
+    }),
   );
   const { user } = useAuth();
   const markAsRead = useMutation(api.conversation.addSeenId);

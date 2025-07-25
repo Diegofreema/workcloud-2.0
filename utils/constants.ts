@@ -35,19 +35,19 @@ export const JWT_SECRET = process.env.JWT_SECRET!;
 
 // Cookie Settings
 export const COOKIE_OPTIONS = {
-    httpOnly: true,
-    secure: true,
-    sameSite: "Lax" as const,
-    path: "/",
-    maxAge: COOKIE_MAX_AGE,
+  httpOnly: true,
+  secure: true,
+  sameSite: "Lax" as const,
+  path: "/",
+  maxAge: COOKIE_MAX_AGE,
 };
 
 export const REFRESH_COOKIE_OPTIONS = {
-    httpOnly: true,
-    secure: true,
-    sameSite: "Lax" as const,
-    path: "/api/auth/refresh", // Restrict to refresh endpoint only
-    maxAge: REFRESH_TOKEN_MAX_AGE,
+  httpOnly: true,
+  secure: true,
+  sameSite: "Lax" as const,
+  path: "/api/auth/refresh", // Restrict to refresh endpoint only
+  maxAge: REFRESH_TOKEN_MAX_AGE,
 };
 
 // 115091837355429288485

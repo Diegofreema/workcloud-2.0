@@ -4,9 +4,9 @@ import {
   TextInputProps,
   View,
   ViewStyle,
-} from 'react-native';
-import { colors } from '~/constants/Colors';
-import { MyText } from '../Ui/MyText';
+} from "react-native";
+import { colors } from "~/constants/Colors";
+import { MyText } from "../Ui/MyText";
 
 type Props = TextInputProps & {
   label: string;
@@ -39,7 +39,7 @@ export const Input = ({
         style={[
           {
             flex: 1,
-            fontFamily: 'NunitoRegular',
+            fontFamily: "NunitoRegular",
             fontSize: 15,
             color: colors.black,
             minHeight: 50,

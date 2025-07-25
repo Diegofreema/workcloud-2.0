@@ -1,8 +1,8 @@
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text } from "react-native";
 
-import { HStack } from './HStack';
-import { MyText } from './Ui/MyText';
-import { colors } from '../constants/Colors';
+import { HStack } from "./HStack";
+import { MyText } from "./Ui/MyText";
+import { colors } from "../constants/Colors";
 
 export const OpeningHours = (): JSX.Element => {
   return (
@@ -14,17 +14,24 @@ export const OpeningHours = (): JSX.Element => {
             poppins="Bold"
             style={{
               color: colors.openBackgroundColor,
-            }}>
+            }}
+          >
             8:00am
           </MyText>
         </View>
         <Text> - </Text>
-        <View style={[styles.subCon, { backgroundColor: colors.closeBackgroundColor }]}>
+        <View
+          style={[
+            styles.subCon,
+            { backgroundColor: colors.closeBackgroundColor },
+          ]}
+        >
           <MyText
             poppins="Bold"
             style={{
               color: colors.closeTextColor,
-            }}>
+            }}
+          >
             5:00pm
           </MyText>
         </View>
@@ -38,6 +45,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 7,
     borderRadius: 3,
     backgroundColor: colors.openTextColor,
-    alignItems: 'center',
+    alignItems: "center",
   },
 });

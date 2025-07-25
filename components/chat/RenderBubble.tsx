@@ -1,36 +1,52 @@
-import React, {useRef, useState} from 'react';
-import {BubbleProps} from 'react-native-gifted-chat';
-import * as Linking from 'expo-linking';
-import {Image} from 'expo-image';
-import {useRouter} from 'expo-router';
-import {CircleChevronDown, Reply} from 'lucide-react-native';
-import {Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View,} from 'react-native';
-import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import React, { useRef, useState } from "react";
+import { BubbleProps } from "react-native-gifted-chat";
+import * as Linking from "expo-linking";
+import { Image } from "expo-image";
+import { useRouter } from "expo-router";
+import { CircleChevronDown, Reply } from "lucide-react-native";
+import {
+  Dimensions,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 
-import Animated, {SharedValue, useAnimatedStyle, withTiming,} from 'react-native-reanimated';
-import {toast} from 'sonner-native';
-import {Id} from '~/convex/_generated/dataModel';
-import {colors} from '~/constants/Colors';
-import {emojis} from '~/constants';
-import {EditType2, FileType, IMessage, SelectedMessage,} from '~/constants/types';
-import {useSelected} from '~/features/chat/hook/use-selected';
-import {useMutation} from 'convex/react';
-import {api} from '~/convex/_generated/api';
-import {useFileUrlStore} from '~/features/chat/hook/use-file-url';
-import {EmojiPickerModal} from '~/features/chat/components/emoji-modal';
-import {RenderReply} from '~/features/chat/components/render-reply';
-import {ChatMenu} from '~/features/chat/components/chat-menu';
-import {HStack} from '~/components/HStack';
-import PdfViewer from '~/features/chat/components/pdf-viewer';
+import Animated, {
+  SharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
+import { toast } from "sonner-native";
+import { Id } from "~/convex/_generated/dataModel";
+import { colors } from "~/constants/Colors";
+import { emojis } from "~/constants";
+import {
+  EditType2,
+  FileType,
+  IMessage,
+  SelectedMessage,
+} from "~/constants/types";
+import { useSelected } from "~/features/chat/hook/use-selected";
+import { useMutation } from "convex/react";
+import { api } from "~/convex/_generated/api";
+import { useFileUrlStore } from "~/features/chat/hook/use-file-url";
+import { EmojiPickerModal } from "~/features/chat/components/emoji-modal";
+import { RenderReply } from "~/features/chat/components/render-reply";
+import { ChatMenu } from "~/features/chat/components/chat-menu";
+import { HStack } from "~/components/HStack";
+import PdfViewer from "~/features/chat/components/pdf-viewer";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 type Props = BubbleProps<IMessage> & {
   setReplyOnSwipeOpen: (message: IMessage) => void;
   updateRowRef: (ref: any) => void;
   onCopy: (text: string) => void;
   onEdit: (value: EditType2) => void;
-  onDelete: (messageId: Id<'messages'>) => void;
-  loggedInUserId: Id<'users'>;
+  onDelete: (messageId: Id<"messages">) => void;
+  loggedInUserId: Id<"users">;
 };
 
 function LeftAction(prog: SharedValue<number>, dragX: SharedValue<number>) {
@@ -77,7 +93,7 @@ export const RenderBubble = ({
   const onPress = (
     url: string | undefined,
     type: FileType | undefined,
-    selectedMessage: SelectedMessage | undefined
+    selectedMessage: SelectedMessage | undefined,
   ) => {
     console.log({ selectedMessage });
     // if (selectedIsNotEmpty && !messageIsSelected) {
@@ -94,30 +110,30 @@ export const RenderBubble = ({
 
     if (!url || !type) return;
     getFile({ type, url });
-    router.push('/preview-file');
+    router.push("/preview-file");
   };
   const findEmojiISelected = currentMessage.reactions?.find(
-    (reaction) => reaction.user_id === loggedInUserId
+    (reaction) => reaction.user_id === loggedInUserId,
   );
 
   const isSent = currentMessage.user._id === loggedInUserId;
 
   const handleEmojiSelect = async (emoji: string) => {
-    console.log('Pressed');
+    console.log("Pressed");
     try {
       await onReactToMessage({
-        messageId: currentMessage._id as Id<'messages'>,
+        messageId: currentMessage._id as Id<"messages">,
         emoji: emoji as any,
-        senderId: loggedInUserId as Id<'users'>,
+        senderId: loggedInUserId as Id<"users">,
       });
     } catch (error) {
-      console.error('Error adding reaction:', error);
-      toast.error('Error adding reaction');
+      console.error("Error adding reaction:", error);
+      toast.error("Error adding reaction");
     }
   };
 
   const handleLongPress = () => {
-    if (Platform.OS === 'android') return;
+    if (Platform.OS === "android") return;
     // if (isSent) {
     //   setSelected({
     //     messageId: currentMessage._id as string,
@@ -135,9 +151,9 @@ export const RenderBubble = ({
           left: Math.max(
             16,
             Math.min(
-              Dimensions.get('window').width - pickerWidth - 16,
-              bubbleCenter - pickerWidth / 2
-            )
+              Dimensions.get("window").width - pickerWidth - 16,
+              bubbleCenter - pickerWidth / 2,
+            ),
           ), // Center horizontally
         });
         setPickerVisible(true);
@@ -146,7 +162,7 @@ export const RenderBubble = ({
   };
 
   const renderContent = () => {
-    if (currentMessage.fileType === 'image' && currentMessage.fileUrl) {
+    if (currentMessage.fileType === "image" && currentMessage.fileUrl) {
       return (
         <View
           style={[
@@ -156,15 +172,15 @@ export const RenderBubble = ({
         >
           <Image
             source={{ uri: currentMessage.fileUrl }}
-            style={{ width: '100%', height: '100%' }}
-            placeholder={require('../../assets/images.png')}
+            style={{ width: "100%", height: "100%" }}
+            placeholder={require("../../assets/images.png")}
             placeholderContentFit="cover"
             contentFit="cover"
           />
         </View>
       );
-    } else if (currentMessage.fileType === 'pdf' && currentMessage.fileUrl) {
-      const pdfUrl = currentMessage.fileUrl?.split('&mode=admin')[0];
+    } else if (currentMessage.fileType === "pdf" && currentMessage.fileUrl) {
+      const pdfUrl = currentMessage.fileUrl?.split("&mode=admin")[0];
       console.log(pdfUrl);
       return (
         <View style={styles.pdfContainer}>
@@ -173,8 +189,8 @@ export const RenderBubble = ({
       );
     } else {
       const isLink =
-        currentMessage.text.startsWith('www') ||
-        currentMessage.text.startsWith('https');
+        currentMessage.text.startsWith("www") ||
+        currentMessage.text.startsWith("https");
       const onOpenLink = async () => {
         if (!isLink) return;
         await Linking.openURL(currentMessage.text);
@@ -190,8 +206,8 @@ export const RenderBubble = ({
               styles.text,
               isSent ? styles.sentText : styles.receivedText,
               {
-                textDecorationLine: isLink ? 'underline' : 'none',
-                textDecorationStyle: 'solid',
+                textDecorationLine: isLink ? "underline" : "none",
+                textDecorationStyle: "solid",
               },
             ]}
             onPress={onOpenLink}
@@ -216,7 +232,7 @@ export const RenderBubble = ({
         acc[emojiKey] = (acc[emojiKey] || 0) + 1;
         return acc;
       },
-      {} as Record<string, number>
+      {} as Record<string, number>,
     );
 
     return (
@@ -240,21 +256,21 @@ export const RenderBubble = ({
     }
   };
 
-  const isText = currentMessage.text.trim() !== '';
+  const isText = currentMessage.text.trim() !== "";
   const isMine = currentMessage.user._id === loggedInUserId;
   const menuItems = [
     ...(isMine && currentMessage._id
       ? [
           {
-            text: 'Delete',
-            onSelect: () => onDelete(currentMessage._id as Id<'messages'>),
+            text: "Delete",
+            onSelect: () => onDelete(currentMessage._id as Id<"messages">),
           },
         ]
       : []),
     ...(isText && currentMessage.text
       ? [
           {
-            text: 'Copy',
+            text: "Copy",
             onSelect: () => onCopy(currentMessage.text),
           },
         ]
@@ -262,10 +278,10 @@ export const RenderBubble = ({
     ...(isText && isMine && currentMessage._id && currentMessage.text
       ? [
           {
-            text: 'Edit',
+            text: "Edit",
             onSelect: () =>
               onEdit({
-                messageId: currentMessage._id as Id<'messages'>,
+                messageId: currentMessage._id as Id<"messages">,
                 textToEdit: currentMessage.text,
                 senderId: currentMessage.user._id,
                 senderName: currentMessage.user.name,
@@ -282,7 +298,7 @@ export const RenderBubble = ({
         enableTrackpadTwoFingerGesture
         leftThreshold={40}
         containerStyle={{
-          width: '100%',
+          width: "100%",
         }}
         ref={updateRowRef}
         onSwipeableOpen={onSwipeAction}
@@ -294,12 +310,12 @@ export const RenderBubble = ({
           ]}
         >
           <ChatMenu
-            alignSelf={'flex-end'}
+            alignSelf={"flex-end"}
             trigger={
               <CircleChevronDown
                 color={isSent ? colors.white : colors.dialPad}
                 size={20}
-                style={{ alignSelf: 'flex-end', marginBottom: 3 }}
+                style={{ alignSelf: "flex-end", marginBottom: 3 }}
               />
             }
             menuItems={menuItems}
@@ -323,7 +339,7 @@ export const RenderBubble = ({
             )}
             {renderContent()}
 
-            <HStack justifyContent={'space-between'}>
+            <HStack justifyContent={"space-between"}>
               <Text
                 style={[
                   styles.time,
@@ -339,8 +355,8 @@ export const RenderBubble = ({
                 ]}
               >
                 {new Date(currentMessage.createdAt).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
+                  hour: "2-digit",
+                  minute: "2-digit",
                 })}
               </Text>
             </HStack>
@@ -372,21 +388,21 @@ const styles = StyleSheet.create({
     backgroundColor: colors.dialPad,
 
     // WhatsApp green for sent
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
   },
   receivedContainer: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     backgroundColor: colors.otherChatBubble,
   },
   text: {
     fontSize: 16,
-    fontFamily: 'PoppinsLight',
+    fontFamily: "PoppinsLight",
   },
   sentText: {
     color: colors.white,
   },
   receivedText: {
-    color: '#000',
+    color: "#000",
   },
   sentTextContainer: {
     padding: 10,
@@ -405,8 +421,8 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#ccc',
-    overflow: 'hidden',
+    borderColor: "#ccc",
+    overflow: "hidden",
   },
   sentImage: {
     borderBottomRightRadius: 2,
@@ -419,20 +435,20 @@ const styles = StyleSheet.create({
     height: 200,
   },
   pdf: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     borderRadius: 8,
   },
-  rightAction: { width: 50, height: 50, backgroundColor: 'purple' },
+  rightAction: { width: 50, height: 50, backgroundColor: "purple" },
 
   time: {
     fontSize: 12,
-    color: '#888',
-    alignSelf: 'flex-end',
+    color: "#888",
+    alignSelf: "flex-end",
     marginTop: 4,
   },
   timeSent: {
-    color: '#fff',
+    color: "#fff",
   },
   timeReceived: {
     color: colors.dialPad,
@@ -454,13 +470,13 @@ const styles = StyleSheet.create({
   //   marginHorizontal: 2,
   // },
   reactionsContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 4,
-    backgroundColor: '#F0F0F0',
+    backgroundColor: "#F0F0F0",
     borderRadius: 12,
     paddingHorizontal: 6,
     paddingVertical: 2,
-    position: 'absolute',
+    position: "absolute",
     bottom: -5,
     left: 10,
     zIndex: 1000,
@@ -470,22 +486,22 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   reactionGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginHorizontal: 2,
   },
   reactionCount: {
     fontSize: 12,
-    color: '#555',
+    color: "#555",
     marginLeft: 2,
   },
 });
 
 const renderEmoji = {
-  LIKE: '👍',
-  LOVE: '❤️',
-  LAUGH: '😂',
-  WOW: '😮',
-  SAD: '😢',
-  ANGRY: '😡',
+  LIKE: "👍",
+  LOVE: "❤️",
+  LAUGH: "😂",
+  WOW: "😮",
+  SAD: "😢",
+  ANGRY: "😡",
 };

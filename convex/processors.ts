@@ -1,6 +1,6 @@
-import { v } from 'convex/values';
-import { query } from './_generated/server';
-import { getUserProfileByWorkerId } from './servicePoints';
+import { v } from "convex/values";
+import { query } from "./_generated/server";
+import { getUserProfileByWorkerId } from "./servicePoints";
 
 // export const getProcessorsByUserId = query({
 //   args: {
@@ -10,21 +10,21 @@ import { getUserProfileByWorkerId } from './servicePoints';
 // });
 
 export const getProcessorThroughUser = query({
-  args: { userId: v.id('users') },
+  args: { userId: v.id("users") },
   handler: async (ctx, args) => {
     const userData = await ctx.db.get(args.userId);
     if (!userData) return [];
     const worker = await ctx.db
-      .query('workers')
-      .withIndex('userId', (q) => q.eq('userId', args.userId))
+      .query("workers")
+      .withIndex("userId", (q) => q.eq("userId", args.userId))
       .first();
     if (!worker) return [];
     const processors = await ctx.db
-      .query('workers')
-      .withIndex('by_org_id', (q) =>
-        q.eq('organizationId', worker.organizationId)
+      .query("workers")
+      .withIndex("by_org_id", (q) =>
+        q.eq("organizationId", worker.organizationId),
       )
-      .filter((q) => q.eq(q.field('type'), 'processor'))
+      .filter((q) => q.eq(q.field("type"), "processor"))
       .collect();
 
     const processorsWithProfile = processors.map(async (p) => {
@@ -37,7 +37,7 @@ export const getProcessorThroughUser = query({
 
 export const getProcessorDetail = query({
   args: {
-    id: v.id('workers'),
+    id: v.id("workers"),
   },
   handler: async (ctx, args) => {
     return getUserProfileByWorkerId(ctx, args.id);

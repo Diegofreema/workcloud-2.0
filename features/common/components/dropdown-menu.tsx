@@ -1,6 +1,6 @@
 import * as DropdownMenu from "zeego/dropdown-menu";
-import React, {CSSProperties} from "react";
-import {EllipsisVertical} from "lucide-react-native";
+import React, { CSSProperties } from "react";
+import { EllipsisVertical } from "lucide-react-native";
 
 export type Props = {
   menuOptions: {

@@ -7,7 +7,6 @@ import { SendIcon } from "lucide-react-native";
 type Props = SendProps<IMessage> & {
   disabled: boolean;
   sending: boolean;
-
 };
 export const RenderSend = ({
   disabled,
@@ -27,7 +26,7 @@ export const RenderSend = ({
       | undefined,
     text?: string,
   ) => {
-     if (text && onSend) {
+    if (text && onSend) {
       onSend({ text: text.trim() }, true);
     } else {
       return false;

@@ -1,6 +1,6 @@
-import {View} from "react-native";
+import { View } from "react-native";
 import React from "react";
-import {constantStyles} from "~/constants/styles";
+import { constantStyles } from "~/constants/styles";
 
 type Props = {
   leftContent: React.ReactNode;
@@ -14,5 +14,3 @@ export const TabsHeader = ({ leftContent, rightContent }: Props) => {
     </View>
   );
 };
-
-

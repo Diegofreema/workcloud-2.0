@@ -1,16 +1,16 @@
-import { ReactNode } from 'react';
-import { DimensionValue, StyleProp, View, ViewStyle } from 'react-native';
+import { ReactNode } from "react";
+import { DimensionValue, StyleProp, View, ViewStyle } from "react-native";
 
 type Props = {
   children: ReactNode;
   justifyContent?:
-    | 'flex-start'
-    | 'flex-end'
-    | 'center'
-    | 'space-between'
-    | 'space-around'
-    | 'space-evenly';
-  alignItems?: 'flex-start' | 'flex-end' | 'center' | 'stretch' | 'baseline';
+    | "flex-start"
+    | "flex-end"
+    | "center"
+    | "space-between"
+    | "space-around"
+    | "space-evenly";
+  alignItems?: "flex-start" | "flex-end" | "center" | "stretch" | "baseline";
   gap?: number;
   p?: number;
   m?: number;
@@ -49,7 +49,7 @@ const VStack = ({
     <View
       style={[
         {
-          flexDirection: 'column',
+          flexDirection: "column",
           justifyContent,
           alignItems,
           gap,
@@ -66,7 +66,8 @@ const VStack = ({
           marginHorizontal: mx,
         },
         style,
-      ]}>
+      ]}
+    >
       {children}
     </View>
   );

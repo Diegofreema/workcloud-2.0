@@ -12,7 +12,10 @@ export const useFetchCalls = () => {
       if (!client || !user) return [];
       const { calls } = await client.queryCalls({
         filter_conditions: {
-          $or: [{ created_by_user: user.id }, { members: { $in: [user.id] } }],
+          $or: [
+            { created_by_user: user._id },
+            { members: { $in: [user._id] } },
+          ],
         },
         sort: [{ field: "created_at", direction: -1 }],
         limit: 50,
@@ -26,12 +29,11 @@ export const useFetchCalls = () => {
 
 export const useFetchCall = (callId: string) => {
   const client = useStreamVideoClient();
-  const { user } = useAuth();
 
   return useQuery({
     queryKey: ["call"],
     queryFn: async () => {
-      if (!client || !user) return null;
+      if (!client) return null;
       const { calls } = await client.queryCalls({
         filter_conditions: {
           ongoing: true,

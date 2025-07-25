@@ -1,8 +1,8 @@
-import { FlatList } from 'react-native';
+import { FlatList } from "react-native";
 
-import { SearchConversation } from '~/components/SearchConversation';
-import { Container } from '~/components/Ui/Container';
-import { User } from '~/constants/types';
+import { SearchConversation } from "~/components/SearchConversation";
+import { Container } from "~/components/Ui/Container";
+import { User } from "~/constants/types";
 
 type Props = {
   users: User[];

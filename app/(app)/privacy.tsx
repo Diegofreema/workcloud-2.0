@@ -1,5 +1,5 @@
-import { Privacy } from '~/components/Privacy';
-import { Container } from '~/components/Ui/Container';
+import { Privacy } from "~/components/Privacy";
+import { Container } from "~/components/Ui/Container";
 
 const privacy = () => {
   return (

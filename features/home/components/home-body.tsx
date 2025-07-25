@@ -1,53 +1,52 @@
-import { Alert, View } from 'react-native';
-import { LegendList } from '@legendapp/list';
-import { HeadingText } from '~/components/Ui/HeadingText';
-import { Item } from '~/components/Item';
-import { EmptyText } from '~/components/EmptyText';
-import { constantStyles } from '~/constants/styles';
+import { Alert, View } from "react-native";
+import { LegendList } from "@legendapp/list";
+import { HeadingText } from "~/components/Ui/HeadingText";
+import { Item } from "~/components/Item";
+import { EmptyText } from "~/components/EmptyText";
+import { constantStyles } from "~/constants/styles";
 import Animated, {
   SharedValue,
   useAnimatedStyle,
-} from 'react-native-reanimated';
-import { Trash } from 'lucide-react-native';
-import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import { colors } from '~/constants/Colors';
-import React, { useState } from 'react';
-import { useMutation } from 'convex/react';
-import { api } from '~/convex/_generated/api';
-import { toast } from 'sonner-native';
-import { generateErrorMessage } from '~/lib/helper';
+} from "react-native-reanimated";
+import { Trash } from "lucide-react-native";
+import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import { colors } from "~/constants/Colors";
+import React, { useState } from "react";
+import { useMutation } from "convex/react";
+import { api } from "~/convex/_generated/api";
+import { toast } from "sonner-native";
+import { generateErrorMessage } from "~/lib/helper";
 
 type Props<T> = {
   headerText: string;
   data: T[];
 };
 
-let T;
 export const HomeBody = <T,>({ data, headerText }: Props<T>) => {
   const deleteConnection = useMutation(api.connection.deleteConnection);
   const [deleting, setDeleting] = useState(false);
   const onAlertDelete = async (item: any) => {
     Alert.alert(
-      'Delete Connection',
-      'Are you sure you want to delete this connection?',
+      "Delete Connection",
+      "Are you sure you want to delete this connection?",
       [
-        { text: 'Cancel' },
+        { text: "Cancel" },
         {
-          text: 'Delete',
+          text: "Delete",
           onPress: async () => {
             if (deleting) return;
             setDeleting(true);
             try {
               await deleteConnection({ id: item.id });
-              toast.success('Success', {
-                description: 'Connection deleted successfully',
+              toast.success("Success", {
+                description: "Connection deleted successfully",
               });
             } catch (e) {
               const errorMessage = generateErrorMessage(
                 e,
-                'Failed to delete connection'
+                "Failed to delete connection",
               );
-              toast.error('Error', {
+              toast.error("Error", {
                 description: errorMessage,
               });
             } finally {
@@ -55,7 +54,7 @@ export const HomeBody = <T,>({ data, headerText }: Props<T>) => {
             }
           },
         },
-      ]
+      ],
     );
   };
   return (
@@ -81,10 +80,10 @@ export const HomeBody = <T,>({ data, headerText }: Props<T>) => {
               friction={2}
               enableTrackpadTwoFingerGesture
               rightThreshold={40}
-              onEnded={() => console.log('ended')}
-              onActivated={() => console.log('activated')}
-              onCancelled={() => console.log('cancelled')}
-              onBegan={() => console.log('began')}
+              onEnded={() => console.log("ended")}
+              onActivated={() => console.log("activated")}
+              onCancelled={() => console.log("cancelled")}
+              onBegan={() => console.log("began")}
             >
               {/*@ts-ignore*/}
               <Item {...item} isLastItemOnList={isLastItemOnList} />
@@ -104,7 +103,7 @@ export const HomeBody = <T,>({ data, headerText }: Props<T>) => {
 function RightAction(
   prog: SharedValue<number>,
   dragX: SharedValue<number>,
-  onAlertDelete: () => void
+  onAlertDelete: () => void,
 ) {
   const styleAnimation = useAnimatedStyle(() => {
     return {
@@ -116,11 +115,11 @@ function RightAction(
     <Animated.View
       style={[
         {
-          alignItems: 'center',
-          backgroundColor: 'red',
-          justifyContent: 'center',
+          alignItems: "center",
+          backgroundColor: "red",
+          justifyContent: "center",
           width: 50,
-          height: '100%',
+          height: "100%",
         },
         styleAnimation,
       ]}

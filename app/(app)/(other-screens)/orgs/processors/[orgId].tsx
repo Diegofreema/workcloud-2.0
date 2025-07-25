@@ -1,6 +1,5 @@
 import { View, Text } from "react-native";
 
-
 const ProcessorsScreen = () => {
   return (
     <View>

@@ -1,12 +1,12 @@
-import { useMutation } from 'convex/react';
-import { router } from 'expo-router';
-import { FlatList, Pressable, View } from 'react-native';
+import { useMutation } from "convex/react";
+import { router } from "expo-router";
+import { FlatList, Pressable, View } from "react-native";
 
-import { MyText } from './Ui/MyText';
+import { MyText } from "./Ui/MyText";
 
-import { Avatar } from '~/components/Ui/Avatar';
-import { SearchType } from '~/constants/types';
-import { api } from '~/convex/_generated/api';
+import { Avatar } from "~/components/Ui/Avatar";
+import { SearchType } from "~/constants/types";
+import { api } from "~/convex/_generated/api";
 
 type Props = {
   data: SearchType[];
@@ -47,14 +47,14 @@ const Item = ({ item }: { item: SearchType }) => {
         opacity: pressed ? 0.5 : 1,
         flex: 1,
 
-        alignItems: 'center',
+        alignItems: "center",
       })}
     >
       <Avatar image={item.avatar!} />
       <MyText
         poppins="Light"
         fontSize={14}
-        style={{ textAlign: 'center', maxWidth: 80 }}
+        style={{ textAlign: "center", maxWidth: 80 }}
       >
         {item.name}
       </MyText>

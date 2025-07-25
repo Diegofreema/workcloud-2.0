@@ -1,10 +1,10 @@
-import { Tab, TabView } from '@rneui/themed';
-import { ReactNode, useState } from 'react';
+import { Tab, TabView } from "@rneui/themed";
+import { ReactNode, useState } from "react";
 
-import { CustomScrollView } from './CustomScrollView';
+import { CustomScrollView } from "./CustomScrollView";
 
-import { colors } from '~/constants/Colors';
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { colors } from "~/constants/Colors";
+import { useDarkMode } from "~/hooks/useDarkMode";
 
 type Props = {
   title1?: string;
@@ -14,16 +14,16 @@ type Props = {
 };
 
 export const CustomTabs = ({
-  title1 = 'FAQ',
-  title2 = 'Contact Us',
+  title1 = "FAQ",
+  title2 = "Contact Us",
   content1,
   content2,
 }: Props): JSX.Element => {
   const { darkMode } = useDarkMode();
   const [index, setIndex] = useState(0);
 
-  const isDarkMode = darkMode === 'dark';
-  const tabTittle = isDarkMode ? 'white' : colors.dialPad;
+  const isDarkMode = darkMode === "dark";
+  const tabTittle = isDarkMode ? "white" : colors.dialPad;
   return (
     <>
       <Tab
@@ -37,7 +37,7 @@ export const CustomTabs = ({
           title={title1}
           titleStyle={{ color: tabTittle }}
           containerStyle={{
-            borderBottomColor: index === 0 ? tabTittle : 'transparent',
+            borderBottomColor: index === 0 ? tabTittle : "transparent",
             borderBottomWidth: 2,
           }}
         />
@@ -45,7 +45,7 @@ export const CustomTabs = ({
           title={title2}
           titleStyle={{ color: tabTittle }}
           containerStyle={{
-            borderBottomColor: index === 1 ? tabTittle : 'transparent',
+            borderBottomColor: index === 1 ? tabTittle : "transparent",
             borderBottomWidth: 2,
           }}
         />
@@ -58,18 +58,18 @@ export const CustomTabs = ({
       >
         <TabView.Item
           style={{
-            width: '100%',
+            width: "100%",
             paddingHorizontal: 20,
-            backgroundColor: darkMode === 'dark' ? 'black' : 'white',
+            backgroundColor: darkMode === "dark" ? "black" : "white",
           }}
         >
           <CustomScrollView>{content1}</CustomScrollView>
         </TabView.Item>
         <TabView.Item
           style={{
-            width: '100%',
+            width: "100%",
             paddingHorizontal: 20,
-            backgroundColor: darkMode === 'dark' ? 'black' : 'white',
+            backgroundColor: darkMode === "dark" ? "black" : "white",
           }}
         >
           <CustomScrollView>{content2}</CustomScrollView>

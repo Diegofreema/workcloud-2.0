@@ -1,12 +1,12 @@
-import { useRouter } from 'expo-router';
-import React, { useEffect } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { useRouter } from "expo-router";
+import React, { useEffect } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-} from 'react-native-reanimated';
-import { colors } from '~/constants/Colors';
+} from "react-native-reanimated";
+import { colors } from "~/constants/Colors";
 
 interface Props {
   unreadCount: number;
@@ -26,17 +26,17 @@ export const UnreadProcessorMessage = ({ unreadCount }: Props) => {
 
   const animatedStyle = useAnimatedStyle(() => ({
     height: height.value,
-    overflow: 'hidden',
+    overflow: "hidden",
   }));
   const onPress = () => {
     router.push(`/processors/chat`);
   };
   return (
     <AnimatedTouchableOpacity style={animatedStyle} onPress={onPress}>
-      <View style={{ padding: 10, backgroundColor: '#f0f0f0' }}>
+      <View style={{ padding: 10, backgroundColor: "#f0f0f0" }}>
         <Text style={{ color: colors.black }}>
-          {unreadCount} unread processor{' '}
-          {unreadCount === 1 ? 'message' : 'messages'}
+          {unreadCount} unread processor{" "}
+          {unreadCount === 1 ? "message" : "messages"}
         </Text>
       </View>
     </AnimatedTouchableOpacity>

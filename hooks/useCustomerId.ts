@@ -1,11 +1,11 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
-import { Id } from '~/convex/_generated/dataModel';
+import { Id } from "~/convex/_generated/dataModel";
 
 type StoreProps = {
-  customerId: Id<'users'> | null;
-  workspaceId: Id<'workspaces'> | null;
-  getIds: (id: Id<'users'>, workspaceId: Id<'workspaces'>) => void;
+  customerId: Id<"users"> | null;
+  workspaceId: Id<"workspaces"> | null;
+  getIds: (id: Id<"users">, workspaceId: Id<"workspaces">) => void;
   removeCustomerId: () => void;
 };
 

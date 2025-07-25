@@ -1,8 +1,8 @@
-import { useQuery } from 'convex/react';
-import { api } from '~/convex/_generated/api';
+import { useQuery } from "convex/react";
+import { api } from "~/convex/_generated/api";
 
 type ConversationProps = {
-  type: 'processor' | 'single';
+  type: "processor" | "single";
 };
 
 export const useGetConversationType = ({ type }: ConversationProps) => {

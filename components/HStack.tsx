@@ -1,15 +1,15 @@
-import { DimensionValue, StyleProp, View, ViewStyle } from 'react-native';
+import { DimensionValue, StyleProp, View, ViewStyle } from "react-native";
 
 type Props = {
   children: React.ReactNode;
   justifyContent?:
-    | 'flex-start'
-    | 'flex-end'
-    | 'center'
-    | 'space-between'
-    | 'space-around'
-    | 'space-evenly';
-  alignItems?: 'flex-start' | 'flex-end' | 'center' | 'stretch' | 'baseline';
+    | "flex-start"
+    | "flex-end"
+    | "center"
+    | "space-between"
+    | "space-around"
+    | "space-evenly";
+  alignItems?: "flex-start" | "flex-end" | "center" | "stretch" | "baseline";
   gap?: number;
   p?: number;
   m?: number;
@@ -55,7 +55,7 @@ export const HStack = ({
     <View
       style={[
         {
-          flexDirection: 'row',
+          flexDirection: "row",
           justifyContent,
           alignItems,
           gap,
@@ -76,7 +76,8 @@ export const HStack = ({
           flex,
         },
         style,
-      ]}>
+      ]}
+    >
       {children}
     </View>
   );

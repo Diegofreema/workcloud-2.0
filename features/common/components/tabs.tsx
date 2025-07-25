@@ -1,14 +1,14 @@
-import {FlatList, View} from "react-native";
-import {CustomPressable} from "~/components/Ui/CustomPressable";
-import {MyText} from "~/components/Ui/MyText";
-import {colors} from "~/constants/Colors";
+import { FlatList, View } from "react-native";
+import { CustomPressable } from "~/components/Ui/CustomPressable";
+import { MyText } from "~/components/Ui/MyText";
+import { colors } from "~/constants/Colors";
 
 type Props = {
   data: string[];
   selectedIndex: number;
   onSelectIndex: (index: number) => void;
 };
-export const TabsSelector = ({  data,onSelectIndex,selectedIndex }: Props) => {
+export const TabsSelector = ({ data, onSelectIndex, selectedIndex }: Props) => {
   return (
     <View>
       <FlatList

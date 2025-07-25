@@ -1,7 +1,7 @@
-import { router } from "expo-router";
+import { router } from 'expo-router';
 
-import { UserPreview } from "~/components/Ui/UserPreview";
-import { ProcessorType } from "~/constants/types";
+import { UserPreview } from '~/components/Ui/UserPreview';
+import { ProcessorType } from '~/constants/types';
 
 type Props = {
   processor: ProcessorType;
@@ -11,7 +11,7 @@ export const Processor = ({ processor }: Props) => {
   return (
     <UserPreview
       name={processor?.user?.name}
-      imageUrl={processor?.user?.imageUrl!}
+      imageUrl={processor?.user?.image!}
       onPress={onPress}
     />
   );

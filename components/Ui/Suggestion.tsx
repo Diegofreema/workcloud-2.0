@@ -1,19 +1,19 @@
-import { router } from 'expo-router';
-import { Search } from 'lucide-react-native';
-import { StyleSheet } from 'react-native';
+import { router } from "expo-router";
+import { Search } from "lucide-react-native";
+import { StyleSheet } from "react-native";
 
-import { CustomPressable } from '~/components/Ui/CustomPressable';
-import { MyText } from '~/components/Ui/MyText';
-import { colors } from '~/constants/Colors';
-import { SuggestionTypes } from '~/constants/types';
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { CustomPressable } from "~/components/Ui/CustomPressable";
+import { MyText } from "~/components/Ui/MyText";
+import { colors } from "~/constants/Colors";
+import { SuggestionTypes } from "~/constants/types";
+import { useDarkMode } from "~/hooks/useDarkMode";
 
 type Props = {
   suggestion: SuggestionTypes;
 };
 export const Suggestion = ({ suggestion }: Props) => {
   const { darkMode } = useDarkMode();
-  const color = darkMode === 'dark' ? colors.white : colors.black;
+  const color = darkMode === "dark" ? colors.white : colors.black;
   const onPress = () => {
     router.setParams({ query: suggestion.text });
   };
@@ -29,10 +29,10 @@ export const Suggestion = ({ suggestion }: Props) => {
 
 const styles = StyleSheet.create({
   pressable: {
-    flexDirection: 'row',
+    flexDirection: "row",
     paddingHorizontal: 10,
     paddingVertical: 15,
     gap: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
 });

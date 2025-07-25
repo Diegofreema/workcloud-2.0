@@ -1,15 +1,15 @@
-import { convexQuery } from '@convex-dev/react-query';
-import { useQuery } from '@tanstack/react-query';
-import React from 'react';
-import { FlatList, View } from 'react-native';
+import { convexQuery } from "@convex-dev/react-query";
+import { useQuery } from "@tanstack/react-query";
+import React from "react";
+import { FlatList, View } from "react-native";
 
-import { EmptyText } from '~/components/EmptyText';
-import { HeaderNav } from '~/components/HeaderNav';
-import { Container } from '~/components/Ui/Container';
-import { ErrorComponent } from '~/components/Ui/ErrorComponent';
-import { LoadingComponent } from '~/components/Ui/LoadingComponent';
-import { UserPreview } from '~/components/Ui/UserPreview';
-import { api } from '~/convex/_generated/api';
+import { EmptyText } from "~/components/EmptyText";
+import { HeaderNav } from "~/components/HeaderNav";
+import { Container } from "~/components/Ui/Container";
+import { ErrorComponent } from "~/components/Ui/ErrorComponent";
+import { LoadingComponent } from "~/components/Ui/LoadingComponent";
+import { UserPreview } from "~/components/Ui/UserPreview";
+import { api } from "~/convex/_generated/api";
 
 const PendingStaffs = () => {
   const {
@@ -21,7 +21,7 @@ const PendingStaffs = () => {
     isRefetching,
     isRefetchError,
   } = useQuery(
-    convexQuery(api.request.getPendingStaffsWithoutOrganization, {})
+    convexQuery(api.request.getPendingStaffsWithoutOrganization, {}),
   );
 
   if (isError || isRefetchError || isPaused) {
@@ -49,7 +49,7 @@ const PendingStaffs = () => {
             imageUrl={item?.user?.image!}
             name={item?.user?.name}
             navigate
-            subText={'Pending'}
+            subText={"Pending"}
             id={item?.worker?._id}
           />
         )}

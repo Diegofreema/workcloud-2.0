@@ -1,6 +1,6 @@
-import { ErrorBoundaryProps, Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { ErrorBoundaryProps, Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import {
   DeepPartial,
@@ -8,19 +8,19 @@ import {
   StreamVideo,
   StreamVideoClient,
   Theme,
-} from '@stream-io/video-react-native-sdk';
-import { ErrorComponent } from '~/components/Ui/ErrorComponent';
+} from "@stream-io/video-react-native-sdk";
+import { ErrorComponent } from "~/components/Ui/ErrorComponent";
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { PermissionsAndroid, Platform } from 'react-native';
-import { colors } from '~/constants/Colors';
-import { useAuth } from '~/context/auth';
-import CallProvider from '~/context/call-provider';
-import { useDarkMode } from '~/hooks/useDarkMode';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { PermissionsAndroid, Platform } from "react-native";
+import { colors } from "~/constants/Colors";
+import { useAuth } from "~/context/auth";
+import CallProvider from "~/context/call-provider";
+import { useDarkMode } from "~/hooks/useDarkMode";
 
-const apiKey = 'cnvc46pm8uq9';
+const apiKey = "cnvc46pm8uq9";
 
-if (Platform.OS === 'android') {
+if (Platform.OS === "android") {
   PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
 }
 export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
@@ -42,24 +42,24 @@ export default function AppLayout() {
       image: user?.image,
       email: user?.email,
     });
-    await AsyncStorage.setItem('person', JSON.stringify(person));
-    await AsyncStorage.setItem('body', values);
+    await AsyncStorage.setItem("person", JSON.stringify(person));
+    await AsyncStorage.setItem("body", values);
     try {
       const response = await fetch(`https://workcloud-web.vercel.app/token`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
 
         body: values,
       });
       const data = await response.json();
-      console.log('🚀 ~ AppLayout ~ tokenProvider ~ data:', data);
+      console.log("🚀 ~ AppLayout ~ tokenProvider ~ data:", data);
 
       return data.token;
     } catch (error) {
-      console.error('error', error);
-      throw new Error('Failed to fetch user data');
+      console.error("error", error);
+      throw new Error("Failed to fetch user data");
     }
   };
 
@@ -70,11 +70,11 @@ export default function AppLayout() {
       logger: (logLevel: LogLevel, message: string, ...args: unknown[]) => {
         console.log(
           message,
-          'message',
+          "message",
           logLevel,
-          'level',
+          "level",
           ...args,
-          'sadjbcjhhv'
+          "sadjbcjhhv",
         );
       },
     },
@@ -132,8 +132,8 @@ export default function AppLayout() {
       <CallProvider>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <StatusBar
-            style={darkMode === 'dark' ? 'light' : 'dark'}
-            backgroundColor={darkMode === 'dark' ? 'black' : 'white'}
+            style={darkMode === "dark" ? "light" : "dark"}
+            backgroundColor={darkMode === "dark" ? "black" : "white"}
           />
 
           <Stack
@@ -143,7 +143,7 @@ export default function AppLayout() {
             <Stack.Screen
               name="upload-review"
               options={{
-                presentation: 'modal',
+                presentation: "modal",
                 headerShown: false,
               }}
             />

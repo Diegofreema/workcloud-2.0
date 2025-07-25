@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 type State = {
   cat: string;
@@ -7,7 +7,7 @@ type State = {
 };
 
 export const useGetCat = create<State>((set) => ({
-  cat: '',
-  removeCat: () => set({ cat: '' }),
+  cat: "",
+  removeCat: () => set({ cat: "" }),
   setCat: (cat: string) => set({ cat }),
 }));

@@ -1,11 +1,11 @@
-import { router } from 'expo-router';
-import { Image, StyleSheet, View } from 'react-native';
-import Modal from 'react-native-modal';
+import { router } from "expo-router";
+import { Image, StyleSheet, View } from "react-native";
+import Modal from "react-native-modal";
 
-import { MyButton } from '../Ui/MyButton';
-import { MyText } from '../Ui/MyText';
+import { MyButton } from "../Ui/MyButton";
+import { MyText } from "../Ui/MyText";
 
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { useDarkMode } from "~/hooks/useDarkMode";
 type Props = {
   text: string;
 
@@ -13,7 +13,11 @@ type Props = {
   isOpen: boolean;
 };
 
-export const ServicePointModal = ({ text, isOpen, onClose }: Props): JSX.Element => {
+export const ServicePointModal = ({
+  text,
+  isOpen,
+  onClose,
+}: Props): JSX.Element => {
   const { darkMode } = useDarkMode();
   const handleClose = () => {
     onClose();
@@ -28,25 +32,31 @@ export const ServicePointModal = ({ text, isOpen, onClose }: Props): JSX.Element
         isVisible={isOpen}
         onBackButtonPress={onClose}
         onBackdropPress={onClose}
-        backdropColor={darkMode === 'dark' ? 'white' : 'black'}>
+        backdropColor={darkMode === "dark" ? "white" : "black"}
+      >
         <View
           style={[
             styles.centeredView,
             {
-              backgroundColor: darkMode === 'dark' ? 'black' : 'white',
-              shadowColor: darkMode === 'dark' ? '#fff' : '#000',
+              backgroundColor: darkMode === "dark" ? "black" : "white",
+              shadowColor: darkMode === "dark" ? "#fff" : "#000",
               height: 180,
             },
-          ]}>
+          ]}
+        >
           <Image
-            source={require('../../assets/images/ok.png')}
-            style={{ position: 'absolute', top: -40 }}
+            source={require("../../assets/images/ok.png")}
+            style={{ position: "absolute", top: -40 }}
           />
-          <MyText poppins="Bold" fontSize={25} style={{ marginBottom: 10, marginTop: 'auto' }}>
+          <MyText
+            poppins="Bold"
+            fontSize={25}
+            style={{ marginBottom: 10, marginTop: "auto" }}
+          >
             {text}
           </MyText>
           <MyButton onPress={handleClose}>
-            <MyText poppins="Bold" fontSize={20} style={{ color: 'white' }}>
+            <MyText poppins="Bold" fontSize={20} style={{ color: "white" }}>
               Continue
             </MyText>
           </MyButton>
@@ -58,10 +68,10 @@ export const ServicePointModal = ({ text, isOpen, onClose }: Props): JSX.Element
 
 const styles = StyleSheet.create({
   centeredView: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     paddingVertical: 20,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,

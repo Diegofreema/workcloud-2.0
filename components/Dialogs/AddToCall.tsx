@@ -1,10 +1,10 @@
-import { Modal, Pressable, StyleSheet } from 'react-native';
+import { Modal, Pressable, StyleSheet } from "react-native";
 
-import { HStack } from '../HStack';
-import { MyButton } from '../Ui/MyButton';
-import { MyText } from '../Ui/MyText';
+import { HStack } from "../HStack";
+import { MyButton } from "../Ui/MyButton";
+import { MyText } from "../Ui/MyText";
 
-import { useToken } from '~/hooks/useToken';
+import { useToken } from "~/hooks/useToken";
 
 export const AddToCall = () => {
   const { isOpen, onClose } = useToken();
@@ -21,23 +21,25 @@ export const AddToCall = () => {
             <MyButton
               style={{
                 flex: 1,
-                backgroundColor: 'transparent',
+                backgroundColor: "transparent",
                 borderWidth: 1,
-                borderColor: 'red',
+                borderColor: "red",
               }}
-              labelStyle={{ color: 'red' }}
-              contentStyle={{ flex: 1 }}>
+              labelStyle={{ color: "red" }}
+              contentStyle={{ flex: 1 }}
+            >
               Leave lobby
             </MyButton>
 
             <MyButton
               style={{
                 flex: 1,
-                backgroundColor: 'transparent',
+                backgroundColor: "transparent",
                 borderWidth: 1,
-                borderColor: 'blue',
+                borderColor: "blue",
               }}
-              labelStyle={{ color: 'blue' }}>
+              labelStyle={{ color: "blue" }}
+            >
               Join call
             </MyButton>
           </HStack>
@@ -49,10 +51,10 @@ export const AddToCall = () => {
 
 const styles = StyleSheet.create({
   centeredView: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     paddingVertical: 20,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,

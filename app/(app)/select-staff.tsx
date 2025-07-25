@@ -1,25 +1,25 @@
-import { useQuery } from "convex/react";
-import { ErrorBoundaryProps, router } from "expo-router";
-import React from "react";
-import { FlatList, View } from "react-native";
+import { useQuery } from 'convex/react';
+import { ErrorBoundaryProps, router } from 'expo-router';
+import React from 'react';
+import { FlatList, View } from 'react-native';
 
-import { AuthHeader } from "~/components/AuthHeader";
-import { EmptyText } from "~/components/EmptyText";
-import { Container } from "~/components/Ui/Container";
-import { ErrorComponent } from "~/components/Ui/ErrorComponent";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { MyButton } from "~/components/Ui/MyButton";
-import { MyText } from "~/components/Ui/MyText";
-import { UserPreviewWithBio } from "~/components/Ui/UserPreviewWithBio";
-import { api } from "~/convex/_generated/api";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { User, useSelect } from "~/hooks/useSelect";
+import { AuthHeader } from '~/components/AuthHeader';
+import { EmptyText } from '~/components/EmptyText';
+import { Container } from '~/components/Ui/Container';
+import { ErrorComponent } from '~/components/Ui/ErrorComponent';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { MyButton } from '~/components/Ui/MyButton';
+import { MyText } from '~/components/Ui/MyText';
+import { UserPreviewWithBio } from '~/components/Ui/UserPreviewWithBio';
+import { api } from '~/convex/_generated/api';
+import { useGetUserId } from '~/hooks/useGetUserId';
+import { User, useSelect } from '~/hooks/useSelect';
 
 export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
   return (
     <ErrorComponent
       refetch={retry}
-      text={"Something went wrong. Please try again later."}
+      text={'Something went wrong. Please try again later.'}
     />
   );
 }
@@ -28,7 +28,7 @@ const SelectStaff = () => {
   const { id } = useGetUserId();
   const staffs = useQuery(
     api.organisation.getStaffsByBossIdNotHavingServicePoint,
-    { bossId: id! },
+    { bossId: id! }
   );
 
   if (!staffs) {
@@ -53,7 +53,7 @@ const SelectStaff = () => {
             <UserPreviewWithBio
               workerId={item?._id!}
               id={item?.userId}
-              imageUrl={item?.user?.imageUrl!}
+              imageUrl={item?.user?.image!}
               name={fullName}
               bio={item.experience!}
               skills={item.skills!}
@@ -61,7 +61,7 @@ const SelectStaff = () => {
                 onSelectStaff({
                   id: item?._id!,
                   name: fullName,
-                  image: item?.user?.imageUrl!,
+                  image: item?.user?.image!,
                   role: item.role!,
                 })
               }
@@ -69,10 +69,10 @@ const SelectStaff = () => {
           );
         }}
         ListEmptyComponent={() => (
-          <View style={{ alignItems: "center", gap: 10 }}>
+          <View style={{ alignItems: 'center', gap: 10 }}>
             <EmptyText text="No free staff" />
-            <MyButton onPress={() => router.push("/allStaffs")}>
-              <MyText poppins="Bold" style={{ color: "white", fontSize: 15 }}>
+            <MyButton onPress={() => router.push('/allStaffs')}>
+              <MyText poppins="Bold" style={{ color: 'white', fontSize: 15 }}>
                 Add a new staff
               </MyText>
             </MyButton>

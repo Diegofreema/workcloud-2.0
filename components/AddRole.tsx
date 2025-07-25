@@ -1,13 +1,13 @@
-import { useMutation } from 'convex/react';
-import { useState } from 'react';
-import { TextInput, View } from 'react-native';
-import { toast } from 'sonner-native';
+import { useMutation } from "convex/react";
+import { useState } from "react";
+import { TextInput, View } from "react-native";
+import { toast } from "sonner-native";
 
-import { MyButton } from './Ui/MyButton';
-import { MyText } from './Ui/MyText';
+import { MyButton } from "./Ui/MyButton";
+import { MyText } from "./Ui/MyText";
 
-import { api } from '~/convex/_generated/api';
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { api } from "~/convex/_generated/api";
+import { useDarkMode } from "~/hooks/useDarkMode";
 
 export const AddRole = ({
   onNavigate,
@@ -15,23 +15,23 @@ export const AddRole = ({
   onNavigate: (item: string) => void;
 }) => {
   const { darkMode } = useDarkMode();
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
   const addRole = useMutation(api.staff.createStaffRole);
 
   const onAddRole = async () => {
-    if (value === '') return;
+    if (value === "") return;
 
     setLoading(true);
     try {
       await addRole({ role: value.charAt(0).toUpperCase() + value.slice(1) });
 
       onNavigate(value);
-      toast.success('Role added successfully');
-      setValue('');
+      toast.success("Role added successfully");
+      setValue("");
     } catch (error) {
       console.log(error);
-      toast.error('Failed to add role');
+      toast.error("Failed to add role");
     } finally {
       setLoading(false);
     }
@@ -43,15 +43,15 @@ export const AddRole = ({
       </MyText>
       <TextInput
         placeholder="Enter a custom one"
-        placeholderTextColor={darkMode === 'dark' ? 'white' : 'black'}
+        placeholderTextColor={darkMode === "dark" ? "white" : "black"}
         style={{
           borderWidth: 1,
           borderRadius: 5,
           marginTop: 10,
           padding: 10,
           height: 55,
-          borderColor: 'gray',
-          color: darkMode === 'dark' ? 'white' : 'black',
+          borderColor: "gray",
+          color: darkMode === "dark" ? "white" : "black",
         }}
         onEndEditing={onAddRole}
         value={value}
@@ -59,11 +59,11 @@ export const AddRole = ({
       />
       <MyButton
         onPress={onAddRole}
-        disabled={value === '' || loading}
+        disabled={value === "" || loading}
         loading={loading}
-        buttonStyle={{ width: '100%' }}
+        buttonStyle={{ width: "100%" }}
       >
-        <MyText poppins="Medium" fontSize={15} style={{ color: 'white' }}>
+        <MyText poppins="Medium" fontSize={15} style={{ color: "white" }}>
           Add
         </MyText>
       </MyButton>

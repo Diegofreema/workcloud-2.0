@@ -1,5 +1,5 @@
-import { GroupDetail } from '~/components/GroupDetail';
-import { Container } from '~/components/Ui/Container';
+import { GroupDetail } from "~/components/GroupDetail";
+import { Container } from "~/components/Ui/Container";
 
 const GroupDetails = () => {
   return (

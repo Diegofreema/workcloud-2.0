@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 
 export const SmallLoader = () => {
   return (

@@ -1,13 +1,13 @@
-import {FontAwesome} from "@expo/vector-icons";
-import {Image} from "expo-image";
-import {Pressable, View} from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import { Image } from "expo-image";
+import { Pressable, View } from "react-native";
 
-import {EmptyText} from "./EmptyText";
+import { EmptyText } from "./EmptyText";
 
-import {PostType} from "~/constants/types";
-import {useDeletePost} from "~/hooks/useDeletePost";
-import {LegendList} from "@legendapp/list";
-import {colors} from "~/constants/Colors";
+import { PostType } from "~/constants/types";
+import { useDeletePost } from "~/hooks/useDeletePost";
+import { LegendList } from "@legendapp/list";
+import { colors } from "~/constants/Colors";
 
 type Props = {
   imgUrls: PostType[];

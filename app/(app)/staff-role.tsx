@@ -1,19 +1,19 @@
-import {convexQuery} from "@convex-dev/react-query";
-import {Input} from "@rneui/themed";
-import {useQuery} from "@tanstack/react-query";
-import {useRouter} from "expo-router";
-import React, {useMemo, useState} from "react";
-import {FlatList, Pressable} from "react-native";
+import { convexQuery } from "@convex-dev/react-query";
+import { Input } from "@rneui/themed";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
+import React, { useMemo, useState } from "react";
+import { FlatList, Pressable } from "react-native";
 
-import {AddRole} from "~/components/AddRole";
-import {HStack} from "~/components/HStack";
-import {HeaderNav} from "~/components/HeaderNav";
-import {Container} from "~/components/Ui/Container";
-import {ErrorComponent} from "~/components/Ui/ErrorComponent";
-import {LoadingComponent} from "~/components/Ui/LoadingComponent";
-import {MyText} from "~/components/Ui/MyText";
-import {api} from "~/convex/_generated/api";
-import {useCreateStaffState} from "~/features/staff/hooks/use-create-staff-state";
+import { AddRole } from "~/components/AddRole";
+import { HStack } from "~/components/HStack";
+import { HeaderNav } from "~/components/HeaderNav";
+import { Container } from "~/components/Ui/Container";
+import { ErrorComponent } from "~/components/Ui/ErrorComponent";
+import { LoadingComponent } from "~/components/Ui/LoadingComponent";
+import { MyText } from "~/components/Ui/MyText";
+import { api } from "~/convex/_generated/api";
+import { useCreateStaffState } from "~/features/staff/hooks/use-create-staff-state";
 
 const StaffRoles = () => {
   const [value, setValue] = useState("");

@@ -1,19 +1,19 @@
-import {useMutation} from "convex/react";
-import {Image} from "expo-image";
-import {useLocalSearchParams} from "expo-router";
-import {useState} from "react";
-import {StyleSheet, View} from "react-native";
+import { useMutation } from "convex/react";
+import { Image } from "expo-image";
+import { useLocalSearchParams } from "expo-router";
+import { useState } from "react";
+import { StyleSheet, View } from "react-native";
 import Modal from "react-native-modal";
-import {toast} from "sonner-native";
+import { toast } from "sonner-native";
 
-import {HStack} from "~/components/HStack";
-import {api} from "~/convex/_generated/api";
-import {Id} from "~/convex/_generated/dataModel";
-import {useDarkMode} from "~/hooks/useDarkMode";
-import {useImagePreview} from "~/hooks/useImagePreview";
-import {uploadProfilePicture} from "~/lib/helper";
-import {Button} from "~/features/common/components/Button";
-import {colors} from "~/constants/Colors";
+import { HStack } from "~/components/HStack";
+import { api } from "~/convex/_generated/api";
+import { Id } from "~/convex/_generated/dataModel";
+import { useDarkMode } from "~/hooks/useDarkMode";
+import { useImagePreview } from "~/hooks/useImagePreview";
+import { uploadProfilePicture } from "~/lib/helper";
+import { Button } from "~/features/common/components/Button";
+import { colors } from "~/constants/Colors";
 
 export const ImagePreview = () => {
   const { darkMode } = useDarkMode();

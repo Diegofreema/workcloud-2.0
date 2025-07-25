@@ -1,10 +1,10 @@
-import { Icon } from '@rneui/themed';
-import { Pressable } from 'react-native';
-import { Menu, MenuDivider, MenuItem } from 'react-native-material-menu';
+import { Icon } from "@rneui/themed";
+import { Pressable } from "react-native";
+import { Menu, MenuDivider, MenuItem } from "react-native-material-menu";
 
-import { MyText } from './Ui/MyText';
+import { MyText } from "./Ui/MyText";
 
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { useDarkMode } from "~/hooks/useDarkMode";
 type Props = {
   visible: boolean;
   onClose: () => void;
@@ -31,7 +31,7 @@ export const ServicePointAction = ({
             name="dots-three-horizontal"
             type="entypo"
             size={25}
-            color={darkMode === 'dark' ? 'white' : 'black'}
+            color={darkMode === "dark" ? "white" : "black"}
           />
         </Pressable>
       }

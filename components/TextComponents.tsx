@@ -1,7 +1,7 @@
-import { StyleSheet, View, Text, Image } from 'react-native';
+import { StyleSheet, View, Text, Image } from "react-native";
 
-import { HStack } from './HStack';
-import VStack from './Ui/VStack';
+import { HStack } from "./HStack";
+import VStack from "./Ui/VStack";
 
 export const TextComponents = (): JSX.Element => {
   return (
@@ -12,9 +12,9 @@ export const TextComponents = (): JSX.Element => {
           height: 48,
           borderRadius: 9999,
           borderWidth: 2,
-          borderColor: '#4EC442',
+          borderColor: "#4EC442",
         }}
-        source={{ uri: 'https://via.placeholder.com/48x48' }}
+        source={{ uri: "https://via.placeholder.com/48x48" }}
       />
 
       <VStack flex={1}>
@@ -22,7 +22,9 @@ export const TextComponents = (): JSX.Element => {
           <Text style={styles.title}>Fidelity bank PLC</Text>
           <Text style={styles.time}>Just now</Text>
         </HStack>
-        <Text style={styles.text}>Hi, Audrey we just sent you a confimation code ...</Text>
+        <Text style={styles.text}>
+          Hi, Audrey we just sent you a confimation code ...
+        </Text>
       </VStack>
       <View style={styles.unread}>
         <Text style={styles.unreadText}>2</Text>
@@ -33,29 +35,29 @@ export const TextComponents = (): JSX.Element => {
 
 const styles = StyleSheet.create({
   title: {
-    color: '#2D2D2D',
+    color: "#2D2D2D",
     fontSize: 14,
-    fontFamily: 'PoppinsMedium',
+    fontFamily: "PoppinsMedium",
   },
   time: {
-    color: '#B3B3B3',
+    color: "#B3B3B3",
     fontSize: 10,
-    fontFamily: 'PoppinsLight',
+    fontFamily: "PoppinsLight",
   },
   text: {
-    color: '#999999',
+    color: "#999999",
     fontSize: 12,
-    fontFamily: 'PoppinsLight',
+    fontFamily: "PoppinsLight",
   },
   unread: {
-    backgroundColor: '#0047FF',
-    position: 'absolute',
+    backgroundColor: "#0047FF",
+    position: "absolute",
     right: 0,
     bottom: 0,
     paddingHorizontal: 10,
     borderRadius: 20,
   },
   unreadText: {
-    color: 'white',
+    color: "white",
   },
 });

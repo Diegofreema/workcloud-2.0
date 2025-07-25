@@ -1,14 +1,14 @@
-import { useMutation } from 'convex/react';
-import { useEffect, useState } from 'react';
+import { useMutation } from "convex/react";
+import { useEffect, useState } from "react";
 
-import { api } from '~/convex/_generated/api';
-import { Doc, Id } from '~/convex/_generated/dataModel';
+import { api } from "~/convex/_generated/api";
+import { Doc, Id } from "~/convex/_generated/dataModel";
 
 type Props = {
-  conversationData: Doc<'conversations'>;
-  id: Id<'users'>;
+  conversationData: Doc<"conversations">;
+  id: Id<"users">;
 
-  type: 'single' | 'processor';
+  type: "single" | "processor";
 };
 export const useCreateConvo = ({
   conversationData,
@@ -17,7 +17,7 @@ export const useCreateConvo = ({
   type,
 }: Props) => {
   const createSingleConversation = useMutation(
-    api.conversation.createSingleConversation
+    api.conversation.createSingleConversation,
   );
 
   const [loading, setLoading] = useState(false);
@@ -33,7 +33,7 @@ export const useCreateConvo = ({
           });
         } catch (e) {
           console.log(e);
-          throw Error('Something went wrong');
+          throw Error("Something went wrong");
         } finally {
           setLoading(false);
         }

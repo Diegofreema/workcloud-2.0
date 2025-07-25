@@ -1,16 +1,16 @@
-import { useMutation } from 'convex/react';
-import * as Notifications from 'expo-notifications';
-import { useRouter } from 'expo-router';
+import { useMutation } from "convex/react";
+import * as Notifications from "expo-notifications";
+import { useRouter } from "expo-router";
 import React, {
   createContext,
   ReactNode,
   useContext,
   useEffect,
   useState,
-} from 'react';
-import { api } from '~/convex/_generated/api';
+} from "react";
+import { api } from "~/convex/_generated/api";
 
-import { registerForPushNotificationsAsync } from '~/utils/registerPushNotification';
+import { registerForPushNotificationsAsync } from "~/utils/registerPushNotification";
 
 interface NotificationContextType {
   expoPushToken: string | undefined;
@@ -19,14 +19,14 @@ interface NotificationContextType {
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const useNotification = () => {
   const context = useContext(NotificationContext);
   if (context === undefined) {
     throw new Error(
-      'useNotification must be used within a NotificationProvider'
+      "useNotification must be used within a NotificationProvider",
     );
   }
   return context;
@@ -39,7 +39,7 @@ interface NotificationProviderProps {
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   children,
 }) => {
-  const [expoPushToken, setExpoPushToken] = useState<string | undefined>('');
+  const [expoPushToken, setExpoPushToken] = useState<string | undefined>("");
   const updatePushToken = useMutation(api.users.updatePushToken);
   const [notification, setNotification] =
     useState<Notifications.Notification | null>(null);
@@ -48,32 +48,32 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   useEffect(() => {
     registerForPushNotificationsAsync().then(
       (token) => setExpoPushToken(token),
-      (error) => setError(error)
+      (error) => setError(error),
     );
     const notificationListener = Notifications.addNotificationReceivedListener(
       (notification) => {
         setNotification(notification);
-      }
+      },
     );
 
     const responseListener =
       Notifications.addNotificationResponseReceivedListener((response) => {
         const data = response.notification.request.content.data;
-        if (data.type === 'single') {
+        if (data.type === "single") {
           router.push(`/chat/${data.conversationId}?type=single`);
         }
-        if (data.type === 'group') {
+        if (data.type === "group") {
           router.push(`/chat/group/${data.conversationId}`);
         }
-        if (data.type === 'processor') {
+        if (data.type === "processor") {
           router.push(`/chat/${data.conversationId}?type=single`);
         }
-        if (data.type === 'notification') {
-          router.push('/notification');
+        if (data.type === "notification") {
+          router.push("/notification");
         }
-        if (data.type === 'review') {
+        if (data.type === "review") {
           router.push(
-            `/orgs/reviews/review?reviewId=${data.reviewId}&owner=true&orgId=${data.orgId}`
+            `/orgs/reviews/review?reviewId=${data.reviewId}&owner=true&orgId=${data.orgId}`,
           );
         }
       });
@@ -87,7 +87,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   useEffect(() => {
     if (expoPushToken) {
       updatePushToken({ pushToken: expoPushToken }).catch((err) => {
-        console.error('Failed to update push token:', err);
+        console.error("Failed to update push token:", err);
       });
     }
   }, [expoPushToken, updatePushToken]);

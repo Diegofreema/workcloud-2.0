@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { Dimensions, Platform, StyleSheet, View } from 'react-native';
+import React, { useCallback } from "react";
+import { Dimensions, Platform, StyleSheet, View } from "react-native";
 import Animated, {
   cancelAnimation,
   useAnimatedStyle,
@@ -8,9 +8,9 @@ import Animated, {
   withRepeat,
   withSequence,
   withTiming,
-} from 'react-native-reanimated';
+} from "react-native-reanimated";
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 // Memoized skeleton message component for better performance
 const SkeletonMessage = React.memo(
@@ -23,11 +23,11 @@ const SkeletonMessage = React.memo(
         withRepeat(
           withSequence(
             withTiming(0.7, { duration: 500 }),
-            withTiming(0.3, { duration: 500 })
+            withTiming(0.3, { duration: 500 }),
           ),
           -1,
-          true
-        )
+          true,
+        ),
       );
 
       return () => {
@@ -55,15 +55,15 @@ const SkeletonMessage = React.memo(
           ]}
         >
           {/* Add lines inside the bubble for more realistic appearance */}
-          <View style={[styles.messageLine, { width: '90%' }]} />
-          <View style={[styles.messageLine, { width: '75%' }]} />
+          <View style={[styles.messageLine, { width: "90%" }]} />
+          <View style={[styles.messageLine, { width: "75%" }]} />
         </Animated.View>
       </View>
     );
-  }
+  },
 );
 
-SkeletonMessage.displayName = 'SkeletonMessage';
+SkeletonMessage.displayName = "SkeletonMessage";
 
 const InputSkeleton = React.memo(() => {
   const opacity = useSharedValue(0.3);
@@ -72,10 +72,10 @@ const InputSkeleton = React.memo(() => {
     opacity.value = withRepeat(
       withSequence(
         withTiming(0.7, { duration: 500 }),
-        withTiming(0.3, { duration: 500 })
+        withTiming(0.3, { duration: 500 }),
       ),
       -1,
-      true
+      true,
     );
 
     return () => {
@@ -96,7 +96,7 @@ const InputSkeleton = React.memo(() => {
   );
 });
 
-InputSkeleton.displayName = 'InputSkeleton';
+InputSkeleton.displayName = "InputSkeleton";
 
 const ChatSkeleton = () => {
   const renderSkeletonMessages = useCallback(() => {
@@ -124,28 +124,28 @@ const ChatSkeleton = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
   messagesContainer: {
     flex: 1,
     padding: 16,
   },
   messageContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginVertical: 8,
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
   },
   leftMessage: {
-    justifyContent: 'flex-start',
+    justifyContent: "flex-start",
   },
   rightMessage: {
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   avatar: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
     marginRight: 8,
   },
   message: {
@@ -154,53 +154,53 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   leftBubble: {
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
     width: SCREEN_WIDTH * 0.65,
     borderTopLeftRadius: 4,
     height: 80, // Increased height
   },
   rightBubble: {
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
     width: SCREEN_WIDTH * 0.5,
     borderTopRightRadius: 4,
     height: 80, // Increased height
   },
   messageLine: {
     height: 8,
-    backgroundColor: '#d0d0d0',
+    backgroundColor: "#d0d0d0",
     borderRadius: 4,
     marginVertical: 4,
   },
   dateSeparator: {
     height: 24,
     width: 100,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
     borderRadius: 12,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginVertical: 16,
   },
   // Input skeleton styles
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-    paddingBottom: Platform.OS === 'ios' ? 30 : 12, // Account for iOS home indicator
+    borderTopColor: "#e0e0e0",
+    paddingBottom: Platform.OS === "ios" ? 30 : 12, // Account for iOS home indicator
   },
   attachButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
     marginRight: 8,
   },
   inputField: {
     flex: 1,
     height: 36,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
     borderRadius: 18,
     marginRight: 8,
   },
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
   },
 });
 

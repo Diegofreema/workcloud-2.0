@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 type Store = {
   role: string;
@@ -7,7 +7,7 @@ type Store = {
 };
 
 export const useStaffRole = create<Store>((set) => ({
-  role: '',
+  role: "",
   setRole: (role: string) => set({ role }),
-  removeRole: () => set({ role: '' }),
+  removeRole: () => set({ role: "" }),
 }));

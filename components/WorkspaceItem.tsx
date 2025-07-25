@@ -1,5 +1,4 @@
-import { Image } from "expo-image";
-import { StyleSheet, Pressable } from "react-native";
+import { Pressable } from "react-native";
 
 import { MyText } from "./Ui/MyText";
 

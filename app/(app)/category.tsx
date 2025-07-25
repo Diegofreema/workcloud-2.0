@@ -1,5 +1,5 @@
-import { CategoryFlatList } from '~/components/CategoryFlatList';
-import { Container } from '~/components/Ui/Container';
+import { CategoryFlatList } from "~/components/CategoryFlatList";
+import { Container } from "~/components/Ui/Container";
 
 const category = () => {
   return (

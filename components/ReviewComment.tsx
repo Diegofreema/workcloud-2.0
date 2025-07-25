@@ -37,7 +37,7 @@ export const ReviewComment = ({ comment }: Props) => {
       <CustomPressable onPress={onPress}>
         <HStack alignItems="center" justifyContent="space-between">
           <HStack alignItems="center" gap={5}>
-            <Avatar image={comment?.user?.imageUrl!} height={40} width={40} />
+            <Avatar image={comment?.user?.image!} height={40} width={40} />
             <MyText poppins="Medium" fontSize={RFPercentage(1.6)}>
               {comment?.user?.name}
             </MyText>

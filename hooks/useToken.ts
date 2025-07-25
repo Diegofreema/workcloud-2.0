@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 type State = {
   isOpen: boolean;
@@ -14,8 +14,8 @@ export const useToken = create<State>((set) => ({
   isOpen: false,
   onOpen: () => set({ isOpen: true }),
   onClose: () => set({ isOpen: false }),
-  token: '',
-  workspaceId: '',
+  token: "",
+  workspaceId: "",
   generateToken: () => {
     const token = Math.random() * 10000;
     set((state) => ({ ...state, token }));

@@ -1,23 +1,23 @@
-import { convexQuery } from '@convex-dev/react-query';
-import { useQuery as useTanstackQuery } from '@tanstack/react-query';
-import { usePaginatedQuery, useQuery } from 'convex/react';
-import { useLocalSearchParams } from 'expo-router';
-import React from 'react';
+import { convexQuery } from "@convex-dev/react-query";
+import { useQuery as useTanstackQuery } from "@tanstack/react-query";
+import { usePaginatedQuery, useQuery } from "convex/react";
+import { useLocalSearchParams } from "expo-router";
+import React from "react";
 
-import { ChatComponentNative } from '~/components/Ui/ChatComponent.native';
-import { ChatHeader } from '~/components/Ui/ChatHeader';
-import ChatSkeleton from '~/components/Ui/ChatSkeleton';
-import { Container } from '~/components/Ui/Container';
-import { useAuth } from '~/context/auth';
-import { api } from '~/convex/_generated/api';
-import { Id } from '~/convex/_generated/dataModel';
-import { useCreateConvo } from '~/hooks/useCreateConvo';
-import { useMarkRead } from '~/hooks/useMarkRead';
+import { ChatComponentNative } from "~/components/Ui/ChatComponent.native";
+import { ChatHeader } from "~/components/Ui/ChatHeader";
+import ChatSkeleton from "~/components/Ui/ChatSkeleton";
+import { Container } from "~/components/Ui/Container";
+import { useAuth } from "~/context/auth";
+import { api } from "~/convex/_generated/api";
+import { Id } from "~/convex/_generated/dataModel";
+import { useCreateConvo } from "~/hooks/useCreateConvo";
+import { useMarkRead } from "~/hooks/useMarkRead";
 
 const SingleChat = () => {
   const { chatId: userToChat, type } = useLocalSearchParams<{
-    chatId: Id<'users'>;
-    type: 'single' | 'processor';
+    chatId: Id<"users">;
+    type: "single" | "processor";
   }>();
 
   const { user } = useAuth();
@@ -26,7 +26,7 @@ const SingleChat = () => {
     convexQuery(api.conversation.getSingleConversationWithMessages, {
       otherUserId: userToChat,
       type,
-    })
+    }),
   );
   const {
     status,
@@ -38,7 +38,7 @@ const SingleChat = () => {
     {
       conversationId: conversationData?._id!,
     },
-    { initialNumItems: 100 }
+    { initialNumItems: 100 },
   );
   const loading = useCreateConvo({
     conversationData: conversationData!,

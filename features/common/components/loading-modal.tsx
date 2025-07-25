@@ -1,5 +1,5 @@
-import {ActivityIndicator, Modal, StyleSheet, View} from "react-native";
-import {colors} from "~/constants/Colors";
+import { ActivityIndicator, Modal, StyleSheet, View } from "react-native";
+import { colors } from "~/constants/Colors";
 
 type Props = {
   isOpen: boolean;

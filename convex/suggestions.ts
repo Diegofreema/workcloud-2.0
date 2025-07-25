@@ -1,6 +1,6 @@
-import { v } from 'convex/values';
+import { v } from "convex/values";
 
-import { mutation, query } from './_generated/server';
+import { mutation, query } from "./_generated/server";
 
 export const getSuggestions = query({
   args: {
@@ -9,8 +9,8 @@ export const getSuggestions = query({
   handler: async (ctx, { query }) => {
     if (!query) return [];
     return await ctx.db
-      .query('suggestions')
-      .withSearchIndex('text', (q) => q.search('text', query))
+      .query("suggestions")
+      .withSearchIndex("text", (q) => q.search("text", query))
       .collect();
   },
 });
@@ -21,11 +21,11 @@ export const addToSuggestions = mutation({
   },
   handler: async (ctx, { suggestion }) => {
     const suggestionIsInDb = await ctx.db
-      .query('suggestions')
-      .filter((q) => q.eq(q.field('text'), suggestion))
+      .query("suggestions")
+      .filter((q) => q.eq(q.field("text"), suggestion))
       .first();
     if (suggestionIsInDb) return;
-    await ctx.db.insert('suggestions', {
+    await ctx.db.insert("suggestions", {
       text: suggestion,
     });
   },

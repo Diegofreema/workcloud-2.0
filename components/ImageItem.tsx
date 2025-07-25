@@ -1,6 +1,6 @@
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 
-import { Image, TouchableOpacity, View } from 'react-native';
+import { Image, TouchableOpacity, View } from "react-native";
 
 // Image item component that displays the image from Supabase Storage and a delte button
 const ImageItem = ({
@@ -38,7 +38,7 @@ const ImageItem = ({
   //   }, [image]);
 
   return (
-    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ alignItems: "center", justifyContent: "center" }}>
       {image ? (
         <View
           style={{
@@ -46,7 +46,7 @@ const ImageItem = ({
             height: 100,
             borderRadius: 50,
 
-            backgroundColor: 'gray',
+            backgroundColor: "gray",
           }}
         >
           <Image style={{ width: 80, height: 80 }} source={{ uri: image }} />
@@ -61,16 +61,16 @@ const ImageItem = ({
             height: 100,
             borderRadius: 50,
 
-            backgroundColor: 'gray',
+            backgroundColor: "gray",
           }}
         >
           {/* <Image /> */}
           <TouchableOpacity
             style={{
-              position: 'absolute',
+              position: "absolute",
               bottom: 0,
               right: 3,
-              backgroundColor: darkMode ? 'white' : 'black',
+              backgroundColor: darkMode ? "white" : "black",
               padding: 5,
               borderRadius: 30,
             }}
@@ -79,7 +79,7 @@ const ImageItem = ({
             <FontAwesome
               name="plus"
               size={20}
-              color={darkMode ? 'black' : 'white'}
+              color={darkMode ? "black" : "white"}
             />
           </TouchableOpacity>
         </View>

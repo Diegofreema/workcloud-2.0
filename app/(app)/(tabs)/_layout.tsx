@@ -1,14 +1,14 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {Text} from "@rneui/themed";
-import {Tabs} from "expo-router";
-import {StatusBar} from "expo-status-bar";
+import { Text } from "@rneui/themed";
+import { Tabs } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import React from "react";
 
-import {fontFamily} from "~/constants";
-import {colors} from "~/constants/Colors";
-import {useDarkMode} from "~/hooks/useDarkMode";
-import {StyleSheet, View} from "react-native";
-import {useUnreadMessageCount} from "~/features/common/hook/use-unread-message-count";
+import { fontFamily } from "~/constants";
+import { colors } from "~/constants/Colors";
+import { useDarkMode } from "~/hooks/useDarkMode";
+import { StyleSheet, View } from "react-native";
+import { useUnreadMessageCount } from "~/features/common/hook/use-unread-message-count";
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -24,8 +24,7 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const { darkMode } = useDarkMode();
 
-
-  const count = useUnreadMessageCount()
+  const count = useUnreadMessageCount();
 
   return (
     <>

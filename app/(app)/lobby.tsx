@@ -1,22 +1,22 @@
-import React from 'react';
-import { FlatList, Image, StyleSheet, View } from 'react-native';
+import React from "react";
+import { FlatList, Image, StyleSheet, View } from "react-native";
 
-import { HeaderNav } from '../../components/HeaderNav';
-import { Container } from '../../components/Ui/Container';
-import { MyButton } from '../../components/Ui/MyButton';
-import { MyText } from '../../components/Ui/MyText';
-import { fontFamily } from '../../constants';
-import { colors } from '../../constants/Colors';
+import { HeaderNav } from "../../components/HeaderNav";
+import { Container } from "../../components/Ui/Container";
+import { MyButton } from "../../components/Ui/MyButton";
+import { MyText } from "../../components/Ui/MyText";
+import { fontFamily } from "../../constants";
+import { colors } from "../../constants/Colors";
 
-import { HStack } from '~/components/HStack';
-import VStack from '~/components/Ui/VStack';
+import { HStack } from "~/components/HStack";
+import VStack from "~/components/Ui/VStack";
 
 const lobbyData = {
-  name: 'Clara Kalu',
-  time: '4mins',
+  name: "Clara Kalu",
+  time: "4mins",
 };
 
-const newArray = new Array(20).fill('');
+const newArray = new Array(20).fill("");
 const lobby = () => {
   return (
     <Container>
@@ -28,9 +28,11 @@ const lobby = () => {
         contentContainerStyle={{ gap: 10, paddingBottom: 50 }}
         data={newArray}
         renderItem={({ item }) => (
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <View
+            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+          >
             <Image
-              source={{ uri: 'https://via.placeholder.com/48x48' }}
+              source={{ uri: "https://via.placeholder.com/48x48" }}
               style={{ width: 48, height: 48, borderRadius: 9999 }}
             />
             <MyText poppins="Bold">{lobbyData.name}</MyText>
@@ -47,7 +49,8 @@ const lobby = () => {
           buttonColor={colors.dialPad}
           textColor="white"
           contentStyle={styles.btn}
-          labelStyle={styles.btnText}>
+          labelStyle={styles.btnText}
+        >
           Exit Lobby
         </MyButton>
       </View>
@@ -63,11 +66,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     width: 20,
 
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   buttonContainer: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     height: 70,
   },
   btn: {
@@ -81,7 +84,7 @@ const HeaderComponent = () => {
     <VStack>
       <HStack gap={5}>
         <Image
-          source={{ uri: 'https://via.placeholder.com/48x48' }}
+          source={{ uri: "https://via.placeholder.com/48x48" }}
           style={{ width: 48, height: 48, borderRadius: 9999 }}
         />
         <VStack>
@@ -97,7 +100,7 @@ const HeaderComponent = () => {
         <HStack gap={20}>
           <VStack>
             <Image
-              source={{ uri: 'https://via.placeholder.com/48x48' }}
+              source={{ uri: "https://via.placeholder.com/48x48" }}
               style={{ width: 48, height: 48, borderRadius: 9999 }}
             />
             <MyText poppins="Light">Attending to</MyText>
@@ -105,7 +108,7 @@ const HeaderComponent = () => {
           </VStack>
           <VStack>
             <Image
-              source={{ uri: 'https://via.placeholder.com/48x48' }}
+              source={{ uri: "https://via.placeholder.com/48x48" }}
               style={{ width: 48, height: 48, borderRadius: 9999 }}
             />
             <MyText poppins="Light">Next</MyText>
@@ -121,8 +124,9 @@ const HeaderComponent = () => {
           <MyText
             poppins="Bold"
             style={{
-              color: 'white',
-            }}>
+              color: "white",
+            }}
+          >
             25
           </MyText>
         </View>

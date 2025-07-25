@@ -72,7 +72,7 @@ const ReviewStar = ({
       // Sync initial rating when not readOnly, but allow user changes
       setInternalRating(rating);
     }
-  }, [readOnly, rating]);
+  }, [readOnly, rating, internalRating]);
 
   const handleStarPress = (index: number) => {
     if (readOnly) return;

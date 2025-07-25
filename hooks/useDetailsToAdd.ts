@@ -1,10 +1,10 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
-import { Id } from '~/convex/_generated/dataModel';
+import { Id } from "~/convex/_generated/dataModel";
 type DataType = {
-  orgId: Id<'organizations'>;
+  orgId: Id<"organizations">;
   role?: string;
-  workspaceId?: Id<'workspaces'>;
+  workspaceId?: Id<"workspaces">;
 };
 type Props = {
   workspaceId: any;
@@ -16,11 +16,12 @@ type Props = {
 };
 
 export const useDetailsToAdd = create<Props>((set, get) => ({
-  workspaceId: '',
-  role: '',
-  orgId: '',
+  workspaceId: "",
+  role: "",
+  orgId: "",
   personal: false,
-  getData: ({ orgId, role, workspaceId }: DataType) => set({ role, workspaceId, orgId }),
+  getData: ({ orgId, role, workspaceId }: DataType) =>
+    set({ role, workspaceId, orgId }),
   setPersonal: (personal: boolean) => {
     set((state) => ({ ...state, personal }));
   },

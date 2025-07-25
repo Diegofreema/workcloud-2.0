@@ -1,10 +1,10 @@
-import {FlatList, View} from "react-native";
-import {MyText} from "~/components/Ui/MyText";
+import { FlatList, View } from "react-native";
+import { MyText } from "~/components/Ui/MyText";
 import React from "react";
-import {Suggestions} from "~/features/organization/type";
-import {CustomPressable} from "~/components/Ui/CustomPressable";
+import { Suggestions } from "~/features/organization/type";
+import { CustomPressable } from "~/components/Ui/CustomPressable";
 import VStack from "~/components/Ui/VStack";
-import {router} from "expo-router";
+import { router } from "expo-router";
 
 type Props = {
   suggestions: Suggestions[];
@@ -35,7 +35,6 @@ type SuggestionsProps = {
 };
 export const Suggestion = ({ suggestion }: SuggestionsProps) => {
   const onPress = () => {
-
     router.push(`/service-points/${suggestion.name}`);
   };
   return (

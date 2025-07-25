@@ -29,14 +29,14 @@ export const Profile = ({
       disabled={isLoading}
       style={{ width: "30%" }}
       onPress={() =>
-        onAddToCall(item?._id, item?.customerId, item?.customer?.clerkId!)
+        onAddToCall(item?._id, item?.customerId, item?.customer?._id!)
       }
       onLongPress={onLongPress}
     >
       <VStack flex={1} alignItems="center" justifyContent="center">
-        <Avatar rounded size={50} source={{ uri: item?.customer?.imageUrl! }} />
+        <Avatar rounded size={50} source={{ uri: item?.customer?.image! }} />
         <MyText poppins="Medium" fontSize={13}>
-          {item?.customer?.name.split(" ")[0]}
+          {item?.customer?.name?.split(" ")[0]}
         </MyText>
         <MyText poppins="Light" fontSize={10} style={{ textAlign: "center" }}>
           {date}

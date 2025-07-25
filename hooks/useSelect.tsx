@@ -1,11 +1,11 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
-import { Id } from '~/convex/_generated/dataModel';
+import { Id } from "~/convex/_generated/dataModel";
 
 export type User = {
   name: string;
   role: string;
-  id: Id<'workers'>;
+  id: Id<"workers">;
   image: string;
 };
 type StaffStore = {

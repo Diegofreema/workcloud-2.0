@@ -25,6 +25,7 @@ import { toast } from 'sonner-native';
 import { EmptyText } from '~/components/EmptyText';
 import { HStack } from '~/components/HStack';
 import { HeaderNav } from '~/components/HeaderNav';
+import { Review } from '~/components/Review';
 import { Container } from '~/components/Ui/Container';
 import { ErrorComponent } from '~/components/Ui/ErrorComponent';
 import { LoadingComponent } from '~/components/Ui/LoadingComponent';
@@ -37,8 +38,6 @@ import { Id } from '~/convex/_generated/dataModel';
 import { useDarkMode } from '~/hooks/useDarkMode';
 import { useGetUserId } from '~/hooks/useGetUserId';
 import { useWaitlistId } from '~/hooks/useWaitlistId';
-import { useAuth } from '~/context/auth';
-import { Review } from '~/components/Review';
 import { sendPushNotification } from '~/utils/sendPushNotification';
 
 export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
@@ -232,15 +231,15 @@ const Representatives = ({ data }: { data: WorkerWithWorkspace[] }) => {
 
 const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
   const router = useRouter();
-  const { user: storedUser } = useAuth();
+  // const { user: storedUser } = useAuth();
   // const { client } = useChatContext();
   const { id: customerId } = useGetUserId();
   const handleWaitlist = useMutation(api.workspace.handleWaitlist);
   const { setId } = useWaitlistId();
-  const { workspace, user, role } = item;
+  const { workspace, user } = item;
 
   const handlePress = async () => {
-    if (storedUser?._id) return;
+    if (!customerId || customerId === item?.user?._id) return;
     if (!workspace?.active || workspace?.leisure) {
       toast.info('This workspace is currently inactive or on leisure', {
         description: 'Please try joining another workspace',
@@ -292,7 +291,7 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
       onPress={handlePress}
     >
       <VStack alignItems="center" justifyContent="center" gap={2}>
-        <Avatar rounded source={{ uri: item?.user?.imageUrl! }} size={50} />
+        <Avatar rounded source={{ uri: item?.user?.image! }} size={50} />
         <MyText poppins="Medium" fontSize={11} style={{ textAlign: 'center' }}>
           {item?.role}
         </MyText>
@@ -334,7 +333,7 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
                 </MyText>
               </View>
 
-              {item?.user?._id !== storedUser?._id && (
+              {item?.user?._id !== customerId && (
                 <Pressable
                   onPress={onMessage}
                   style={{

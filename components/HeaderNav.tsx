@@ -49,7 +49,6 @@ export const HeaderNav = ({
           flexDirection: "row",
           alignItems: "center",
           gap: 10,
-
         }}
       >
         <CustomPressable

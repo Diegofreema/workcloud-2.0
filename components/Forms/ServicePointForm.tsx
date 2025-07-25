@@ -1,12 +1,12 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState } from "react";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { Button } from '~/features/common/components/Button';
-import { schema, SchemaType } from '~/validator';
-import { ServicePointModal } from '../Dialogs/ServicePointModal';
-import { CustomInput } from '../InputComponent';
-import VStack from '../Ui/VStack';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Button } from "~/features/common/components/Button";
+import { schema, SchemaType } from "~/validator";
+import { ServicePointModal } from "../Dialogs/ServicePointModal";
+import { CustomInput } from "../InputComponent";
+import VStack from "../Ui/VStack";
 
 type Props = {
   onSubmit: (data: SchemaType) => void;
@@ -23,10 +23,10 @@ export const ServicePointForm = ({ onSubmit, initialValues }: Props) => {
     watch,
   } = useForm<SchemaType>({
     defaultValues: {
-      link: '',
-      name: '',
-      description: '',
-      linkText: '',
+      link: "",
+      name: "",
+      description: "",
+      linkText: "",
       ...initialValues,
     },
     resolver: zodResolver(schema),
@@ -59,7 +59,7 @@ export const ServicePointForm = ({ onSubmit, initialValues }: Props) => {
 
       <CustomInput
         label="Description"
-        name={'description'}
+        name={"description"}
         placeholder="Describe what this service point is for"
         multiline
         textarea
@@ -72,7 +72,7 @@ export const ServicePointForm = ({ onSubmit, initialValues }: Props) => {
         control={control}
         errors={errors}
         placeholder="Paste a link for this service point"
-        autoCapitalize={'none'}
+        autoCapitalize={"none"}
         name="link"
       />
 
@@ -81,16 +81,16 @@ export const ServicePointForm = ({ onSubmit, initialValues }: Props) => {
         control={control}
         errors={errors}
         placeholder="Add a text for this link"
-        autoCapitalize={'none'}
+        autoCapitalize={"none"}
         name="linkText"
       />
 
       <Button
-        title={'Submit'}
+        title={"Submit"}
         onPress={handleSubmit(onSubmit)}
         loading={isSubmitting}
         disabled={disable}
-        loadingTitle={'Submitting...'}
+        loadingTitle={"Submitting..."}
         style={{ height: 55, marginHorizontal: 10 }}
       />
     </VStack>

@@ -1,6 +1,6 @@
-import { useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from "react-native";
 
-import { MyText } from './Ui/MyText';
+import { MyText } from "./Ui/MyText";
 
 type Props = {
   text: string;
@@ -12,12 +12,13 @@ export const EmptyText = ({ text }: Props): JSX.Element => {
     <MyText
       poppins="Medium"
       style={{
-        textAlign: 'center',
+        textAlign: "center",
         marginTop: 10,
         fontSize: 20,
-        textAlignVertical: 'center',
+        textAlignVertical: "center",
         width: width * 0.9,
-      }}>
+      }}
+    >
       {text}
     </MyText>
   );

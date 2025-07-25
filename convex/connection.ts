@@ -1,17 +1,17 @@
-import { ConvexError, v } from 'convex/values';
-import { mutation, query } from './_generated/server';
-import { getLoggedInUser, getOrganisations } from './users';
+import { ConvexError, v } from "convex/values";
+import { mutation, query } from "./_generated/server";
+import { getLoggedInUser, getOrganisations } from "./users";
 
 export const getConnection = query({
   args: {
-    from: v.id('users'),
-    to: v.id('organizations'),
+    from: v.id("users"),
+    to: v.id("organizations"),
   },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query('connections')
-      .withIndex('by_ownerId_orgId', (q) =>
-        q.eq('ownerId', args.from).eq('connectedTo', args.to)
+      .query("connections")
+      .withIndex("by_ownerId_orgId", (q) =>
+        q.eq("ownerId", args.from).eq("connectedTo", args.to),
       )
       .first();
   },
@@ -19,26 +19,26 @@ export const getConnection = query({
 export const getUserConnections = query({
   args: {},
   handler: async (ctx, args) => {
-    const me = await getLoggedInUser(ctx, 'query');
+    const me = await getLoggedInUser(ctx, "query");
     if (!me) return [];
     const connections = await ctx.db
-      .query('connections')
-      .withIndex('by_creation_time')
-      .order('desc')
-      .filter((q) => q.eq(q.field('ownerId'), me._id))
+      .query("connections")
+      .withIndex("by_creation_time")
+      .order("desc")
+      .filter((q) => q.eq(q.field("ownerId"), me._id))
       .take(10);
     const c = [...connections].sort((a, b) => {
       const dateA = new Date(
         a.connectedAt.replace(
           /(\d+)\/(\d+)\/(\d+), (\d+):(\d+):(\d+)/,
-          '$3-$2-$1T$4:$5:$6'
-        )
+          "$3-$2-$1T$4:$5:$6",
+        ),
       );
       const dateB = new Date(
         b.connectedAt.replace(
           /(\d+)\/(\d+)\/(\d+), (\d+):(\d+):(\d+)/,
-          '$3-$2-$1T$4:$5:$6'
-        )
+          "$3-$2-$1T$4:$5:$6",
+        ),
       );
       return dateB.getTime() - dateA.getTime();
     });
@@ -46,7 +46,7 @@ export const getUserConnections = query({
       c.map(async (connection) => {
         const organisation = await getOrganisations(
           ctx,
-          connection.connectedTo
+          connection.connectedTo,
         );
 
         return {
@@ -54,30 +54,30 @@ export const getUserConnections = query({
           id: connection._id,
           organisation,
         };
-      })
+      }),
     );
   },
 });
 // mutation
 export const handleConnection = mutation({
   args: {
-    from: v.id('users'),
-    to: v.id('organizations'),
+    from: v.id("users"),
+    to: v.id("organizations"),
     connectedAt: v.string(),
   },
   handler: async (ctx, args) => {
     const connection = await ctx.db
-      .query('connections')
+      .query("connections")
       .filter((q) =>
         q.and(
-          q.eq(q.field('connectedTo'), args.to),
-          q.eq(q.field('ownerId'), args.from)
-        )
+          q.eq(q.field("connectedTo"), args.to),
+          q.eq(q.field("ownerId"), args.from),
+        ),
       )
       .first();
 
     if (!connection) {
-      await ctx.db.insert('connections', {
+      await ctx.db.insert("connections", {
         ownerId: args.from,
         connectedTo: args.to,
         connectedAt: args.connectedAt,
@@ -92,7 +92,7 @@ export const handleConnection = mutation({
 
 export const updateConnection = mutation({
   args: {
-    id: v.id('connections'),
+    id: v.id("connections"),
     time: v.string(),
   },
   handler: async (ctx, args) => {
@@ -103,11 +103,11 @@ export const updateConnection = mutation({
 });
 
 export const deleteConnection = mutation({
-  args: { id: v.id('connections') },
+  args: { id: v.id("connections") },
   handler: async (ctx, args) => {
     const connection = await ctx.db.get(args.id);
     if (!connection) {
-      throw new ConvexError('Connection not found');
+      throw new ConvexError("Connection not found");
     }
 
     await ctx.db.delete(connection._id);

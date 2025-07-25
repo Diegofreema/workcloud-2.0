@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import { useIsFirstTime } from '~/hooks/use-is-first-time';
-import { useOrganizationModal } from '~/hooks/useOrganizationModal';
+import { useEffect } from "react";
+import { useIsFirstTime } from "~/hooks/use-is-first-time";
+import { useOrganizationModal } from "~/hooks/useOrganizationModal";
 
 type Props = {
   showModal: boolean;

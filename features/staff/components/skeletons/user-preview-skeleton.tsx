@@ -1,7 +1,12 @@
-import React, {useCallback, useEffect} from "react";
-import {Platform, StyleSheet, View} from "react-native";
-import Animated, {Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming,} from "react-native-reanimated";
-
+import React, { useCallback, useEffect } from "react";
+import { Platform, StyleSheet, View } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
 
 const StaffCardSkeleton = () => {
   const opacity = useSharedValue(0.3);
@@ -20,7 +25,7 @@ const StaffCardSkeleton = () => {
       // Cleanup animation
       opacity.value = withTiming(0.3, { duration: 0 });
     };
-  }, [startAnimation]);
+  }, [startAnimation, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,

@@ -1,6 +1,6 @@
-import React from 'react';
-import { Dimensions, Image, StatusBar, StyleSheet, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import React from "react";
+import { Dimensions, Image, StatusBar, StyleSheet, View } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   Extrapolation,
   interpolate,
@@ -8,9 +8,9 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-} from 'react-native-reanimated';
+} from "react-native-reanimated";
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 interface ImageTransitionProps {
   smallImageUrl: string;
@@ -35,18 +35,18 @@ export const ImageTransition: React.FC<ImageTransitionProps> = ({
   const translateY = useSharedValue(initialPosition.y);
 
   const animatedStyles = useAnimatedStyle(() => ({
-    position: 'absolute',
+    position: "absolute",
     width: interpolate(
       progress.value,
       [0, 1],
       [200, SCREEN_WIDTH],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     ),
     height: interpolate(
       progress.value,
       [0, 1],
       [200, SCREEN_HEIGHT],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     ),
     transform: [
       { translateX: translateX.value },
@@ -59,7 +59,7 @@ export const ImageTransition: React.FC<ImageTransitionProps> = ({
 
   const overlayStyle = useAnimatedStyle(() => ({
     opacity: progress.value,
-    backgroundColor: 'rgba(0,0,0,0.8)',
+    backgroundColor: "rgba(0,0,0,0.8)",
     ...StyleSheet.absoluteFillObject,
     zIndex: 998,
   }));
@@ -71,11 +71,11 @@ export const ImageTransition: React.FC<ImageTransitionProps> = ({
     progress.value = withSpring(isExpanding ? 1 : 0, SPRING_CONFIG);
     translateX.value = withSpring(
       isExpanding ? 0 : initialPosition.x,
-      SPRING_CONFIG
+      SPRING_CONFIG,
     );
     translateY.value = withSpring(
       isExpanding ? 0 : initialPosition.y,
-      SPRING_CONFIG
+      SPRING_CONFIG,
     );
   };
 
@@ -91,7 +91,7 @@ export const ImageTransition: React.FC<ImageTransitionProps> = ({
           Math.abs(event.translationY),
           [0, SCREEN_HEIGHT / 2],
           [1, 0.7],
-          Extrapolation.CLAMP
+          Extrapolation.CLAMP,
         );
       }
     })
@@ -114,7 +114,7 @@ export const ImageTransition: React.FC<ImageTransitionProps> = ({
               uri: progress.value > 0.5 ? largeImageUrl : smallImageUrl,
             }}
             style={styles.image}
-            resizeMode={progress.value > 0.5 ? 'contain' : 'cover'}
+            resizeMode={progress.value > 0.5 ? "contain" : "cover"}
           />
         </Animated.View>
       </GestureDetector>
@@ -124,10 +124,10 @@ export const ImageTransition: React.FC<ImageTransitionProps> = ({
 
 const styles = StyleSheet.create({
   imageContainer: {
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
 });

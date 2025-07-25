@@ -1,8 +1,8 @@
-import { useQuery } from 'convex/react';
-import { LoadingComponent } from '~/components/Ui/LoadingComponent';
-import { useAuth } from '~/context/auth';
-import { api } from '~/convex/_generated/api';
-import { RenderProcessors } from '~/features/processor/components/render-processors';
+import { useQuery } from "convex/react";
+import { LoadingComponent } from "~/components/Ui/LoadingComponent";
+import { useAuth } from "~/context/auth";
+import { api } from "~/convex/_generated/api";
+import { RenderProcessors } from "~/features/processor/components/render-processors";
 
 export const FetchProcessors = () => {
   const { user } = useAuth();
@@ -12,7 +12,7 @@ export const FetchProcessors = () => {
       ? {
           userId: user?._id,
         }
-      : 'skip'
+      : "skip",
   );
 
   if (processors === undefined) {

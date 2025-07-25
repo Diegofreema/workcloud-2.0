@@ -1,8 +1,8 @@
-import { ButtonProps, Button } from '@rneui/themed';
-import { StyleProp, TextStyle, ViewStyle } from 'react-native';
+import { ButtonProps, Button } from "@rneui/themed";
+import { StyleProp, TextStyle, ViewStyle } from "react-native";
 
-import { colors } from '../../constants/Colors';
-import { fontFamily } from '../../constants/index';
+import { colors } from "../../constants/Colors";
+import { fontFamily } from "../../constants/index";
 
 type Props = ButtonProps & {
   children: React.ReactNode;
@@ -18,7 +18,7 @@ export const MyButton = ({
   children,
   contentStyle,
   buttonColor = colors.dialPad,
-  textColor = 'white',
+  textColor = "white",
   style,
   labelStyle,
   loading,
@@ -30,7 +30,7 @@ export const MyButton = ({
     <Button
       {...props}
       loading={loading}
-      buttonStyle={[{ minHeight: 50, alignItems: 'center' }, buttonStyle]}
+      buttonStyle={[{ minHeight: 50, alignItems: "center" }, buttonStyle]}
       titleStyle={[
         {
           color: textColor,
@@ -43,10 +43,11 @@ export const MyButton = ({
       containerStyle={[{ borderRadius: 10, minWidth: 150 }, containerStyle]}
       style={[
         {
-          alignItems: 'center',
+          alignItems: "center",
         },
         style,
-      ]}>
+      ]}
+    >
       {children}
     </Button>
   );

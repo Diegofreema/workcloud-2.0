@@ -1,9 +1,9 @@
-import {FlatList, StyleSheet} from "react-native";
-import {MyText} from "~/components/Ui/MyText";
+import { FlatList, StyleSheet } from "react-native";
+import { MyText } from "~/components/Ui/MyText";
 import React from "react";
-import {colors} from "~/constants/Colors";
-import {CustomPressable} from "~/components/Ui/CustomPressable";
-import {capitaliseFirstLetter} from "~/lib/helper";
+import { colors } from "~/constants/Colors";
+import { CustomPressable } from "~/components/Ui/CustomPressable";
+import { capitaliseFirstLetter } from "~/lib/helper";
 
 type Props = {
   roles: string[];

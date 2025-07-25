@@ -52,13 +52,14 @@ export const FetchProcessorDetails = () => {
         <UserPreview
           name={profileData?.name!}
           roleText={'Processor'}
-          imageUrl={profileData?.imageUrl!}
+          imageUrl={profileData?.image!}
           size={80}
         />
         <Button
           title="Resign"
           onPress={() => setIsOpen(true)}
           disabled={isResigning}
+          style={{ backgroundColor: colors.closeTextColor }}
         />
       </View>
     </>
