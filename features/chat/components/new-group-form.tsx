@@ -1,4 +1,8 @@
-import React from "react";
+import { useMutation } from 'convex/react';
+import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import {
   Image,
   ScrollView,
@@ -6,20 +10,15 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-} from "react-native";
-import { Controller, useForm } from "react-hook-form";
-import * as ImagePicker from "expo-image-picker";
-import { colors } from "~/constants/Colors";
-import VStack from "~/components/Ui/VStack";
-import { CustomPressable } from "~/components/Ui/CustomPressable";
-import { useRouter } from "expo-router";
-import { useStaffStore } from "~/features/staff/store/staff-store";
-import { DisplayStaffList } from "~/features/staff/components/display-staff-list";
-import { toast } from "sonner-native";
-import { useMutation } from "convex/react";
-import { api } from "~/convex/_generated/api";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { capitaliseFirstLetter, uploadProfilePicture } from "~/lib/helper";
+} from 'react-native';
+import { toast } from 'sonner-native';
+import { CustomPressable } from '~/components/Ui/CustomPressable';
+import VStack from '~/components/Ui/VStack';
+import { colors } from '~/constants/Colors';
+import { api } from '~/convex/_generated/api';
+import { DisplayStaffList } from '~/features/staff/components/display-staff-list';
+import { useStaffStore } from '~/features/staff/store/staff-store';
+import { capitaliseFirstLetter, uploadProfilePicture } from '~/lib/helper';
 
 type FormData = {
   groupName: string;
@@ -29,7 +28,7 @@ type FormData = {
 
 export const NewGroupForm = () => {
   const router = useRouter();
-  const { id } = useGetUserId();
+
   const clearStaffs = useStaffStore((state) => state.clear);
   const staffs = useStaffStore((state) => state.staffs);
   const createGroup = useMutation(api.conversation.createGroupConversation);
@@ -42,19 +41,18 @@ export const NewGroupForm = () => {
     setValue,
   } = useForm<FormData>({
     defaultValues: {
-      groupName: "",
-      description: "",
-      image: "",
+      groupName: '',
+      description: '',
+      image: '',
     },
   });
 
   const onSubmit = async (data: FormData) => {
-    console.log("Form submitted:", data);
+    console.log('Form submitted:', data);
     try {
       const res = await uploadProfilePicture(generateUploadUrl, data.image);
       const groupId = await createGroup({
         name: capitaliseFirstLetter(data.groupName),
-        loggedInUserId: id!,
         imageId: res?.storageId,
         otherUsers: staffs.map((s) => s.id),
         description: data.description,
@@ -62,26 +60,26 @@ export const NewGroupForm = () => {
       router.replace(`/chat/group/${groupId}`);
       clearStaffs();
       reset();
-      toast.success("Success", {
-        description: "Group created successfully",
+      toast.success('Success', {
+        description: 'Group created successfully',
       });
     } catch (e) {
       console.log(e);
-      toast.error("Failed", {
-        description: "Could not create group",
+      toast.error('Failed', {
+        description: 'Could not create group',
       });
     }
   };
-  const onPress = () => router.push("/select-staff");
+  const onPress = () => router.push('/select-staff');
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
     if (!result.canceled && result.assets && result.assets.length > 0) {
-      setValue("image", result.assets[0].uri);
+      setValue('image', result.assets[0].uri);
     }
   };
   const disabled = staffs.length === 0 || isSubmitting;
@@ -108,7 +106,7 @@ export const NewGroupForm = () => {
         />
         <Controller
           control={control}
-          rules={{ required: "Group name is required" }}
+          rules={{ required: 'Group name is required' }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
               style={styles.input}
@@ -144,7 +142,7 @@ export const NewGroupForm = () => {
         <CustomPressable
           style={[
             styles.button,
-            { marginTop: 2, backgroundColor: "transparent" },
+            { marginTop: 2, backgroundColor: 'transparent' },
           ]}
           disable={isSubmitting}
           onPress={onPress}
@@ -161,7 +159,7 @@ export const NewGroupForm = () => {
         onPress={handleSubmit(onSubmit)}
       >
         <Text style={styles.buttonText}>
-          {isSubmitting ? "Creating..." : "Create"}
+          {isSubmitting ? 'Creating...' : 'Create'}
         </Text>
       </CustomPressable>
     </ScrollView>
@@ -175,10 +173,10 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: colors.black,
     marginBottom: 20,
-    textAlign: "center",
+    textAlign: 'center',
   },
   input: {
     height: 50,
@@ -197,11 +195,11 @@ const styles = StyleSheet.create({
     borderColor: colors.grayText,
     borderWidth: 1,
     borderRadius: 100,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 15,
     backgroundColor: colors.white,
-    alignSelf: "center",
+    alignSelf: 'center',
   },
   imagePreview: {
     width: 150,
@@ -211,22 +209,22 @@ const styles = StyleSheet.create({
   imageText: {
     color: colors.grayText,
     fontSize: 16,
-    textAlign: "center",
+    textAlign: 'center',
   },
   button: {
     backgroundColor: colors.dialPad,
     paddingVertical: 15,
     borderRadius: 10,
-    alignItems: "center",
-    marginTop: "auto",
+    alignItems: 'center',
+    marginTop: 'auto',
   },
   buttonText: {
     color: colors.white,
     fontSize: 18,
-    fontFamily: "PoppinsMedium",
+    fontFamily: 'PoppinsMedium',
   },
   error: {
-    color: "red",
+    color: 'red',
     fontSize: 14,
     marginBottom: 10,
   },

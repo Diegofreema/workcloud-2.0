@@ -1,30 +1,30 @@
-import { EvilIcons } from "@expo/vector-icons";
-import { useQuery } from "convex/react";
+import { EvilIcons } from '@expo/vector-icons';
+import { useQuery } from 'convex/react';
 
-import { Image } from "expo-image";
-import * as Linking from "expo-linking";
-import { router } from "expo-router";
-import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image } from 'expo-image';
+import * as Linking from 'expo-linking';
+import { router } from 'expo-router';
+import React from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Star } from "lucide-react-native";
-import { AuthHeader } from "~/components/AuthHeader";
-import { CreateWorkspaceModal } from "~/components/Dialogs/CreateWorkspace";
-import { DeleteWksSpaceModal } from "~/components/Dialogs/DeleteWks";
-import { SelectRow } from "~/components/Dialogs/SelectRow";
-import { Container } from "~/components/Ui/Container";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { MyText } from "~/components/Ui/MyText";
-import { WorkspaceDetails } from "~/components/WorkspaceDetails";
-import { colors } from "~/constants/Colors";
-import { api } from "~/convex/_generated/api";
-import { useCreate } from "~/hooks/useCreate";
-import { useDarkMode } from "~/hooks/useDarkMode";
+import { Star } from 'lucide-react-native';
+import { AuthHeader } from '~/components/AuthHeader';
+import { CreateWorkspaceModal } from '~/components/Dialogs/CreateWorkspace';
+import { DeleteWksSpaceModal } from '~/components/Dialogs/DeleteWks';
+import { SelectRow } from '~/components/Dialogs/SelectRow';
+import { Container } from '~/components/Ui/Container';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { MyText } from '~/components/Ui/MyText';
+import { WorkspaceDetails } from '~/components/WorkspaceDetails';
+import { colors } from '~/constants/Colors';
+import { api } from '~/convex/_generated/api';
+import { useCreate } from '~/hooks/useCreate';
+import { useDarkMode } from '~/hooks/useDarkMode';
 
 const MyOrg = () => {
   const data = useQuery(
     api.organisation.getOrganizationWithOwnerAndWorkspaces,
-    {},
+    {}
   );
 
   const { onOpen } = useCreate();
@@ -34,8 +34,8 @@ const MyOrg = () => {
     return <LoadingComponent />;
   }
 
-  const startDay = data?.workDays?.split("-")[0];
-  const endDay = data?.workDays?.split("-")[1];
+  const startDay = data?.workDays?.split('-')[0];
+  const endDay = data?.workDays?.split('-')[1];
 
   return (
     <Container>
@@ -43,45 +43,42 @@ const MyOrg = () => {
       <CreateWorkspaceModal workspace={data?.workspaces!} />
       <SelectRow organizationId={data?._id!} profile={data?.owner!} />
       <DeleteWksSpaceModal />
-      <AuthHeader
-        style={{ alignItems: "center" }}
-        path="Manage Organizations"
-      />
+      <AuthHeader style={{ alignItems: 'center' }} path="Manage Organization" />
       <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}
         >
-          <View style={{ alignItems: "center", flexDirection: "row", gap: 10 }}>
+          <View style={{ alignItems: 'center', flexDirection: 'row', gap: 10 }}>
             <Image
               style={{ width: 70, height: 70, borderRadius: 50 }}
               contentFit="cover"
               source={{ uri: data?.avatar! }}
-              placeholder={require("~/assets/images/boy.png")}
+              placeholder={require('~/assets/images/boy.png')}
               placeholderContentFit="cover"
             />
             <View>
               <Text
                 style={{
-                  fontFamily: "PoppinsBold",
+                  fontFamily: 'PoppinsBold',
 
                   fontSize: 14,
-                  color: darkMode === "dark" ? colors.white : colors.black,
+                  color: darkMode === 'dark' ? colors.white : colors.black,
                 }}
               >
                 {data?.name}
               </Text>
               <Text
                 style={{
-                  fontFamily: "PoppinsMedium",
+                  fontFamily: 'PoppinsMedium',
                   fontSize: 10,
-                  color: darkMode === "dark" ? colors.white : colors.black,
+                  color: darkMode === 'dark' ? colors.white : colors.black,
                 }}
               >
-                {data?.owner?.name?.split(" ")?.[0]} | Admin
+                {data?.owner?.name?.split(' ')?.[0]} | Admin
               </Text>
             </View>
           </View>
@@ -94,14 +91,14 @@ const MyOrg = () => {
                 borderRadius: 5,
                 width: 100,
                 height: 40,
-                justifyContent: "center",
-                alignItems: "center",
+                justifyContent: 'center',
+                alignItems: 'center',
               })}
               onPress={() =>
                 router.push(`/(app)/(organization)/edit/${data?._id}`)
               }
             >
-              <MyText poppins="Medium" fontSize={14} style={{ color: "white" }}>
+              <MyText poppins="Medium" fontSize={14} style={{ color: 'white' }}>
                 Edit
               </MyText>
             </Pressable>
@@ -110,7 +107,7 @@ const MyOrg = () => {
         <View
           style={{
             marginTop: 10,
-            borderTopColor: darkMode === "dark" ? colors.black : colors.gray,
+            borderTopColor: darkMode === 'dark' ? colors.black : colors.gray,
             borderTopWidth: StyleSheet.hairlineWidth,
             paddingTop: 10,
           }}
@@ -125,35 +122,35 @@ const MyOrg = () => {
           </MyText>
           <View
             style={{
-              flexDirection: "row",
-              alignItems: "center",
+              flexDirection: 'row',
+              alignItems: 'center',
               gap: 20,
               marginTop: 10,
             }}
           >
             <Text
               style={{
-                fontFamily: "PoppinsBold",
+                fontFamily: 'PoppinsBold',
                 fontSize: 10,
 
-                color: darkMode === "dark" ? colors.white : colors.black,
-                textTransform: "uppercase",
+                color: darkMode === 'dark' ? colors.white : colors.black,
+                textTransform: 'uppercase',
               }}
             >
               {startDay} - {endDay}
             </Text>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <View
                 style={{
                   padding: 5,
                   borderRadius: 5,
-                  backgroundColor: "#CCF2D9",
+                  backgroundColor: '#CCF2D9',
                 }}
               >
                 <Text
                   style={{
-                    color: "#00C041",
-                    fontFamily: "PoppinsBold",
+                    color: '#00C041',
+                    fontFamily: 'PoppinsBold',
                     fontSize: 10,
                   }}
                 >
@@ -163,7 +160,7 @@ const MyOrg = () => {
               <Text style={{ marginBottom: 8 }}> — </Text>
               <View
                 style={{
-                  backgroundColor: "#FFD9D9",
+                  backgroundColor: '#FFD9D9',
 
                   padding: 5,
                   borderRadius: 5,
@@ -171,8 +168,8 @@ const MyOrg = () => {
               >
                 <Text
                   style={{
-                    color: "#D61B0C",
-                    fontFamily: "PoppinsBold",
+                    color: '#D61B0C',
+                    fontFamily: 'PoppinsBold',
                     fontSize: 10,
                   }}
                 >
@@ -193,9 +190,9 @@ const MyOrg = () => {
           <OrganizationItems name="link" text={data?.website} website />
           <Text
             style={{
-              fontFamily: "PoppinsBold",
+              fontFamily: 'PoppinsBold',
               fontSize: 12,
-              color: darkMode === "dark" ? colors.white : colors.black,
+              color: darkMode === 'dark' ? colors.white : colors.black,
             }}
           >
             Members {data?.followers?.length || 0}
@@ -206,63 +203,63 @@ const MyOrg = () => {
             style={{
               marginVertical: 20,
               borderWidth: StyleSheet.hairlineWidth,
-              borderColor: darkMode === "dark" ? colors.black : colors.gray,
+              borderColor: darkMode === 'dark' ? colors.black : colors.gray,
             }}
           />
         </View>
 
         <View
           style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            alignItems: "center",
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            alignItems: 'center',
             marginBottom: 15,
           }}
         >
           <WorkspaceDetails
             onPress={onOpen}
             darkMode={darkMode}
-            uri={require("~/assets/images/workspace.png")}
+            uri={require('~/assets/images/workspace.png')}
             name="Workspaces"
           />
 
           <WorkspaceDetails
             onPress={() => router.push(`/staffs/${data?.owner?._id}`)}
             darkMode={darkMode}
-            uri={require("~/assets/images/staff.png")}
+            uri={require('~/assets/images/staff.png')}
             name="Staffs"
           />
           <WorkspaceDetails
             onPress={() => router.push(`/message`)}
             darkMode={darkMode}
-            uri={require("~/assets/images/message.png")}
+            uri={require('~/assets/images/message.png')}
             name="Messages"
           />
 
           <WorkspaceDetails
             onPress={() => router.push(`/posts/${data?._id}`)}
             darkMode={darkMode}
-            uri={require("~/assets/images/post.png")}
+            uri={require('~/assets/images/post.png')}
             name="Posts"
           />
         </View>
         <View
           style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            alignItems: "center",
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            alignItems: 'center',
           }}
         >
           <WorkspaceDetails
             onPress={() => router.push(`/services?id=${data?._id}`)}
             darkMode={darkMode}
-            uri={require("~/assets/images/service.png")}
+            uri={require('~/assets/images/service.png')}
             name="Service point"
           />
           <WorkspaceDetails
             onPress={() =>
               router.push(
-                `/orgs/reviews/${data?.owner?.organizationId}?owner=true`,
+                `/orgs/reviews/${data?.owner?.organizationId}?owner=true`
               )
             }
             darkMode={darkMode}
@@ -271,8 +268,8 @@ const MyOrg = () => {
                 style={{
                   width: 50,
                   height: 50,
-                  justifyContent: "center",
-                  alignItems: "center",
+                  justifyContent: 'center',
+                  alignItems: 'center',
                   backgroundColor: colors.dialPad,
                   borderRadius: 50,
                 }}
@@ -301,11 +298,11 @@ export const OrganizationItems = ({ name, text, website }: SubProps) => {
   if (website) {
     return (
       <Pressable
-        onPress={() => Linking.openURL("https://" + text)}
-        style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
+        onPress={() => Linking.openURL('https://' + text)}
+        style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}
       >
         <EvilIcons
-          color={darkMode === "dark" ? colors.white : colors.textGray}
+          color={darkMode === 'dark' ? colors.white : colors.textGray}
           name={name}
           size={24}
         />
@@ -323,16 +320,16 @@ export const OrganizationItems = ({ name, text, website }: SubProps) => {
     );
   }
   return (
-    <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
       <EvilIcons
-        color={darkMode === "dark" ? colors.white : colors.textGray}
+        color={darkMode === 'dark' ? colors.white : colors.textGray}
         name={name}
         size={24}
       />
       <Text
         style={{
-          color: darkMode === "dark" ? colors.white : colors.textGray,
-          fontFamily: "PoppinsBold",
+          color: darkMode === 'dark' ? colors.white : colors.textGray,
+          fontFamily: 'PoppinsBold',
           fontSize: 10,
         }}
       >

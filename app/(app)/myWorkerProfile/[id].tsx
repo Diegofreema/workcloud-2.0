@@ -50,6 +50,7 @@ const Profile = () => {
         workerId: data._id,
       });
       toast.success('Resigned successfully');
+      setIsOpen(false);
     } catch (error) {
       const errorMessage = generateErrorMessage(error, 'Something went wrong');
       toast.error('An error occurred', {

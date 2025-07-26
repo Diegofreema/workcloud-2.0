@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ConvexReactClient } from 'convex/react';
 import { useFonts } from 'expo-font';
 import * as Notifications from 'expo-notifications';
-import { Stack, useNavigationContainerRef, usePathname } from 'expo-router';
+import { Stack, usePathname } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -17,8 +17,8 @@ import { Toaster } from 'sonner-native';
 import { useDarkMode } from '~/hooks/useDarkMode';
 // import { Authenticated, Unauthenticated, AuthLoading } from 'convex/react';
 
-import * as Sentry from '@sentry/react-native';
-import { isRunningInExpoGo } from 'expo';
+// import * as Sentry from '@sentry/react-native';
+// import { isRunningInExpoGo } from 'expo';
 import { MenuProvider } from 'react-native-popup-menu';
 import { AuthProvider, useAuth } from '~/context/auth';
 import { NotificationProvider } from '~/context/notification-context';
@@ -31,9 +31,9 @@ const secureStorage = {
   removeItem: SecureStore.deleteItemAsync,
 };
 // Construct a new integration instance. This is needed to communicate between the integration and React
-const navigationIntegration = Sentry.reactNavigationIntegration({
-  enableTimeToInitialDisplay: !isRunningInExpoGo(),
-});
+// const navigationIntegration = Sentry.reactNavigationIntegration({
+//   enableTimeToInitialDisplay: !isRunningInExpoGo(),
+// });
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldPlaySound: true,
@@ -60,22 +60,22 @@ const queryClient = new QueryClient({
 convexQueryClient.connect(queryClient);
 registerTask();
 
-Sentry.init({
-  dsn: 'https://3309f876b2a32501367ff526d4b77ca7@o4506898363318273.ingest.us.sentry.io/4507879223066624',
-  debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
-  tracesSampleRate: 1.0, // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing. Adjusting this value in production.
-  integrations: [
-    // Pass integration
-    navigationIntegration,
-  ],
-  enableNativeFramesTracking: !isRunningInExpoGo(), // Tracks slow and frozen frames in the application
-  _experiments: {
-    profilesSampleRate: 1.0,
-    replaysSessionSampleRate: 1.0,
-    replaysOnErrorSampleRate: 1.0,
-  },
-  attachScreenshot: true,
-});
+// Sentry.init({
+//   dsn: 'https://3309f876b2a32501367ff526d4b77ca7@o4506898363318273.ingest.us.sentry.io/4507879223066624',
+//   debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
+//   tracesSampleRate: 1.0, // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing. Adjusting this value in production.
+//   integrations: [
+//     // Pass integration
+//     navigationIntegration,
+//   ],
+//   enableNativeFramesTracking: !isRunningInExpoGo(), // Tracks slow and frozen frames in the application
+//   _experiments: {
+//     profilesSampleRate: 1.0,
+//     replaysSessionSampleRate: 1.0,
+//     replaysOnErrorSampleRate: 1.0,
+//   },
+//   attachScreenshot: true,
+// });
 
 SplashScreen.preventAutoHideAsync();
 
@@ -108,13 +108,13 @@ export function RootLayout() {
     PoppinsLightItalic: require('../assets/fonts/Poppins-BoldItalic.ttf'),
     ...FontAwesome.font,
   });
-  const ref = useNavigationContainerRef();
+  // const ref = useNavigationContainerRef();
 
-  useEffect(() => {
-    if (ref?.current) {
-      navigationIntegration.registerNavigationContainer(ref);
-    }
-  }, [ref]);
+  // useEffect(() => {
+  //   if (ref?.current) {
+  //     navigationIntegration.registerNavigationContainer(ref);
+  //   }
+  // }, [ref]);
 
   useEffect(() => {
     if (error) throw error;
@@ -177,4 +177,4 @@ export function RootLayout() {
   );
 }
 
-export default Sentry.wrap(RootLayout);
+export default RootLayout;

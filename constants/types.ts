@@ -591,3 +591,7 @@ export type InfoType = {
   organizationId: Id<'organizations'> | null;
   role: string;
 };
+
+export type ActivitiesType = Doc<'stars'> & {
+  user: Doc<'users'>;
+};

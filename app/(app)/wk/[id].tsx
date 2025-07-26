@@ -197,8 +197,7 @@ const Work = () => {
   const onAddToCall = async (
     currentUser: Id<'waitlists'>,
     nextUser: Id<'waitlists'>,
-    customerId: Id<'users'>,
-    customerCallId: string
+    customerId: Id<'users'>
   ) => {
     if (!client || !data?.workspace.workerId) return;
     setAddingToCall(true);
@@ -228,7 +227,7 @@ const Work = () => {
               custom: { convexId: loggedInUser, currentUser },
             },
             {
-              user_id: customerCallId,
+              user_id: customerId,
               custom: { convexId: customerId, currentUser },
             },
           ],
@@ -276,7 +275,7 @@ const Work = () => {
           <HeaderNav
             title="Workspace"
             subTitle={`${organization?.name} lobby`}
-            rightComponent={<MessageBtn />}
+            rightComponent={isWorker && <MessageBtn />}
           />
           <View style={{ marginTop: 20 }} />
           <UserPreview

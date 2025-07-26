@@ -1,23 +1,23 @@
-import { EvilIcons, FontAwesome } from "@expo/vector-icons";
-import { Button } from "@rneui/themed";
-import { useMutation } from "convex/react";
-import { useRouter } from "expo-router";
-import React, { useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
-import Modal from "react-native-modal";
-import { toast } from "sonner-native";
+import { EvilIcons, FontAwesome } from '@expo/vector-icons';
+import { Button } from '@rneui/themed';
+import { useMutation } from 'convex/react';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
+import Modal from 'react-native-modal';
+import { toast } from 'sonner-native';
 
-import { EmptyText } from "../EmptyText";
-import { HStack } from "../HStack";
-import { DottedButton } from "../Ui/DottedButton";
-import { MyText } from "../Ui/MyText";
+import { EmptyText } from '../EmptyText';
+import { HStack } from '../HStack';
+import { DottedButton } from '../Ui/DottedButton';
+import { MyText } from '../Ui/MyText';
 
-import { colors } from "~/constants/Colors";
-import { Wks } from "~/constants/types";
-import { api } from "~/convex/_generated/api";
-import { useCreate } from "~/hooks/useCreate";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { useDetailsToAdd } from "~/hooks/useDetailsToAdd";
+import { colors } from '~/constants/Colors';
+import { Wks } from '~/constants/types';
+import { api } from '~/convex/_generated/api';
+import { useCreate } from '~/hooks/useCreate';
+import { useDarkMode } from '~/hooks/useDarkMode';
+import { useDetailsToAdd } from '~/hooks/useDetailsToAdd';
 
 export const CreateWorkspaceModal = ({ workspace }: { workspace: Wks }) => {
   const { isOpen, onClose } = useCreate();
@@ -31,22 +31,22 @@ export const CreateWorkspaceModal = ({ workspace }: { workspace: Wks }) => {
 
   const handleClose = () => {
     onClose();
-    router.push("/role");
+    router.push('/role');
     setPersonal(true);
   };
   const onDelete = async () => {
     setDeleting(true);
     try {
       await deleteWorkspace({ id: workspace._id });
-      toast.success("Success", {
-        description: "Workspace deleted",
+      toast.success('Success', {
+        description: 'Workspace deleted',
       });
       setDeleting(false);
       setDeleteMode(false);
       onClose();
     } catch (error) {
       console.log(error);
-      toast.error("Failed to delete this workspace");
+      toast.error('Failed to delete this workspace');
     } finally {
       setDeleting(false);
     }
@@ -71,13 +71,13 @@ export const CreateWorkspaceModal = ({ workspace }: { workspace: Wks }) => {
           style={[
             styles.centeredView,
             {
-              backgroundColor: darkMode === "dark" ? "black" : "white",
-              shadowColor: darkMode === "dark" ? "#fff" : "#000",
+              backgroundColor: darkMode === 'dark' ? 'black' : 'white',
+              shadowColor: darkMode === 'dark' ? '#fff' : '#000',
             },
           ]}
         >
           <MyText poppins="Bold" fontSize={20}>
-            Your workspaces
+            Your workspace
           </MyText>
           <Pressable
             style={({ pressed }) => [
@@ -89,15 +89,15 @@ export const CreateWorkspaceModal = ({ workspace }: { workspace: Wks }) => {
             <FontAwesome
               name="times"
               size={24}
-              color={darkMode === "dark" ? "white" : "black"}
-              style={{ fontWeight: "300" }}
+              color={darkMode === 'dark' ? 'white' : 'black'}
+              style={{ fontWeight: '300' }}
             />
           </Pressable>
 
           {!thereIsWorkspace && (
             <DottedButton onPress={handleClose} text="Create personal WKS" />
           )}
-          <View style={{ marginTop: 20, width: "100%" }}>
+          <View style={{ marginTop: 20, width: '100%' }}>
             {thereIsWorkspace && (
               <Pressable onPress={() => handlePress(workspace._id)}>
                 <HStack
@@ -129,7 +129,7 @@ export const CreateWorkspaceModal = ({ workspace }: { workspace: Wks }) => {
               <HStack gap={10} justifyContent="center">
                 <Button
                   disabled={deleting}
-                  titleStyle={{ fontFamily: "PoppinsMedium" }}
+                  titleStyle={{ fontFamily: 'PoppinsMedium' }}
                   buttonStyle={{
                     backgroundColor: colors.closeTextColor,
                     borderRadius: 5,
@@ -141,7 +141,7 @@ export const CreateWorkspaceModal = ({ workspace }: { workspace: Wks }) => {
                 </Button>
 
                 <Button
-                  titleStyle={{ fontFamily: "PoppinsMedium" }}
+                  titleStyle={{ fontFamily: 'PoppinsMedium' }}
                   buttonStyle={{
                     backgroundColor: colors.dialPad,
                     borderRadius: 5,
@@ -163,10 +163,10 @@ export const CreateWorkspaceModal = ({ workspace }: { workspace: Wks }) => {
 
 const styles = StyleSheet.create({
   centeredView: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     padding: 10,
-    alignItems: "center",
-    shadowColor: "#000",
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -178,8 +178,8 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   trash: {
-    backgroundColor: "white",
-    shadowColor: "#000",
+    backgroundColor: 'white',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -190,16 +190,16 @@ const styles = StyleSheet.create({
     borderRadius: 55,
     width: 30,
     height: 30,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   button: {
-    position: "absolute",
+    position: 'absolute',
     top: 10,
     right: 15,
     padding: 4,

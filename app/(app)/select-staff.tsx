@@ -12,6 +12,7 @@ import { MyButton } from '~/components/Ui/MyButton';
 import { MyText } from '~/components/Ui/MyText';
 import { UserPreviewWithBio } from '~/components/Ui/UserPreviewWithBio';
 import { api } from '~/convex/_generated/api';
+import { Id } from '~/convex/_generated/dataModel';
 import { useGetUserId } from '~/hooks/useGetUserId';
 import { User, useSelect } from '~/hooks/useSelect';
 
@@ -49,20 +50,21 @@ const SelectStaff = () => {
         data={staffs}
         renderItem={({ item }) => {
           const fullName = item?.user?.name!;
+          const { worker, user } = item;
           return (
             <UserPreviewWithBio
-              workerId={item?._id!}
-              id={item?.userId}
+              workerId={worker?._id!}
+              id={user?._id as Id<'users'>}
               imageUrl={item?.user?.image!}
               name={fullName}
-              bio={item.experience!}
-              skills={item.skills!}
+              bio={worker.experience!}
+              skills={worker.skills!}
               onPress={() =>
                 onSelectStaff({
-                  id: item?._id!,
+                  id: worker?._id!,
                   name: fullName,
-                  image: item?.user?.image!,
-                  role: item.role!,
+                  image: user?.image!,
+                  role: worker.role!,
                 })
               }
             />

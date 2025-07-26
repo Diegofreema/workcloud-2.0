@@ -1,12 +1,12 @@
-import { useCall } from "@stream-io/video-react-bindings";
-import { CallContent } from "@stream-io/video-react-native-sdk";
-import { useMutation } from "convex/react";
-import { View } from "react-native";
-import { CustomCallControls } from "~/components/custom-call-buttons";
-import StarMessageComponent from "~/components/Ui/star-component";
-import { api } from "~/convex/_generated/api";
-import { useCallStore } from "../hook/useCallStore";
-import { useStar } from "~/hooks/useStar";
+import { useCall } from '@stream-io/video-react-bindings';
+import { CallContent } from '@stream-io/video-react-native-sdk';
+import { useMutation } from 'convex/react';
+import { View } from 'react-native';
+import { CustomCallControls } from '~/components/custom-call-buttons';
+import StarMessageComponent from '~/components/Ui/star-component';
+import { api } from '~/convex/_generated/api';
+import { useCallStore } from '../hook/useCallStore';
+import { useStar } from '~/hooks/useStar';
 
 export const CallComponent = () => {
   const {
@@ -34,7 +34,9 @@ export const CallComponent = () => {
     try {
       await call.endCall();
 
-      await deleteWaitlist({ waitlistId: waitList });
+      if (waitList) {
+        await deleteWaitlist({ waitlistId: waitList });
+      }
 
       if (workspaceId) {
         clear();
@@ -49,7 +51,7 @@ export const CallComponent = () => {
       <View style={{ flex: 1 }}>
         <CallContent
           onHangupCallHandler={onHangupCallHandler}
-          layout={"grid"}
+          layout={'grid'}
           CallControls={CustomCallControls}
         />
         {isOpen && (

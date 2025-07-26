@@ -1,20 +1,20 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Text } from "@rneui/themed";
-import { Tabs } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import React from "react";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Text } from '@rneui/themed';
+import { Tabs } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import React from 'react';
 
-import { fontFamily } from "~/constants";
-import { colors } from "~/constants/Colors";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { StyleSheet, View } from "react-native";
-import { useUnreadMessageCount } from "~/features/common/hook/use-unread-message-count";
+import { fontFamily } from '~/constants';
+import { colors } from '~/constants/Colors';
+import { useDarkMode } from '~/hooks/useDarkMode';
+import { StyleSheet, View } from 'react-native';
+import { useUnreadMessageCount } from '~/features/common/hook/use-unread-message-count';
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
  */
 function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
+  name: React.ComponentProps<typeof FontAwesome>['name'];
   color: string;
   size?: number;
 }) {
@@ -29,21 +29,21 @@ export default function TabLayout() {
   return (
     <>
       <StatusBar
-        style={darkMode === "dark" ? "light" : "dark"}
-        backgroundColor={darkMode === "dark" ? "black" : "white"}
+        style={darkMode === 'dark' ? 'light' : 'dark'}
+        backgroundColor={darkMode === 'dark' ? 'black' : 'white'}
       />
 
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: darkMode === "dark" ? "#151718" : "white",
+          tabBarActiveTintColor: darkMode === 'dark' ? '#151718' : 'white',
           headerShown: false,
           tabBarStyle: {
             height: 50,
             paddingBottom: 5,
-            backgroundColor: darkMode === "dark" ? "black" : "white",
+            backgroundColor: darkMode === 'dark' ? 'black' : 'white',
           },
           tabBarLabelStyle: {
-            fontWeight: "bold",
+            fontWeight: 'bold',
           },
         }}
       >
@@ -103,7 +103,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="organization"
           options={{
-            title: "Organizations",
+            title: 'Organization',
             tabBarIcon: ({ focused, size }) => (
               <TabBarIcon
                 name="briefcase"
@@ -119,7 +119,7 @@ export default function TabLayout() {
                   fontSize: 10,
                 }}
               >
-                Organizations
+                Organization
               </Text>
             ),
           }}
@@ -155,11 +155,11 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   con: {
     backgroundColor: colors.lightBlue,
-    position: "absolute",
+    position: 'absolute',
     top: -30,
     right: -2,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 30,
     width: 20,
     height: 20,

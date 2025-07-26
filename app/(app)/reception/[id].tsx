@@ -85,10 +85,12 @@ const Reception = () => {
   if (!data) {
     return <LoadingComponent />;
   }
+
   const day1 = data?.workDays?.split('-')[0] || '';
   const day2 = data?.workDays?.split('-')[1] || '';
   const finalDay1 = day1.charAt(0).toUpperCase() + day1.slice(1);
   const finalDay2 = day2.charAt(0).toUpperCase() + day2.slice(1);
+  console.log({ worker: data?.workers });
 
   return (
     <Container>

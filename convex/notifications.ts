@@ -1,30 +1,30 @@
-import { v } from "convex/values";
+import { v } from 'convex/values';
 
-import { internalMutation, mutation, query } from "./_generated/server";
-import { paginationOptsValidator } from "convex/server";
-import { getLoggedInUser } from "./users";
-import { Id } from "./_generated/dataModel";
+import { internalMutation, mutation, query } from './_generated/server';
+import { paginationOptsValidator } from 'convex/server';
+import { getLoggedInUser } from './users';
+import { Id } from './_generated/dataModel';
 
 export const getNotifications = query({
   args: {
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const user = await getLoggedInUser(ctx, "query");
+    const user = await getLoggedInUser(ctx, 'query');
 
     const notifications = await ctx.db
-      .query("notifications")
-      .withIndex("by_user_id", (q) => q.eq("userId", user?._id as Id<"users">))
+      .query('notifications')
+      .withIndex('by_user_id', (q) => q.eq('userId', user?._id as Id<'users'>))
       .paginate(args.paginationOpts);
 
     const page = await Promise.all(
       notifications.page.map(async (n) => {
-        let image = "";
+        let image = '';
         if (n.reviewId) {
           const review = await ctx.db.get(n.reviewId);
           const user = await ctx.db.get(review?.userId!);
           if (user) {
-            image = user.imageUrl as string;
+            image = user.image as string;
           }
         }
         if (n.requestId) {
@@ -38,7 +38,7 @@ export const getNotifications = query({
           ...n,
           image,
         };
-      }),
+      })
     );
 
     return {
@@ -50,12 +50,12 @@ export const getNotifications = query({
 
 export const getUnreadNotificationCount = query({
   handler: async (ctx, args) => {
-    const user = await getLoggedInUser(ctx, "query");
+    const user = await getLoggedInUser(ctx, 'query');
     if (!user) return 0;
     const notifications = await ctx.db
-      .query("notifications")
-      .withIndex("by_user_id", (q) => q.eq("userId", user._id))
-      .filter((q) => q.eq(q.field("seen"), false))
+      .query('notifications')
+      .withIndex('by_user_id', (q) => q.eq('userId', user._id))
+      .filter((q) => q.eq(q.field('seen'), false))
       .collect();
 
     return notifications.length || 0;
@@ -64,14 +64,14 @@ export const getUnreadNotificationCount = query({
 
 export const createNotification = internalMutation({
   args: {
-    userId: v.id("users"),
+    userId: v.id('users'),
     message: v.string(),
     title: v.string(),
-    requestId: v.optional(v.id("organizations")),
-    reviewId: v.optional(v.id("reviews")),
+    requestId: v.optional(v.id('organizations')),
+    reviewId: v.optional(v.id('reviews')),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.insert("notifications", {
+    return await ctx.db.insert('notifications', {
       userId: args.userId,
       message: args.message,
       title: args.title,
@@ -84,12 +84,12 @@ export const createNotification = internalMutation({
 
 export const markNotificationAsRead = mutation({
   handler: async (ctx, args) => {
-    const user = await getLoggedInUser(ctx, "mutation");
+    const user = await getLoggedInUser(ctx, 'mutation');
     if (!user) return;
     const notifications = await ctx.db
-      .query("notifications")
-      .withIndex("by_user_id_seen", (q) =>
-        q.eq("userId", user._id).eq("seen", false),
+      .query('notifications')
+      .withIndex('by_user_id_seen', (q) =>
+        q.eq('userId', user._id).eq('seen', false)
       )
       .collect();
     for (const notificationId of notifications) {

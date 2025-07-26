@@ -1,26 +1,29 @@
 // First, create your Zustand store (useStar.js)
 
 // Main Component
-import { useMutation } from "convex/react";
-import React, { useEffect, useState } from "react";
+import { useMutation } from 'convex/react';
+import React, { useEffect, useState } from 'react';
 import {
   Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-} from "react-native";
+} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-} from "react-native-reanimated";
-import { toast } from "sonner-native";
-import { api } from "~/convex/_generated/api";
-import { useCallStore } from "~/features/calls/hook/useCallStore";
-import { Button } from "~/features/common/components/Button";
-import { generateErrorMessage } from "~/lib/helper";
+} from 'react-native-reanimated';
+import { toast } from 'sonner-native';
+import { api } from '~/convex/_generated/api';
+import { useCallStore } from '~/features/calls/hook/useCallStore';
+import { Button } from '~/features/common/components/Button';
+import { generateErrorMessage } from '~/lib/helper';
 
 type Props = {
   isOpen: boolean;
@@ -32,7 +35,7 @@ const StarMessageComponent = ({ isOpen, setIsOpen }: Props) => {
     data: { workspaceId, customerId, customerImage, customerName },
   } = useCallStore();
 
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const starCustomer = useMutation(api.workspace.starCustomer);
   // Shared values for animations
@@ -48,7 +51,7 @@ const StarMessageComponent = ({ isOpen, setIsOpen }: Props) => {
 
   const animatedStyle = useAnimatedStyle(() => ({
     height: height.value,
-    overflow: "hidden",
+    overflow: 'hidden',
   }));
 
   const hideComponent = () => {
@@ -62,12 +65,12 @@ const StarMessageComponent = ({ isOpen, setIsOpen }: Props) => {
     setSending(true);
     try {
       await starCustomer({ workspaceId, customerId, text: message });
-      toast.success("Starred successfully");
+      toast.success('Starred successfully');
       hideComponent();
-      setMessage("");
+      setMessage('');
     } catch (error) {
-      const errorMessage = generateErrorMessage(error, "Something went wrong");
-      toast.error("Something went wrong", {
+      const errorMessage = generateErrorMessage(error, 'Something went wrong');
+      toast.error('Something went wrong', {
         description: errorMessage,
       });
     } finally {
@@ -79,55 +82,60 @@ const StarMessageComponent = ({ isOpen, setIsOpen }: Props) => {
 
   return (
     <Animated.View style={[styles.starMessageContainer, animatedStyle]}>
-      <Animated.View style={[styles.componentContent]}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.profileSection}>
-            <Image
-              source={{
-                uri: customerImage as string,
-              }}
-              style={styles.profileImage}
-            />
-            <View style={styles.headerText}>
-              <Text style={styles.starredText}>You starred</Text>
-              <Text style={styles.userName}>{customerName}</Text>
+      <ScrollView>
+        <Animated.View style={[styles.componentContent]}>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.profileSection}>
+              <Image
+                source={{
+                  uri: customerImage as string,
+                }}
+                style={styles.profileImage}
+              />
+              <View style={styles.headerText}>
+                <Text style={styles.starredText}>You starred</Text>
+                <Text style={styles.userName}>{customerName}</Text>
+              </View>
             </View>
           </View>
-        </View>
 
-        {/* Message Input */}
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.messageInput}
-            placeholder="Type why you starred this account"
-            placeholderTextColor="#999"
-            multiline
-            textAlignVertical="top"
-            value={message}
-            onChangeText={setMessage}
-          />
-        </View>
-
-        {/* Action Buttons */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.sendButton}
-            onPress={hideComponent}
-            activeOpacity={0.8}
+          {/* Message Input */}
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           >
-            <Text style={styles.sendButtonText}>Cancel</Text>
-          </TouchableOpacity>
-          <Button
-            style={styles.saveButton}
-            onPress={handleSend}
-            disabled={sending || !message}
-            loading={sending}
-            title="Submit"
-            loadingTitle="Submitting..."
-          />
-        </View>
-      </Animated.View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.messageInput}
+                placeholder="Type why you starred this account"
+                placeholderTextColor="#999"
+                multiline
+                textAlignVertical="top"
+                value={message}
+                onChangeText={setMessage}
+              />
+            </View>
+          </KeyboardAvoidingView>
+          {/* Action Buttons */}
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.sendButton}
+              onPress={hideComponent}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.sendButtonText}>Cancel</Text>
+            </TouchableOpacity>
+            <Button
+              style={styles.saveButton}
+              onPress={handleSend}
+              disabled={sending || !message}
+              loading={sending}
+              title="Submit"
+              loadingTitle="Submitting..."
+            />
+          </View>
+        </Animated.View>
+      </ScrollView>
     </Animated.View>
   );
 };
@@ -135,102 +143,102 @@ const StarMessageComponent = ({ isOpen, setIsOpen }: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: '#f5f5f5',
   },
   mainContent: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
   title: {
     fontSize: 28,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 10,
-    color: "#333",
-    textAlign: "center",
+    color: '#333',
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: "#666",
-    textAlign: "center",
+    color: '#666',
+    textAlign: 'center',
     marginBottom: 10,
     paddingHorizontal: 20,
   },
   stateInfo: {
     fontSize: 14,
-    color: "#007AFF",
-    fontWeight: "600",
+    color: '#007AFF',
+    fontWeight: '600',
     marginBottom: 30,
   },
   triggerButton: {
-    backgroundColor: "#007AFF",
+    backgroundColor: '#007AFF',
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 25,
     elevation: 3,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     marginBottom: 15,
   },
   triggerButtonActive: {
-    backgroundColor: "#34C759",
+    backgroundColor: '#34C759',
   },
   triggerButtonText: {
-    color: "white",
+    color: 'white',
     fontSize: 16,
-    fontWeight: "600",
-    textAlign: "center",
+    fontWeight: '600',
+    textAlign: 'center',
   },
   hideButton: {
-    backgroundColor: "#FF3B30",
+    backgroundColor: '#FF3B30',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 20,
     marginBottom: 20,
   },
   hideButtonText: {
-    color: "white",
+    color: 'white',
     fontSize: 14,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   externalControls: {
-    alignItems: "center",
+    alignItems: 'center',
   },
   controlsTitle: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
+    fontWeight: '600',
+    color: '#333',
     marginBottom: 10,
   },
   controlButtons: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 10,
   },
   controlButton: {
-    backgroundColor: "#6C7B7F",
+    backgroundColor: '#6C7B7F',
     paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 15,
   },
   controlButtonText: {
-    color: "white",
+    color: 'white',
     fontSize: 12,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   starMessageContainer: {
-    backgroundColor: "#ffffff",
+    backgroundColor: '#ffffff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     elevation: 10,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: -3 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   componentContent: {
     paddingTop: 20,
@@ -239,14 +247,14 @@ const styles = StyleSheet.create({
     height: 300,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 20,
   },
   profileSection: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
   },
   profileImage: {
@@ -254,20 +262,20 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     marginRight: 15,
-    backgroundColor: "#e0e0e0",
+    backgroundColor: '#e0e0e0',
   },
   headerText: {
     flex: 1,
   },
   starredText: {
     fontSize: 18,
-    fontWeight: "600",
-    color: "#333",
+    fontWeight: '600',
+    color: '#333',
     marginBottom: 2,
   },
   userName: {
     fontSize: 16,
-    color: "#666",
+    color: '#666',
   },
   notificationIcon: {
     padding: 8,
@@ -279,44 +287,44 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   messageInput: {
-    backgroundColor: "#f8f9fa",
+    backgroundColor: '#f8f9fa',
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: "#007AFF",
+    borderColor: '#007AFF',
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 16,
-    color: "#333",
+    color: '#333',
     height: 80,
-    textAlignVertical: "top",
+    textAlignVertical: 'top',
   },
   buttonContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 15,
   },
   sendButton: {
     flex: 1,
-    backgroundColor: "#e8f2ff",
+    backgroundColor: '#e8f2ff',
     paddingVertical: 14,
     borderRadius: 12,
-    alignItems: "center",
+    alignItems: 'center',
   },
   sendButtonText: {
-    color: "#007AFF",
+    color: '#007AFF',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   saveButton: {
     flex: 1,
-    backgroundColor: "#007AFF",
+    backgroundColor: '#007AFF',
     paddingVertical: 14,
     borderRadius: 12,
-    alignItems: "center",
+    alignItems: 'center',
   },
   saveButtonText: {
-    color: "white",
+    color: 'white',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });
 

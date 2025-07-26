@@ -1,19 +1,18 @@
-import { useQuery } from "convex/react";
-import { View } from "react-native";
-import { RFPercentage } from "react-native-responsive-fontsize";
-import { RatingPercentage } from "~/components/RatingPercentage";
-import { ReviewComments } from "~/components/ReviewComments";
-import { MyText } from "~/components/Ui/MyText";
-import { api } from "~/convex/_generated/api";
-import { Id } from "~/convex/_generated/dataModel";
-import { calculateRatingStats } from "~/lib/helper";
-import ReviewStar from "~/features/common/components/ReviewStars";
-import { EmptyText } from "~/components/EmptyText";
-import { Button } from "~/features/common/components/Button";
-import { router, usePathname } from "expo-router";
+import { useQuery } from 'convex/react';
+import { router, usePathname } from 'expo-router';
+import { View } from 'react-native';
+import { RFPercentage } from 'react-native-responsive-fontsize';
+import { RatingPercentage } from '~/components/RatingPercentage';
+import { ReviewComments } from '~/components/ReviewComments';
+import { MyText } from '~/components/Ui/MyText';
+import { api } from '~/convex/_generated/api';
+import { Id } from '~/convex/_generated/dataModel';
+import { Button } from '~/features/common/components/Button';
+import ReviewStar from '~/features/common/components/ReviewStars';
+import { calculateRatingStats } from '~/lib/helper';
 
 type ReviewProps = {
-  organizationId: Id<"organizations">;
+  organizationId: Id<'organizations'>;
   scroll?: boolean;
   showComments?: boolean;
   hide?: boolean;
@@ -30,9 +29,9 @@ export const Review = ({
 }: ReviewProps) => {
   const reviews = useQuery(api.reviews.fetchReviews, { organizationId });
   const pathname = usePathname();
-  const isReviewPage = pathname.includes("reviews");
+  const isReviewPage = pathname.includes('reviews');
   if (reviews === undefined) return null;
-  if (reviews.length === 0) return <EmptyText text="No reviews yet" />;
+
   const counts: RatingCounts = {
     1: 0,
     2: 0,
@@ -56,33 +55,46 @@ export const Review = ({
   const { averageRating, ratingPercentages } =
     calculateRatingStats(reviewsData);
   const onSeeReview = () => router.push(`/orgs/reviews/${organizationId}`);
+  const hasReviews = reviews.length > 0;
   return (
     <View style={{ flex: 1 }}>
-      <MyText
-        poppins="Bold"
-        fontSize={RFPercentage(2.4)}
-        style={{ textAlign: "center", marginVertical: 10 }}
-      >
-        {averageRating} out of 5.0
-      </MyText>
+      {hasReviews && (
+        <MyText
+          poppins="Bold"
+          fontSize={RFPercentage(2.4)}
+          style={{ textAlign: 'center', marginVertical: 10 }}
+        >
+          {averageRating} out of 5.0
+        </MyText>
+      )}
 
-      <ReviewStar readOnly rating={averageRating} />
-      <MyText
-        poppins="Light"
-        fontSize={RFPercentage(1.6)}
-        style={{ textAlign: "center", marginVertical: 10 }}
-      >
-        ({reviews?.length} Reviews)
-      </MyText>
-      <RatingPercentage data={ratingPercentages} />
-      {showComments && (
-        <ReviewComments
-          organizationId={organizationId}
-          scroll={scroll}
-          hide={hide}
+      {hasReviews && <ReviewStar readOnly rating={averageRating} />}
+      {hasReviews && (
+        <>
+          <MyText
+            poppins="Light"
+            fontSize={RFPercentage(1.6)}
+            style={{ textAlign: 'center', marginVertical: 10 }}
+          >
+            ({reviews?.length} Reviews)
+          </MyText>
+          <RatingPercentage data={ratingPercentages} />
+          {showComments && (
+            <ReviewComments
+              organizationId={organizationId}
+              scroll={scroll}
+              hide={hide}
+            />
+          )}
+        </>
+      )}
+      {!isReviewPage && (
+        <Button
+          title={'See all'}
+          onPress={onSeeReview}
+          style={{ marginTop: 'auto' }}
         />
       )}
-      {!isReviewPage && <Button title={"See all"} onPress={onSeeReview} />}
     </View>
   );
 };
