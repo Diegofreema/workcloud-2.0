@@ -12,11 +12,16 @@ import {
 import { ErrorComponent } from '~/components/Ui/ErrorComponent';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useConvex, useMutation } from 'convex/react';
+import { useEffect } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
 import { colors } from '~/constants/Colors';
 import { useAuth } from '~/context/auth';
 import CallProvider from '~/context/call-provider';
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { useNotification } from '~/context/notification-context';
+import { api } from '~/convex/_generated/api';
+import { useTheme } from '~/hooks/use-theme';
+import axios from 'axios';
 
 const apiKey = 'cnvc46pm8uq9';
 
@@ -27,9 +32,13 @@ export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
   return <ErrorComponent refetch={retry} text={error.message} />;
 }
 export default function AppLayout() {
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
   const { user } = useAuth();
+  console.log('🚀 ~ AppLayout ~ user:', { user });
 
+  const { expoPushToken } = useNotification();
+  const convex = useConvex();
+  const updateStreamToken = useMutation(api.users.updateStreamToken);
   const person = {
     id: user?._id!,
     name: user?.name,
@@ -43,17 +52,18 @@ export default function AppLayout() {
     await AsyncStorage.setItem('person', JSON.stringify(person));
     await AsyncStorage.setItem('body', values);
     try {
-      const response = await fetch(`https://workcloud-web.vercel.app/token`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const { data } = await axios.post(
+        `https://workcloud-web.vercel.app/token`,
+        {
+          name: user?.name,
+          email: user?.email,
+          image: user?.image,
+          id: user?._id,
+        }
+      );
 
-        body: values,
-      });
-      const data = await response.json();
       console.log('🚀 ~ AppLayout ~ tokenProvider ~ data:', data);
-
+      await updateStreamToken({ streamToken: data.token });
       return data.token;
     } catch (error) {
       console.error('error', error);
@@ -78,6 +88,16 @@ export default function AppLayout() {
     },
     tokenProvider,
   });
+  useEffect(() => {
+    if (expoPushToken) {
+      convex
+        .mutation(api.pushNotification.recordPushNotificationToken, {
+          token: expoPushToken,
+        })
+
+        .catch((error) => alert(error));
+    }
+  }, [convex, expoPushToken]);
   //@ts-ignore
   const theme: DeepPartial<Theme> = {
     callControls: {

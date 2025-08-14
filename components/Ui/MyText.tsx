@@ -1,13 +1,13 @@
-import { StyleProp, Text, TextStyle, useWindowDimensions } from "react-native";
-import { RFValue } from "react-native-responsive-fontsize";
+import { StyleProp, TextStyle, useWindowDimensions } from 'react-native';
+import { RFValue } from 'react-native-responsive-fontsize';
 
-import { fontFamily } from "~/constants";
-import { useDarkMode } from "~/hooks/useDarkMode";
+import { fontFamily } from '~/constants';
+import { ThemedText } from './themed-text';
 
 type Props = {
   style?: StyleProp<TextStyle>;
   children: React.ReactNode;
-  poppins: "Bold" | "Light" | "Medium" | "BoldItalic" | "LightItalic";
+  poppins: 'Bold' | 'Light' | 'Medium' | 'BoldItalic' | 'LightItalic';
   fontSize?: number;
 };
 
@@ -17,20 +17,18 @@ export const MyText = ({
   style,
   fontSize = 10,
 }: Props): JSX.Element => {
-  const { darkMode } = useDarkMode();
   const { height } = useWindowDimensions();
   return (
-    <Text
+    <ThemedText
       style={[
         {
           fontFamily: fontFamily[poppins],
           fontSize: RFValue(fontSize, height),
-          color: darkMode === "dark" ? "white" : "black",
         },
         style,
       ]}
     >
       {children}
-    </Text>
+    </ThemedText>
   );
 };

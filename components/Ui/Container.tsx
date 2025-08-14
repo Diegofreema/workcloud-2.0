@@ -1,9 +1,7 @@
-import React from "react";
-import { StyleProp, ViewStyle } from "react-native";
+import React from 'react';
+import { StyleProp, ViewStyle } from 'react-native';
 
-import { View } from "../Themed";
-
-import { useDarkMode } from "~/hooks/useDarkMode";
+import { ThemedView } from './themed-view';
 
 type Props = {
   children: React.ReactNode;
@@ -12,20 +10,18 @@ type Props = {
 };
 
 export const Container = ({ children, noPadding, style }: Props) => {
-  const { darkMode } = useDarkMode();
   return (
-    <View
+    <ThemedView
       collapsable={false}
       style={[
         {
           flex: 1,
           paddingHorizontal: noPadding ? 0 : 20,
-          backgroundColor: darkMode === "dark" ? "black" : "white",
         },
         style,
       ]}
     >
       {children}
-    </View>
+    </ThemedView>
   );
 };

@@ -112,8 +112,6 @@ export const RenderGroupChat = ({ chat }: Props) => {
 
 const styles = StyleSheet.create({
   pressable: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
     borderRadius: 10,
     paddingVertical: 15,
   },

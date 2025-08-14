@@ -3,10 +3,12 @@ import { useStreamVideoClient } from '@stream-io/video-react-native-sdk';
 import * as Crypto from 'expo-crypto';
 import { router } from 'expo-router';
 import { Mail, Phone } from 'lucide-react-native';
+import { useColorScheme } from 'react-native';
 import { HStack } from '~/components/HStack';
 import { CustomPressable } from '~/components/Ui/CustomPressable';
 import { MyText } from '~/components/Ui/MyText';
 import VStack from '~/components/Ui/VStack';
+import Colors from '~/constants/Colors';
 import { useAuth } from '~/context/auth';
 import { Avatar } from '~/features/common/components/avatar';
 import { formatMessageTime } from '~/lib/helper';
@@ -15,7 +17,8 @@ type Props = {
 };
 export const VideoCall = ({ videoCall }: Props) => {
   const { user } = useAuth();
-
+  const colorScheme = useColorScheme();
+  const color = Colors[colorScheme ?? 'light'].text;
   const loggedInCallUser = videoCall.state.members.find(
     (m) => m.user_id !== user?._id
   )!;
@@ -59,10 +62,10 @@ export const VideoCall = ({ videoCall }: Props) => {
       </HStack>
       <HStack alignItems={'center'} gap={2}>
         <CustomPressable onPress={onVideoCall}>
-          <Phone size={24} />
+          <Phone size={24} color={color} />
         </CustomPressable>
         <CustomPressable onPress={onChat}>
-          <Mail size={24} />
+          <Mail size={24} color={color} />
         </CustomPressable>
       </HStack>
     </HStack>

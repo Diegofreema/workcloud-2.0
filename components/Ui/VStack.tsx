@@ -1,16 +1,17 @@
-import { ReactNode } from "react";
-import { DimensionValue, StyleProp, View, ViewStyle } from "react-native";
+import { ReactNode } from 'react';
+import { DimensionValue, StyleProp, ViewStyle } from 'react-native';
+import { ThemedView } from './themed-view';
 
 type Props = {
   children: ReactNode;
   justifyContent?:
-    | "flex-start"
-    | "flex-end"
-    | "center"
-    | "space-between"
-    | "space-around"
-    | "space-evenly";
-  alignItems?: "flex-start" | "flex-end" | "center" | "stretch" | "baseline";
+    | 'flex-start'
+    | 'flex-end'
+    | 'center'
+    | 'space-between'
+    | 'space-around'
+    | 'space-evenly';
+  alignItems?: 'flex-start' | 'flex-end' | 'center' | 'stretch' | 'baseline';
   gap?: number;
   p?: number;
   m?: number;
@@ -46,10 +47,10 @@ const VStack = ({
   mx,
 }: Props) => {
   return (
-    <View
+    <ThemedView
       style={[
         {
-          flexDirection: "column",
+          flexDirection: 'column',
           justifyContent,
           alignItems,
           gap,
@@ -69,7 +70,7 @@ const VStack = ({
       ]}
     >
       {children}
-    </View>
+    </ThemedView>
   );
 };
 export default VStack;

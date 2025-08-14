@@ -1,6 +1,6 @@
-import { MyText } from "~/components/Ui/MyText";
-import { RFPercentage } from "react-native-responsive-fontsize";
-import { StyleProp, TextStyle } from "react-native";
+import { MyText } from '~/components/Ui/MyText';
+import { RFPercentage } from 'react-native-responsive-fontsize';
+import { StyleProp, TextStyle } from 'react-native';
 
 type Props = {
   title: string;
@@ -8,9 +8,9 @@ type Props = {
   styles?: StyleProp<TextStyle>;
 };
 
-export const Title = ({ title, fontSize = 3, styles }: Props) => {
+export const Title = ({ title, fontSize = 2.5, styles }: Props) => {
   return (
-    <MyText poppins={"Bold"} fontSize={RFPercentage(fontSize)} style={styles}>
+    <MyText poppins={'Bold'} fontSize={RFPercentage(fontSize)} style={styles}>
       {title}
     </MyText>
   );

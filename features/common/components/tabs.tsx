@@ -1,7 +1,8 @@
-import { FlatList, View } from "react-native";
-import { CustomPressable } from "~/components/Ui/CustomPressable";
-import { MyText } from "~/components/Ui/MyText";
-import { colors } from "~/constants/Colors";
+import { FlatList, View } from 'react-native';
+import { CustomPressable } from '~/components/Ui/CustomPressable';
+import { MyText } from '~/components/Ui/MyText';
+import Colors, { colors } from '~/constants/Colors';
+import { useColorScheme } from '~/hooks/useColorScheme';
 
 type Props = {
   data: string[];
@@ -9,6 +10,8 @@ type Props = {
   onSelectIndex: (index: number) => void;
 };
 export const TabsSelector = ({ data, onSelectIndex, selectedIndex }: Props) => {
+  const colorScheme = useColorScheme();
+  const color = Colors[colorScheme ?? 'light'].text;
   return (
     <View>
       <FlatList
@@ -18,15 +21,15 @@ export const TabsSelector = ({ data, onSelectIndex, selectedIndex }: Props) => {
             onPress={() => onSelectIndex(index)}
             style={{
               backgroundColor:
-                selectedIndex === index ? colors.dialPad : "transparent",
+                selectedIndex === index ? colors.dialPad : 'transparent',
               borderRadius: 4,
             }}
           >
             <MyText
-              poppins={"Medium"}
+              poppins={'Medium'}
               fontSize={15}
               style={{
-                color: selectedIndex === index ? colors.white : colors.black,
+                color: selectedIndex === index ? colors.white : color,
               }}
             >
               {item}

@@ -18,8 +18,8 @@ import { MyText } from '~/components/Ui/MyText';
 import { WorkspaceDetails } from '~/components/WorkspaceDetails';
 import { colors } from '~/constants/Colors';
 import { api } from '~/convex/_generated/api';
+import { useTheme } from '~/hooks/use-theme';
 import { useCreate } from '~/hooks/useCreate';
-import { useDarkMode } from '~/hooks/useDarkMode';
 
 const MyOrg = () => {
   const data = useQuery(
@@ -28,7 +28,7 @@ const MyOrg = () => {
   );
 
   const { onOpen } = useCreate();
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
 
   if (data === undefined) {
     return <LoadingComponent />;
@@ -293,7 +293,7 @@ type SubProps = {
   website?: boolean;
 };
 export const OrganizationItems = ({ name, text, website }: SubProps) => {
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
 
   if (website) {
     return (

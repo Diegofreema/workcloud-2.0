@@ -8,6 +8,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
     // `args.type` is one of "oauth" | "email" | "phone" | "credentials" | "verification"
     // `args.provider` is the currently used provider config
     async createOrUpdateUser(ctx: MutationCtx, args) {
+      console.log({ args: args.profile });
       if (args.existingUserId) {
         // Optionally merge updated fields into the existing user object here
         return args.existingUserId;
@@ -18,6 +19,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         ctx,
         args.profile.email as string
       );
+
       if (existingUser) return existingUser._id;
 
       // Implement your own user creation:

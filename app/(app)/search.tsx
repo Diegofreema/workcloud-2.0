@@ -1,34 +1,34 @@
-import { Avatar } from "@rneui/themed";
-import { useMutation, useQuery } from "convex/react";
+import { Avatar } from '@rneui/themed';
+import { useMutation, useQuery } from 'convex/react';
 import {
   ErrorBoundaryProps,
   useGlobalSearchParams,
   useRouter,
-} from "expo-router";
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Pressable } from "react-native";
-import { useDebounce } from "use-debounce";
+} from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Pressable } from 'react-native';
+import { useDebounce } from 'use-debounce';
 
-import { HStack } from "~/components/HStack";
-import { TSearch } from "~/components/TopSearch";
-import { Container } from "~/components/Ui/Container";
-import { ErrorComponent } from "~/components/Ui/ErrorComponent";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { MyText } from "~/components/Ui/MyText";
-import { Suggestions } from "~/components/Ui/Suggestions";
-import VStack from "~/components/Ui/VStack";
-import { SearchServicePoints } from "~/constants/types";
-import { api } from "~/convex/_generated/api";
-import { SearchComponent } from "~/features/common/components/SearchComponent";
-import { RenderSuggestions } from "~/features/organization/components/render-suggestions";
-import { useGetUserId } from "~/hooks/useGetUserId";
+import { HStack } from '~/components/HStack';
+import { TSearch } from '~/components/TopSearch';
+import { Container } from '~/components/Ui/Container';
+import { ErrorComponent } from '~/components/Ui/ErrorComponent';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { MyText } from '~/components/Ui/MyText';
+import { Suggestions } from '~/components/Ui/Suggestions';
+import VStack from '~/components/Ui/VStack';
+import { SearchServicePoints } from '~/constants/types';
+import { api } from '~/convex/_generated/api';
+import { SearchComponent } from '~/features/common/components/SearchComponent';
+import { RenderSuggestions } from '~/features/organization/components/render-suggestions';
+import { useGetUserId } from '~/hooks/useGetUserId';
 
 export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
   return <ErrorComponent refetch={retry} text={error.message} />;
 }
 
 const Search = () => {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('');
   const [val] = useDebounce(value, 500);
   const { query } = useGlobalSearchParams<{ query: string }>();
   const { id } = useGetUserId();
@@ -43,7 +43,7 @@ const Search = () => {
     {
       query: val,
       ownerId: id!,
-    },
+    }
   );
   const servicePoints = useQuery(api.organisation.getServicePoints);
   const data = useQuery(api.organisation.getOrganisationsBySearchQuery, {
@@ -55,7 +55,6 @@ const Search = () => {
     query: value,
   });
 
-  console.log({ searchesByServicePointName, servicePoints });
   if (topSearch === undefined || servicePoints === undefined) {
     return (
       <Container>
@@ -73,17 +72,19 @@ const Search = () => {
     await addSuggestionToDb({ suggestion: val });
   };
   const showResultText =
-    val !== "" && (searchesByServicePointName?.length ?? 0) > 0;
+    val !== '' && (searchesByServicePointName?.length ?? 0) > 0;
   const loading = val?.length > 0 && searchesByServicePointName === undefined;
 
   const hide = dataToRender.length > 0;
   return (
     <Container>
       <SearchComponent value={value} setValue={setValue} />
-      {value && <Suggestions suggestions={suggestions} />}
-      <TSearch data={topSearch} />
+      {value && suggestions && <Suggestions suggestions={suggestions} />}
+      {topSearch.length > 0 && <TSearch data={topSearch} />}
 
-      <RenderSuggestions suggestions={servicePoints} hide={hide} />
+      {servicePoints.length > 0 && (
+        <RenderSuggestions suggestions={servicePoints} hide={hide} />
+      )}
       {loading ? (
         <ActivityIndicator size="large" style={{ marginTop: 30 }} />
       ) : (

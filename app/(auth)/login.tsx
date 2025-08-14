@@ -1,33 +1,33 @@
-import { Divider } from "@rneui/themed";
-import { LinearGradient } from "expo-linear-gradient";
+import { Divider } from '@rneui/themed';
+import { LinearGradient } from 'expo-linear-gradient';
 import {
   Image,
   ScrollView,
   StyleSheet,
   useWindowDimensions,
   View,
-} from "react-native";
+} from 'react-native';
 
-import { AuthTitle } from "~/components/AuthTitle";
-import { SignIn } from "~/components/Buttons/sign-in-button";
-import { Subtitle } from "~/components/Subtitle";
-import { Container } from "~/components/Ui/Container";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { useWarmUpBrowser } from "~/hooks/warmUpBrowser";
+import { AuthTitle } from '~/components/AuthTitle';
+import { SignIn } from '~/components/Buttons/sign-in-button';
+import { Subtitle } from '~/components/Subtitle';
+import { Container } from '~/components/Ui/Container';
+import { useTheme } from '~/hooks/use-theme';
+import { useWarmUpBrowser } from '~/hooks/warmUpBrowser';
 
 export default function SignInScreen() {
   useWarmUpBrowser();
   const { height } = useWindowDimensions();
 
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
 
   // const { signIn } = useSignIn();
   const { width } = useWindowDimensions();
 
   const color =
-    darkMode === "dark"
-      ? ["rgba(0, 0, 0, 0.7)", "rgba(0, 0, 0, 0.9)", "#000"]
-      : ["rgba(255, 255, 255, 0.7)", "rgba(255, 255, 255, 0.9)", "#fff"];
+    darkMode === 'dark'
+      ? ['rgba(0, 0, 0, 0.7)', 'rgba(0, 0, 0, 0.9)', '#000']
+      : ['rgba(255, 255, 255, 0.7)', 'rgba(255, 255, 255, 0.9)', '#fff'];
   return (
     <Container>
       <ScrollView
@@ -38,25 +38,25 @@ export default function SignInScreen() {
         <View style={styles.container}>
           <View style={{ marginTop: 40, marginHorizontal: 20 }}>
             <AuthTitle>Get an organized way to solve problems</AuthTitle>
-            <Subtitle style={{ textAlign: "center" }}>
+            <Subtitle style={{ textAlign: 'center' }}>
               Own a workspace, connect to clients and get issue solved
             </Subtitle>
           </View>
           <Divider />
           <View
             style={{
-              width: "100%",
+              width: '100%',
 
-              alignItems: "center",
+              alignItems: 'center',
               flex: 1,
             }}
           >
             <Image
-              source={require("~/assets/images/d.png")}
+              source={require('~/assets/images/d.png')}
               style={{
-                height: "100%",
+                height: '100%',
                 width: width * 0.9,
-                resizeMode: "contain",
+                resizeMode: 'contain',
                 marginTop: 20,
               }}
             />
@@ -68,13 +68,13 @@ export default function SignInScreen() {
           colors={color}
           locations={[0, 0.2, 1]}
           style={{
-            position: "absolute",
+            position: 'absolute',
             bottom: 0,
-            width: "100%",
+            width: '100%',
             height: height * 0.25,
           }}
         >
-          <View style={{ marginTop: "auto", marginBottom: 20 }}>
+          <View style={{ marginTop: 'auto', marginBottom: 20 }}>
             <SignIn />
           </View>
         </LinearGradient>

@@ -1,10 +1,11 @@
 import {
+  NoiseCancellationProvider,
   RingingCallContent,
   StreamCall,
   useCalls,
-} from "@stream-io/video-react-native-sdk";
-import React from "react";
-import { CallComponent } from "~/features/calls/components/call-component";
+} from '@stream-io/video-react-native-sdk';
+import React from 'react';
+import { CallComponent } from '~/features/calls/components/call-component';
 
 const Ringing = () => {
   const calls = useCalls().filter((c) => c.ringing);
@@ -13,7 +14,9 @@ const Ringing = () => {
   if (!ringingCall) return null;
   return (
     <StreamCall call={ringingCall}>
-      <RingingCallContent CallContent={CallComponent} />
+      <NoiseCancellationProvider>
+        <RingingCallContent CallContent={CallComponent} />
+      </NoiseCancellationProvider>
     </StreamCall>
   );
 };

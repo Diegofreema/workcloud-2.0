@@ -1,12 +1,13 @@
-import { useRouter } from "expo-router";
-import { Pressable, StyleSheet, View } from "react-native";
+import { useRouter } from 'expo-router';
+import { Pressable, StyleSheet } from 'react-native';
 
-import { HStack } from "../HStack";
-import { MyText } from "../Ui/MyText";
-import { UserPreview } from "../Ui/UserPreview";
+import { HStack } from '../HStack';
+import { MyText } from '../Ui/MyText';
+import { UserPreview } from '../Ui/UserPreview';
 
-import { colors } from "~/constants/Colors";
-import { useDarkMode } from "~/hooks/useDarkMode";
+import { colors } from '~/constants/Colors';
+import { ThemedView } from '../Ui/themed-view';
+import { useTheme } from '~/hooks/use-theme';
 type Props = {
   id?: string;
   image?: string;
@@ -15,31 +16,22 @@ type Props = {
 
 export const TopCard = ({ image, name, id }: Props): JSX.Element => {
   const router = useRouter();
-
-  const { darkMode } = useDarkMode();
-
+  const { theme: darkMode } = useTheme();
   const onEditProfile = () => {
     router.push(`/edit-new?id=${id}`);
   };
   return (
-    <View
+    <ThemedView
       style={{
-        backgroundColor: darkMode === "dark" ? "black" : "white",
         marginBottom: 20,
       }}
     >
-      <View
-        style={[
-          styles.absolute,
-          { backgroundColor: darkMode === "dark" ? "black" : "white" },
-        ]}
-      />
-      <View
+      <ThemedView style={[styles.absolute]} />
+      <ThemedView
         style={[
           styles.topCard,
           {
-            backgroundColor: darkMode === "dark" ? "black" : "white",
-            shadowColor: darkMode === "dark" ? "#fff" : "#000",
+            shadowColor: darkMode === 'dark' ? '#fff' : '#000',
           },
         ]}
       >
@@ -53,13 +45,13 @@ export const TopCard = ({ image, name, id }: Props): JSX.Element => {
             }}
             onPress={onEditProfile}
           >
-            <MyText poppins="Medium" fontSize={15} style={{ color: "white" }}>
+            <MyText poppins="Medium" fontSize={15} style={{ color: 'white' }}>
               Edit Profile
             </MyText>
           </Pressable>
         </HStack>
-      </View>
-    </View>
+      </ThemedView>
+    </ThemedView>
   );
 };
 
@@ -67,11 +59,11 @@ const styles = StyleSheet.create({
   topCard: {
     paddingHorizontal: 20,
     paddingTop: 10,
-    backgroundColor: "white",
+
     paddingBottom: 20,
     borderBottomRightRadius: 25,
     borderBottomLeftRadius: 25,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 3,
@@ -82,13 +74,13 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   absolute: {
-    position: "absolute",
+    position: 'absolute',
     top: -5,
     right: 0,
     left: 0,
-    width: "100%",
+    width: '100%',
     height: 10,
-    backgroundColor: "white",
+
     zIndex: 1,
   },
 });

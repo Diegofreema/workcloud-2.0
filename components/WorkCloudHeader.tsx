@@ -1,24 +1,24 @@
-import { FontAwesome } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { Pressable, StyleSheet, View } from "react-native";
+import { FontAwesome } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { Pressable, StyleSheet, View } from 'react-native';
 
-import { colors } from "../constants/Colors";
-import { useDarkMode } from "../hooks/useDarkMode";
-import { MyText } from "./Ui/MyText";
+import { useTheme } from '~/hooks/use-theme';
+import { colors } from '../constants/Colors';
+import { MyText } from './Ui/MyText';
 
 export const WorkCloudHeader = (): JSX.Element => {
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
   const router = useRouter();
   return (
     <>
       <Pressable
-        onPress={() => router.push("/create-workspace")}
+        onPress={() => router.push('/create-workspace')}
         style={[
           {
-            flexDirection: "row",
+            flexDirection: 'row',
             gap: 10,
             marginTop: 13,
-            alignItems: "center",
+            alignItems: 'center',
           },
         ]}
       >
@@ -26,13 +26,13 @@ export const WorkCloudHeader = (): JSX.Element => {
           <FontAwesome
             name="briefcase"
             size={20}
-            color={darkMode === "dark" ? colors.white : colors.black}
+            color={darkMode === 'dark' ? colors.white : colors.black}
           />
           <FontAwesome
             name="plus-circle"
             size={15}
             color={colors.lightBlue}
-            style={{ position: "absolute", bottom: 5, right: 3 }}
+            style={{ position: 'absolute', bottom: 5, right: 3 }}
           />
         </View>
         <MyText

@@ -23,7 +23,8 @@ export const getAllOtherWorkers = query({
         q.and(
           q.neq(q.field('userId'), boss._id),
           q.eq(q.field('bossId'), undefined),
-          q.neq(q.field('type'), 'personal')
+          q.neq(q.field('type'), 'personal'),
+          q.eq(q.field('organizationId'), undefined)
         )
       )
       .collect();

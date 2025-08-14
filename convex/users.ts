@@ -152,13 +152,20 @@ export const updateUserById = mutation({
     imageUrl: v.optional(v.id('_storage')),
   },
   handler: async (ctx, args) => {
+    const user = await ctx.db.get(args._id);
+    if (!user) throw new Error('User not found');
+
     let img;
     if (args.imageUrl) {
+      if (args.imageUrl !== user.storageId && user.storageId) {
+        await ctx.storage.delete(user.storageId);
+      }
       img = await ctx.storage.getUrl(args.imageUrl);
       await ctx.db.patch(args._id, {
         name: args.name,
         phoneNumber: args.phoneNumber,
         image: img!,
+        storageId: args.imageUrl,
       });
     } else {
       await ctx.db.patch(args._id, {
@@ -312,3 +319,16 @@ export const findUserByEmail = async (ctx: MutationCtx, email: string) => {
     .withIndex('email', (q) => q.eq('email', email))
     .first();
 };
+
+export const updateStreamToken = mutation({
+  args: {
+    streamToken: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+    return await ctx.db.patch(userId, {
+      streamToken: args.streamToken,
+    });
+  },
+});

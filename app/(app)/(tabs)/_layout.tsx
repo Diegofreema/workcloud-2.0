@@ -4,11 +4,11 @@ import { Tabs } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 
-import { fontFamily } from '~/constants';
-import { colors } from '~/constants/Colors';
-import { useDarkMode } from '~/hooks/useDarkMode';
 import { StyleSheet, View } from 'react-native';
+import { fontFamily } from '~/constants';
+import Colors, { colors } from '~/constants/Colors';
 import { useUnreadMessageCount } from '~/features/common/hook/use-unread-message-count';
+import { useColorScheme } from '~/hooks/useColorScheme';
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -22,25 +22,24 @@ function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
-  const { darkMode } = useDarkMode();
-
+  const colorScheme = useColorScheme();
   const count = useUnreadMessageCount();
+  const isDark = colorScheme === 'dark';
 
   return (
     <>
       <StatusBar
-        style={darkMode === 'dark' ? 'light' : 'dark'}
-        backgroundColor={darkMode === 'dark' ? 'black' : 'white'}
+        style={isDark ? 'light' : 'dark'}
+        backgroundColor={isDark ? 'black' : 'white'}
       />
 
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: darkMode === 'dark' ? '#151718' : 'white',
+          tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
           headerShown: false,
           tabBarStyle: {
             height: 50,
             paddingBottom: 5,
-            backgroundColor: darkMode === 'dark' ? 'black' : 'white',
           },
           tabBarLabelStyle: {
             fontWeight: 'bold',

@@ -252,8 +252,8 @@ export const getMembersInConversation = query({
 
     const members = conversation.participants.map(async (m) => {
       const user = await ctx.db.get(m);
-      if (user?.pushToken === undefined) return null;
-      return user?.pushToken;
+
+      return user?._id;
     });
 
     return await Promise.all(members);

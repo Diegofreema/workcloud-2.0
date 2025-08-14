@@ -1,15 +1,16 @@
-import { DimensionValue, StyleProp, View, ViewStyle } from "react-native";
+import { DimensionValue, StyleProp, ViewStyle } from 'react-native';
+import { ThemedView } from './Ui/themed-view';
 
 type Props = {
   children: React.ReactNode;
   justifyContent?:
-    | "flex-start"
-    | "flex-end"
-    | "center"
-    | "space-between"
-    | "space-around"
-    | "space-evenly";
-  alignItems?: "flex-start" | "flex-end" | "center" | "stretch" | "baseline";
+    | 'flex-start'
+    | 'flex-end'
+    | 'center'
+    | 'space-between'
+    | 'space-around'
+    | 'space-evenly';
+  alignItems?: 'flex-start' | 'flex-end' | 'center' | 'stretch' | 'baseline';
   gap?: number;
   p?: number;
   m?: number;
@@ -52,10 +53,10 @@ export const HStack = ({
   flex,
 }: Props) => {
   return (
-    <View
+    <ThemedView
       style={[
         {
-          flexDirection: "row",
+          flexDirection: 'row',
           justifyContent,
           alignItems,
           gap,
@@ -79,6 +80,6 @@ export const HStack = ({
       ]}
     >
       {children}
-    </View>
+    </ThemedView>
   );
 };

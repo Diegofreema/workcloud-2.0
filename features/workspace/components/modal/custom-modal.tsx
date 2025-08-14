@@ -1,9 +1,11 @@
-import { Modal, StyleSheet, Text, View } from "react-native";
-import { ReactNode } from "react";
-import { RFPercentage } from "react-native-responsive-fontsize";
-import { colors } from "~/constants/Colors";
-import { CustomPressable } from "~/components/Ui/CustomPressable";
-import { X } from "lucide-react-native";
+import { X } from 'lucide-react-native';
+import { ReactNode } from 'react';
+import { Modal, StyleSheet, useColorScheme, View } from 'react-native';
+import { RFPercentage } from 'react-native-responsive-fontsize';
+import { CustomPressable } from '~/components/Ui/CustomPressable';
+import { ThemedText } from '~/components/Ui/themed-text';
+import { ThemedView } from '~/components/Ui/themed-view';
+import Colors, { colors } from '~/constants/Colors';
 
 type Props = {
   isOpen: boolean;
@@ -12,6 +14,8 @@ type Props = {
   children: ReactNode;
 };
 export const CustomModal = ({ onClose, isOpen, children, title }: Props) => {
+  const colorScheme = useColorScheme();
+  const color = Colors[colorScheme ?? 'light'].text;
   return (
     <Modal
       animationType="slide"
@@ -20,15 +24,15 @@ export const CustomModal = ({ onClose, isOpen, children, title }: Props) => {
       onRequestClose={onClose}
     >
       <View style={styles.centeredView}>
-        <View style={styles.modalView}>
+        <ThemedView style={[styles.modalView, { shadowColor: color }]}>
           <CustomPressable onPress={onClose} style={styles.button}>
-            <X size={25} color={colors.black} />
+            <X size={25} color={color} />
           </CustomPressable>
           <View style={styles.title}>
-            <Text style={styles.modalText}>{title}</Text>
+            <ThemedText style={styles.modalText}>{title}</ThemedText>
           </View>
           <View style={styles.content}>{children}</View>
-        </View>
+        </ThemedView>
       </View>
     </Modal>
   );
@@ -37,57 +41,56 @@ export const CustomModal = ({ onClose, isOpen, children, title }: Props) => {
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalView: {
     marginVertical: 20,
-    backgroundColor: "white",
     borderRadius: 10,
     paddingVertical: 35,
-    alignItems: "center",
-    shadowColor: "#000",
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 5,
     },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.4,
     shadowRadius: 4,
     elevation: 5,
-    width: "90%",
+    width: '90%',
   },
   button: {
     borderRadius: 20,
     padding: 10,
     elevation: 2,
-    position: "absolute",
-    backgroundColor: "transparent",
+    position: 'absolute',
+    backgroundColor: 'transparent',
     top: 5,
     right: 0,
   },
   buttonOpen: {
-    backgroundColor: "#F194FF",
+    backgroundColor: '#F194FF',
   },
   buttonClose: {
-    backgroundColor: "#2196F3",
+    backgroundColor: '#2196F3',
   },
   textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   modalText: {
     marginBottom: 15,
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: RFPercentage(2),
-    fontFamily: "PoppinsMedium",
+    fontFamily: 'PoppinsMedium',
   },
   title: {
     borderBottomWidth: 1,
     borderBottomColor: colors.gray,
-    width: "100%",
+    width: '100%',
   },
   content: {
-    width: "100%",
+    width: '100%',
   },
 });

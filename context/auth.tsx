@@ -16,6 +16,8 @@ const AuthContext = React.createContext({
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const user = useQuery(api.users.getUser, {});
+  console.log({ image: user?.image });
+
   const { expoPushToken } = useNotification();
   const updatePushToken = useMutation(api.users.updatePushToken);
   const isAuthenticated = !!user;

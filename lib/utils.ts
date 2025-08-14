@@ -1,8 +1,11 @@
-import * as TaskManager from "expo-task-manager";
-import * as BackgroundTask from "expo-background-task";
-import * as Updates from "expo-updates";
+import * as TaskManager from 'expo-task-manager';
+import * as BackgroundTask from 'expo-background-task';
+import * as Updates from 'expo-updates';
+import { ConvexReactClient } from 'convex/react';
+import { Id } from '~/convex/_generated/dataModel';
+import { api } from '~/convex/_generated/api';
 
-const BACKGROUND_TASK_NAME = "task-run-expo-update";
+const BACKGROUND_TASK_NAME = 'task-run-expo-update';
 
 TaskManager.defineTask(BACKGROUND_TASK_NAME, async () => {
   const update = await Updates.checkForUpdateAsync();
@@ -24,3 +27,26 @@ export async function registerTask() {
     });
   }
 }
+
+type Props = {
+  title: string;
+  body: string;
+  data: Record<string, string>;
+  to: Id<'users'>;
+};
+
+export const convexPushNotificationsHelper = async (
+  convex: ConvexReactClient,
+  { body, data, title, to }: Props
+) => {
+  try {
+    return await convex.mutation(api.pushNotification.sendPushNotification, {
+      body,
+      data,
+      title,
+      to,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};

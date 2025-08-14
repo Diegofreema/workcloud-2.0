@@ -1,9 +1,8 @@
-import { FontAwesome } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import React from "react";
-import { Pressable, StyleProp, Text, ViewStyle } from "react-native";
-
-import { useDarkMode } from "../hooks/useDarkMode";
+import { FontAwesome } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Pressable, StyleProp, Text, ViewStyle } from 'react-native';
+import { useTheme } from '~/hooks/use-theme';
 
 type Props = {
   path?: string;
@@ -12,7 +11,7 @@ type Props = {
 
 export const AuthHeader = ({ path, style }: Props) => {
   const router = useRouter();
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
 
   const navigator = () => {
     router.back();
@@ -24,7 +23,7 @@ export const AuthHeader = ({ path, style }: Props) => {
       style={[
         {
           marginBottom: 14,
-          flexDirection: "row",
+          flexDirection: 'row',
           gap: 10,
         },
         style,
@@ -33,15 +32,15 @@ export const AuthHeader = ({ path, style }: Props) => {
       <FontAwesome
         name="angle-left"
         size={30}
-        color={darkMode === "dark" ? "white" : "black"}
+        color={darkMode === 'dark' ? 'white' : 'black'}
       />
       {path && (
         <Text
           style={{
-            color: darkMode === "dark" ? "white" : "black",
+            color: darkMode === 'dark' ? 'white' : 'black',
 
             fontSize: 20,
-            fontFamily: "PoppinsBold",
+            fontFamily: 'PoppinsBold',
           }}
         >
           {path}

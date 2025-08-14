@@ -7,11 +7,11 @@ import {
   TouchableOpacityProps,
   View,
   ViewStyle,
-} from "react-native";
-import { RFPercentage } from "react-native-responsive-fontsize";
+} from 'react-native';
+import { RFPercentage } from 'react-native-responsive-fontsize';
 
-import { MyText } from "~/components/Ui/MyText";
-import { colors } from "~/constants/Colors";
+import { MyText } from '~/components/Ui/MyText';
+import { colors } from '~/constants/Colors';
 
 type ActionBtnProps = TouchableOpacityProps & {
   title: string;
@@ -39,17 +39,17 @@ export const ActionBtn = ({
       ) : (
         <View
           style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <MyText poppins="Medium" style={[styles.text, textStyle]}>
-            {title}{" "}
+            {title}
           </MyText>
           {right && (
             <View style={styles.right}>
-              <MyText poppins={"Medium"} style={{ color: "white" }}>
+              <MyText poppins={'Medium'} style={{ color: 'white' }}>
                 {right}
               </MyText>
             </View>
@@ -64,24 +64,24 @@ const styles = StyleSheet.create({
   text: {
     color: colors.dialPad,
     fontSize: RFPercentage(1.5),
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   btn: {
     padding: 5,
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 5,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: colors.dialPad,
   },
   right: {
-    backgroundColor: "red",
+    backgroundColor: 'red',
     borderRadius: 99,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     width: 15,
     height: 15,
   },

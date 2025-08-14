@@ -4,6 +4,7 @@ import { authTables } from '@convex-dev/auth/server';
 export const User = {
   name: v.optional(v.string()),
   image: v.optional(v.string()),
+  storageId: v.optional(v.id('_storage')),
   email: v.optional(v.string()),
   emailVerificationTime: v.optional(v.number()),
   phone: v.optional(v.string()),
@@ -294,4 +295,16 @@ export default defineSchema({
   notifications: defineTable(Notification)
     .index('by_user_id', ['userId'])
     .index('by_user_id_seen', ['userId', 'seen']),
+  deletionRequests: defineTable({
+    userId: v.string(),
+    email: v.string(),
+    reason: v.optional(v.string()),
+    feedback: v.optional(v.string()),
+    requestedAt: v.number(),
+    status: v.union(
+      v.literal('pending'),
+      v.literal('processed'),
+      v.literal('cancelled')
+    ),
+  }).index('by_user', ['userId']),
 });

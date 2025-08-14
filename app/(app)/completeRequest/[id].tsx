@@ -1,35 +1,35 @@
-import { convexQuery } from "@convex-dev/react-query";
+import { convexQuery } from '@convex-dev/react-query';
 
-import { useQuery } from "@tanstack/react-query";
-import { useMutation } from "convex/react";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect } from "react";
-import { ScrollView, TouchableOpacity, View } from "react-native";
-import { toast } from "sonner-native";
+import { useQuery } from '@tanstack/react-query';
+import { useConvex, useMutation } from 'convex/react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect } from 'react';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { toast } from 'sonner-native';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { CompleteDialog } from "~/components/Dialogs/SavedDialog";
-import { HeaderNav } from "~/components/HeaderNav";
-import { CustomInput } from "~/components/InputComponent";
-import { Container } from "~/components/Ui/Container";
-import { ErrorComponent } from "~/components/Ui/ErrorComponent";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { UserPreview } from "~/components/Ui/UserPreview";
-import VStack from "~/components/Ui/VStack";
-import { api } from "~/convex/_generated/api";
-import { Id } from "~/convex/_generated/dataModel";
-import { Button } from "~/features/common/components/Button";
-import { useCreateStaffState } from "~/features/staff/hooks/use-create-staff-state";
-import { offerSchema, OfferSchemaType } from "~/schema";
-import { sendPushNotification } from "~/utils/sendPushNotification";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { CompleteDialog } from '~/components/Dialogs/SavedDialog';
+import { HeaderNav } from '~/components/HeaderNav';
+import { CustomInput } from '~/components/InputComponent';
+import { Container } from '~/components/Ui/Container';
+import { ErrorComponent } from '~/components/Ui/ErrorComponent';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { UserPreview } from '~/components/Ui/UserPreview';
+import VStack from '~/components/Ui/VStack';
+import { api } from '~/convex/_generated/api';
+import { Id } from '~/convex/_generated/dataModel';
+import { Button } from '~/features/common/components/Button';
+import { useCreateStaffState } from '~/features/staff/hooks/use-create-staff-state';
+import { convexPushNotificationsHelper } from '~/lib/utils';
+import { offerSchema, OfferSchemaType } from '~/schema';
 
 const CompleteRequest = () => {
-  const { id } = useLocalSearchParams<{ id: Id<"workers"> }>();
-
+  const { id } = useLocalSearchParams<{ id: Id<'workers'> }>();
+  const convex = useConvex();
   const { staffData } = useCreateStaffState();
   const finalRole =
-    staffData?.type === "processor" ? staffData.type : staffData.role;
+    staffData?.type === 'processor' ? staffData.type : staffData.role;
 
   const router = useRouter();
   const { data, isPaused, isPending, isError, refetch, isRefetchError, error } =
@@ -48,10 +48,10 @@ const CompleteRequest = () => {
     reset,
   } = useForm<OfferSchemaType>({
     defaultValues: {
-      role: "",
-      responsibility: "",
-      salary: "",
-      qualities: "",
+      role: '',
+      responsibility: '',
+      salary: '',
+      qualities: '',
     },
     resolver: zodResolver(offerSchema),
   });
@@ -67,26 +67,27 @@ const CompleteRequest = () => {
         from: orgData?.ownerId!,
         to: data?.user?._id,
       });
-      await sendPushNotification({
-        title: "Offer Request",
+      await convexPushNotificationsHelper(convex, {
+        title: 'Offer Request',
         body: `${orgData?.name} sent you an offer request`,
         data: {
-          type: "notification",
+          type: 'notification',
         },
-        expoPushToken: data.user.pushToken!,
+        to: data.user._id,
       });
-      toast.success("Request sent");
+
+      toast.success('Request sent');
       reset();
-      router.replace("/pending-staffs");
+      router.replace('/pending-staffs');
     } catch (error) {
       console.log(error);
-      toast.error("Error, failed to send request");
+      toast.error('Error, failed to send request');
     }
   };
 
   useEffect(() => {
     if (finalRole) {
-      setValue("role", finalRole);
+      setValue('role', finalRole);
     }
   }, [finalRole, setValue]);
   if (isError || isRefetchError || isPaused || orgError) {
@@ -117,7 +118,7 @@ const CompleteRequest = () => {
 
         <VStack mt={30} gap={20}>
           <>
-            <TouchableOpacity onPress={() => router.push("/staff-role")}>
+            <TouchableOpacity onPress={() => router.push('/staff-role')}>
               <CustomInput
                 control={control}
                 errors={errors}
@@ -131,7 +132,7 @@ const CompleteRequest = () => {
 
           <CustomInput
             label="Responsibility"
-            name={"responsibility"}
+            name={'responsibility'}
             control={control}
             errors={errors}
             placeholder="What will this person do in your workspace?"
@@ -143,7 +144,7 @@ const CompleteRequest = () => {
 
           <CustomInput
             label="Qualities"
-            name={"qualities"}
+            name={'qualities'}
             control={control}
             errors={errors}
             placeholder="What qualities are you looking for?"
@@ -155,7 +156,7 @@ const CompleteRequest = () => {
 
           <CustomInput
             label="Salary"
-            name={"salary"}
+            name={'salary'}
             control={control}
             errors={errors}
             placeholder="Type a salary in naira"
@@ -164,9 +165,9 @@ const CompleteRequest = () => {
         </VStack>
 
         <Button
-          title={"Send Request"}
+          title={'Send Request'}
           onPress={handleSubmit(onSubmit)}
-          loadingTitle={"Sending..."}
+          loadingTitle={'Sending...'}
           loading={isSubmitting}
           style={{ marginTop: 20 }}
         />

@@ -1,4 +1,4 @@
-import { useStreamVideoClient } from '@stream-io/video-react-bindings';
+import { useCall, useStreamVideoClient } from '@stream-io/video-react-bindings';
 import { useMutation, useQuery } from 'convex/react';
 import { format } from 'date-fns';
 import * as Crypto from 'expo-crypto';
@@ -23,13 +23,13 @@ import { LoadingModal } from '~/features/common/components/loading-modal';
 import { MessageBtn } from '~/features/common/components/message-btn';
 import { useGetWaitlistIdForCustomer } from '~/hooks/useGetWorkspaceIdForCustomer';
 import { generateErrorMessage } from '~/lib/helper';
-
+import { useCalls } from '@stream-io/video-react-native-sdk';
 const today = format(new Date(), 'dd-MM-yyyy');
 
 const Work = () => {
   const { id } = useLocalSearchParams<{ id: Id<'workspaces'> }>();
   const [showMenu, setShowMenu] = useState(false);
-
+  const calls = useCalls();
   const { user } = useAuth();
   const loggedInUser = user?._id;
   const client = useStreamVideoClient();
@@ -202,20 +202,8 @@ const Work = () => {
     if (!client || !data?.workspace.workerId) return;
     setAddingToCall(true);
     try {
-      const customer = await updateWaitlistType({
-        waitlistId: currentUser,
-        nextWaitListId: nextUser,
-        workerId: data?.workspace.workerId,
-      });
       const callId = Crypto.randomUUID();
-      getData({
-        callId,
-        workerId: data?.workspace.workerId,
-        workspaceId: id,
-        customerId: customer._id,
-        customerImage: customer.image as string,
-        customerName: customer.name as string,
-      });
+
       await client.call('default', callId).getOrCreate({
         ring: true,
         video: true,
@@ -233,9 +221,24 @@ const Work = () => {
           ],
         },
       });
+
+      const customer = await updateWaitlistType({
+        waitlistId: currentUser,
+        nextWaitListId: nextUser,
+        workerId: data?.workspace.workerId,
+      });
+
+      getData({
+        callId,
+        workerId: data?.workspace.workerId,
+        workspaceId: id,
+        customerId: customer._id,
+        customerImage: customer.image as string,
+        customerName: customer.name as string,
+      });
     } catch (error) {
       const errorMessage = generateErrorMessage(error, 'Something went wrong');
-      toast.error('Something went wrong', {
+      toast.error("Something went wrong couldn't add to call", {
         description: errorMessage,
       });
     } finally {

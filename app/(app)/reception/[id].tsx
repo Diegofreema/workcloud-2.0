@@ -1,6 +1,6 @@
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Avatar } from '@rneui/themed';
-import { useMutation, useQuery } from 'convex/react';
+import { useConvex, useMutation, useQuery } from 'convex/react';
 import { format } from 'date-fns';
 import { Image } from 'expo-image';
 import {
@@ -9,7 +9,7 @@ import {
   useLocalSearchParams,
   useRouter,
 } from 'expo-router';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   FlatList,
   Pressable,
@@ -38,7 +38,7 @@ import { Id } from '~/convex/_generated/dataModel';
 import { useDarkMode } from '~/hooks/useDarkMode';
 import { useGetUserId } from '~/hooks/useGetUserId';
 import { useWaitlistId } from '~/hooks/useWaitlistId';
-import { sendPushNotification } from '~/utils/sendPushNotification';
+import { convexPushNotificationsHelper } from '~/lib/utils';
 
 export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
   return <ErrorComponent refetch={retry} text={error.message} />;
@@ -90,7 +90,6 @@ const Reception = () => {
   const day2 = data?.workDays?.split('-')[1] || '';
   const finalDay1 = day1.charAt(0).toUpperCase() + day1.slice(1);
   const finalDay2 = day2.charAt(0).toUpperCase() + day2.slice(1);
-  console.log({ worker: data?.workers });
 
   return (
     <Container>
@@ -233,6 +232,12 @@ const Representatives = ({ data }: { data: WorkerWithWorkspace[] }) => {
 
 const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
   const router = useRouter();
+  const convex = useConvex();
+  const [notifId, setNotifId] = useState<string | null>(null);
+  const notificationState = useQuery(
+    api.pushNotification.getNotificationStatus,
+    notifId ? { id: notifId } : 'skip'
+  );
   // const { user: storedUser } = useAuth();
   // const { client } = useChatContext();
   const { id: customerId } = useGetUserId();
@@ -241,26 +246,32 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
   const { workspace, user } = item;
 
   const handlePress = async () => {
-    if (!customerId || customerId === item?.user?._id) return;
+    if (!customerId || customerId === item?.user?._id || !item.user?._id)
+      return;
     if (!workspace?.active || workspace?.leisure) {
       toast.info('This workspace is currently inactive or on leisure', {
         description: 'Please try joining another workspace',
       });
       return;
     }
-
+    if (notificationState) {
+      toast.info('Notification state', {
+        description: notificationState,
+      });
+    }
     try {
       const waitlistId = await handleWaitlist({
         customerId: customerId!,
         workspaceId: workspace._id,
         joinedAt: format(Date.now(), 'dd/MM/yyyy, HH:mm:ss'),
       });
-      await sendPushNotification({
+      const notification = await convexPushNotificationsHelper(convex, {
         title: user?.name!,
         body: 'Joined your workspace',
-        expoPushToken: '',
+        to: item.user?._id,
         data: { workkspaceId: item?.workspace?._id!, type: 'workspace' },
       });
+      setNotifId(notification as string);
       if (waitlistId) {
         setId(waitlistId, false);
       }

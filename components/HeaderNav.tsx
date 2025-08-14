@@ -1,14 +1,14 @@
-import { FontAwesome } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { StyleProp, View, ViewStyle } from "react-native";
+import { FontAwesome } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { StyleProp, useColorScheme, View, ViewStyle } from 'react-native';
 
-import { MyText } from "./Ui/MyText";
-import VStack from "./Ui/VStack";
+import { MyText } from './Ui/MyText';
+import VStack from './Ui/VStack';
 
-import { CustomPressable } from "~/components/Ui/CustomPressable";
-import { colors } from "~/constants/Colors";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
+import { CustomPressable } from '~/components/Ui/CustomPressable';
+import Colors, { colors } from '~/constants/Colors';
+import { ThemedView } from './Ui/themed-view';
 
 type Props = {
   title: string;
@@ -24,7 +24,8 @@ export const HeaderNav = ({
   style,
 }: Props): JSX.Element => {
   const router = useRouter();
-  const { darkMode } = useDarkMode();
+  const colorScheme = useColorScheme();
+  const color = Colors[colorScheme ?? 'light'].text;
 
   const onGoBack = () => {
     if (router.canGoBack()) {
@@ -32,13 +33,13 @@ export const HeaderNav = ({
     }
   };
   return (
-    <View
+    <ThemedView
       style={[
         {
-          flexDirection: "row",
-          justifyContent: "space-between",
-          backgroundColor: darkMode === "dark" ? "black" : "white",
-          alignItems: "center",
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+
+          alignItems: 'center',
           paddingRight: 2,
         },
         style,
@@ -46,8 +47,8 @@ export const HeaderNav = ({
     >
       <View
         style={{
-          flexDirection: "row",
-          alignItems: "center",
+          flexDirection: 'row',
+          alignItems: 'center',
           gap: 10,
         }}
       >
@@ -58,11 +59,7 @@ export const HeaderNav = ({
             paddingRight: 5,
           }}
         >
-          <FontAwesome
-            name="angle-left"
-            color={darkMode === "dark" ? "white" : "black"}
-            size={30}
-          />
+          <FontAwesome name="angle-left" color={color} size={30} />
         </CustomPressable>
         <VStack>
           <MyText
@@ -91,6 +88,6 @@ export const HeaderNav = ({
       </View>
 
       {rightComponent}
-    </View>
+    </ThemedView>
   );
 };

@@ -1,27 +1,23 @@
-import { Text } from "@rneui/themed";
-import React from "react";
+import React from 'react';
 
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { RFPercentage } from "react-native-responsive-fontsize";
+import { RFPercentage } from 'react-native-responsive-fontsize';
+import { ThemedText } from './Ui/themed-text';
 
 type Props = {
   children: React.ReactNode;
 };
 
 export const AuthTitle = ({ children }: Props): JSX.Element => {
-  const { darkMode } = useDarkMode();
   return (
-    <Text
-      h2
+    <ThemedText
       style={{
-        fontFamily: "PoppinsBold",
-        fontSize: RFPercentage(1.5),
+        fontFamily: 'PoppinsBold',
+        fontSize: RFPercentage(2.5),
 
-        color: darkMode === "dark" ? "white" : "black",
-        textAlign: "center",
+        textAlign: 'center',
       }}
     >
       {children}
-    </Text>
+    </ThemedText>
   );
 };

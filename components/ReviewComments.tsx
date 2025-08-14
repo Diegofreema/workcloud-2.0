@@ -1,14 +1,14 @@
-import { usePaginatedQuery } from "convex/react";
-import { View } from "react-native";
+import { usePaginatedQuery } from 'convex/react';
+import { View } from 'react-native';
 
-import { LegendList } from "@legendapp/list";
-import { ReviewComment } from "~/components/ReviewComment";
-import { api } from "~/convex/_generated/api";
-import { Id } from "~/convex/_generated/dataModel";
-import { Button } from "~/features/common/components/Button";
+import { LegendList } from '@legendapp/list';
+import { ReviewComment } from '~/components/ReviewComment';
+import { api } from '~/convex/_generated/api';
+import { Id } from '~/convex/_generated/dataModel';
+import { Button } from '~/features/common/components/Button';
 
 type Props = {
-  organizationId: Id<"organizations">;
+  organizationId: Id<'organizations'>;
   scroll?: boolean;
   hide?: boolean;
 };
@@ -19,9 +19,9 @@ export const ReviewComments = ({ organizationId, scroll, hide }: Props) => {
     {
       organizationId,
     },
-    { initialNumItems: 5 },
+    { initialNumItems: 5 }
   );
-  const canLoadMore = status === "CanLoadMore";
+  const canLoadMore = status === 'CanLoadMore';
   const onLoadMore = () => {
     if (canLoadMore && !isLoading) {
       loadMore(10);
@@ -41,18 +41,17 @@ export const ReviewComments = ({ organizationId, scroll, hide }: Props) => {
         ListFooterComponent={() =>
           canLoadMore && !hide ? (
             <Button
-              title={"Load more"}
-              style={{ backgroundColor: "transparent" }}
-              textStyle={{ color: "black" }}
+              title={'Load more'}
+              style={{ backgroundColor: 'transparent' }}
+              textStyle={{ color: 'black' }}
               onPress={onLoadMore}
               disabled={isLoading}
               loading={isLoading}
-              loadingTitle={"Loading more..."}
+              loadingTitle={'Loading more...'}
             />
           ) : null
         }
         recycleItems
-        // ListEmptyComponent={() => <EmptyText text="No review yet" />}
       />
     </View>
   );

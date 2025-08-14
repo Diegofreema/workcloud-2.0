@@ -90,7 +90,7 @@ export const Review = ({
       )}
       {!isReviewPage && (
         <Button
-          title={'See all'}
+          title={hasReviews ? 'See all reviews' : 'Leave a review'}
           onPress={onSeeReview}
           style={{ marginTop: 'auto' }}
         />
