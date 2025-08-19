@@ -11,6 +11,7 @@ import { router, useLocalSearchParams, usePathname } from 'expo-router';
 import { Id } from '~/convex/_generated/dataModel';
 import { Reply } from '~/features/review/component/reply';
 import { CustomPressable } from './Ui/CustomPressable';
+import { useTheme } from '~/hooks/use-theme';
 
 type Props = {
   comment: ReviewType;
@@ -21,7 +22,8 @@ export const ReviewComment = ({ comment }: Props) => {
     orgId: Id<'organizations'>;
     owner: string;
   }>();
-
+  const { theme } = useTheme();
+  const isDarkMode = theme === 'dark';
   const isOwner = !!owner;
   const pathname = usePathname();
   const isOnSingleReviewPage = pathname.includes('reviews/review');
@@ -55,6 +57,7 @@ export const ReviewComment = ({ comment }: Props) => {
           imageSize={20}
           readonly
           style={{ alignSelf: 'flex-start' }}
+          tintColor={isDarkMode ? 'black' : 'white'}
         />
       </CustomPressable>
       <Reply isOwner={isOwner} reviewId={comment._id} />

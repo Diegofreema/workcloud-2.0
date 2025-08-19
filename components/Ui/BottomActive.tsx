@@ -1,14 +1,14 @@
-import { BottomSheet, Icon, Switch } from "@rneui/themed";
-import { useMutation } from "convex/react";
-import React from "react";
-import { StyleSheet, Text } from "react-native";
-import { toast } from "sonner-native";
+import { BottomSheet, Icon, Switch } from '@rneui/themed';
+import { useMutation } from 'convex/react';
+import React from 'react';
+import { StyleSheet, Text } from 'react-native';
+import { toast } from 'sonner-native';
 
-import { HStack } from "~/components/HStack";
-import VStack from "~/components/Ui/VStack";
-import { api } from "~/convex/_generated/api";
-import { Id } from "~/convex/_generated/dataModel";
-import { useDarkMode } from "~/hooks/useDarkMode";
+import { HStack } from '~/components/HStack';
+import VStack from '~/components/Ui/VStack';
+import { api } from '~/convex/_generated/api';
+import { Id } from '~/convex/_generated/dataModel';
+import { useTheme } from '~/hooks/use-theme';
 
 export const BottomActive = ({
   onClose,
@@ -21,32 +21,32 @@ export const BottomActive = ({
   active: boolean;
   leisure: boolean;
   isVisible: boolean;
-  id: Id<"workspaces">;
+  id: Id<'workspaces'>;
 }) => {
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
   const toggleActiveStatus = useMutation(api.workspace.toggleWorkspaceStatus);
   const toggleActive = async () => {
     try {
-      await toggleActiveStatus({ workspaceId: id, type: "active" });
-      toast.success("Active status updated", {
-        description: "Your active status has been updated",
+      await toggleActiveStatus({ workspaceId: id, type: 'active' });
+      toast.success('Active status updated', {
+        description: 'Your active status has been updated',
       });
     } catch {
-      toast.error("Failed to update active status", {
-        description: "Something went wrong",
+      toast.error('Failed to update active status', {
+        description: 'Something went wrong',
       });
     }
   };
 
   const toggleLeisure = async () => {
     try {
-      await toggleActiveStatus({ workspaceId: id, type: "leisure" });
-      toast.success("Leisure status updated", {
-        description: "Your leisure status has been updated",
+      await toggleActiveStatus({ workspaceId: id, type: 'leisure' });
+      toast.success('Leisure status updated', {
+        description: 'Your leisure status has been updated',
       });
     } catch {
-      toast.error("Failed to update leisure status", {
-        description: "Something went wrong",
+      toast.error('Failed to update leisure status', {
+        description: 'Something went wrong',
       });
     }
   };
@@ -58,14 +58,14 @@ export const BottomActive = ({
       scrollViewProps={{
         showsVerticalScrollIndicator: false,
         style: {
-          backgroundColor: darkMode === "dark" ? "black" : "white",
+          backgroundColor: darkMode === 'dark' ? 'black' : 'white',
           padding: 10,
           borderTopRightRadius: 40,
           borderTopLeftRadius: 40,
-          height: "40%",
+          height: '40%',
         },
         contentContainerStyle: {
-          height: "100%",
+          height: '100%',
         },
       }}
       isVisible={isVisible}
@@ -79,9 +79,9 @@ export const BottomActive = ({
       >
         <Text
           style={{
-            color: darkMode === "dark" ? "white" : "black",
-            textAlign: "center",
-            fontFamily: "PoppinsBold",
+            color: darkMode === 'dark' ? 'white' : 'black',
+            textAlign: 'center',
+            fontFamily: 'PoppinsBold',
             fontSize: 20,
             marginTop: 10,
           }}
@@ -92,7 +92,7 @@ export const BottomActive = ({
           name="close"
           onPress={onClose}
           color="black"
-          style={{ position: "absolute", right: 5, top: -10 }}
+          style={{ position: 'absolute', right: 5, top: -10 }}
         />
       </HStack>
 
@@ -102,7 +102,7 @@ export const BottomActive = ({
             <Text
               style={[
                 styles.header,
-                { color: darkMode === "dark" ? "white" : "black" },
+                { color: darkMode === 'dark' ? 'white' : 'black' },
               ]}
             >
               Active
@@ -110,13 +110,13 @@ export const BottomActive = ({
             <Text
               style={[
                 styles.text,
-                { color: darkMode === "dark" ? "white" : "black" },
+                { color: darkMode === 'dark' ? 'white' : 'black' },
               ]}
             >
               This shows if you are active or not active
             </Text>
           </VStack>
-          <VStack style={{ alignSelf: "flex-end" }}>
+          <VStack style={{ alignSelf: 'flex-end' }}>
             <Switch value={active} onValueChange={toggleActive} />
           </VStack>
         </HStack>
@@ -125,7 +125,7 @@ export const BottomActive = ({
             <Text
               style={[
                 styles.header,
-                { color: darkMode === "dark" ? "white" : "black" },
+                { color: darkMode === 'dark' ? 'white' : 'black' },
               ]}
             >
               Leisure
@@ -133,7 +133,7 @@ export const BottomActive = ({
             <Text
               style={[
                 styles.text,
-                { color: darkMode === "dark" ? "white" : "black" },
+                { color: darkMode === 'dark' ? 'white' : 'black' },
               ]}
             >
               This shows that you are not completely active, probably on a break
@@ -148,9 +148,9 @@ export const BottomActive = ({
 
 const styles = StyleSheet.create({
   header: {
-    color: "black",
+    color: 'black',
     fontSize: 17,
-    fontFamily: "PoppinsBold",
+    fontFamily: 'PoppinsBold',
   },
-  text: { color: "black", fontFamily: "PoppinsLight" },
+  text: { color: 'black', fontFamily: 'PoppinsLight' },
 });

@@ -1,11 +1,11 @@
-import { router } from "expo-router";
-import { X } from "lucide-react-native";
-import { FlatList, Pressable, StyleSheet, View } from "react-native";
+import { router } from 'expo-router';
+import { X } from 'lucide-react-native';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 
-import { MyText } from "./Ui/MyText";
+import { MyText } from './Ui/MyText';
 
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { useStoreSearch } from "~/hooks/useStoreSearch";
+import { useTheme } from '~/hooks/use-theme';
+import { useStoreSearch } from '~/hooks/useStoreSearch';
 
 export const RecentSearch = (): JSX.Element => {
   const recentSearchedOrgs = useStoreSearch((state) => state.orgs);
@@ -32,7 +32,7 @@ export const RecentSearch = (): JSX.Element => {
 
 const SearchItem = ({ item }: { item: { name: string; id: string } }) => {
   const removeOrg = useStoreSearch((state) => state.removeOrg);
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
   const onPress = () => {
     // @ts-ignore
     router.push(`reception/${item.id}`);
@@ -52,7 +52,7 @@ const SearchItem = ({ item }: { item: { name: string; id: string } }) => {
         style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1, padding: 5 }]}
         onPress={() => removeOrg(item.id)}
       >
-        <X size={20} color={darkMode === "dark" ? "#fff" : "#000"} />
+        <X size={20} color={darkMode === 'dark' ? '#fff' : '#000'} />
       </Pressable>
     </Pressable>
   );
@@ -60,13 +60,13 @@ const SearchItem = ({ item }: { item: { name: string; id: string } }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderWidth: 1,
-    borderColor: "#E5E5E5",
+    borderColor: '#E5E5E5',
     borderRadius: 10,
   },
 });

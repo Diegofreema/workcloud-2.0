@@ -1,20 +1,20 @@
-import { Pressable, View } from "react-native";
-import { HStack } from "~/components/HStack";
-import { UserPreview } from "~/components/Ui/UserPreview";
-import { capitaliseFirstLetter } from "~/lib/helper";
-import { EmptyText } from "~/components/EmptyText";
-import React from "react";
-import { LegendList } from "@legendapp/list";
-import { ProcessorType } from "~/features/staff/type";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useDarkMode } from "~/hooks/useDarkMode";
+import { Pressable, View } from 'react-native';
+import { HStack } from '~/components/HStack';
+import { UserPreview } from '~/components/Ui/UserPreview';
+import { capitaliseFirstLetter } from '~/lib/helper';
+import { EmptyText } from '~/components/EmptyText';
+import React from 'react';
+import { LegendList } from '@legendapp/list';
+import { ProcessorType } from '~/features/staff/type';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTheme } from '~/hooks/use-theme';
 
 type Props = {
   data: ProcessorType[];
   showMenu: (item: ProcessorType) => void;
 };
 export const StaffLists = ({ data, showMenu }: Props) => {
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
   return (
     <View style={{ flex: 1 }}>
       <LegendList
@@ -36,7 +36,7 @@ export const StaffLists = ({ data, showMenu }: Props) => {
               <MaterialCommunityIcons
                 name="dots-vertical"
                 size={24}
-                color={darkMode === "dark" ? "white" : "black"}
+                color={darkMode === 'dark' ? 'white' : 'black'}
               />
             </Pressable>
           </HStack>

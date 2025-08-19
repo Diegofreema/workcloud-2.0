@@ -16,10 +16,10 @@ import { useForm } from 'react-hook-form';
 import { api } from '~/convex/_generated/api';
 import { Doc } from '~/convex/_generated/dataModel';
 import { Button } from '~/features/common/components/Button';
-import { useDarkMode } from '~/hooks/useDarkMode';
 import { uploadProfilePicture } from '~/lib/helper';
 import { profileUpdateSchema, ProfileUpdateSchemaType } from '~/schema';
 import { Avatar } from '../Ui/Avatar';
+import { useTheme } from '~/hooks/use-theme';
 
 export const ProfileUpdateForm = ({ person }: { person: Doc<'users'> }) => {
   const updateUser = useMutation(api.users.updateUserById);
@@ -76,7 +76,7 @@ export const ProfileUpdateForm = ({ person }: { person: Doc<'users'> }) => {
     }
   };
 
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
 
   const pickImageAsync = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({

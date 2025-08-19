@@ -5,7 +5,7 @@ import { RFPercentage } from 'react-native-responsive-fontsize';
 import { CustomPressable } from '~/components/Ui/CustomPressable';
 import { ThemedText } from '~/components/Ui/themed-text';
 import { ThemedView } from '~/components/Ui/themed-view';
-import Colors, { colors } from '~/constants/Colors';
+import Colors from '~/constants/Colors';
 
 type Props = {
   isOpen: boolean;
@@ -86,8 +86,6 @@ const styles = StyleSheet.create({
     fontFamily: 'PoppinsMedium',
   },
   title: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.gray,
     width: '100%',
   },
   content: {

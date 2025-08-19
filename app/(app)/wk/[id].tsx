@@ -1,4 +1,5 @@
-import { useCall, useStreamVideoClient } from '@stream-io/video-react-bindings';
+import { useStreamVideoClient } from '@stream-io/video-react-bindings';
+import { StreamVideoEvent } from '@stream-io/video-react-native-sdk';
 import { useMutation, useQuery } from 'convex/react';
 import { format } from 'date-fns';
 import * as Crypto from 'expo-crypto';
@@ -23,13 +24,12 @@ import { LoadingModal } from '~/features/common/components/loading-modal';
 import { MessageBtn } from '~/features/common/components/message-btn';
 import { useGetWaitlistIdForCustomer } from '~/hooks/useGetWorkspaceIdForCustomer';
 import { generateErrorMessage } from '~/lib/helper';
-import { useCalls } from '@stream-io/video-react-native-sdk';
 const today = format(new Date(), 'dd-MM-yyyy');
 
 const Work = () => {
   const { id } = useLocalSearchParams<{ id: Id<'workspaces'> }>();
   const [showMenu, setShowMenu] = useState(false);
-  const calls = useCalls();
+
   const { user } = useAuth();
   const loggedInUser = user?._id;
   const client = useStreamVideoClient();
@@ -194,6 +194,9 @@ const Work = () => {
     setIsVisible(false);
   };
 
+  const sortedWaitlist = waitlist.sort(
+    (a, b) => a?._creationTime - b?._creationTime
+  );
   const onAddToCall = async (
     currentUser: Id<'waitlists'>,
     nextUser: Id<'waitlists'>,
@@ -222,19 +225,28 @@ const Work = () => {
         },
       });
 
-      const customer = await updateWaitlistType({
-        waitlistId: currentUser,
-        nextWaitListId: nextUser,
-        workerId: data?.workspace.workerId,
-      });
+      client.on('call.accepted', async (event: StreamVideoEvent) => {
+        console.log({ event: event });
 
-      getData({
-        callId,
-        workerId: data?.workspace.workerId,
-        workspaceId: id,
-        customerId: customer._id,
-        customerImage: customer.image as string,
-        customerName: customer.name as string,
+        if (
+          event.type === 'call.accepted' &&
+          event.call.id === callId &&
+          data?.workspace.workerId
+        ) {
+          const customer = await updateWaitlistType({
+            waitlistId: currentUser,
+            nextWaitListId: nextUser,
+            workerId: data?.workspace.workerId,
+          });
+          getData({
+            callId,
+            workerId: data?.workspace.workerId,
+            workspaceId: id,
+            customerId: customer._id,
+            customerImage: customer.image as string,
+            customerName: customer.name as string,
+          });
+        }
       });
     } catch (error) {
       const errorMessage = generateErrorMessage(error, 'Something went wrong');
@@ -302,7 +314,7 @@ const Work = () => {
           )}
 
           <Waitlists
-            waitlists={waitlist}
+            waitlists={sortedWaitlist}
             isWorker={isWorker}
             onLongPress={onLongPress}
             onAddToCall={onAddToCall}

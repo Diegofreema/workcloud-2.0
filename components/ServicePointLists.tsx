@@ -1,23 +1,23 @@
-import { Divider } from "@rneui/themed";
-import { FlatList } from "react-native";
+import { Divider } from '@rneui/themed';
+import { FlatList } from 'react-native';
 
-import { EmptyText } from "./EmptyText";
-import { MyText } from "./Ui/MyText";
-import VStack from "./Ui/VStack";
+import { EmptyText } from './EmptyText';
+import { MyText } from './Ui/MyText';
+import VStack from './Ui/VStack';
 
-import { colors } from "~/constants/Colors";
-import { ServicePointType } from "~/constants/types";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { CustomPressable } from "~/components/Ui/CustomPressable";
-import * as Linking from "expo-linking";
-import { toast } from "sonner-native";
+import { colors } from '~/constants/Colors';
+import { ServicePointType } from '~/constants/types';
+import { useTheme } from '~/hooks/use-theme';
+import { CustomPressable } from '~/components/Ui/CustomPressable';
+import * as Linking from 'expo-linking';
+import { toast } from 'sonner-native';
 
 type Props = {
   data: ServicePointType[];
 };
 
 export const ServicePointLists = ({ data }: Props): JSX.Element => {
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
   return (
     <FlatList
       scrollEnabled={false}
@@ -34,7 +34,7 @@ export const ServicePointLists = ({ data }: Props): JSX.Element => {
         <Divider
           style={{
             marginVertical: 10,
-            backgroundColor: darkMode === "dark" ? "transparent" : "#ccc",
+            backgroundColor: darkMode === 'dark' ? 'transparent' : '#ccc',
           }}
         />
       )}
@@ -44,12 +44,12 @@ export const ServicePointLists = ({ data }: Props): JSX.Element => {
 };
 
 const ServicePointItem = ({ item }: { item: ServicePointType }) => {
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
   const onPress = async () => {
     if (item.externalLink && (await Linking.canOpenURL(item.externalLink))) {
       await Linking.openURL(item.externalLink);
     } else {
-      toast.success("Could not open URL");
+      toast.success('Could not open URL');
     }
   };
   return (
@@ -61,7 +61,7 @@ const ServicePointItem = ({ item }: { item: ServicePointType }) => {
         poppins="Medium"
         fontSize={12}
         style={{
-          color: darkMode === "dark" ? colors.white : colors.grayText,
+          color: darkMode === 'dark' ? colors.white : colors.grayText,
           marginTop: 5,
         }}
       >

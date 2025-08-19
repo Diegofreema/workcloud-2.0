@@ -1,22 +1,22 @@
-import { convexQuery } from "@convex-dev/react-query";
-import { Divider } from "@rneui/themed";
-import { useQuery } from "@tanstack/react-query";
-import React from "react";
-import { FlatList } from "react-native";
+import { convexQuery } from '@convex-dev/react-query';
+import { Divider } from '@rneui/themed';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
+import { FlatList } from 'react-native';
 
-import { EmptyText } from "~/components/EmptyText";
-import { HeaderNav } from "~/components/HeaderNav";
-import { Container } from "~/components/Ui/Container";
-import { ErrorComponent } from "~/components/Ui/ErrorComponent";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { WorkPreview } from "~/components/Ui/UserPreview";
-import { api } from "~/convex/_generated/api";
-import { useDarkMode } from "~/hooks/useDarkMode";
+import { EmptyText } from '~/components/EmptyText';
+import { HeaderNav } from '~/components/HeaderNav';
+import { Container } from '~/components/Ui/Container';
+import { ErrorComponent } from '~/components/Ui/ErrorComponent';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { WorkPreview } from '~/components/Ui/UserPreview';
+import { api } from '~/convex/_generated/api';
+import { useTheme } from '~/hooks/use-theme';
 
 const RequestScreen = () => {
   // const info = useInfos((state) => state.infoIds);
 
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
   const {
     data,
     isPaused,
@@ -50,8 +50,8 @@ const RequestScreen = () => {
             <Divider
               style={{
                 height: 2,
-                backgroundColor: darkMode === "dark" ? "transparent" : "#ccc",
-                width: "100%",
+                backgroundColor: darkMode === 'dark' ? 'transparent' : '#ccc',
+                width: '100%',
               }}
             />
           )}

@@ -1,17 +1,17 @@
-import { Image, StyleSheet, View } from "react-native";
-import Modal from "react-native-modal";
+import { Image, StyleSheet, View } from 'react-native';
+import Modal from 'react-native-modal';
 
-import { useSaved } from "../../hooks/useSaved";
-import { MyText } from "../Ui/MyText";
+import { useSaved } from '../../hooks/useSaved';
+import { MyText } from '../Ui/MyText';
 
-import { useDarkMode } from "~/hooks/useDarkMode";
+import { useTheme } from '~/hooks/use-theme';
 type Props = {
   text: string;
 };
 
 export const CompleteDialog = ({ text }: Props): JSX.Element => {
   const { isOpen, onClose } = useSaved();
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
   return (
     <View>
       <Modal
@@ -26,8 +26,8 @@ export const CompleteDialog = ({ text }: Props): JSX.Element => {
           style={[
             styles.centeredView,
             {
-              backgroundColor: darkMode === "dark" ? "black" : "white",
-              shadowColor: darkMode === "dark" ? "#fff" : "#000",
+              backgroundColor: darkMode === 'dark' ? 'black' : 'white',
+              shadowColor: darkMode === 'dark' ? '#fff' : '#000',
             },
           ]}
         >
@@ -36,8 +36,8 @@ export const CompleteDialog = ({ text }: Props): JSX.Element => {
           </MyText>
 
           <Image
-            source={require("../../assets/images/good.png")}
-            style={{ marginTop: "auto" }}
+            source={require('../../assets/images/good.png')}
+            style={{ marginTop: 'auto' }}
           />
         </View>
       </Modal>
@@ -47,10 +47,10 @@ export const CompleteDialog = ({ text }: Props): JSX.Element => {
 
 const styles = StyleSheet.create({
   centeredView: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     paddingVertical: 20,
-    alignItems: "center",
-    shadowColor: "#000",
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,

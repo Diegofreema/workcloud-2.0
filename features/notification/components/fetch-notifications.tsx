@@ -1,20 +1,21 @@
-import { LegendList } from "@legendapp/list";
-import { useMutation, usePaginatedQuery } from "convex/react";
-import { useEffect } from "react";
-import { Text, View } from "react-native";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { api } from "~/convex/_generated/api";
-import { Notification } from "./notification";
+import { LegendList } from '@legendapp/list';
+import { useMutation, usePaginatedQuery } from 'convex/react';
+import { useEffect } from 'react';
+import { View } from 'react-native';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { MyText } from '~/components/Ui/MyText';
+import { api } from '~/convex/_generated/api';
+import { Notification } from './notification';
 
 export const FetchNotifications = () => {
   const markedNotificationsAsSeen = useMutation(
-    api.notifications.markNotificationAsRead,
+    api.notifications.markNotificationAsRead
   );
 
   const notifications = usePaginatedQuery(
     api.notifications.getNotifications,
     {},
-    { initialNumItems: 100 },
+    { initialNumItems: 100 }
   );
   useEffect(() => {
     const markAsSeen = async () => {
@@ -27,7 +28,7 @@ export const FetchNotifications = () => {
   }
   const { results, isLoading, loadMore, status } = notifications;
   const onLoadMore = () => {
-    if (status === "CanLoadMore" && !isLoading) {
+    if (status === 'CanLoadMore' && !isLoading) {
       loadMore(20);
     }
   };
@@ -40,7 +41,13 @@ export const FetchNotifications = () => {
         renderItem={({ item }) => <Notification notification={item} />}
         onEndReached={onLoadMore}
         onEndReachedThreshold={0.5}
-        ListFooterComponent={isLoading ? <Text>Loading...</Text> : null}
+        ListFooterComponent={
+          isLoading ? (
+            <MyText poppins="Light" fontSize={12}>
+              Loading...
+            </MyText>
+          ) : null
+        }
         recycleItems
         contentContainerStyle={{ gap: 20 }}
       />

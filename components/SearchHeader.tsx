@@ -1,15 +1,10 @@
-import { router } from "expo-router";
-import { ArrowLeft, SearchIcon, X } from "lucide-react-native";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { router } from 'expo-router';
+import { ArrowLeft, SearchIcon, X } from 'lucide-react-native';
+import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
-import { colors } from "~/constants/Colors";
-import { useDarkMode } from "~/hooks/useDarkMode";
+import { colors } from '~/constants/Colors';
+import { useTheme } from '~/hooks/use-theme';
+import { ThemedText } from './Ui/themed-text';
 
 type Props = {
   placeholder: string;
@@ -29,8 +24,8 @@ export const SearchHeader = ({
   onClear,
   back = false,
 }: Props) => {
-  const { darkMode } = useDarkMode();
-  const color = darkMode === "dark" ? colors.white : colors.black;
+  const { theme: darkMode } = useTheme();
+  const color = darkMode === 'dark' ? colors.white : colors.black;
   return search ? (
     <View style={[styles.textInputContainer, { height: 50 }]}>
       {back && !query && (
@@ -55,7 +50,7 @@ export const SearchHeader = ({
     </View>
   ) : (
     <TouchableOpacity style={styles.textInputContainer} onPress={onPress}>
-      <Text style={styles.textInput}>{placeholder}</Text>
+      <ThemedText style={styles.textInput}>{placeholder}</ThemedText>
       <SearchIcon size={30} color={color} strokeWidth={1.5} />
     </TouchableOpacity>
   );
@@ -64,14 +59,14 @@ export const SearchHeader = ({
 const styles = StyleSheet.create({
   textInput: {
     flex: 1,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
   textInputContainer: {
     borderWidth: 1,
     borderColor: colors.gray,
     borderRadius: 5,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 10,
   },
 });

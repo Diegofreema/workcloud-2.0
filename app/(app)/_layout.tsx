@@ -1,5 +1,4 @@
 import { ErrorBoundaryProps, Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import {
@@ -12,6 +11,7 @@ import {
 import { ErrorComponent } from '~/components/Ui/ErrorComponent';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import { useConvex, useMutation } from 'convex/react';
 import { useEffect } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
@@ -20,8 +20,6 @@ import { useAuth } from '~/context/auth';
 import CallProvider from '~/context/call-provider';
 import { useNotification } from '~/context/notification-context';
 import { api } from '~/convex/_generated/api';
-import { useTheme } from '~/hooks/use-theme';
-import axios from 'axios';
 
 const apiKey = 'cnvc46pm8uq9';
 
@@ -32,9 +30,7 @@ export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
   return <ErrorComponent refetch={retry} text={error.message} />;
 }
 export default function AppLayout() {
-  const { theme: darkMode } = useTheme();
   const { user } = useAuth();
-  console.log('🚀 ~ AppLayout ~ user:', { user });
 
   const { expoPushToken } = useNotification();
   const convex = useConvex();
@@ -149,11 +145,6 @@ export default function AppLayout() {
     <StreamVideo client={client} style={theme}>
       <CallProvider>
         <GestureHandlerRootView style={{ flex: 1 }}>
-          <StatusBar
-            style={darkMode === 'dark' ? 'light' : 'dark'}
-            backgroundColor={darkMode === 'dark' ? 'black' : 'white'}
-          />
-
           <Stack
             screenOptions={{ headerShown: false }}
             initialRouteName="(tabs)"

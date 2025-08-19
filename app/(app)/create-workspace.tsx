@@ -29,7 +29,7 @@ import { MyText } from '~/components/Ui/MyText';
 import { days } from '~/constants';
 import { colors } from '~/constants/Colors';
 import { api } from '~/convex/_generated/api';
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { useTheme } from '~/hooks/use-theme';
 import { useGetCat } from '~/hooks/useGetCat';
 import { generateErrorMessage, uploadProfilePicture } from '~/lib/helper';
 import {
@@ -51,7 +51,7 @@ const CreateWorkSpace = () => {
 
   const [show, setShow] = useState(false);
   const [show2, setShow2] = useState(false);
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
   const router = useRouter();
   const {
     handleSubmit,

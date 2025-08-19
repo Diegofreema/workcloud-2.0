@@ -19,7 +19,7 @@ import { UserPreview } from '~/components/Ui/UserPreview';
 import VStack from '~/components/Ui/VStack';
 import { colors } from '~/constants/Colors';
 import { Id } from '~/convex/_generated/dataModel';
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { useTheme } from '~/hooks/use-theme';
 import { useGetUserId } from '~/hooks/useGetUserId';
 import { useWorkerActions } from '~/features/staff/hooks/use-worker-actions';
 import { useAuth } from '~/context/auth';
@@ -29,7 +29,7 @@ const Profile = () => {
 
   const { user } = useAuth();
   const { id } = useGetUserId();
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
 
   const {
     isPending,

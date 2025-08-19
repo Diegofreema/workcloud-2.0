@@ -31,6 +31,9 @@ export const CustomCallControls = (props: CallControlProps) => {
   const {
     data: { workspaceId },
   } = useCallStore();
+
+  console.log({ workspaceId });
+
   const setOpen = useStar((state) => state.setIsOpen);
   return (
     <View style={styles.container}>

@@ -215,7 +215,6 @@ const Edit = () => {
   if (isPending) {
     return <LoadingComponent />;
   }
-  console.log({ image, i: data?.avatar });
 
   return (
     <Container>

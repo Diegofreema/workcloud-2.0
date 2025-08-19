@@ -12,6 +12,7 @@ import { RFPercentage } from 'react-native-responsive-fontsize';
 
 import { MyText } from '~/components/Ui/MyText';
 import { colors } from '~/constants/Colors';
+import { Badge } from '../badge/Badge';
 
 type ActionBtnProps = TouchableOpacityProps & {
   title: string;
@@ -42,17 +43,21 @@ export const ActionBtn = ({
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
+            gap: 4,
           }}
         >
           <MyText poppins="Medium" style={[styles.text, textStyle]}>
             {title}
           </MyText>
-          {right && (
-            <View style={styles.right}>
-              <MyText poppins={'Medium'} style={{ color: 'white' }}>
-                {right}
-              </MyText>
-            </View>
+          {right !== undefined && (
+            <Badge
+              label={right?.toString()}
+              radius="full"
+              size="sm"
+              variant="error"
+              textStyle={{ color: 'white' }}
+              style={styles.right}
+            />
           )}
         </View>
       )}
@@ -79,10 +84,6 @@ const styles = StyleSheet.create({
   },
   right: {
     backgroundColor: 'red',
-    borderRadius: 99,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 15,
-    height: 15,
+    width: 20,
   },
 });

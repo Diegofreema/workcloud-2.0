@@ -7,7 +7,7 @@ import { HStack } from '~/components/HStack';
 import { Profile } from '~/components/Ui/WorkspaceProfile';
 import { WaitList as WaitlistType } from '~/constants/types';
 import { Id } from '~/convex/_generated/dataModel';
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { useTheme } from '~/hooks/use-theme';
 import { MyText } from './MyText';
 import { RFPercentage } from 'react-native-responsive-fontsize';
 
@@ -29,7 +29,7 @@ export const Waitlists = ({
   onAddToCall,
   isLoading,
 }: WaitlistsProps) => {
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
   const getIdsToUpdate = (id: Id<'waitlists'>, customerId: Id<'users'>) => {
     const userToAttendTo = waitlists.findIndex((user) => user._id === id);
     if (userToAttendTo === -1) return;

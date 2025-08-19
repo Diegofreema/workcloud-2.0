@@ -1,36 +1,36 @@
-import { StyleSheet, TextInput, View } from "react-native";
-import { Container } from "~/components/Ui/Container";
-import { HStack } from "~/components/HStack";
-import VStack from "~/components/Ui/VStack";
-import { MyText } from "~/components/Ui/MyText";
-import { RFPercentage } from "react-native-responsive-fontsize";
-import ReviewStar from "~/features/common/components/ReviewStars";
-import React, { useState } from "react";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { useMutation } from "convex/react";
-import { api } from "~/convex/_generated/api";
-import { toast } from "sonner-native";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { router, useLocalSearchParams } from "expo-router";
-import { colors } from "~/constants/Colors";
-import { Id } from "~/convex/_generated/dataModel";
-import { Button } from "~/features/common/components/Button";
-import { CustomPressable } from "~/components/Ui/CustomPressable";
-import { X } from "lucide-react-native";
+import { StyleSheet, TextInput, View } from 'react-native';
+import { Container } from '~/components/Ui/Container';
+import { HStack } from '~/components/HStack';
+import VStack from '~/components/Ui/VStack';
+import { MyText } from '~/components/Ui/MyText';
+import { RFPercentage } from 'react-native-responsive-fontsize';
+import ReviewStar from '~/features/common/components/ReviewStars';
+import React, { useState } from 'react';
+import { useTheme } from '~/hooks/use-theme';
+import { useMutation } from 'convex/react';
+import { api } from '~/convex/_generated/api';
+import { toast } from 'sonner-native';
+import { useGetUserId } from '~/hooks/useGetUserId';
+import { router, useLocalSearchParams } from 'expo-router';
+import { colors } from '~/constants/Colors';
+import { Id } from '~/convex/_generated/dataModel';
+import { Button } from '~/features/common/components/Button';
+import { CustomPressable } from '~/components/Ui/CustomPressable';
+import { X } from 'lucide-react-native';
 
 const UploadReview = () => {
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
   const { id: userId } = useGetUserId();
-  const { id } = useLocalSearchParams<{ id: Id<"organizations"> }>();
-  const [value, setValue] = useState("");
+  const { id } = useLocalSearchParams<{ id: Id<'organizations'> }>();
+  const [value, setValue] = useState('');
   const [rating, setRating] = useState(3);
   const [sending, setSending] = useState(false);
   const addReview = useMutation(api.reviews.addReview);
-  const iconColor = darkMode === "dark" ? "white" : "black";
+  const iconColor = darkMode === 'dark' ? 'white' : 'black';
   const valueLength = value.length;
 
   const handleClose = () => {
-    setValue("");
+    setValue('');
     router.dismiss();
   };
   const onSubmit = async () => {
@@ -43,14 +43,14 @@ const UploadReview = () => {
         organizationId: id,
       });
       handleClose();
-      toast.success("Success", {
-        description: "Review submitted",
+      toast.success('Success', {
+        description: 'Review submitted',
       });
     } catch (error) {
       console.log(error);
       handleClose();
-      toast.error("Failed to add review", {
-        description: "Please try again later",
+      toast.error('Failed to add review', {
+        description: 'Please try again later',
       });
     } finally {
       setSending(false);
@@ -63,18 +63,18 @@ const UploadReview = () => {
       </CustomPressable>
       <View style={{ marginHorizontal: 15, marginTop: 100 }}>
         <HStack justifyContent="space-between">
-          <VStack width={"100%"}>
+          <VStack width={'100%'}>
             <MyText
               poppins="Bold"
               fontSize={20}
-              style={{ textAlign: "center" }}
+              style={{ textAlign: 'center' }}
             >
               Send a review
             </MyText>
             <MyText
               poppins="Medium"
               fontSize={RFPercentage(1.3)}
-              style={{ textAlign: "center" }}
+              style={{ textAlign: 'center' }}
             >
               Share a public review about this Organization
             </MyText>
@@ -106,8 +106,8 @@ const UploadReview = () => {
           style={{ marginTop: 30 }}
           disabled={sending}
           loading={sending}
-          loadingTitle={"Submitting..."}
-          title={"Submit Review"}
+          loadingTitle={'Submitting...'}
+          title={'Submit Review'}
         />
       </View>
     </Container>
@@ -118,7 +118,7 @@ export default UploadReview;
 const maxLength = 150;
 const styles = StyleSheet.create({
   input: {
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: colors.grayText,
     borderRadius: 5,
@@ -126,8 +126,8 @@ const styles = StyleSheet.create({
     height: 100,
   },
   abs: {
-    backgroundColor: "transparent",
-    position: "absolute",
+    backgroundColor: 'transparent',
+    position: 'absolute',
     top: 10,
     right: 5,
   },

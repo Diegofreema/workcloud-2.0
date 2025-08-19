@@ -1,29 +1,29 @@
-import { EvilIcons } from "@expo/vector-icons";
-import { useMutation, useQuery } from "convex/react";
-import { Image } from "expo-image";
-import * as Linking from "expo-linking";
-import { useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import { EvilIcons } from '@expo/vector-icons';
+import { useMutation, useQuery } from 'convex/react';
+import { Image } from 'expo-image';
+import * as Linking from 'expo-linking';
+import { useLocalSearchParams } from 'expo-router';
+import React, { useState } from 'react';
 import {
   Pressable,
   ScrollView,
   Text,
   useWindowDimensions,
   View,
-} from "react-native";
-import { toast } from "sonner-native";
+} from 'react-native';
+import { toast } from 'sonner-native';
 
-import { HeaderNav } from "~/components/HeaderNav";
-import { ServicePointLists } from "~/components/ServicePointLists";
-import { Container } from "~/components/Ui/Container";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { MyButton } from "~/components/Ui/MyButton";
-import { MyText } from "~/components/Ui/MyText";
-import { colors } from "~/constants/Colors";
-import { api } from "~/convex/_generated/api";
-import { Id } from "~/convex/_generated/dataModel";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { useGetUserId } from "~/hooks/useGetUserId";
+import { HeaderNav } from '~/components/HeaderNav';
+import { ServicePointLists } from '~/components/ServicePointLists';
+import { Container } from '~/components/Ui/Container';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { MyButton } from '~/components/Ui/MyButton';
+import { MyText } from '~/components/Ui/MyText';
+import { colors } from '~/constants/Colors';
+import { api } from '~/convex/_generated/api';
+import { Id } from '~/convex/_generated/dataModel';
+import { useTheme } from '~/hooks/use-theme';
+import { useGetUserId } from '~/hooks/useGetUserId';
 
 type SubProps = {
   name: any;
@@ -32,23 +32,23 @@ type SubProps = {
 };
 
 export const OrganizationItems = ({ name, text, website }: SubProps) => {
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
 
   if (website) {
     return (
       <Pressable
-        onPress={() => Linking.openURL("https://" + text)}
-        style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
+        onPress={() => Linking.openURL('https://' + text)}
+        style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}
       >
         <EvilIcons
-          color={darkMode === "dark" ? colors.white : colors.textGray}
+          color={darkMode === 'dark' ? colors.white : colors.textGray}
           name={name}
           size={24}
         />
         <MyText
           poppins="Bold"
           style={{
-            color: darkMode === "dark" ? colors?.lightBlue : colors.buttonBlue,
+            color: darkMode === 'dark' ? colors?.lightBlue : colors.buttonBlue,
 
             fontSize: 10,
           }}
@@ -59,16 +59,16 @@ export const OrganizationItems = ({ name, text, website }: SubProps) => {
     );
   }
   return (
-    <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
       <EvilIcons
-        color={darkMode === "dark" ? colors.white : colors.textGray}
+        color={darkMode === 'dark' ? colors.white : colors.textGray}
         name={name}
         size={24}
       />
       <Text
         style={{
-          color: darkMode === "dark" ? colors.white : colors.textGray,
-          fontFamily: "PoppinsBold",
+          color: darkMode === 'dark' ? colors.white : colors.textGray,
+          fontFamily: 'PoppinsBold',
           fontSize: 10,
         }}
       >
@@ -78,11 +78,11 @@ export const OrganizationItems = ({ name, text, website }: SubProps) => {
   );
 };
 const Overview = () => {
-  const { id } = useLocalSearchParams<{ id: Id<"organizations"> }>();
+  const { id } = useLocalSearchParams<{ id: Id<'organizations'> }>();
   const [following, setFollowing] = useState(false);
 
   const { id: loggedInUser } = useGetUserId();
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
 
   const { width } = useWindowDimensions();
   const data = useQuery(api.organisation.getOrganisationWithServicePoints, {
@@ -101,8 +101,8 @@ const Overview = () => {
       await handleFollow({ organizationId: id, userId: loggedInUser! });
     } catch (error) {
       console.log(error);
-      toast.error(`Failed to ${isFollowing ? "Leave" : "Join"}`, {
-        description: "Please try again later",
+      toast.error(`Failed to ${isFollowing ? 'Leave' : 'Join'}`, {
+        description: 'Please try again later',
       });
     } finally {
       setFollowing(false);
@@ -111,10 +111,10 @@ const Overview = () => {
 
   const { organization, servicePoints } = data;
 
-  const startDay = organization?.workDays?.split("-")[0];
-  const endDay = organization?.workDays?.split("-")[1];
-  const unfollowingText = following ? "Leaving..." : "Leave";
-  const followingText = following ? "Joining..." : "Join";
+  const startDay = organization?.workDays?.split('-')[0];
+  const endDay = organization?.workDays?.split('-')[1];
+  const unfollowingText = following ? 'Leaving...' : 'Leave';
+  const followingText = following ? 'Joining...' : 'Join';
   return (
     <Container>
       <HeaderNav
@@ -125,25 +125,25 @@ const Overview = () => {
       <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}
         >
-          <View style={{ alignItems: "center", flexDirection: "row", gap: 10 }}>
+          <View style={{ alignItems: 'center', flexDirection: 'row', gap: 10 }}>
             <Image
               style={{ width: 70, height: 70, borderRadius: 50 }}
               contentFit="cover"
               source={{ uri: organization?.avatar! }}
-              placeholder={require("../../../assets/images.png")}
+              placeholder={require('../../../assets/images.png')}
             />
             <View>
               <Text
                 style={{
-                  fontFamily: "PoppinsBold",
+                  fontFamily: 'PoppinsBold',
                   maxWidth: width * 0.7,
                   fontSize: 12,
-                  color: darkMode === "dark" ? colors.white : colors.black,
+                  color: darkMode === 'dark' ? colors.white : colors.black,
                 }}
               >
                 {organization?.description}
@@ -167,45 +167,53 @@ const Overview = () => {
           </MyText>
           <View
             style={{
-              flexDirection: "row",
-              alignItems: "center",
+              flexDirection: 'row',
+              alignItems: 'center',
               gap: 20,
               marginTop: 10,
             }}
           >
             <Text
               style={{
-                fontFamily: "PoppinsBold",
+                fontFamily: 'PoppinsBold',
                 fontSize: 10,
 
-                color: darkMode === "dark" ? colors.white : colors.black,
-                textTransform: "uppercase",
+                color: darkMode === 'dark' ? colors.white : colors.black,
+                textTransform: 'uppercase',
               }}
             >
               {startDay} - {endDay}
             </Text>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <View
                 style={{
                   padding: 5,
                   borderRadius: 5,
-                  backgroundColor: "#CCF2D9",
+                  backgroundColor: '#CCF2D9',
                 }}
               >
                 <Text
                   style={{
-                    color: "#00C041",
-                    fontFamily: "PoppinsBold",
+                    color: '#00C041',
+                    fontFamily: 'PoppinsBold',
                     fontSize: 10,
                   }}
                 >
                   {organization?.start}
                 </Text>
               </View>
-              <Text style={{ marginBottom: 4 }}> — </Text>
+              <Text
+                style={{
+                  marginBottom: 4,
+                  color: darkMode === 'dark' ? colors.white : colors.black,
+                }}
+              >
+                {' '}
+                —{' '}
+              </Text>
               <View
                 style={{
-                  backgroundColor: "#FFD9D9",
+                  backgroundColor: '#FFD9D9',
 
                   padding: 5,
                   borderRadius: 5,
@@ -213,8 +221,8 @@ const Overview = () => {
               >
                 <Text
                   style={{
-                    color: "#D61B0C",
-                    fontFamily: "PoppinsBold",
+                    color: '#D61B0C',
+                    fontFamily: 'PoppinsBold',
                     fontSize: 10,
                   }}
                 >
@@ -235,20 +243,20 @@ const Overview = () => {
           <OrganizationItems name="link" text={organization?.website} website />
           <Text
             style={{
-              fontFamily: "PoppinsBold",
+              fontFamily: 'PoppinsBold',
               fontSize: 12,
-              color: darkMode === "dark" ? colors.white : colors.black,
+              color: darkMode === 'dark' ? colors.white : colors.black,
             }}
           >
             Members {organization?.followers?.length || 0}
           </Text>
         </View>
-        <View style={{ marginTop: 10, marginBottom: 20, width: "100%" }}>
+        <View style={{ marginTop: 10, marginBottom: 20, width: '100%' }}>
           <MyButton
             onPress={onHandleFollow}
             disabled={following}
             contentStyle={{ height: 50 }}
-            buttonStyle={{ width: "100%" }}
+            buttonStyle={{ width: '100%' }}
           >
             {isFollowing ? unfollowingText : followingText}
           </MyButton>

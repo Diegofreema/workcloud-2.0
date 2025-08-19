@@ -1,14 +1,15 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Platform,
   StyleSheet,
-  Text,
   View,
   ViewStyle,
-} from "react-native";
-import { WebView } from "react-native-webview";
-import type { WebViewErrorEvent } from "react-native-webview/lib/WebViewTypes";
+} from 'react-native';
+import { WebView } from 'react-native-webview';
+import type { WebViewErrorEvent } from 'react-native-webview/lib/WebViewTypes';
+import { ThemedText } from '~/components/Ui/themed-text';
+import { ThemedView } from '~/components/Ui/themed-view';
 
 interface PDFViewerProps {
   pdfUrl: string;
@@ -36,10 +37,10 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
   onLoadEnd,
   onError,
   showLoader = true,
-  loaderColor = "#007AFF",
-  errorMessage = "Failed to load PDF",
-  retryText = "Tap to retry",
-  backgroundColor = "#f5f5f5",
+  loaderColor = '#007AFF',
+  errorMessage = 'Failed to load PDF',
+  retryText = 'Tap to retry',
+  backgroundColor = '#f5f5f5',
 }) => {
   const [state, setState] = useState<PDFViewerState>({
     loading: true,
@@ -60,7 +61,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
   // Generate HTML content with embedded PDF.js viewer
   const htmlContent = useMemo(() => {
     if (!isValidUrl(pdfUrl)) {
-      return "<html><body><h3>Invalid PDF URL</h3></body></html>";
+      return '<html><body><h3>Invalid PDF URL</h3></body></html>';
     }
 
     return `
@@ -291,7 +292,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
   const handleError = useCallback(
     (event: WebViewErrorEvent) => {
       const errorMsg =
-        event.nativeEvent.description || "Unknown error occurred";
+        event.nativeEvent.description || 'Unknown error occurred';
       setState((prev) => ({
         ...prev,
         loading: false,
@@ -300,7 +301,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
       }));
       onError?.(errorMsg);
     },
-    [onError],
+    [onError]
   );
 
   // Handle messages from WebView
@@ -310,22 +311,22 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         const data = JSON.parse(event.nativeEvent.data);
 
         switch (data.type) {
-          case "PDF_LOADED":
+          case 'PDF_LOADED':
             setState((prev) => ({ ...prev, loading: false, error: null }));
             onLoadEnd?.();
             break;
 
-          case "PDF_ERROR":
+          case 'PDF_ERROR':
             setState((prev) => ({
               ...prev,
               loading: false,
-              error: data.error || "Failed to load PDF",
+              error: data.error || 'Failed to load PDF',
               retryCount: prev.retryCount + 1,
             }));
-            onError?.(data.error || "Failed to load PDF");
+            onError?.(data.error || 'Failed to load PDF');
             break;
 
-          case "PDF_RETRY":
+          case 'PDF_RETRY':
             setState((prev) => ({
               ...prev,
               loading: true,
@@ -336,10 +337,10 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
             break;
         }
       } catch (error) {
-        console.error("Error parsing WebView message:", error);
+        console.error('Error parsing WebView message:', error);
       }
     },
-    [onLoadStart, onLoadEnd, onError],
+    [onLoadStart, onLoadEnd, onError]
   );
 
   // Error view component
@@ -348,10 +349,10 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
   const renderLoader = () =>
     showLoader &&
     state.loading && (
-      <View style={styles.loaderContainer}>
+      <ThemedView style={styles.loaderContainer}>
         <ActivityIndicator size="large" color={loaderColor} />
-        <Text style={styles.loadingText}>Loading PDF...</Text>
-      </View>
+        <ThemedText style={styles.loadingText}>Loading PDF...</ThemedText>
+      </ThemedView>
     );
 
   return (
@@ -367,24 +368,24 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         javaScriptEnabled={true}
         domStorageEnabled={true}
         startInLoadingState={false}
-        scalesPageToFit={Platform.OS === "android"}
+        scalesPageToFit={Platform.OS === 'android'}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         allowsInlineMediaPlayback={true}
         mediaPlaybackRequiresUserAction={false}
         // Web-specific props
-        {...(Platform.OS === "web" && {
+        {...(Platform.OS === 'web' && {
           containerStyle: styles.webContainer,
         })}
         // iOS-specific props
-        {...(Platform.OS === "ios" && {
+        {...(Platform.OS === 'ios' && {
           allowsBackForwardNavigationGestures: false,
           bounces: false,
           scrollEnabled: true,
         })}
         // Android-specific props
-        {...(Platform.OS === "android" && {
-          mixedContentMode: "compatibility",
+        {...(Platform.OS === 'android' && {
+          mixedContentMode: 'compatibility',
           thirdPartyCookiesEnabled: true,
           cacheEnabled: true,
         })}
@@ -397,56 +398,56 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: '#f5f5f5',
   },
   webview: {
     flex: 1,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
   webContainer: {
     flex: 1,
   },
   loaderContainer: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    justifyContent: 'center',
+    alignItems: 'center',
+
     zIndex: 1000,
   },
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: "#666",
-    fontWeight: "500",
+    color: '#666',
+    fontWeight: '500',
   },
   errorContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
   },
   errorText: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#d32f2f",
-    textAlign: "center",
+    fontWeight: 'bold',
+    color: '#d32f2f',
+    textAlign: 'center',
     marginBottom: 10,
   },
   errorDetails: {
     fontSize: 14,
-    color: "#666",
-    textAlign: "center",
+    color: '#666',
+    textAlign: 'center',
     marginBottom: 20,
   },
   retryText: {
     fontSize: 16,
-    color: "#007AFF",
-    textAlign: "center",
-    textDecorationLine: "underline",
+    color: '#007AFF',
+    textAlign: 'center',
+    textDecorationLine: 'underline',
     padding: 10,
   },
 });

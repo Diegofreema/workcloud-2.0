@@ -16,7 +16,7 @@ import { colors } from '~/constants/Colors';
 import { Wks } from '~/constants/types';
 import { api } from '~/convex/_generated/api';
 import { useCreate } from '~/hooks/useCreate';
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { useTheme } from '~/hooks/use-theme';
 import { useDetailsToAdd } from '~/hooks/useDetailsToAdd';
 
 export const CreateWorkspaceModal = ({ workspace }: { workspace: Wks }) => {
@@ -25,7 +25,7 @@ export const CreateWorkspaceModal = ({ workspace }: { workspace: Wks }) => {
   const deleteWorkspace = useMutation(api.workspace.deleteWorkspace);
   const [deleteMode, setDeleteMode] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
 
   const router = useRouter();
 

@@ -122,17 +122,14 @@ export const handleWaitlist = mutation({
       )
       .first();
     if (isInWaitlist) {
-      await ctx.db.patch(isInWaitlist._id, {
-        joinedAt,
-      });
-    } else {
-      return await ctx.db.insert('waitlists', {
-        customerId,
-        workspaceId,
-        joinedAt,
-        type: 'waiting',
-      });
+      await ctx.db.delete(isInWaitlist._id);
     }
+    return await ctx.db.insert('waitlists', {
+      customerId,
+      workspaceId,
+      joinedAt,
+      type: 'waiting',
+    });
   },
 });
 export const toggleWorkspaceStatus = mutation({
@@ -423,7 +420,10 @@ export const getWaitlist = async ({
 }) => {
   const waitlists = await ctx.db
     .query('waitlists')
-    .filter((q) => q.eq(q.field('workspaceId'), workspaceId))
+    .withIndex('by_customer_id_workspace_id', (q) =>
+      q.eq('workspaceId', workspaceId)
+    )
+    .order('desc')
     .collect();
   if (!waitlists) return [];
   const usersInWaitlist = waitlists.map(async (waitlist) => {

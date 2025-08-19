@@ -1,25 +1,25 @@
-import { AntDesign } from "@expo/vector-icons";
-import { useQuery } from "convex/react";
-import * as ImagePicker from "expo-image-picker";
-import { useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
-import { Pressable } from "react-native";
+import { AntDesign } from '@expo/vector-icons';
+import { useQuery } from 'convex/react';
+import * as ImagePicker from 'expo-image-picker';
+import { useLocalSearchParams } from 'expo-router';
+import React, { useState } from 'react';
+import { Pressable } from 'react-native';
 
-import { DeletePostModal } from "~/components/Dialogs/DeletePost";
-import { HeaderNav } from "~/components/HeaderNav";
-import { PostComponent } from "~/components/PostComponent";
-import { Container } from "~/components/Ui/Container";
-import { ImagePreview } from "~/components/Ui/ImagePreview";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { api } from "~/convex/_generated/api";
-import { Id } from "~/convex/_generated/dataModel";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { useImagePreview } from "~/hooks/useImagePreview";
+import { DeletePostModal } from '~/components/Dialogs/DeletePost';
+import { HeaderNav } from '~/components/HeaderNav';
+import { PostComponent } from '~/components/PostComponent';
+import { Container } from '~/components/Ui/Container';
+import { ImagePreview } from '~/components/Ui/ImagePreview';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { api } from '~/convex/_generated/api';
+import { Id } from '~/convex/_generated/dataModel';
+import { useTheme } from '~/hooks/use-theme';
+import { useImagePreview } from '~/hooks/useImagePreview';
 
 const Posts = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const data = useQuery(api.organisation.getPostsByOrganizationId, {
-    organizationId: id as Id<"organizations">,
+    organizationId: id as Id<'organizations'>,
   });
 
   if (data === undefined) {
@@ -41,7 +41,7 @@ const Posts = () => {
 export default Posts;
 
 const RightComponent = () => {
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
 
   const [selectedImage, setSelectedImage] =
     useState<ImagePicker.ImagePickerAsset | null>(null);
@@ -49,7 +49,7 @@ const RightComponent = () => {
   const onOpen = useImagePreview((state) => state.onOpen);
   const pickImageAsync = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
+      mediaTypes: ['images'],
       allowsEditing: true,
       quality: 0.4,
       aspect: [4, 3],
@@ -70,7 +70,7 @@ const RightComponent = () => {
       <AntDesign
         name="pluscircleo"
         size={24}
-        color={darkMode === "dark" ? "white" : "black"}
+        color={darkMode === 'dark' ? 'white' : 'black'}
       />
     </Pressable>
   );

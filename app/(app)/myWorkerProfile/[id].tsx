@@ -22,7 +22,7 @@ import VStack from '~/components/Ui/VStack';
 import { colors } from '~/constants/Colors';
 import { api } from '~/convex/_generated/api';
 import { Button } from '~/features/common/components/Button';
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { useTheme } from '~/hooks/use-theme';
 import { generateErrorMessage } from '~/lib/helper';
 import { CustomModal } from '~/components/Dialogs/CustomModal';
 const Profile = () => {
@@ -31,7 +31,7 @@ const Profile = () => {
 
   const data = useQuery(api.users.getWorkerProfileWithUser, {});
   const resign = useMutation(api.worker.resignFromOrganization);
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
 
   const router = useRouter();
 
@@ -135,12 +135,7 @@ const Profile = () => {
             Qualifications
           </MyText>
 
-          <HStack
-            gap={10}
-            alignItems="center"
-            pb={40}
-            style={{ borderBottomColor: colors.gray, borderBottomWidth: 1 }}
-          >
+          <HStack gap={10} alignItems="center" pb={40}>
             <SimpleLineIcons
               name="graduation"
               size={24}
@@ -156,12 +151,7 @@ const Profile = () => {
             Experience and Specialization
           </MyText>
 
-          <HStack
-            gap={10}
-            alignItems="center"
-            pb={40}
-            style={{ borderBottomColor: colors.gray, borderBottomWidth: 1 }}
-          >
+          <HStack gap={10} alignItems="center" pb={40}>
             <SimpleLineIcons
               name="graduation"
               size={24}
@@ -178,11 +168,7 @@ const Profile = () => {
             Skills
           </MyText>
 
-          <HStack
-            gap={10}
-            pb={40}
-            style={{ borderBottomColor: colors.gray, borderBottomWidth: 1 }}
-          >
+          <HStack gap={10} pb={40}>
             <MaterialCommunityIcons
               name="clipboard-list-outline"
               size={24}

@@ -1,25 +1,24 @@
 import { ConvexAuthProvider } from '@convex-dev/auth/react';
 import { ConvexQueryClient } from '@convex-dev/react-query';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useColorScheme } from '~/hooks/useColorScheme';
-import { ConvexReactClient } from 'convex/react';
-import { useFonts } from 'expo-font';
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ConvexReactClient } from 'convex/react';
+import { useFonts } from 'expo-font';
 import * as Notifications from 'expo-notifications';
 import { Stack, useNavigationContainerRef, usePathname } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { Appearance, PermissionsAndroid, Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Toaster } from 'sonner-native';
+import { useColorScheme } from '~/hooks/useColorScheme';
 // import { Authenticated, Unauthenticated, AuthLoading } from 'convex/react';
 
 import * as Sentry from '@sentry/react-native';
@@ -27,8 +26,9 @@ import { isRunningInExpoGo } from 'expo';
 import { MenuProvider } from 'react-native-popup-menu';
 import { AuthProvider, useAuth } from '~/context/auth';
 import { NotificationProvider } from '~/context/notification-context';
-import { registerTask } from '~/lib/utils';
 import { useTheme } from '~/hooks/use-theme';
+import { registerTask } from '~/lib/utils';
+import { CustomStatusBar } from '~/components/custom-status-bar';
 // import { registerTask } from "~/lib/utils";
 
 const secureStorage = {
@@ -165,13 +165,13 @@ export function RootLayout() {
           <AuthProvider>
             <QueryClientProvider client={queryClient}>
               <GestureHandlerRootView style={{ flex: 1 }}>
-                <StatusBar style="auto" />
                 <SafeAreaView
                   style={{
                     flex: 1,
                   }}
                 >
                   <MenuProvider>
+                    <CustomStatusBar />
                     <InitialRouteLayout />
                   </MenuProvider>
                   <Toaster />

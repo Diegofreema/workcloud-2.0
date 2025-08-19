@@ -1,26 +1,26 @@
-import { AntDesign } from "@expo/vector-icons";
-import { Divider } from "@rneui/themed";
-import { Href, router } from "expo-router";
-import { Pressable } from "react-native";
-import * as WebBrowser from "expo-web-browser";
-import { HStack } from "../HStack";
-import { HelpSvg, LockSvg, UserSvg } from "../LockSvg";
-import { MyText } from "./MyText";
-import VStack from "./VStack";
+import { AntDesign } from '@expo/vector-icons';
+import { Divider } from '@rneui/themed';
+import { Href, router } from 'expo-router';
+import { Pressable } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
+import { HStack } from '../HStack';
+import { HelpSvg, LockSvg, UserSvg } from '../LockSvg';
+import { MyText } from './MyText';
+import VStack from './VStack';
 
-import { colors } from "~/constants/Colors";
-import { useDarkMode } from "~/hooks/useDarkMode";
+import { colors } from '~/constants/Colors';
+import { useTheme } from '~/hooks/use-theme';
 
 export const OtherLinks = ({
   workerId,
 }: {
   workerId?: string;
 }): JSX.Element => {
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
   const link: string = workerId
     ? `/myWorkerProfile/${workerId}`
-    : "/create-worker-profile";
-  const title = workerId ? "Worker's Profile" : "Create Worker Profile";
+    : '/create-worker-profile';
+  const title = workerId ? "Worker's Profile" : 'Create Worker Profile';
   return (
     <VStack
       mt={20}
@@ -38,7 +38,7 @@ export const OtherLinks = ({
       />
       <Divider
         style={{
-          backgroundColor: darkMode === "dark" ? "transparent" : "#ccc",
+          backgroundColor: darkMode === 'dark' ? 'transparent' : '#ccc',
         }}
       />
       <Item

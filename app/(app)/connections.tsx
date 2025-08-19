@@ -1,18 +1,18 @@
-import { EvilIcons } from "@expo/vector-icons";
-import { useQuery } from "convex/react";
-import React from "react";
-import { FlatList, View } from "react-native";
+import { EvilIcons } from '@expo/vector-icons';
+import { useQuery } from 'convex/react';
+import React from 'react';
+import { FlatList, View } from 'react-native';
 
-import { EmptyText } from "~/components/EmptyText";
-import { HeaderNav } from "~/components/HeaderNav";
-import { Item } from "~/components/Item";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { defaultStyle } from "~/constants";
-import { api } from "~/convex/_generated/api";
-import { useDarkMode } from "~/hooks/useDarkMode";
+import { EmptyText } from '~/components/EmptyText';
+import { HeaderNav } from '~/components/HeaderNav';
+import { Item } from '~/components/Item';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { defaultStyle } from '~/constants';
+import { api } from '~/convex/_generated/api';
+import { useTheme } from '~/hooks/use-theme';
 
 const Connections = () => {
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
 
   const connections = useQuery(api.connection.getUserConnections, {});
 
@@ -25,7 +25,7 @@ const Connections = () => {
     <View
       style={{
         flex: 1,
-        backgroundColor: darkMode === "dark" ? "black" : "white",
+        backgroundColor: darkMode === 'dark' ? 'black' : 'white',
         ...defaultStyle,
       }}
     >
@@ -53,11 +53,11 @@ const Connections = () => {
 };
 
 const SearchComponent = () => {
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
   return (
     <EvilIcons
       name="search"
-      color={darkMode === "dark" ? "white" : "black"}
+      color={darkMode === 'dark' ? 'white' : 'black'}
       size={24}
     />
   );

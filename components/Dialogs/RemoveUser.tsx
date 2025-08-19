@@ -1,22 +1,22 @@
-import { Button } from "@rneui/themed";
-import { useMutation } from "convex/react";
-import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
-import Modal from "react-native-modal";
-import { toast } from "sonner-native";
+import { Button } from '@rneui/themed';
+import { useMutation } from 'convex/react';
+import React, { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import Modal from 'react-native-modal';
+import { toast } from 'sonner-native';
 
-import { HStack } from "../HStack";
-import { MyText } from "../Ui/MyText";
+import { HStack } from '../HStack';
+import { MyText } from '../Ui/MyText';
 
-import { colors } from "~/constants/Colors";
-import { api } from "~/convex/_generated/api";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { useHandleStaff } from "~/hooks/useHandleStaffs";
-import { useRemoveUser } from "~/hooks/useRemoveUser";
+import { colors } from '~/constants/Colors';
+import { api } from '~/convex/_generated/api';
+import { useTheme } from '~/hooks/use-theme';
+import { useHandleStaff } from '~/hooks/useHandleStaffs';
+import { useRemoveUser } from '~/hooks/useRemoveUser';
 
 export const RemoveUser = () => {
   const { onClose, isOpen } = useRemoveUser();
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
 
   const [deleting, setDeleting] = useState(false);
   const { item } = useHandleStaff();
@@ -28,12 +28,12 @@ export const RemoveUser = () => {
         workerId: item?._id!,
         workspaceId: item?.workspaceId!,
       });
-      toast.success("Staff has been removed successfully");
+      toast.success('Staff has been removed successfully');
 
       onClose();
     } catch (error) {
       console.log(error);
-      toast.error("Something went wrong");
+      toast.error('Something went wrong');
     } finally {
       setDeleting(false);
     }
@@ -52,15 +52,15 @@ export const RemoveUser = () => {
           style={[
             styles.centeredView,
             {
-              backgroundColor: darkMode === "dark" ? "black" : "white",
-              shadowColor: darkMode === "dark" ? "#fff" : "#000",
+              backgroundColor: darkMode === 'dark' ? 'black' : 'white',
+              shadowColor: darkMode === 'dark' ? '#fff' : '#000',
             },
           ]}
         >
           <MyText
             poppins="Bold"
             fontSize={17}
-            style={{ textAlign: "center", marginBottom: 15 }}
+            style={{ textAlign: 'center', marginBottom: 15 }}
           >
             Are you sure you want to remove this staff?
           </MyText>
@@ -68,7 +68,7 @@ export const RemoveUser = () => {
           <HStack gap={10}>
             <Button
               disabled={deleting}
-              titleStyle={{ fontFamily: "PoppinsMedium" }}
+              titleStyle={{ fontFamily: 'PoppinsMedium' }}
               buttonStyle={{
                 backgroundColor: colors.closeTextColor,
                 borderRadius: 5,
@@ -80,7 +80,7 @@ export const RemoveUser = () => {
             </Button>
 
             <Button
-              titleStyle={{ fontFamily: "PoppinsMedium" }}
+              titleStyle={{ fontFamily: 'PoppinsMedium' }}
               buttonStyle={{
                 backgroundColor: colors.dialPad,
                 borderRadius: 5,
@@ -99,10 +99,10 @@ export const RemoveUser = () => {
 
 const styles = StyleSheet.create({
   centeredView: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     padding: 30,
-    alignItems: "center",
-    shadowColor: "#000",
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -114,8 +114,8 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   trash: {
-    backgroundColor: "white",
-    shadowColor: "#000",
+    backgroundColor: 'white',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -128,11 +128,11 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -142,20 +142,20 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   button: {
-    position: "absolute",
+    position: 'absolute',
     top: 10,
     right: 15,
     padding: 4,
   },
   row: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 10,
     marginTop: 20,
     borderWidth: 1,
     borderColor: colors.gray10,
     padding: 10,
     borderRadius: 10,
-    borderStyle: "dashed",
+    borderStyle: 'dashed',
   },
 });

@@ -1,5 +1,7 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import { ThemedText } from '~/components/Ui/themed-text';
+import { ThemedView } from '~/components/Ui/themed-view';
 
 interface CardProps {
   style?: any;
@@ -16,7 +18,7 @@ interface CardHeaderProps {
 }
 
 const CardHeader = ({ style, children }: CardHeaderProps) => {
-  return <View style={[styles.header, style]}>{children}</View>;
+  return <ThemedView style={[styles.header, style]}>{children}</ThemedView>;
 };
 
 interface CardFooterProps {
@@ -25,7 +27,7 @@ interface CardFooterProps {
 }
 
 const CardFooter = ({ style, children }: CardFooterProps) => {
-  return <View style={[styles.footer, style]}>{children}</View>;
+  return <ThemedView style={[styles.footer, style]}>{children}</ThemedView>;
 };
 
 interface CardTitleProps {
@@ -34,7 +36,7 @@ interface CardTitleProps {
 }
 
 const CardTitle = ({ style, children }: CardTitleProps) => {
-  return <Text style={[styles.title, style]}>{children}</Text>;
+  return <ThemedText style={[styles.title, style]}>{children}</ThemedText>;
 };
 
 interface CardDescriptionProps {
@@ -43,7 +45,9 @@ interface CardDescriptionProps {
 }
 
 const CardDescription = ({ style, children }: CardDescriptionProps) => {
-  return <Text style={[styles.description, style]}>{children}</Text>;
+  return (
+    <ThemedText style={[styles.description, style]}>{children}</ThemedText>
+  );
 };
 
 Card.Header = CardHeader;
@@ -53,12 +57,12 @@ Card.Description = CardDescription;
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
     borderRadius: 8,
     padding: 16,
     marginVertical: 8,
     // Shadow for iOS
-    boxShadow: "0px 1px 2px 0px rgba(0, 0, 0, 0.8)",
+    boxShadow: '0px 1px 2px 0px rgba(0, 0, 0, 0.8)',
   },
   header: {
     marginBottom: 12,
@@ -68,13 +72,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: 'bold',
+    color: '#333',
     marginBottom: 12,
   },
   description: {
     fontSize: 14,
-    color: "#666",
+    color: '#666',
     lineHeight: 20,
   },
 });

@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Image, Text, StyleSheet, ViewStyle } from "react-native";
+import React from 'react';
+import { Image, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 interface AvatarPileProps {
   avatars: string[];
@@ -73,28 +73,28 @@ export const AvatarPile: React.FC<AvatarPileProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   avatarContainer: {
     borderWidth: 2,
-    borderColor: "white",
+    borderColor: 'white',
     borderRadius: 999,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   avatar: {
-    backgroundColor: "#E1E1E1", // Placeholder color
+    backgroundColor: '#E1E1E1', // Placeholder color
   },
   remainingCount: {
-    backgroundColor: "#E1E1E1",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#E1E1E1',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 2,
-    borderColor: "white",
+    borderColor: 'white',
   },
   remainingText: {
-    color: "#666",
+    color: '#666',
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });

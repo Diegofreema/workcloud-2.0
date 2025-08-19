@@ -35,7 +35,7 @@ import { colors } from '~/constants/Colors';
 import { WorkerWithWorkspace } from '~/constants/types';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
-import { useDarkMode } from '~/hooks/useDarkMode';
+import { useTheme } from '~/hooks/use-theme';
 import { useGetUserId } from '~/hooks/useGetUserId';
 import { useWaitlistId } from '~/hooks/useWaitlistId';
 import { convexPushNotificationsHelper } from '~/lib/utils';
@@ -47,6 +47,7 @@ export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
 const Reception = () => {
   const { id } = useLocalSearchParams<{ id: Id<'organizations'> }>();
   const { id: from } = useGetUserId();
+  const { theme: darkMode } = useTheme();
   const data = useQuery(api.organisation.getOrganisationsWithPostAndWorkers, {
     id,
   });
@@ -125,7 +126,15 @@ const Reception = () => {
                     {data?.start}
                   </MyText>
                 </View>
-                <Text style={{ marginBottom: 5 }}> - </Text>
+                <Text
+                  style={{
+                    marginBottom: 5,
+                    color: darkMode === 'dark' ? colors.white : colors.black,
+                  }}
+                >
+                  {' '}
+                  -{' '}
+                </Text>
                 <View
                   style={[
                     styles.subCon,
@@ -369,7 +378,7 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
 };
 
 const ReceptionRightHeader = () => {
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   return (
     <Pressable

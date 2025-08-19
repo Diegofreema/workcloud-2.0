@@ -1,27 +1,27 @@
-import { Avatar } from "@rneui/themed";
-import { useLocalSearchParams } from "expo-router";
-import { Plus } from "lucide-react-native";
-import { useEffect, useState } from "react";
-import { FlatList, Pressable, StyleSheet, View } from "react-native";
-import { toast } from "sonner-native";
+import { Avatar } from '@rneui/themed';
+import { useLocalSearchParams } from 'expo-router';
+import { Plus } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { toast } from 'sonner-native';
 
-import { AuthHeader } from "./AuthHeader";
-import { HStack } from "./HStack";
-import { MyButton } from "./Ui/MyButton";
-import { MyText } from "./Ui/MyText";
-import VStack from "./Ui/VStack";
+import { AuthHeader } from './AuthHeader';
+import { HStack } from './HStack';
+import { MyButton } from './Ui/MyButton';
+import { MyText } from './Ui/MyText';
+import VStack from './Ui/VStack';
 
-import { colors } from "~/constants/Colors";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { ChatMember, useMembers } from "~/hooks/useMembers";
-import { useAuth } from "~/context/auth";
+import { colors } from '~/constants/Colors';
+import { useTheme } from '~/hooks/use-theme';
+import { ChatMember, useMembers } from '~/hooks/useMembers';
+import { useAuth } from '~/context/auth';
 
 export const GroupDetail = (): JSX.Element => {
   const members = useMembers((state) => state.members);
   const { chatId } = useLocalSearchParams<{ chatId: string }>();
 
   const [isDeleting, setIsDeleting] = useState(false);
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
   const [close, setClose] = useState(false);
 
   const { user } = useAuth();
@@ -30,12 +30,12 @@ export const GroupDetail = (): JSX.Element => {
     const fetchChannel = async () => {};
     void fetchChannel();
   }, [chatId]);
-  const admin = members.find((m) => m.role === "owner");
+  const admin = members.find((m) => m.role === 'owner');
   const isAdmin = user?.id === admin?.user?.id;
 
   const formattedArray = members.sort((a, b) => {
-    if (a.role === "owner") return -1;
-    if (b.role !== "owner") return 0;
+    if (a.role === 'owner') return -1;
+    if (b.role !== 'owner') return 0;
     return 0;
   });
 
@@ -45,8 +45,8 @@ export const GroupDetail = (): JSX.Element => {
     } catch (error) {
       console.log(error);
 
-      toast.error("Something went wrong", {
-        description: "Failed to delete group",
+      toast.error('Something went wrong', {
+        description: 'Failed to delete group',
       });
     } finally {
       setIsDeleting(false);
@@ -60,7 +60,7 @@ export const GroupDetail = (): JSX.Element => {
         <AuthHeader path="Group Details" />
         {isAdmin && (
           <Pressable style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}>
-            <Plus color={darkMode === "dark" ? "white" : "black"} size={25} />
+            <Plus color={darkMode === 'dark' ? 'white' : 'black'} size={25} />
           </Pressable>
         )}
       </HStack>
@@ -74,7 +74,7 @@ export const GroupDetail = (): JSX.Element => {
         )}
         contentContainerStyle={{ gap: 15, flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
-        ListFooterComponentStyle={{ marginTop: "auto", marginBottom: 20 }}
+        ListFooterComponentStyle={{ marginTop: 'auto', marginBottom: 20 }}
         ListFooterComponent={() =>
           close ? (
             <HStack width="100%" alignItems="center" gap={10}>
@@ -86,8 +86,8 @@ export const GroupDetail = (): JSX.Element => {
                   styles.close,
                 ]}
               >
-                <MyText poppins="Bold" fontSize={15} style={{ color: "white" }}>
-                  {isDeleting ? "Closing..." : "Proceed"}
+                <MyText poppins="Bold" fontSize={15} style={{ color: 'white' }}>
+                  {isDeleting ? 'Closing...' : 'Proceed'}
                 </MyText>
               </Pressable>
               <Pressable
@@ -98,14 +98,14 @@ export const GroupDetail = (): JSX.Element => {
                   styles.cancel,
                 ]}
               >
-                <MyText poppins="Bold" fontSize={15} style={{ color: "white" }}>
+                <MyText poppins="Bold" fontSize={15} style={{ color: 'white' }}>
                   Cancel
                 </MyText>
               </Pressable>
             </HStack>
           ) : (
             <MyButton onPress={onClose}>
-              <MyText poppins="Bold" fontSize={15} style={{ color: "white" }}>
+              <MyText poppins="Bold" fontSize={15} style={{ color: 'white' }}>
                 Close group
               </MyText>
             </MyButton>
@@ -125,7 +125,7 @@ const MemberItem = ({
 
   chatId: string;
 }) => {
-  const admin = member.role === "owner";
+  const admin = member.role === 'owner';
   const [remove, setRemove] = useState(false);
   const [removing, setRemoving] = useState(false);
 
@@ -136,8 +136,8 @@ const MemberItem = ({
     } catch (error) {
       console.log(error);
 
-      toast.error("Something went wrong", {
-        description: "Failed to remove member",
+      toast.error('Something went wrong', {
+        description: 'Failed to remove member',
       });
     } finally {
       setRemoving(false);
@@ -172,12 +172,12 @@ const MemberItem = ({
               style={({ pressed }) => ({
                 opacity: pressed ? 0.5 : 1,
                 padding: 5,
-                backgroundColor: "green",
+                backgroundColor: 'green',
                 borderRadius: 5,
               })}
             >
-              <MyText poppins="Medium" fontSize={15} style={{ color: "white" }}>
-                {removing ? "Removing..." : "Remove"}
+              <MyText poppins="Medium" fontSize={15} style={{ color: 'white' }}>
+                {removing ? 'Removing...' : 'Remove'}
               </MyText>
             </Pressable>
             <Pressable
@@ -189,7 +189,7 @@ const MemberItem = ({
                 borderRadius: 5,
               })}
             >
-              <MyText poppins="Medium" fontSize={15} style={{ color: "white" }}>
+              <MyText poppins="Medium" fontSize={15} style={{ color: 'white' }}>
                 Cancel
               </MyText>
             </Pressable>
@@ -200,11 +200,11 @@ const MemberItem = ({
             style={({ pressed }) => ({
               opacity: pressed ? 0.5 : 1,
               padding: 5,
-              backgroundColor: "red",
+              backgroundColor: 'red',
               borderRadius: 5,
             })}
           >
-            <MyText poppins="Medium" fontSize={15} style={{ color: "white" }}>
+            <MyText poppins="Medium" fontSize={15} style={{ color: 'white' }}>
               Remove
             </MyText>
           </Pressable>
@@ -215,12 +215,12 @@ const MemberItem = ({
 
 const styles = StyleSheet.create({
   close: {
-    backgroundColor: "green",
+    backgroundColor: 'green',
     flex: 1,
     padding: 5,
     height: 50,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 5,
   },
   cancel: {

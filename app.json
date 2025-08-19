@@ -94,8 +94,7 @@
             "showWhenLockedAndroid": true
           },
           "androidKeepCallAlive": true,
-          "enableNonRingingPushNotifications": true,
-          "addNoiseCancellation": true
+          "enableNonRingingPushNotifications": true
         }
       ],
       "@config-plugins/react-native-callkeep",

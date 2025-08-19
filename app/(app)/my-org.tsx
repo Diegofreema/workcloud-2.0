@@ -157,7 +157,15 @@ const MyOrg = () => {
                   {data?.start}
                 </Text>
               </View>
-              <Text style={{ marginBottom: 8 }}> — </Text>
+              <Text
+                style={{
+                  marginBottom: 8,
+                  color: darkMode === 'dark' ? colors.white : colors.black,
+                }}
+              >
+                {' '}
+                —{' '}
+              </Text>
               <View
                 style={{
                   backgroundColor: '#FFD9D9',

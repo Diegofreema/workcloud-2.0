@@ -1,7 +1,6 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Text } from '@rneui/themed';
 import { Tabs } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 
 import { StyleSheet, View } from 'react-native';
@@ -24,15 +23,9 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const count = useUnreadMessageCount();
-  const isDark = colorScheme === 'dark';
 
   return (
     <>
-      <StatusBar
-        style={isDark ? 'light' : 'dark'}
-        backgroundColor={isDark ? 'black' : 'white'}
-      />
-
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,

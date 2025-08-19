@@ -1,38 +1,38 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "convex/react";
-import { useRouter } from "expo-router";
-import React from "react";
-import { useForm } from "react-hook-form";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { SelectList } from "react-native-dropdown-select-list";
-import { toast } from "sonner-native";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQuery } from 'convex/react';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SelectList } from 'react-native-dropdown-select-list';
+import { toast } from 'sonner-native';
 
-import { AuthHeader } from "~/components/AuthHeader";
-import { AuthTitle } from "~/components/AuthTitle";
-import { CustomInput } from "~/components/InputComponent";
-import { Container } from "~/components/Ui/Container";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { MyText } from "~/components/Ui/MyText";
-import { colors } from "~/constants/Colors";
-import { api } from "~/convex/_generated/api";
-import { Button } from "~/features/common/components/Button";
-import { useDarkMode } from "~/hooks/useDarkMode";
-import { generateErrorMessage } from "~/lib/helper";
-import { editWorkerSchema, EditWorkerSchemaType } from "~/schema";
+import { AuthHeader } from '~/components/AuthHeader';
+import { AuthTitle } from '~/components/AuthTitle';
+import { CustomInput } from '~/components/InputComponent';
+import { Container } from '~/components/Ui/Container';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { MyText } from '~/components/Ui/MyText';
+import { colors } from '~/constants/Colors';
+import { api } from '~/convex/_generated/api';
+import { Button } from '~/features/common/components/Button';
+import { useTheme } from '~/hooks/use-theme';
+import { generateErrorMessage } from '~/lib/helper';
+import { editWorkerSchema, EditWorkerSchemaType } from '~/schema';
 
 const max = 150;
 const genders = [
   {
-    key: "Male",
-    value: "male",
+    key: 'Male',
+    value: 'male',
   },
   {
-    key: "Female",
-    value: "female",
+    key: 'Female',
+    value: 'female',
   },
 ];
 const CreateProfile = () => {
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
 
   const data = useQuery(api.users.getWorkerProfileWithUser, {});
   const updateWorkerProfile = useMutation(api.users.updateWorkerProfile);
@@ -47,11 +47,11 @@ const CreateProfile = () => {
     watch,
   } = useForm<EditWorkerSchemaType>({
     defaultValues: {
-      location: data?.location || "",
-      gender: data?.gender || "",
-      skills: data?.skills || "",
-      experience: data?.experience || "",
-      qualifications: data?.qualifications || "",
+      location: data?.location || '',
+      gender: data?.gender || '',
+      skills: data?.skills || '',
+      experience: data?.experience || '',
+      qualifications: data?.qualifications || '',
     },
     resolver: zodResolver(editWorkerSchema),
   });
@@ -61,16 +61,16 @@ const CreateProfile = () => {
       await updateWorkerProfile({ _id: data?._id, ...values });
 
       toast.success(
-        `${data?.user?.name?.split(" ")[0]} your work profile has been updated`,
+        `${data?.user?.name?.split(' ')[0]} your work profile has been updated`
       );
       reset();
       router.back();
     } catch (error) {
-      const errorMessage = generateErrorMessage(error, "Something went wrong");
-      toast.error("An error occurred", {
+      const errorMessage = generateErrorMessage(error, 'Something went wrong');
+      toast.error('An error occurred', {
         description: errorMessage,
       });
-      console.log(error, "Error");
+      console.log(error, 'Error');
     }
   };
 
@@ -147,8 +147,8 @@ const CreateProfile = () => {
           <View style={{ marginHorizontal: 10 }}>
             <Text
               style={{
-                color: darkMode === "dark" ? colors.white : colors.black,
-                fontWeight: "bold",
+                color: darkMode === 'dark' ? colors.white : colors.black,
+                fontWeight: 'bold',
                 fontSize: 15,
                 marginBottom: 10,
               }}
@@ -160,22 +160,22 @@ const CreateProfile = () => {
               search={false}
               boxStyles={{
                 ...styles2.border,
-                justifyContent: "flex-start",
-                width: "100%",
-                alignItems: "center",
+                justifyContent: 'flex-start',
+                width: '100%',
+                alignItems: 'center',
               }}
               dropdownTextStyles={{
-                color: darkMode === "dark" ? colors.white : colors.black,
+                color: darkMode === 'dark' ? colors.white : colors.black,
               }}
               inputStyles={{
-                textAlign: "left",
+                textAlign: 'left',
                 borderWidth: 0,
-                color: "gray",
-                justifyContent: "center",
-                alignItems: "center",
+                color: 'gray',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
               fontFamily="PoppinsMedium"
-              setSelected={(value: string) => setValue("gender", value)}
+              setSelected={(value: string) => setValue('gender', value)}
               data={genders}
               defaultOption={{ key: gender, value: gender }}
               save="value"
@@ -183,7 +183,7 @@ const CreateProfile = () => {
             />
 
             {errors.gender && (
-              <Text style={{ color: "red", fontWeight: "bold" }}>
+              <Text style={{ color: 'red', fontWeight: 'bold' }}>
                 {errors.gender.message}
               </Text>
             )}
@@ -191,9 +191,9 @@ const CreateProfile = () => {
         </View>
         <View style={{ marginTop: 30, marginHorizontal: 10 }}>
           <Button
-            title={"Submit"}
+            title={'Submit'}
             onPress={handleSubmit(onSubmit)}
-            loadingTitle={"Submitting..."}
+            loadingTitle={'Submitting...'}
             loading={isSubmitting}
           />
         </View>
@@ -206,13 +206,13 @@ export default CreateProfile;
 
 const styles2 = StyleSheet.create({
   border: {
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     minHeight: 52,
     borderRadius: 5,
     paddingLeft: 5,
-    justifyContent: "center",
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: colors.gray,
-    width: "100%",
+    width: '100%',
   },
 });

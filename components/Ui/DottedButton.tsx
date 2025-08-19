@@ -1,9 +1,9 @@
-import { AntDesign } from "@expo/vector-icons";
-import { Text } from "@rneui/themed";
-import { Pressable } from "react-native";
+import { AntDesign } from '@expo/vector-icons';
+import { Text } from '@rneui/themed';
+import { Pressable } from 'react-native';
 
-import { colors } from "~/constants/Colors";
-import { useDarkMode } from "~/hooks/useDarkMode";
+import { colors } from '~/constants/Colors';
+import { useTheme } from '~/hooks/use-theme';
 
 type Props = {
   onPress: () => void;
@@ -16,28 +16,28 @@ export const DottedButton = ({
   text,
   isIcon = true,
 }: Props): JSX.Element => {
-  const { darkMode } = useDarkMode();
+  const { theme: darkMode } = useTheme();
   return (
     <Pressable
       style={({ pressed }) => ({
         borderWidth: 1,
         borderColor: colors.gray10,
         borderRadius: 10,
-        borderStyle: "dashed",
+        borderStyle: 'dashed',
         marginTop: 20,
         height: 50,
-        flexDirection: "row",
+        flexDirection: 'row',
         padding: 10,
         gap: 3,
-        alignItems: "center",
+        alignItems: 'center',
         opacity: pressed ? 0.5 : 1,
       })}
       onPress={onPress}
     >
       <Text
         style={{
-          color: darkMode === "dark" ? "white" : "black",
-          fontFamily: "PoppinsLight",
+          color: darkMode === 'dark' ? 'white' : 'black',
+          fontFamily: 'PoppinsLight',
         }}
       >
         {text}
@@ -46,7 +46,7 @@ export const DottedButton = ({
         <AntDesign
           name="plus"
           size={20}
-          color={darkMode === "dark" ? "white" : "black"}
+          color={darkMode === 'dark' ? 'white' : 'black'}
         />
       )}
     </Pressable>

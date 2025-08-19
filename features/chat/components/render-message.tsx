@@ -1,12 +1,13 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Image } from "expo-image";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import Animated, { FadeInDown, FadeOutDown } from "react-native-reanimated";
-import { EditType, IMessage } from "~/constants/types";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { colors } from "~/constants/Colors";
-import PDFViewer from "~/features/chat/components/pdf-viewer";
+import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
+import { MyText } from '~/components/Ui/MyText';
+import { colors } from '~/constants/Colors';
+import { EditType, IMessage } from '~/constants/types';
+import PDFViewer from '~/features/chat/components/pdf-viewer';
+import { useGetUserId } from '~/hooks/useGetUserId';
 
 type ReplyMessageBarProps = {
   clearReply: () => void;
@@ -23,17 +24,17 @@ const ReplyMessageBar = ({
 }: ReplyMessageBarProps) => {
   const { id: loggedInUser } = useGetUserId();
   const renderContent = () => {
-    if (message?.fileType === "image" && message.fileUrl) {
+    if (message?.fileType === 'image' && message.fileUrl) {
       return (
         <Image
           source={{ uri: message.fileUrl }}
           style={{ width: 40, height: 40, marginLeft: 10 }}
-          placeholder={require("../../../assets/images.png")}
+          placeholder={require('../../../assets/images.png')}
           placeholderContentFit="cover"
           contentFit="cover"
         />
       );
-    } else if (message?.fileType === "pdf" && message.fileUrl) {
+    } else if (message?.fileType === 'pdf' && message.fileUrl) {
       return (
         <View style={styles.pdf}>
           <PDFViewer pdfUrl={message.fileUrl} />
@@ -41,11 +42,15 @@ const ReplyMessageBar = ({
       );
     } else {
       return (
-        <Text style={{ color: colors.black, paddingLeft: 10, paddingTop: 5 }}>
+        <MyText
+          poppins="Medium"
+          fontSize={13}
+          style={{ paddingLeft: 10, paddingTop: 5 }}
+        >
           {message!.text.length > 40
-            ? message?.text.substring(0, 40) + "..."
+            ? message?.text.substring(0, 40) + '...'
             : message?.text}
-        </Text>
+        </MyText>
       );
     }
   };
@@ -57,7 +62,7 @@ const ReplyMessageBar = ({
   // Calculate height based on the content being displayed
   const height =
     displayMessage &&
-    (message?.fileType === "image" || message?.fileType === "pdf")
+    (message?.fileType === 'image' || message?.fileType === 'pdf')
       ? 70
       : 50;
 
@@ -67,22 +72,22 @@ const ReplyMessageBar = ({
         <Animated.View
           style={{
             height: height,
-            flexDirection: "row",
-            backgroundColor: "#E4E9EB",
+            flexDirection: 'row',
+            backgroundColor: '#E4E9EB',
           }}
           entering={FadeInDown}
           exiting={FadeOutDown}
         >
           <View
-            style={{ height: height, width: 6, backgroundColor: "#89BC0C" }}
+            style={{ height: height, width: 6, backgroundColor: '#89BC0C' }}
           ></View>
-          <View style={{ flexDirection: "column" }}>
+          <View style={{ flexDirection: 'column' }}>
             <Text
               style={{
                 color: colors.cod,
                 paddingLeft: 10,
                 paddingTop: 5,
-                fontWeight: "600",
+                fontWeight: '600',
                 fontSize: 15,
               }}
             >
@@ -94,8 +99,8 @@ const ReplyMessageBar = ({
           <View
             style={{
               flex: 1,
-              justifyContent: "center",
-              alignItems: "flex-end",
+              justifyContent: 'center',
+              alignItems: 'flex-end',
               paddingRight: 10,
             }}
           >
@@ -114,32 +119,32 @@ const ReplyMessageBar = ({
         <Animated.View
           style={{
             height: height,
-            flexDirection: "row",
-            backgroundColor: "#E4E9EB",
+            flexDirection: 'row',
+            backgroundColor: '#E4E9EB',
           }}
           entering={FadeInDown}
           exiting={FadeOutDown}
         >
           <View
-            style={{ height: height, width: 6, backgroundColor: "#89BC0C" }}
+            style={{ height: height, width: 6, backgroundColor: '#89BC0C' }}
           ></View>
           <View>
             <Text
               style={{
-                color: "#89BC0C",
+                color: '#89BC0C',
                 paddingLeft: 10,
                 paddingTop: 5,
-                fontWeight: "600",
+                fontWeight: '600',
                 fontSize: 15,
               }}
             >
-              {editText.senderId === loggedInUser ? "You" : editText.senderName}
+              {editText.senderId === loggedInUser ? 'You' : editText.senderName}
             </Text>
             <Text
               style={{ color: colors.gray, paddingLeft: 10, paddingTop: 5 }}
             >
               {editText!.text.length > 40
-                ? editText?.text.substring(0, 40) + "..."
+                ? editText?.text.substring(0, 40) + '...'
                 : editText.text}
             </Text>
           </View>
@@ -147,8 +152,8 @@ const ReplyMessageBar = ({
           <View
             style={{
               flex: 1,
-              justifyContent: "center",
-              alignItems: "flex-end",
+              justifyContent: 'center',
+              alignItems: 'flex-end',
               paddingRight: 10,
             }}
           >
@@ -176,7 +181,7 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   receivedText: {
-    color: "#000",
+    color: '#000',
   },
   sentTextContainer: {
     backgroundColor: colors.dialPad,
@@ -197,8 +202,8 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#ccc",
-    overflow: "hidden",
+    borderColor: '#ccc',
+    overflow: 'hidden',
   },
   sentImage: {
     borderBottomRightRadius: 2,

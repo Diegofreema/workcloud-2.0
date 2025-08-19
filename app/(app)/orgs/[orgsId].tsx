@@ -1,22 +1,22 @@
-import { EvilIcons, Fontisto, Ionicons } from "@expo/vector-icons";
-import { Image } from "expo-image";
-import { useRouter } from "expo-router";
-import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { EvilIcons, Fontisto, Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
-import { HeaderNav } from "../../../components/HeaderNav";
-import { MyButton } from "../../../components/Ui/MyButton";
-import { MyText } from "../../../components/Ui/MyText";
-import { colors } from "../../../constants/Colors";
+import { HeaderNav } from '../../../components/HeaderNav';
+import { MyButton } from '../../../components/Ui/MyButton';
+import { MyText } from '../../../components/Ui/MyText';
+import { colors } from '../../../constants/Colors';
 
-import { HStack } from "~/components/HStack";
-import { Container } from "~/components/Ui/Container";
-import VStack from "~/components/Ui/VStack";
+import { HStack } from '~/components/HStack';
+import { Container } from '~/components/Ui/Container';
+import VStack from '~/components/Ui/VStack';
 
 const Orgs = () => {
   const router = useRouter();
   const handleNav = () => {
-    router.push("/lobby");
+    router.push('/lobby');
   };
   return (
     <Container>
@@ -25,7 +25,7 @@ const Orgs = () => {
         <View style={{ marginTop: 10 }}>
           <HStack gap={10} alignItems="center">
             <Image
-              source={{ uri: "https://via.placeholder.com/48x48" }}
+              source={{ uri: 'https://via.placeholder.com/48x48' }}
               style={{ width: 48, height: 48, borderRadius: 9999 }}
             />
 
@@ -55,7 +55,7 @@ const Orgs = () => {
                     8:00am
                   </MyText>
                 </View>
-                <Text> - </Text>
+                <MyText poppins="Bold"> - </MyText>
                 <View
                   style={[
                     styles.subCon,
@@ -76,20 +76,20 @@ const Orgs = () => {
 
             <Details />
             <MyText poppins="Bold" style={{ marginTop: 10 }}>
-              {" "}
+              {' '}
               Members 1.2M
             </MyText>
             <HStack alignItems="center" gap={10} mt={20}>
               <MyButton
                 onPress={handleNav}
-                style={{ width: "50%" }}
+                style={{ width: '50%' }}
                 contentStyle={{ backgroundColor: colors.cod }}
                 textColor={colors.dialPad}
               >
                 Visit Workspace
               </MyButton>
               <MyButton
-                style={{ width: "50%" }}
+                style={{ width: '50%' }}
                 contentStyle={{ backgroundColor: colors.dialPad }}
               >
                 Join
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 7,
     borderRadius: 3,
     backgroundColor: colors.openTextColor,
-    alignItems: "center",
+    alignItems: 'center',
   },
 });
 
@@ -142,17 +142,17 @@ const Details = () => {
 
 const data = [
   {
-    title: "Electronic cash tellering",
-    subTitle: "Remita, western union, world remit etc.",
+    title: 'Electronic cash tellering',
+    subTitle: 'Remita, western union, world remit etc.',
   },
   {
-    title: "Customer service",
+    title: 'Customer service',
     subTitle:
-      "Get connected to a representative and achieve more on workcloud banking.",
+      'Get connected to a representative and achieve more on workcloud banking.',
   },
   {
-    title: "Loan and funding",
-    subTitle: "Connect to a special advice on our loan and funding policy.",
+    title: 'Loan and funding',
+    subTitle: 'Connect to a special advice on our loan and funding policy.',
   },
 ];
 
@@ -161,10 +161,10 @@ const ServicePoint = () => {
     <View style={{ marginTop: 20 }}>
       <View
         style={{
-          backgroundColor: "#F2F2F2",
+          backgroundColor: '#F2F2F2',
           borderRadius: 20,
           width: 90,
-          alignItems: "center",
+          alignItems: 'center',
         }}
       >
         <MyText
@@ -185,7 +185,7 @@ const ServicePoint = () => {
               { opacity: pressed ? 0.5 : 1 },
               { gap: 5, paddingBottom: 25 },
               {
-                borderBottomColor: "#F2F2F2",
+                borderBottomColor: '#F2F2F2',
                 borderBottomWidth: index !== 2 ? 2 : 0,
               },
             ]}

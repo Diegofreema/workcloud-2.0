@@ -1,5 +1,4 @@
 import {
-  NoiseCancellationProvider,
   RingingCallContent,
   StreamCall,
   useCalls,
@@ -14,9 +13,7 @@ const Ringing = () => {
   if (!ringingCall) return null;
   return (
     <StreamCall call={ringingCall}>
-      <NoiseCancellationProvider>
-        <RingingCallContent CallContent={CallComponent} />
-      </NoiseCancellationProvider>
+      <RingingCallContent CallContent={CallComponent} />
     </StreamCall>
   );
 };
