@@ -12,7 +12,7 @@ export const AuthTitle = ({ children }: Props): JSX.Element => {
     <ThemedText
       style={{
         fontFamily: 'PoppinsBold',
-        fontSize: RFPercentage(2.5),
+        fontSize: RFPercentage(2),
 
         textAlign: 'center',
       }}

@@ -1,15 +1,18 @@
 import { Call } from '@stream-io/video-client';
 import { useStreamVideoClient } from '@stream-io/video-react-native-sdk';
+import { useQuery } from 'convex/react';
 import * as Crypto from 'expo-crypto';
 import { router } from 'expo-router';
-import { Mail, Phone } from 'lucide-react-native';
+import { ArrowDownLeft, ArrowUpRight, Mail, Phone } from 'lucide-react-native';
 import { useColorScheme } from 'react-native';
+import { ChatPreviewSkeleton } from '~/components/ChatPreviewSkeleton';
 import { HStack } from '~/components/HStack';
 import { CustomPressable } from '~/components/Ui/CustomPressable';
 import { MyText } from '~/components/Ui/MyText';
 import VStack from '~/components/Ui/VStack';
-import Colors from '~/constants/Colors';
+import Colors, { colors } from '~/constants/Colors';
 import { useAuth } from '~/context/auth';
+import { api } from '~/convex/_generated/api';
 import { Avatar } from '~/features/common/components/avatar';
 import { formatMessageTime } from '~/lib/helper';
 type Props = {
@@ -22,9 +25,18 @@ export const VideoCall = ({ videoCall }: Props) => {
   const loggedInCallUser = videoCall.state.members.find(
     (m) => m.user_id !== user?._id
   )!;
-  console.log({ loggedInCallUser });
+  const missedCall = useQuery(
+    api.users.getMissedCallByCallId,
+    user?._id
+      ? {
+          callId: videoCall.id,
+          userId: user?._id,
+        }
+      : 'skip'
+  );
 
   const { user: call_user } = loggedInCallUser;
+  const callIsCreatedByMe = videoCall.state.createdBy?.id === user?._id;
 
   const client = useStreamVideoClient();
 
@@ -47,6 +59,23 @@ export const VideoCall = ({ videoCall }: Props) => {
       },
     });
   };
+
+  if (missedCall === undefined) {
+    return <ChatPreviewSkeleton length={1} />;
+  }
+  const arrowToShow = () => {
+    if (callIsCreatedByMe) {
+      return <ArrowUpRight size={16} color={colors.openBackgroundColor} />;
+    } else {
+      return (
+        <ArrowDownLeft
+          size={16}
+          color={missedCall ? 'red' : colors.openBackgroundColor}
+        />
+      );
+    }
+  };
+
   return (
     <HStack justifyContent={'space-between'} alignItems={'center'}>
       <HStack alignItems={'center'} gap={4}>
@@ -55,9 +84,12 @@ export const VideoCall = ({ videoCall }: Props) => {
           <MyText poppins={'Medium'} fontSize={14}>
             {call_user.name}
           </MyText>
-          <MyText poppins={'Medium'} fontSize={14}>
-            {formatMessageTime(videoCall.state.createdAt)}
-          </MyText>
+          <HStack alignItems={'center'} gap={2}>
+            {arrowToShow()}
+            <MyText poppins={'Medium'} fontSize={14}>
+              {formatMessageTime(videoCall.state.createdAt)}
+            </MyText>
+          </HStack>
         </VStack>
       </HStack>
       <HStack alignItems={'center'} gap={2}>

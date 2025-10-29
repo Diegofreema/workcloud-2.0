@@ -1,22 +1,25 @@
 import { convexQuery } from '@convex-dev/react-query';
-
 import { useQuery } from '@tanstack/react-query';
 import { useConvex, useMutation } from 'convex/react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import CurrencyInput from 'react-native-currency-input';
 import { toast } from 'sonner-native';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { CompleteDialog } from '~/components/Dialogs/SavedDialog';
 import { HeaderNav } from '~/components/HeaderNav';
 import { CustomInput } from '~/components/InputComponent';
 import { Container } from '~/components/Ui/Container';
 import { ErrorComponent } from '~/components/Ui/ErrorComponent';
 import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { MyText } from '~/components/Ui/MyText';
 import { UserPreview } from '~/components/Ui/UserPreview';
 import VStack from '~/components/Ui/VStack';
+import { colors } from '~/constants/Colors';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
 import { Button } from '~/features/common/components/Button';
@@ -50,7 +53,7 @@ const CompleteRequest = () => {
     defaultValues: {
       role: '',
       responsibility: '',
-      salary: '',
+      salary: 0,
       qualities: '',
     },
     resolver: zodResolver(offerSchema),
@@ -60,10 +63,10 @@ const CompleteRequest = () => {
     if (!data?.user) return;
     try {
       await sendRequest({
-        role,
-        salary,
-        qualities,
-        responsibility,
+        role: role.trim(),
+        salary: salary.toString().trim(),
+        qualities: qualities.trim(),
+        responsibility: responsibility.trim(),
         from: orgData?.ownerId!,
         to: data?.user?._id,
       });
@@ -97,12 +100,13 @@ const CompleteRequest = () => {
   if (isPending || orgPending) {
     return <LoadingComponent />;
   }
+  console.log({ errors });
 
   return (
     <Container>
       <HeaderNav title="Complete Request" />
       <CompleteDialog text="Request sent" />
-      <ScrollView
+      <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 50 }}
       >
@@ -154,14 +158,43 @@ const CompleteRequest = () => {
             textarea
           />
 
-          <CustomInput
+          {/* <CustomInput
             label="Salary"
             name={'salary'}
             control={control}
             errors={errors}
             placeholder="Type a salary in naira"
-            keyboardType="number-pad"
-          />
+            keyboardType="numeric"
+          /> */}
+          <VStack>
+            <MyText poppins="Bold" style={{ fontFamily: 'NunitoBold' }}>
+              Salary
+            </MyText>
+
+            <Controller
+              control={control}
+              name="salary"
+              render={({ field: { onChange, value } }) => (
+                <CurrencyInput
+                  value={+value}
+                  onChangeValue={onChange}
+                  prefix="₦"
+                  delimiter=","
+                  separator="."
+                  precision={2}
+                  minValue={0}
+                  onChangeText={(formattedValue) => {
+                    console.log(formattedValue); // R$ +2.310,46
+                  }}
+                  style={styles.numberInput}
+                />
+              )}
+            />
+            {errors['salary'] && (
+              // @ts-ignore
+              <Text style={styles.error}>{errors?.['salary']?.message}</Text>
+            )}
+          </VStack>
         </VStack>
 
         <Button
@@ -171,9 +204,27 @@ const CompleteRequest = () => {
           loading={isSubmitting}
           style={{ marginTop: 20 }}
         />
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </Container>
   );
 };
 
 export default CompleteRequest;
+
+const styles = StyleSheet.create({
+  numberInput: {
+    width: '100%',
+
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: colors.gray,
+    borderRadius: 8,
+    padding: 5,
+    height: 55,
+  },
+  error: {
+    fontSize: 15,
+    fontFamily: 'NunitoBold',
+    color: 'red',
+  },
+});

@@ -23,16 +23,18 @@ export const CustomModal = ({ onClose, isOpen, children, title }: Props) => {
       visible={isOpen}
       onRequestClose={onClose}
     >
-      <View style={styles.centeredView}>
-        <ThemedView style={[styles.modalView, { shadowColor: color }]}>
-          <CustomPressable onPress={onClose} style={styles.button}>
-            <X size={25} color={color} />
-          </CustomPressable>
-          <View style={styles.title}>
-            <ThemedText style={styles.modalText}>{title}</ThemedText>
-          </View>
-          <View style={styles.content}>{children}</View>
-        </ThemedView>
+      <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+        <View style={styles.centeredView}>
+          <ThemedView style={[styles.modalView, { shadowColor: color }]}>
+            <CustomPressable onPress={onClose} style={styles.button}>
+              <X size={25} color={color} />
+            </CustomPressable>
+            <View style={styles.title}>
+              <ThemedText style={styles.modalText}>{title}</ThemedText>
+            </View>
+            <View style={styles.content}>{children}</View>
+          </ThemedView>
+        </View>
       </View>
     </Modal>
   );

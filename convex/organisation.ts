@@ -2,6 +2,7 @@ import { ConvexError, v } from 'convex/values';
 import { Id } from './_generated/dataModel';
 import { mutation, query, QueryCtx } from './_generated/server';
 import { getLoggedInUser, getUserByUserId, getUserForWorker } from './users';
+import { internal } from './_generated/api';
 
 export const getServicePoints = query({
   args: {},
@@ -105,12 +106,14 @@ export const getOrganisationWithServicePoints = query({
       ctx,
       organizationId
     );
+
     const servicePoints = await ctx.db
       .query('servicePoints')
       .withIndex('by_organisation_id', (q) =>
         q.eq('organizationId', organizationId)
       )
       .collect();
+
     return {
       organization,
       servicePoints,
@@ -254,7 +257,7 @@ export const getOrganisationsByServicePointsSearchQueryName = query({
         );
       })
     );
-    console.log({ organisation });
+
     return organisation.filter((org) => org?.ownerId !== ownerId) || [];
   },
 });
@@ -396,6 +399,14 @@ export const createOrganization = mutation({
     }
     await ctx.db.patch(user._id, {
       organizationId: organizationId,
+    });
+    await ctx.scheduler.runAfter(0, internal.sendEmails.sendNewOrgEmail, {
+      name: user.name as string,
+      email: user.email as string,
+    });
+    await ctx.scheduler.runAfter(0, internal.pushNotification.sendToAllUsers, {
+      orgId: organizationId,
+      message: `New organization "${args.name}" created!`,
     });
   },
 });
@@ -638,5 +649,41 @@ export const deleteImageId = mutation({
       avatar: undefined,
     });
     return await ctx.storage.delete(args.id);
+  },
+});
+
+export const getTeamMembers = query({
+  args: {
+    workspaceId: v.id('workspaces'),
+  },
+  handler: async (ctx, args) => {
+    const workspace = await ctx.db.get(args.workspaceId);
+    const emptyResult = {
+      boss: null,
+      workers: [],
+    };
+    if (!workspace) return emptyResult;
+    const organization = await ctx.db.get(workspace.organizationId);
+    if (!organization) return emptyResult;
+    const workers = await ctx.db
+      .query('workers')
+      .withIndex('by_org_id', (q) => q.eq('organizationId', organization._id))
+      .collect();
+
+    const boss = await getUserByUserId(ctx, organization.ownerId);
+    const workersWithProfiles = await Promise.all(
+      workers.map(async (worker) => {
+        const user = await getUserByUserId(ctx, worker.userId);
+        return {
+          ...worker,
+          user,
+        };
+      })
+    );
+
+    return {
+      boss,
+      workers: workersWithProfiles,
+    };
   },
 });

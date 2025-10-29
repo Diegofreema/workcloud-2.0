@@ -12,7 +12,7 @@ import { api } from '~/convex/_generated/api';
 import { toast } from 'sonner-native';
 import { useGetUserId } from '~/hooks/useGetUserId';
 import { router, useLocalSearchParams } from 'expo-router';
-import { colors } from '~/constants/Colors';
+import Colors, { colors } from '~/constants/Colors';
 import { Id } from '~/convex/_generated/dataModel';
 import { Button } from '~/features/common/components/Button';
 import { CustomPressable } from '~/components/Ui/CustomPressable';
@@ -20,6 +20,7 @@ import { X } from 'lucide-react-native';
 
 const UploadReview = () => {
   const { theme: darkMode } = useTheme();
+  const textColor = Colors[darkMode].text;
   const { id: userId } = useGetUserId();
   const { id } = useLocalSearchParams<{ id: Id<'organizations'> }>();
   const [value, setValue] = useState('');
@@ -90,7 +91,7 @@ const UploadReview = () => {
             placeholder="Write a comment"
             value={value}
             onChangeText={setValue}
-            style={styles.input}
+            style={[styles.input, { color: textColor }]}
             numberOfLines={5}
             multiline
             autoCapitalize="sentences"

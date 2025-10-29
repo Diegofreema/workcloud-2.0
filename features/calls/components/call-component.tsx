@@ -1,12 +1,12 @@
 import { useCall } from '@stream-io/video-react-bindings';
 import { CallContent } from '@stream-io/video-react-native-sdk';
 import { useMutation } from 'convex/react';
-import { View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { CustomCallControls } from '~/components/custom-call-buttons';
 import StarMessageComponent from '~/components/Ui/star-component';
 import { api } from '~/convex/_generated/api';
-import { useCallStore } from '../hook/useCallStore';
 import { useStar } from '~/hooks/useStar';
+import { useCallStore } from '../hook/useCallStore';
 
 export const CallComponent = () => {
   const {
@@ -47,17 +47,17 @@ export const CallComponent = () => {
   };
 
   return (
-    <>
-      <View style={{ flex: 1 }}>
-        <CallContent
-          onHangupCallHandler={onHangupCallHandler}
-          layout={'grid'}
-          CallControls={CustomCallControls}
-        />
-        {isOpen && (
-          <StarMessageComponent isOpen={isOpen} setIsOpen={setIsOpen} />
-        )}
-      </View>
-    </>
+    <KeyboardAwareScrollView
+      style={{ flex: 1 }}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ flexGrow: 1 }}
+    >
+      <CallContent
+        onHangupCallHandler={onHangupCallHandler}
+        layout={'grid'}
+        CallControls={CustomCallControls}
+      />
+      {isOpen && <StarMessageComponent isOpen={isOpen} setIsOpen={setIsOpen} />}
+    </KeyboardAwareScrollView>
   );
 };

@@ -4,17 +4,21 @@ import { useMutation, useQuery } from 'convex/react';
 import { format } from 'date-fns';
 import * as Crypto from 'expo-crypto';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
+import { Users2 } from 'lucide-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { toast } from 'sonner-native';
 import { WaitListModal } from '~/components/Dialogs/WaitListModal';
 import { HeaderNav } from '~/components/HeaderNav';
+import { HStack } from '~/components/HStack';
 import { BottomActive } from '~/components/Ui/BottomActive';
 import { Container } from '~/components/Ui/Container';
+import { CustomPressable } from '~/components/Ui/CustomPressable';
 import { LoadingComponent } from '~/components/Ui/LoadingComponent';
 import { UserPreview } from '~/components/Ui/UserPreview';
 import { Waitlists } from '~/components/Ui/Waitlists';
 import { WorkspaceButtons } from '~/components/Ui/WorkspaceButtons';
+import { colors } from '~/constants/Colors';
 import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
@@ -202,7 +206,7 @@ const Work = () => {
     nextUser: Id<'waitlists'>,
     customerId: Id<'users'>
   ) => {
-    if (!client || !data?.workspace.workerId) return;
+    if (!client || data?.worker?._id !== user?._id) return;
     setAddingToCall(true);
     try {
       const callId = Crypto.randomUUID();
@@ -210,6 +214,7 @@ const Work = () => {
       await client.call('default', callId).getOrCreate({
         ring: true,
         video: true,
+
         // notify: true,
         data: {
           members: [
@@ -224,10 +229,16 @@ const Work = () => {
           ],
         },
       });
+      getData({
+        callId,
+        workerId: data?.workspace.workerId!,
+        workspaceId: id,
+        customerId: '' as Id<'users'>,
+        customerImage: '',
+        customerName: '',
+      });
 
       client.on('call.accepted', async (event: StreamVideoEvent) => {
-        console.log({ event: event });
-
         if (
           event.type === 'call.accepted' &&
           event.call.id === callId &&
@@ -290,7 +301,7 @@ const Work = () => {
           <HeaderNav
             title="Workspace"
             subTitle={`${organization?.name} lobby`}
-            rightComponent={isWorker && <MessageBtn />}
+            rightComponent={isWorker && <WorkerButton workspaceId={id} />}
           />
           <View style={{ marginTop: 20 }} />
           <UserPreview
@@ -353,3 +364,23 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+type WorkerButtonProps = {
+  workspaceId: Id<'workspaces'>;
+  isProcessor?: boolean;
+};
+export const WorkerButton = ({
+  workspaceId,
+  isProcessor,
+}: WorkerButtonProps) => {
+  return (
+    <HStack>
+      <MessageBtn isProcessor={isProcessor} workspaceId={workspaceId} />
+      <CustomPressable
+        onPress={() => router.push(`/teams?workspaceId=${workspaceId}`)}
+      >
+        <Users2 color={colors.grayText} size={25} />
+      </CustomPressable>
+    </HStack>
+  );
+};

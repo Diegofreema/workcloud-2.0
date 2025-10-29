@@ -1,19 +1,19 @@
-import React from "react";
-import { StyleSheet, View } from "react-native";
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
-import { RFPercentage } from "react-native-responsive-fontsize";
-import { Doc } from "~/convex/_generated/dataModel";
-import { Avatar } from "~/features/common/components/avatar";
-import { colors } from "~/constants/Colors";
-import { MyText } from "~/components/Ui/MyText";
+import { RFPercentage } from 'react-native-responsive-fontsize';
+import { Doc } from '~/convex/_generated/dataModel';
+import { Avatar } from '~/features/common/components/avatar';
+import { colors } from '~/constants/Colors';
+import { MyText } from '~/components/Ui/MyText';
 
 type Props = {
-  data: Doc<"conversations">;
+  data: Doc<'conversations'>;
   count: number;
 };
 
 export const RoomInfoTop = ({ data, count }: Props) => {
-  const memberText = count > 1 ? "members" : "member";
+  const memberText = count > 1 ? 'members' : 'member';
   return (
     <View style={{ gap: 10 }}>
       <View style={styles.container}>
@@ -21,22 +21,27 @@ export const RoomInfoTop = ({ data, count }: Props) => {
           <Avatar url={data.imageUrl!} size={100} />
         </View>
         <MyText
-          poppins={"Bold"}
+          poppins={'Bold'}
           fontSize={30}
-          style={[styles.name, { textAlign: "center" }]}
+          style={[styles.name, { textAlign: 'center' }]}
         >
           {data.name!}
         </MyText>
         <MyText
-          poppins={"Medium"}
+          poppins={'Medium'}
           fontSize={15}
-          style={[styles.count, { textAlign: "center" }]}
+          style={[styles.count, { textAlign: 'center' }]}
         >
           {`${count} ${memberText} `}
         </MyText>
       </View>
 
-      <MyText poppins={"Light"} fontSize={20} style={[styles.name]}>
+      {data.description && (
+        <MyText poppins={'Medium'} fontSize={25} style={[styles.description]}>
+          {data.description}
+        </MyText>
+      )}
+      <MyText poppins={'Light'} fontSize={20} style={[styles.name]}>
         Members
       </MyText>
     </View>
@@ -45,7 +50,7 @@ export const RoomInfoTop = ({ data, count }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    alignSelf: "center",
+    alignSelf: 'center',
     gap: 5,
   },
   image: {
@@ -54,7 +59,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   name: {
-    color: colors.black,
     fontSize: RFPercentage(1.5),
 
     flex: 0,
@@ -62,6 +66,13 @@ const styles = StyleSheet.create({
   count: {
     color: colors.black,
     flex: 0,
-    textAlign: "center",
+    textAlign: 'center',
+  },
+
+  description: {
+    fontSize: RFPercentage(2),
+    flex: 0,
+    textAlign: 'center',
+    marginBottom: 10,
   },
 });

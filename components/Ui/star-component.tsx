@@ -5,9 +5,6 @@ import { useMutation } from 'convex/react';
 import React, { useEffect, useState } from 'react';
 import {
   Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -64,7 +61,7 @@ const StarMessageComponent = ({ isOpen, setIsOpen }: Props) => {
     if (!workspaceId || !message || !customerId) return;
     setSending(true);
     try {
-      await starCustomer({ workspaceId, customerId, text: message });
+      await starCustomer({ workspaceId, customerId, text: message.trim() });
       toast.success('Starred successfully');
       hideComponent();
       setMessage('');
@@ -82,60 +79,54 @@ const StarMessageComponent = ({ isOpen, setIsOpen }: Props) => {
 
   return (
     <Animated.View style={[styles.starMessageContainer, animatedStyle]}>
-      <ScrollView>
-        <Animated.View style={[styles.componentContent]}>
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.profileSection}>
-              <Image
-                source={{
-                  uri: customerImage as string,
-                }}
-                style={styles.profileImage}
-              />
-              <View style={styles.headerText}>
-                <Text style={styles.starredText}>You starred</Text>
-                <Text style={styles.userName}>{customerName}</Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Message Input */}
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          >
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.messageInput}
-                placeholder="Type why you starred this account"
-                placeholderTextColor="#999"
-                multiline
-                textAlignVertical="top"
-                value={message}
-                onChangeText={setMessage}
-              />
-            </View>
-          </KeyboardAvoidingView>
-          {/* Action Buttons */}
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.sendButton}
-              onPress={hideComponent}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.sendButtonText}>Cancel</Text>
-            </TouchableOpacity>
-            <Button
-              style={styles.saveButton}
-              onPress={handleSend}
-              disabled={sending || !message}
-              loading={sending}
-              title="Submit"
-              loadingTitle="Submitting..."
+      <Animated.View style={[styles.componentContent]}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.profileSection}>
+            <Image
+              source={{
+                uri: customerImage as string,
+              }}
+              style={styles.profileImage}
             />
+            <View style={styles.headerText}>
+              <Text style={styles.starredText}>You starred</Text>
+              <Text style={styles.userName}>{customerName}</Text>
+            </View>
           </View>
-        </Animated.View>
-      </ScrollView>
+        </View>
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.messageInput}
+            placeholder="Type why you starred this account"
+            placeholderTextColor="#999"
+            multiline
+            textAlignVertical="top"
+            value={message}
+            onChangeText={setMessage}
+          />
+        </View>
+
+        {/* Action Buttons */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.sendButton}
+            onPress={hideComponent}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.sendButtonText}>Cancel</Text>
+          </TouchableOpacity>
+          <Button
+            style={styles.saveButton}
+            onPress={handleSend}
+            disabled={sending || !message}
+            loading={sending}
+            title="Submit"
+            loadingTitle="Submitting..."
+          />
+        </View>
+      </Animated.View>
     </Animated.View>
   );
 };

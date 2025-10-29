@@ -1,13 +1,15 @@
 import { AntDesign } from '@expo/vector-icons';
 import { Divider } from '@rneui/themed';
 import { Href, router } from 'expo-router';
-import { Pressable } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
+import { Platform, Pressable } from 'react-native';
 import { HStack } from '../HStack';
 import { HelpSvg, LockSvg, UserSvg } from '../LockSvg';
 import { MyText } from './MyText';
 import VStack from './VStack';
 
+import { Check, Trash } from 'lucide-react-native';
+import { View } from 'react-native';
 import { colors } from '~/constants/Colors';
 import { useTheme } from '~/hooks/use-theme';
 
@@ -53,6 +55,46 @@ export const OtherLinks = ({
         title={title}
         link={link as Href}
       />
+      <Item
+        rightIcon={
+          <View
+            style={{
+              backgroundColor: '#E7EDFF',
+              borderRadius: 5555,
+
+              width: 50,
+              height: 50,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Trash size={30} color={'#0047FF'} />
+          </View>
+        }
+        title={'Delete account'}
+        link={'/delete-account'}
+      />
+
+        <Item
+          rightIcon={
+            <View
+              style={{
+                backgroundColor: '#E7EDFF',
+                borderRadius: 5555,
+
+                width: 50,
+                height: 50,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Check size={30} color={'#0047FF'} />
+            </View>
+          }
+          title={'Pro plans'}
+          link={'/subcription'}
+        />
+
     </VStack>
   );
 };

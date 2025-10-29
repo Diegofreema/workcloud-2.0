@@ -8,7 +8,7 @@ import { Button } from '@rneui/themed';
 import { format } from 'date-fns';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
-import { ScrollView, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 // import { useChatContext } from 'stream-chat-expo';
 import { HStack } from '~/components/HStack';
 import { HeaderNav } from '~/components/HeaderNav';
@@ -46,7 +46,26 @@ const Profile = () => {
   }
 
   const showRequestBtn =
-    data?.worker.bossId !== user?._id && pendingData?.status !== 'pending';
+    data?.worker.bossId !== user?._id && pendingData?.status === 'pending';
+  const onAlertCancel = async () => {
+    Alert.alert(
+      'Cancel Request',
+      'Are you sure you want to cancel the request?',
+      [
+        {
+          text: 'No',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: async () => {
+            await handleRequest();
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
   return (
     <Container>
       <ScrollView>
@@ -65,7 +84,7 @@ const Profile = () => {
         <HStack gap={20} mt={20} mb={5}>
           {showRequestBtn && (
             <Button
-              onPress={handleRequest}
+              onPress={onAlertCancel}
               loading={cancelling}
               titleStyle={{ fontFamily: 'PoppinsMedium', fontSize: 12 }}
               buttonStyle={{

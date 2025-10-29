@@ -4,7 +4,7 @@ const AuthLayout = () => {
   return (
     // @ts-ignore
     <>
-      <Stack screenOptions={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }} initialRouteName="login" />
     </>
   );
 };

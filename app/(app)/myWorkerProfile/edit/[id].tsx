@@ -3,8 +3,9 @@ import { useMutation, useQuery } from 'convex/react';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { toast } from 'sonner-native';
 
 import { AuthHeader } from '~/components/AuthHeader';
@@ -81,7 +82,7 @@ const CreateProfile = () => {
   }
   return (
     <Container>
-      <ScrollView
+      <KeyboardAwareScrollView
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 50 }}
@@ -197,7 +198,7 @@ const CreateProfile = () => {
             loading={isSubmitting}
           />
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </Container>
   );
 };

@@ -25,7 +25,7 @@ export const getConversations = query({
         conversation.participants.includes(me?._id!) &&
         conversation.lastMessage !== undefined
     )
-      .order('asc')
+      .order('desc')
       .take(50);
   },
 });
@@ -49,7 +49,7 @@ export const getConversationsSingleSearch = query({
           p.toLowerCase().includes(args.query.toLowerCase())
         )
     )
-      .order('asc')
+      .order('desc')
       .collect();
   },
 });

@@ -4,6 +4,7 @@ import { ActivityIndicator, View } from 'react-native';
 import { ActivitiesType } from '~/constants/types';
 import { EmptyText } from '../EmptyText';
 import { RenderActivity } from './render-activity';
+import { useLocalSearchParams } from 'expo-router';
 
 type Props = {
   onLoadMore: () => void;
@@ -16,6 +17,8 @@ export const RenderActivities = ({
   results,
   isLoading,
 }: Props): JSX.Element => {
+  const { processor } = useLocalSearchParams<{ processor: string }>();
+  const isProcessor = !!processor;
   return (
     <View style={{ flex: 1 }}>
       <LegendList
@@ -24,7 +27,9 @@ export const RenderActivities = ({
         showsVerticalScrollIndicator={false}
         onEndReached={onLoadMore}
         onEndReachedThreshold={0.5}
-        renderItem={({ item }) => <RenderActivity item={item} />}
+        renderItem={({ item }) => (
+          <RenderActivity item={item} isProcessor={isProcessor} />
+        )}
         keyExtractor={(item) => item._id}
         ListEmptyComponent={() => <EmptyText text="Nothing to see here" />}
         ListFooterComponent={

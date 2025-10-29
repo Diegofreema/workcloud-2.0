@@ -35,6 +35,8 @@ export const Conversation = ({ conversation }: Props) => {
     return <ChatPreviewSkeleton />;
   }
   const isImage = lastMessage?.startsWith('https');
+  console.log({ lastMessage });
+
   return (
     <TouchableOpacity onPress={onPress} style={styles.pressable}>
       <HStack justifyContent="space-between" alignItems="flex-start">

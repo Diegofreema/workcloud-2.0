@@ -3,6 +3,7 @@ import { Text } from '@rneui/themed';
 import { useQuery } from 'convex/react';
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { ThemedText } from '~/components/Ui/themed-text';
 
 import Colors, { colors } from '~/constants/Colors';
 import { api } from '~/convex/_generated/api';
@@ -25,7 +26,7 @@ export const Header = () => {
 
   return (
     <View style={styles.container}>
-      <Text
+      <ThemedText
         style={{
           fontFamily: 'PoppinsBoldItalic',
           color: colors.buttonBlue,
@@ -33,7 +34,7 @@ export const Header = () => {
         }}
       >
         Workcloud
-      </Text>
+      </ThemedText>
       <View style={styles.subContainer}>
         <Pressable
           onPress={onSearch}

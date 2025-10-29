@@ -1,6 +1,11 @@
-import { Ionicons } from "@expo/vector-icons";
-import React from "react";
-import { DimensionValue, FlexAlignType, StyleSheet } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import {
+  DimensionValue,
+  FlexAlignType,
+  StyleSheet,
+  useColorScheme,
+} from 'react-native';
 
 import {
   Menu,
@@ -8,7 +13,8 @@ import {
   MenuOptions,
   MenuTrigger,
   renderers,
-} from "react-native-popup-menu";
+} from 'react-native-popup-menu';
+import Colors from '~/constants/Colors';
 
 interface MenuItem {
   text: string;
@@ -20,7 +26,7 @@ interface PopupMenuProps {
   disable?: boolean;
   trigger?: React.ReactNode;
   width?: DimensionValue | undefined;
-  alignSelf?: "auto" | FlexAlignType | undefined;
+  alignSelf?: 'auto' | FlexAlignType | undefined;
 }
 
 export const ChatMenu: React.FC<PopupMenuProps> = ({
@@ -30,6 +36,9 @@ export const ChatMenu: React.FC<PopupMenuProps> = ({
   width,
   alignSelf,
 }) => {
+  const colorScheme = useColorScheme();
+  const color = Colors[colorScheme ?? 'light'].text;
+  const backgroundColor = Colors[colorScheme ?? 'light'].background;
   return (
     <Menu renderer={renderers.ContextMenu}>
       <MenuTrigger
@@ -46,10 +55,18 @@ export const ChatMenu: React.FC<PopupMenuProps> = ({
         {trigger ? (
           trigger
         ) : (
-          <Ionicons name="ellipsis-vertical" size={24} color="black" />
+          <Ionicons name="ellipsis-vertical" size={24} color={color} />
         )}
       </MenuTrigger>
-      <MenuOptions customStyles={menuOptionsStyles}>
+      <MenuOptions
+        customStyles={{
+          optionsContainer: {
+            ...menuOptionsStyles.optionsContainer,
+            backgroundColor,
+            shadowColor: color,
+          },
+        }}
+      >
         {menuItems.map((item, index) => (
           <MenuOption
             key={index}
@@ -72,9 +89,8 @@ const styles = StyleSheet.create({
 
 const menuOptionsStyles = {
   optionsContainer: {
-    backgroundColor: "#fff",
     borderRadius: 8,
-    shadowColor: "#000",
+
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -91,6 +107,6 @@ const menuOptionStyles = {
   },
   optionText: {
     fontSize: 16,
-    color: "#333",
+    color: '#333',
   },
 };

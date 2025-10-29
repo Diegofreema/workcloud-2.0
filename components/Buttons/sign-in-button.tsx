@@ -1,7 +1,7 @@
 import { useAuthActions } from '@convex-dev/auth/react';
 import { makeRedirectUri } from 'expo-auth-session';
 import { openAuthSessionAsync } from 'expo-web-browser';
-import { Platform } from 'react-native';
+import { Platform, View } from 'react-native';
 import { useAuth } from '~/context/auth';
 import { Button } from '~/features/common/components/Button';
 
@@ -11,8 +11,8 @@ export function SignIn() {
   const { signIn } = useAuthActions();
   const { user } = useAuth();
   const loading = user === undefined;
-  const handleSignIn = async () => {
-    const { redirect } = await signIn('google', { redirectTo });
+  const handleSignIn = async (provider: 'google' | 'apple') => {
+    const { redirect } = await signIn(provider, { redirectTo });
     if (Platform.OS === 'web') {
       return;
     }
@@ -24,12 +24,24 @@ export function SignIn() {
     }
   };
   return (
-    <Button
-      title={'Sign in with Google'}
-      loadingTitle={'Signing in...'}
-      onPress={handleSignIn}
-      loading={loading}
-      disabled={loading}
-    />
+    <View style={{ gap: 15 }}>
+      <Button
+        title={'Sign in with Google'}
+        loadingTitle={'Signing in...'}
+        onPress={() => handleSignIn('google')}
+        loading={loading}
+        disabled={loading}
+      />
+
+      {/* {Platform.OS === 'ios' && (
+        <Button
+          title={'Continue'}
+          loadingTitle={'Signing in...'}
+          onPress={() => handleSignIn('apple')}
+          loading={loading}
+          disabled={loading}
+        />
+      )} */}
+    </View>
   );
 }

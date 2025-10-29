@@ -62,13 +62,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       Notifications.addNotificationResponseReceivedListener((response) => {
         const data = response.notification.request.content.data;
         if (data.type === 'single') {
-          router.push(`/chat/${data.conversationId}?type=single`);
+          router.push(`/chat/${data.loggedInUserId}?type=single`);
         }
         if (data.type === 'group') {
           router.push(`/chat/group/${data.conversationId}`);
         }
         if (data.type === 'processor') {
-          router.push(`/chat/${data.conversationId}?type=single`);
+          router.push(`/chat/${data.loggedInUserId}?type=single`);
         }
         if (data.type === 'notification') {
           router.push('/notification');

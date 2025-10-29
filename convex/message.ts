@@ -153,8 +153,14 @@ export const sendMessage = mutation({
     fileId: v.optional(v.id('_storage')),
     replyTo: v.optional(v.id('messages')),
     senderName: v.optional(v.string()),
+    audioDuration: v.optional(v.number()),
+    lastMessageType: v.union(
+      v.literal('audio'),
+      v.literal('file'),
+      v.literal('text')
+    ),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, { lastMessageType, ...args }) => {
     const room = await ctx.db.get(args.conversationId);
     if (!room) {
       throw new ConvexError('Conversation not found');
@@ -174,6 +180,7 @@ export const sendMessage = mutation({
     await ctx.db.patch(room._id, {
       lastMessage: args.content || file_url,
       lastMessageTime: new Date().getTime(),
+      lastMessageType,
     });
   },
 });

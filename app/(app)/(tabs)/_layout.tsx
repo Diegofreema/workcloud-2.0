@@ -1,11 +1,14 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Text } from '@rneui/themed';
+import { useQuery } from 'convex/react';
 import { Tabs } from 'expo-router';
 import React from 'react';
 
 import { StyleSheet, View } from 'react-native';
 import { fontFamily } from '~/constants';
 import Colors, { colors } from '~/constants/Colors';
+import { useAuth } from '~/context/auth';
+import { api } from '~/convex/_generated/api';
 import { useUnreadMessageCount } from '~/features/common/hook/use-unread-message-count';
 import { useColorScheme } from '~/hooks/useColorScheme';
 
@@ -23,7 +26,13 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const count = useUnreadMessageCount();
-
+  const { user } = useAuth();
+  const userId = user?._id;
+  const missedCall = useQuery(
+    api.users.getMissedCalls,
+    userId ? { userId } : 'skip'
+  );
+  const missedCallCount = missedCall === undefined ? 0 : missedCall;
   return (
     <>
       <Tabs
@@ -127,15 +136,22 @@ export default function TabLayout() {
               />
             ),
             tabBarLabel: ({ focused }) => (
-              <Text
-                style={{
-                  color: focused ? colors.buttonBlue : colors.grayText,
-                  fontFamily: fontFamily.Bold,
-                  fontSize: 10,
-                }}
-              >
-                Call log
-              </Text>
+              <View>
+                <Text
+                  style={{
+                    color: focused ? colors.buttonBlue : colors.grayText,
+                    fontFamily: fontFamily.Bold,
+                    fontSize: 10,
+                  }}
+                >
+                  Call log
+                </Text>
+                {missedCallCount > 0 && (
+                  <View style={styles.call}>
+                    <Text style={styles.count}>{missedCallCount}</Text>
+                  </View>
+                )}
+              </View>
             ),
           }}
         />
@@ -147,6 +163,17 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   con: {
     backgroundColor: colors.lightBlue,
+    position: 'absolute',
+    top: -30,
+    right: -2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 30,
+    width: 20,
+    height: 20,
+  },
+  call: {
+    backgroundColor: colors.closeTextColor,
     position: 'absolute',
     top: -30,
     right: -2,

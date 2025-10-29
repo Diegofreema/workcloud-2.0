@@ -16,6 +16,8 @@ type Props = {
   onClose: () => void;
   isOpen: boolean;
   btnText?: string;
+  cancelText?: string;
+  actionBtnColor?: string;
 };
 export const CustomModal = ({
   onPress,
@@ -24,6 +26,8 @@ export const CustomModal = ({
   onClose,
   isOpen,
   btnText = 'Yes',
+  cancelText = 'No',
+  actionBtnColor,
 }: Props) => {
   const { theme: darkMode } = useTheme();
 
@@ -72,14 +76,14 @@ export const CustomModal = ({
               onPress={onClose}
               color={colors.black}
             >
-              No
+              {cancelText}
             </Button>
             <Button
               disabled={isLoading}
               loading={isLoading}
               titleStyle={{ fontFamily: 'PoppinsMedium' }}
               buttonStyle={{
-                backgroundColor: colors.dialPad,
+                backgroundColor: actionBtnColor || colors.dialPad,
                 borderRadius: 5,
                 width: 120,
               }}

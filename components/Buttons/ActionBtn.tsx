@@ -10,9 +10,9 @@ import {
 } from 'react-native';
 import { RFPercentage } from 'react-native-responsive-fontsize';
 
+import { Text } from 'react-native';
 import { MyText } from '~/components/Ui/MyText';
 import { colors } from '~/constants/Colors';
-import { Badge } from '../badge/Badge';
 
 type ActionBtnProps = TouchableOpacityProps & {
   title: string;
@@ -50,14 +50,9 @@ export const ActionBtn = ({
             {title}
           </MyText>
           {right !== undefined && (
-            <Badge
-              label={right?.toString()}
-              radius="full"
-              size="sm"
-              variant="error"
-              textStyle={{ color: 'white' }}
-              style={styles.right}
-            />
+            <View style={styles.right}>
+              <Text style={{ color: 'white' }}>{right}</Text>
+            </View>
           )}
         </View>
       )}
@@ -84,6 +79,10 @@ const styles = StyleSheet.create({
   },
   right: {
     backgroundColor: 'red',
-    width: 20,
+    borderRadius: 99,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 18,
+    height: 18,
   },
 });

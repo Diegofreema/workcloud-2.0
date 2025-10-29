@@ -565,6 +565,7 @@ export interface SendIMessage {
   fileUrl?: string;
   fileId?: Id<'_storage'>;
   replyTo?: Id<'messages'>;
+  lastMessageType: 'audio' | 'file' | 'text';
 }
 
 export const emojiType = v.union(

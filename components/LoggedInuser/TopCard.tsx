@@ -1,13 +1,17 @@
-import { useRouter } from 'expo-router';
-import { Pressable, StyleSheet } from 'react-native';
+import {router, useRouter} from 'expo-router';
+import {Platform, Pressable, StyleSheet, View} from 'react-native';
 
-import { HStack } from '../HStack';
-import { MyText } from '../Ui/MyText';
-import { UserPreview } from '../Ui/UserPreview';
+import {HStack} from '../HStack';
+import {MyText} from '../Ui/MyText';
+import {UserPreview} from '../Ui/UserPreview';
 
-import { colors } from '~/constants/Colors';
-import { ThemedView } from '../Ui/themed-view';
-import { useTheme } from '~/hooks/use-theme';
+import {colors} from '~/constants/Colors';
+import {ThemedView} from '../Ui/themed-view';
+import {useTheme} from '~/hooks/use-theme';
+import {useQuery} from "convex/react";
+import {api} from "~/convex/_generated/api";
+import {CustomPressable} from "~/components/Ui/CustomPressable";
+
 type Props = {
   id?: string;
   image?: string;
@@ -50,6 +54,7 @@ export const TopCard = ({ image, name, id }: Props): JSX.Element => {
             </MyText>
           </Pressable>
         </HStack>
+         <ProCard />
       </ThemedView>
     </ThemedView>
   );
@@ -80,7 +85,59 @@ const styles = StyleSheet.create({
     left: 0,
     width: '100%',
     height: 10,
-
     zIndex: 1,
   },
 });
+
+const ProCard = () => {
+
+  const subscriptionData = useQuery(api.users.getSubscriptions)
+  if (subscriptionData === undefined) {
+    return <></>;
+  }
+  const isPro = subscriptionData.isPremium;
+
+    const subscription = subscriptionData?.subscription
+    const onPress = () => {
+        router.push('/subcription');
+        console.log("Pressed")
+    }
+  if (!isPro|| !subscription) {
+    return (
+     <CustomPressable onPress={onPress}>
+         <MyText
+             poppins="Bold"
+             fontSize={15}
+             style={{ marginTop: 10, textAlign: 'center' }}
+         >
+             Upgrade to Pro for more features
+         </MyText>
+     </CustomPressable>
+    );
+  }
+  const planName = subscriptionData?.subscription?.product.name || 'Free trial';
+  const expiresAt = subscription.endedAt
+  const subscribedAt = subscription.createdAt
+  const period = subscription.currentPeriodEnd || 'N/A';
+  return (
+    <View style={{ marginTop: 10, alignItems: 'center', gap: 5 }}>
+      <MyText
+        poppins="Medium"
+        fontSize={13}
+        style={{ marginTop: 10, textAlign: 'center' }}
+      >
+        Plan: {planName}
+      </MyText>
+
+      <MyText poppins="LightItalic" fontSize={13}>
+        Expires At: {expiresAt}
+      </MyText>
+      <MyText poppins="LightItalic" fontSize={13}>
+        Subscribed At: {subscribedAt}
+      </MyText>
+      <MyText poppins="LightItalic" fontSize={13}>
+        Billing Period: {period}
+      </MyText>
+    </View>
+  );
+};

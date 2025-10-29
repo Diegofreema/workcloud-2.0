@@ -20,7 +20,6 @@ import { DottedButton } from '~/components/Ui/DottedButton';
 import { LoadingComponent } from '~/components/Ui/LoadingComponent';
 import { MyText } from '~/components/Ui/MyText';
 import { StaffBottomSheet } from '~/components/Ui/staff-bottom';
-import { colors } from '~/constants/Colors';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
 import { LoadingModal } from '~/features/common/components/loading-modal';
@@ -32,6 +31,9 @@ import { CustomModal } from '~/features/workspace/components/modal/custom-modal'
 import { useWorkspaceModal } from '~/features/workspace/hooks/use-workspace-modal';
 import { useTheme } from '~/hooks/use-theme';
 import { useHandleStaff } from '~/hooks/useHandleStaffs';
+import { useGetCustomerInfo } from '~/hooks/rc/use-get-customer-info';
+import { useGetOfferings } from '~/hooks/rc/use-get-offerings';
+import { ErrorComponent } from '~/components/Ui/ErrorComponent';
 
 const Staffs = () => {
   const { id } = useLocalSearchParams<{ id: Id<'users'> }>();
@@ -44,7 +46,7 @@ const Staffs = () => {
   const [assigning, setAssigning] = useState(false);
   const { getItem, item: staff } = useHandleStaff();
   const { onClose, isOpen, onOpen } = useWorkspaceModal();
-
+  const { data: customerInfo, isPending, isError } = useGetCustomerInfo();
   const [role, setRole] = useState('All');
   const router = useRouter();
   const roles = useQuery(api.staff.getStaffRoles, { bossId: id });
@@ -52,6 +54,11 @@ const Staffs = () => {
   const workspaces = useQuery(api.workspace.freeWorkspaces, { ownerId: id });
   const { theme: darkMode } = useTheme();
   const { onGetData } = useCreateStaffState();
+  const {
+    data: offerings,
+    isPending: isPendingOfferings,
+    isError: isErrorOfferings,
+  } = useGetOfferings();
   const addToWorkspace = useMutation(api.workspace.addStaffToWorkspace);
   const createWorkspace = useMutation(api.workspace.createAndAssignWorkspace);
 
@@ -63,8 +70,10 @@ const Staffs = () => {
 
     return data?.filter((worker) => worker.role === role);
   }, [data, role]);
-
-  if (!data || !roles || !workspaces) {
+  if (isError || isErrorOfferings) {
+    return <ErrorComponent refetch={onGetData} text={'Something went wrong'} />;
+  }
+  if (!data || !roles || !workspaces || isPending || isPendingOfferings) {
     return <LoadingComponent />;
   }
 
@@ -102,6 +111,45 @@ const Staffs = () => {
     }
   };
 
+  // const numberOfStaffs = workers.length;
+  // const isPro = (customerInfo?.activeSubscriptions.length ?? 0) > 0;
+
+  // const isBusinessPlanPro =
+  //   customerInfo?.entitlements.active['Business Plan Pro monthly'];
+  // const isBusinessPlan = offerings?.all['Business Plan'];
+  // const isEnterprisePlan = offerings?.all['Enterprise Plan monthly'];
+  const onAddNewStaff = () => {
+    // if (numberOfStaffs >= 1 && !isPro) {
+    //   toast.error('Upgrade to pro to add more staff');
+    //   router.push('/subcription');
+    //   return;
+    // }
+
+    // Pro plan (not Business Pro): 5 staff limit
+    // if (
+    //   numberOfStaffs >= 5 &&
+    //   isPro &&
+    //   !isBusinessPlanPro &&
+    //   !isEnterprisePlan
+    // ) {
+    //   toast.error(
+    //     'You have reached the maximum number of staff for Business plan. Upgrade to Business plan pro or Enterprise plan to add more staff'
+    //   );
+    //   router.push('/subcription');
+    //   return;
+    // }
+
+    // Business Pro plan: 10 staff limit
+    // if (numberOfStaffs >= 10 && isBusinessPlanPro && !isEnterprisePlan) {
+    //   toast.error(
+    //     'You have reached the maximum number of staff for Business plan pro. Upgrade to Enterprise plan to add more staff'
+    //   );
+    //   router.push('/subcription');
+    //   return;
+    // }
+
+    onOpen();
+  };
   const array = [
     {
       icon: 'user-o',
@@ -182,6 +230,7 @@ const Staffs = () => {
       _id,
     })
   );
+
   return (
     <Container>
       <LoadingModal isOpen={assigning} />
@@ -216,7 +265,7 @@ const Staffs = () => {
       <View style={{ marginBottom: 15 }}>
         <StaffRoles roles={roles} setRole={setRole} role={role} />
         <HStack gap={10} justifyContent="center">
-          <DottedButton text="Add New Staff" onPress={onOpen} />
+          <DottedButton text="Add New Staff" onPress={onAddNewStaff} />
           <DottedButton
             isIcon={false}
             text="Pending Staffs"

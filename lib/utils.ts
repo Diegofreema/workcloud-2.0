@@ -50,3 +50,14 @@ export const convexPushNotificationsHelper = async (
     console.log(error);
   }
 };
+
+export function getArticle(word: string) {
+  if (!word || typeof word !== 'string') {
+    return 'a';
+  }
+
+  const firstLetter = word.trim().toLowerCase().charAt(0);
+  const vowels = ['a', 'e', 'i', 'o', 'u'];
+
+  return vowels.includes(firstLetter) ? 'an' : 'a';
+}

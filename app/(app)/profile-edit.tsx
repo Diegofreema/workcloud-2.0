@@ -20,11 +20,11 @@ import { TopCard } from '~/components/LoggedInuser/TopCard';
 import { LoadingComponent } from '~/components/Ui/LoadingComponent';
 import { MyText } from '~/components/Ui/MyText';
 import { OtherLinks } from '~/components/Ui/OtherLinks';
-import { ThemedView } from '~/components/Ui/themed-view';
 import { defaultStyle } from '~/constants';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
 import { useTheme } from '~/hooks/use-theme';
+import { CustomScrollView } from '~/components/Ui/CustomScrollView';
 
 const ProfileEdit = () => {
   const { signOut } = useAuthActions();
@@ -41,7 +41,7 @@ const ProfileEdit = () => {
   const logout = async () => {
     setLoading(true);
     try {
-      signOut();
+      await signOut();
       await StreamVideoRN.onPushLogout();
     } catch (error) {
       console.log(error);
@@ -51,11 +51,7 @@ const ProfileEdit = () => {
   };
 
   return (
-    <ThemedView
-      style={{
-        flex: 1,
-      }}
-    >
+    <CustomScrollView>
       <View style={[styles.container]}>
         <HeaderNav title="Profile" rightComponent={<RightComponent />} />
       </View>
@@ -94,7 +90,7 @@ const ProfileEdit = () => {
           </HStack>
         )}
       </Pressable>
-    </ThemedView>
+    </CustomScrollView>
   );
 };
 

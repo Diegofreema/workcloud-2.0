@@ -1,23 +1,21 @@
-import { Divider } from '@rneui/themed';
 import { FlatList } from 'react-native';
 
 import { EmptyText } from './EmptyText';
 import { MyText } from './Ui/MyText';
 import VStack from './Ui/VStack';
 
+import * as Linking from 'expo-linking';
+import { toast } from 'sonner-native';
+import { CustomPressable } from '~/components/Ui/CustomPressable';
 import { colors } from '~/constants/Colors';
 import { ServicePointType } from '~/constants/types';
 import { useTheme } from '~/hooks/use-theme';
-import { CustomPressable } from '~/components/Ui/CustomPressable';
-import * as Linking from 'expo-linking';
-import { toast } from 'sonner-native';
 
 type Props = {
   data: ServicePointType[];
 };
 
 export const ServicePointLists = ({ data }: Props): JSX.Element => {
-  const { theme: darkMode } = useTheme();
   return (
     <FlatList
       scrollEnabled={false}
@@ -30,14 +28,6 @@ export const ServicePointLists = ({ data }: Props): JSX.Element => {
       renderItem={({ item }) => <ServicePointItem item={item} />}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ gap: 10 }}
-      ItemSeparatorComponent={() => (
-        <Divider
-          style={{
-            marginVertical: 10,
-            backgroundColor: darkMode === 'dark' ? 'transparent' : '#ccc',
-          }}
-        />
-      )}
       ListEmptyComponent={() => <EmptyText text="No Service Point yet" />}
     />
   );

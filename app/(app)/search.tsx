@@ -152,7 +152,7 @@ const OrganizationItem = ({
       onPress={onPress}
     >
       <HStack alignItems="center" gap={10}>
-        <Avatar rounded source={{ uri: item.avatar! }} size={50} />
+        <Avatar rounded source={{ uri: item?.avatar! }} size={50} />
         <VStack>
           <MyText poppins="Bold" fontSize={14}>
             {item?.name}

@@ -15,6 +15,7 @@ export const getNotifications = query({
     const notifications = await ctx.db
       .query('notifications')
       .withIndex('by_user_id', (q) => q.eq('userId', user?._id as Id<'users'>))
+      .order('desc')
       .paginate(args.paginationOpts);
 
     const page = await Promise.all(

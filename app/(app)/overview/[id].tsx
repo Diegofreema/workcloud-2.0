@@ -1,5 +1,5 @@
 import { EvilIcons } from '@expo/vector-icons';
-import { useMutation, useQuery } from 'convex/react';
+import { useConvex, useMutation, useQuery } from 'convex/react';
 import { Image } from 'expo-image';
 import * as Linking from 'expo-linking';
 import { useLocalSearchParams } from 'expo-router';
@@ -20,10 +20,12 @@ import { LoadingComponent } from '~/components/Ui/LoadingComponent';
 import { MyButton } from '~/components/Ui/MyButton';
 import { MyText } from '~/components/Ui/MyText';
 import { colors } from '~/constants/Colors';
+import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
 import { useTheme } from '~/hooks/use-theme';
 import { useGetUserId } from '~/hooks/useGetUserId';
+import { convexPushNotificationsHelper } from '~/lib/utils';
 
 type SubProps = {
   name: any;
@@ -80,7 +82,8 @@ export const OrganizationItems = ({ name, text, website }: SubProps) => {
 const Overview = () => {
   const { id } = useLocalSearchParams<{ id: Id<'organizations'> }>();
   const [following, setFollowing] = useState(false);
-
+  const convex = useConvex();
+  const { user } = useAuth();
   const { id: loggedInUser } = useGetUserId();
   const { theme: darkMode } = useTheme();
 
@@ -96,9 +99,16 @@ const Overview = () => {
     data?.organization?.followers?.includes(loggedInUser!) ?? false;
 
   const onHandleFollow = async () => {
+    if (!data?.organization?.ownerId) return;
     setFollowing(true);
     try {
       await handleFollow({ organizationId: id, userId: loggedInUser! });
+      await convexPushNotificationsHelper(convex, {
+        data: {},
+        body: `${user?.name} has ${isFollowing ? 'left' : 'joined'} your organization`,
+        title: `Organization info`,
+        to: data?.organization.ownerId,
+      });
     } catch (error) {
       console.log(error);
       toast.error(`Failed to ${isFollowing ? 'Leave' : 'Join'}`, {

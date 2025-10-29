@@ -8,7 +8,7 @@ type Props = {
   styles?: StyleProp<TextStyle>;
 };
 
-export const Title = ({ title, fontSize = 2.5, styles }: Props) => {
+export const Title = ({ title, fontSize = 2, styles }: Props) => {
   return (
     <MyText poppins={'Bold'} fontSize={RFPercentage(fontSize)} style={styles}>
       {title}

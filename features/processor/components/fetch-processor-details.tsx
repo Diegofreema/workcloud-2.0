@@ -1,5 +1,6 @@
-import { useMutation, useQuery } from 'convex/react';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useMutation } from 'convex/react';
+import { FunctionReturnType } from 'convex/server';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { toast } from 'sonner-native';
@@ -7,16 +8,17 @@ import { CustomModal } from '~/components/Dialogs/CustomModal';
 import { UserPreview } from '~/components/Ui/UserPreview';
 import { colors } from '~/constants/Colors';
 import { api } from '~/convex/_generated/api';
-import { Id } from '~/convex/_generated/dataModel';
 import { Button } from '~/features/common/components/Button';
 import { SmallLoader } from '~/features/common/components/small-loader';
 import { generateErrorMessage } from '~/lib/helper';
 
-export const FetchProcessorDetails = () => {
-  const { id } = useLocalSearchParams<{ id: Id<'workers'> }>();
+type Props = {
+  profileData: FunctionReturnType<typeof api.processors.getProcessorDetail>;
+};
+export const FetchProcessorDetails = ({ profileData }: Props) => {
   const [open, setIsOpen] = useState(false);
   const [isResigning, setIsResigning] = useState(false);
-  const profileData = useQuery(api.processors.getProcessorDetail, { id });
+
   const resign = useMutation(api.worker.resignFromOrganization);
   if (profileData === undefined) return <SmallLoader />;
   const handleResign = async () => {

@@ -1,7 +1,10 @@
 import { Divider } from '@rneui/themed';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Redirect } from 'expo-router';
+import { useEffect } from 'react';
 import {
   Image,
+  Platform,
   ScrollView,
   StyleSheet,
   useWindowDimensions,
@@ -12,22 +15,34 @@ import { AuthTitle } from '~/components/AuthTitle';
 import { SignIn } from '~/components/Buttons/sign-in-button';
 import { Subtitle } from '~/components/Subtitle';
 import { Container } from '~/components/Ui/Container';
+import { useFirstTime } from '~/hooks/use-first-time';
 import { useTheme } from '~/hooks/use-theme';
-import { useWarmUpBrowser } from '~/hooks/warmUpBrowser';
 
 export default function SignInScreen() {
-  useWarmUpBrowser();
   const { height } = useWindowDimensions();
 
   const { theme: darkMode } = useTheme();
 
   // const { signIn } = useSignIn();
   const { width } = useWindowDimensions();
+  const setFirstTimeToFalse = useFirstTime((state) => state.setIsFirstTime);
+  const isFirstTime = useFirstTime((state) => state.isFirstTime);
+  const isIos = Platform.OS === 'ios';
+  useEffect(() => {
+    if (isFirstTime && isIos) {
+      setFirstTimeToFalse();
+    }
+  }, [setFirstTimeToFalse, isFirstTime, isIos]);
 
   const color =
     darkMode === 'dark'
       ? ['rgba(0, 0, 0, 0.7)', 'rgba(0, 0, 0, 0.9)', '#000']
       : ['rgba(255, 255, 255, 0.7)', 'rgba(255, 255, 255, 0.9)', '#fff'];
+
+  // if (!isFirstTime && isIos) {
+  //   return <Redirect href={'/sign-in'} />;
+  // }
+
   return (
     <Container>
       <ScrollView

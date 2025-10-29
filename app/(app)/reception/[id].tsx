@@ -9,7 +9,7 @@ import {
   useLocalSearchParams,
   useRouter,
 } from 'expo-router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   FlatList,
   Pressable,
@@ -33,6 +33,7 @@ import { MyText } from '~/components/Ui/MyText';
 import VStack from '~/components/Ui/VStack';
 import { colors } from '~/constants/Colors';
 import { WorkerWithWorkspace } from '~/constants/types';
+import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
 import { useTheme } from '~/hooks/use-theme';
@@ -242,17 +243,13 @@ const Representatives = ({ data }: { data: WorkerWithWorkspace[] }) => {
 const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
   const router = useRouter();
   const convex = useConvex();
-  const [notifId, setNotifId] = useState<string | null>(null);
-  const notificationState = useQuery(
-    api.pushNotification.getNotificationStatus,
-    notifId ? { id: notifId } : 'skip'
-  );
-  // const { user: storedUser } = useAuth();
+
+  const { user: storedUser } = useAuth();
   // const { client } = useChatContext();
   const { id: customerId } = useGetUserId();
   const handleWaitlist = useMutation(api.workspace.handleWaitlist);
   const { setId } = useWaitlistId();
-  const { workspace, user } = item;
+  const { workspace } = item;
 
   const handlePress = async () => {
     if (!customerId || customerId === item?.user?._id || !item.user?._id)
@@ -263,24 +260,20 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
       });
       return;
     }
-    if (notificationState) {
-      toast.info('Notification state', {
-        description: notificationState,
-      });
-    }
+
     try {
       const waitlistId = await handleWaitlist({
         customerId: customerId!,
         workspaceId: workspace._id,
         joinedAt: format(Date.now(), 'dd/MM/yyyy, HH:mm:ss'),
       });
-      const notification = await convexPushNotificationsHelper(convex, {
-        title: user?.name!,
-        body: 'Joined your workspace',
+      await convexPushNotificationsHelper(convex, {
+        title: storedUser?.name!,
+        body: 'is waiting in your looby',
         to: item.user?._id,
         data: { workkspaceId: item?.workspace?._id!, type: 'workspace' },
       });
-      setNotifId(notification as string);
+
       if (waitlistId) {
         setId(waitlistId, false);
       }

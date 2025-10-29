@@ -12,10 +12,16 @@ export const FetchMessages = () => {
   if (paginatedQuery === undefined) {
     return <ChatPreviewSkeleton />;
   }
+  const sortedChats = paginatedQuery.sort((a, b) => {
+    return (
+      new Date(b.lastMessageTime || '').getTime() -
+      new Date(a.lastMessageTime || '').getTime()
+    );
+  });
   return (
     <View style={{ flex: 1, marginTop: 20 }}>
       <Title title={'Messages'} fontSize={2} />
-      <RenderChats chats={paginatedQuery} />
+      <RenderChats chats={sortedChats} />
     </View>
   );
 };

@@ -11,6 +11,7 @@ const Ringing = () => {
   const ringingCall = calls[0];
 
   if (!ringingCall) return null;
+
   return (
     <StreamCall call={ringingCall}>
       <RingingCallContent CallContent={CallComponent} />

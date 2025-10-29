@@ -17,12 +17,14 @@
       "bundleIdentifier": "com.workcloud.app",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera for video calls.",
-        "NSMicrophoneUsageDescription": "This app uses the microphone to record audio for video or voice messages."
+        "NSMicrophoneUsageDescription": "This app uses the microphone to record audio for video or voice messages.",
+        "ITSAppUsesNonExemptEncryption": false,
+        "UIBackgroundModes": ["audio"]
       },
-      "googleServicesFile": "./GoogleService-Info.plist",
-      "entitlements": {
-        "aps-environment": "production"
-      }
+      "googleServicesFile": "./GoogleService-Info.plist"
+      // "entitlements": {
+      //   "aps-environment": "production"
+      // }
     },
     "android": {
       "adaptiveIcon": {
@@ -30,26 +32,6 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO",
-        "android.permission.BLUETOOTH",
-        "android.permission.BLUETOOTH_CONNECT",
-        "android.permission.BLUETOOTH_ADMIN",
-        "android.permission.WAKE_LOCK",
-        "android.permission.POST_NOTIFICATIONS",
-        "android.permission.FOREGROUND_SERVICE",
-        "android.permission.FOREGROUND_SERVICE_CAMERA",
-        "android.permission.FOREGROUND_SERVICE_MICROPHONE",
-        "android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE",
-        "android.permission.FOREGROUND_SERVICE_DATA_SYNC",
-        "android.permission.USE_FULL_SCREEN_INTENT",
-        "android.permission.BIND_TELECOM_CONNECTION_SERVICE",
-        "android.permission.READ_PHONE_STATE",
-        "android.permission.CALL_PHONE",
-        "android.permission.ACCESS_NETWORK_STATE",
-        "android.permission.INTERNET",
-        "android.permission.MODIFY_AUDIO_SETTINGS",
-        "android.permission.SYSTEM_ALERT_WINDOW",
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",
         "android.permission.BLUETOOTH",
@@ -86,6 +68,12 @@
     "plugins": [
       ["expo-router"],
       [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone to create voice recordings"
+        }
+      ],
+      [
         "@stream-io/video-react-native-sdk",
         {
           "ringingPushNotifications": {
@@ -94,7 +82,8 @@
             "showWhenLockedAndroid": true
           },
           "androidKeepCallAlive": true,
-          "enableNonRingingPushNotifications": true
+          "enableNonRingingPushNotifications": true,
+          "androidPictureInPicture": true
         }
       ],
       "@config-plugins/react-native-callkeep",
@@ -154,7 +143,8 @@
       "expo-font",
       "expo-web-browser",
       "expo-background-task",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true

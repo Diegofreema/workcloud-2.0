@@ -37,8 +37,13 @@ import { Id } from '~/convex/_generated/dataModel';
 import ReplyMessageBar from '~/features/chat/components/render-message';
 import { useDebounce } from '~/features/chat/hook/use-debounce';
 import { useGetUserId } from '~/hooks/useGetUserId';
-import { generateErrorMessage, uploadProfilePicture } from '~/lib/helper';
+import {
+  generateErrorMessage,
+  uploadAudio,
+  uploadProfilePicture,
+} from '~/lib/helper';
 import { convexPushNotificationsHelper } from '~/lib/utils';
+import { useMinutes, useRecording } from '../hook/use-recording';
 
 type Props = {
   loggedInUserId: Id<'users'>;
@@ -63,6 +68,8 @@ export const ChatGroupComponent = ({
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
   const { user } = useGetUserId();
+  const recordState = useRecording((state) => state.recorderState);
+  const mins = useMinutes((state) => state.minutes);
   const convex = useConvex();
   // const { theme: darkMode } = useTheme();
   const [isTypingLocally, setIsTypingLocally] = useState(false);
@@ -131,6 +138,7 @@ export const ChatGroupComponent = ({
               fileId: message.fileId,
               replyTo: replyMessage?._id,
               senderName: user?.name,
+              lastMessageType: message.lastMessageType || 'text',
             });
             const body = message.text ? message.text : 'File';
             for (const member of membersInConversation) {
@@ -190,6 +198,7 @@ export const ChatGroupComponent = ({
             user: { _id: loggedInUserId },
             fileId: file.id,
             fileType: 'pdf' as FileType,
+            lastMessageType: 'file' as 'audio' | 'file' | 'text',
           };
         });
         void onSend(messages);
@@ -227,6 +236,7 @@ export const ChatGroupComponent = ({
             user: { _id: loggedInUserId },
             fileId: file.id,
             fileType: 'image' as FileType,
+            lastMessageType: 'file' as 'audio' | 'file' | 'text',
           };
         });
         await onSend(messages);
@@ -334,6 +344,27 @@ export const ChatGroupComponent = ({
     },
     [loggedInUserId, deleteMessage]
   );
+  const onUploadVoiceNote = async () => {
+    try {
+      if (recordState.url && recordState.url.length > 0) {
+        setSending(true);
+        const res = await uploadAudio(generateUploadUrl, recordState.url);
+        const message = {
+          text: '',
+          user: { _id: loggedInUserId },
+          fileId: res?.storageId as Id<'_storage'>,
+          fileType: 'audio' as FileType,
+          audioDuration: mins,
+          lastMessageType: 'audio' as 'audio' | 'file' | 'text',
+        };
+        void onSend([message]);
+      }
+    } catch (error) {
+      console.error('Error uploading voice note:', error);
+    } finally {
+      setSending(false);
+    }
+  };
   const onEdit = useCallback(
     async ({ textToEdit, messageId, senderId, senderName }: EditType2) => {
       setEditText({ text: textToEdit, senderId, senderName });
@@ -363,6 +394,7 @@ export const ChatGroupComponent = ({
         text={text}
         alwaysShowSend
         keyboardShouldPersistTaps="always"
+        // @ts-ignore
         onSend={onSend}
         onInputTextChanged={onInputTextChanged}
         user={{
@@ -373,7 +405,11 @@ export const ChatGroupComponent = ({
         )}
         renderMessageImage={RenderMessageImage}
         renderActions={(props) => (
-          <RenderActions onPickDocument={handleFilePick} {...props} />
+          <RenderActions
+            onUploadVoiceNote={onUploadVoiceNote}
+            onPickDocument={handleFilePick}
+            {...props}
+          />
         )}
         renderComposer={(props) => (
           <RenderComposer onPickImage={handleImagePick} {...props} />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { ThemedText } from '~/components/Ui/themed-text';
 import { ThemedView } from '~/components/Ui/themed-view';
 
@@ -9,7 +9,7 @@ interface CardProps {
 }
 
 const Card = ({ style, children }: CardProps) => {
-  return <View style={[styles.card, style]}>{children}</View>;
+  return <ThemedView style={[styles.card, style]}>{children}</ThemedView>;
 };
 
 interface CardHeaderProps {
@@ -57,7 +57,6 @@ Card.Description = CardDescription;
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 8,
     padding: 16,
     marginVertical: 8,

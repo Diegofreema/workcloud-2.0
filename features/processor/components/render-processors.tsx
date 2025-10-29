@@ -1,11 +1,10 @@
-import { View } from "react-native";
-import { ProcessorType } from "~/features/staff/type";
-import { router } from "expo-router";
-import { EmptyText } from "~/components/EmptyText";
-import { LegendList } from "@legendapp/list";
-import React from "react";
-import { UserPreview } from "~/components/Ui/UserPreview";
-import { colors } from "~/constants/Colors";
+import { LegendList } from '@legendapp/list';
+import { router } from 'expo-router';
+import React from 'react';
+import { View } from 'react-native';
+import { EmptyText } from '~/components/EmptyText';
+import { UserPreview } from '~/components/Ui/UserPreview';
+import { ProcessorType } from '~/features/staff/type';
 
 type Props = {
   data: ProcessorType[];
@@ -27,18 +26,10 @@ export const RenderProcessors = ({ data }: Props) => {
           />
         )}
         style={{ marginTop: 20 }}
-        contentContainerStyle={{ paddingBottom: 50 }}
-        ItemSeparatorComponent={() => (
-          <View
-            style={{
-              height: 2,
-              width: "100%",
-              backgroundColor: colors.grayText,
-            }}
-          />
-        )}
+        contentContainerStyle={{ paddingBottom: 50, gap: 15 }}
+        columnWrapperStyle={{ gap: 15 }}
         keyExtractor={(item) => item.id}
-        ListEmptyComponent={() => <EmptyText text={"No processors found"} />}
+        ListEmptyComponent={() => <EmptyText text={'No processors found'} />}
         recycleItems
       />
     </View>

@@ -64,7 +64,9 @@ export const profileUpdateSchema = z.object({
 export const offerSchema = z.object({
   role: z.string().min(1, 'Role is required'),
   responsibility: z.string().min(1, 'responsibility is required'),
-  salary: z.string().min(1, 'salary is required'),
+  salary: z
+    .number({ message: 'Salary must be a number greater than 0' })
+    .min(1, 'salary must be greater than 0'),
   qualities: z.string().min(1, 'qualities are required'),
 });
 

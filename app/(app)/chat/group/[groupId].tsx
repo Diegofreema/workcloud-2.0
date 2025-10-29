@@ -2,6 +2,7 @@ import { usePaginatedQuery, useQuery } from 'convex/react';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { toast } from 'sonner-native';
+import { HStack } from '~/components/HStack';
 import { ChatHeader } from '~/components/Ui/ChatHeader';
 import ChatSkeleton from '~/components/Ui/ChatSkeleton';
 import { Container } from '~/components/Ui/Container';
@@ -48,14 +49,15 @@ const GroupChatScreen = () => {
     return <Redirect href={'/message'} />;
   }
   const isCreator = group?.creatorId === loggedInUserId;
+  console.log({ isCreator });
 
   return (
     <Container noPadding>
-      <ChatHeader
-        name={group?.name || 'Group'}
-        imageUrl={group?.imageUrl || ''}
-        rightContent={
-          isCreator ? (
+      <HStack>
+        <ChatHeader
+          name={group?.name || 'Group'}
+          imageUrl={group?.imageUrl || ''}
+          rightContent={
             <ChatMenu
               menuItems={[
                 {
@@ -65,9 +67,9 @@ const GroupChatScreen = () => {
                 },
               ]}
             />
-          ) : null
-        }
-      />
+          }
+        />
+      </HStack>
       <ChatGroupComponent
         conversationId={group?._id!}
         createdAt={group?._creationTime!}

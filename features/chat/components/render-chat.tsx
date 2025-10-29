@@ -1,6 +1,6 @@
 import { useQuery } from 'convex/react';
 import { router, usePathname } from 'expo-router';
-import { CheckCheck, File } from 'lucide-react-native';
+import { CheckCheck, File, MicrochipIcon } from 'lucide-react-native';
 import { StyleSheet } from 'react-native';
 import { ChatPreviewSkeleton } from '~/components/ChatPreviewSkeleton';
 import { HStack } from '~/components/HStack';
@@ -55,8 +55,10 @@ export const RenderChat = ({ chat }: Props) => {
   const isMine = lastMessageSenderId === id;
   const isTyping =
     getTypingUsers.length > 0 && getTypingUsers.includes(otherUser?._id!);
-  const isImage = lastMessage?.startsWith('https');
+  const isImage = chat.lastMessageType === 'file';
   const firstName = otherUser?.name?.split(' ')[0];
+  const isAudio = chat.lastMessageType === 'audio';
+  console.log(chat.lastMessageType);
 
   return (
     <CustomPressable onPress={onPress} style={styles.pressable}>
@@ -76,6 +78,8 @@ export const RenderChat = ({ chat }: Props) => {
                 {isMine && <CheckCheck size={20} color={colors.buttonBlue} />}
                 {isImage ? (
                   <File color={colors.grayText} size={25} />
+                ) : isAudio ? (
+                  <MicrochipIcon color={colors.grayText} size={25} />
                 ) : (
                   <MyText poppins="Medium" fontSize={14}>
                     {trimText(lastMessage || '', 20)}

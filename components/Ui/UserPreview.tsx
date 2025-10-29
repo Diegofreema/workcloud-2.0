@@ -20,7 +20,7 @@ import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
 import { useDecline } from '~/hooks/useDecline';
 import { useOpen } from '~/hooks/useOpen';
-import { convexPushNotificationsHelper } from '~/lib/utils';
+import { convexPushNotificationsHelper, getArticle } from '~/lib/utils';
 
 type PreviewWorker = {
   name?: string;
@@ -157,17 +157,19 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
     request: { qualities, role, salary, responsibility, to, _id, from, status },
     organisation,
   } = item;
+
+  // made a mistake with from and to
   const {
     data: toData,
     isError: toError,
     isPending: toPending,
-  } = useQuery(convexQuery(api.users.getUser, to ? { userId: to } : 'skip'));
+  } = useQuery(convexQuery(api.users.getUserById, to ? { id: to } : 'skip'));
   const {
     data: fromData,
     isError: fromError,
     isPending: fromPending,
   } = useQuery(
-    convexQuery(api.users.getUser, from ? { userId: from } : 'skip')
+    convexQuery(api.users.getUserById, from ? { id: from } : 'skip')
   );
 
   if (toError || fromError) {
@@ -194,7 +196,7 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
       });
       await convexPushNotificationsHelper(convex, {
         title: 'Offer accepted',
-        body: `${toData?.name} accepted the ${role} in your organization`,
+        body: `${toData?.name} accepted the role of ${getArticle(role)}  ${role} in your organization`,
         data: {
           type: 'notification',
         },
@@ -204,7 +206,7 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
       // logic to accept organisation if not employed;
 
       toast.success('You have accepted the offer', {
-        description: `From ${organisation.name} as an ${role}`,
+        description: `From ${organisation.name} as ${getArticle(role)} ${role}`,
       });
     } catch (error) {
       console.log(error);
@@ -221,7 +223,7 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
       toast.success('Request has been declined');
       await convexPushNotificationsHelper(convex, {
         title: 'Offer rejected',
-        body: `${toData?.name} rejected the ${role} in your organization`,
+        body: `${toData?.name} rejected the role of ${getArticle(role)} ${role} in your organization`,
         data: {
           type: 'notification',
         },

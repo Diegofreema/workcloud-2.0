@@ -5,12 +5,15 @@ import { Container } from '~/components/Ui/Container';
 import { RenderActivities } from '~/components/Ui/render-activities';
 import { api } from '~/convex/_generated/api';
 import { useGetUserId } from '~/hooks/useGetUserId';
-
+import {useAuth} from "~/context/auth";
+import {useLocalSearchParams} from "expo-router";
+import {Id} from "~/convex/_generated/dataModel";
 const ActivitiesScreen = () => {
-  const { workspaceId } = useGetUserId();
+
+  const {id} = useLocalSearchParams<{id: Id<'workspaces'>}>()
   const { isLoading, loadMore, results, status } = usePaginatedQuery(
     api.worker.getStarred,
-    workspaceId ? { id: workspaceId } : 'skip',
+     { id },
     { initialNumItems: 50 }
   );
 

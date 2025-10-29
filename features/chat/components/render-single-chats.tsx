@@ -1,12 +1,11 @@
-import { LegendList } from "@legendapp/list";
-import { View } from "react-native";
-import { EmptyText } from "~/components/EmptyText";
-import { constantStyles } from "~/constants/styles";
-import { Doc } from "~/convex/_generated/dataModel";
-import { RenderChat } from "~/features/chat/components/render-chat";
+import { LegendList } from '@legendapp/list';
+import { View } from 'react-native';
+import { EmptyText } from '~/components/EmptyText';
+import { Doc } from '~/convex/_generated/dataModel';
+import { RenderChat } from '~/features/chat/components/render-chat';
 
 type Props = {
-  chats: Doc<"conversations">[];
+  chats: Doc<'conversations'>[];
 };
 export const RenderChats = ({ chats }: Props) => {
   return (
@@ -14,9 +13,13 @@ export const RenderChats = ({ chats }: Props) => {
       <LegendList
         data={chats}
         renderItem={({ item }) => <RenderChat chat={item} />}
-        contentContainerStyle={constantStyles.contentContainerStyle}
+        contentContainerStyle={{
+          gap: 15,
+          paddingBottom: 50,
+        }}
+        columnWrapperStyle={{ gap: 15 }}
         recycleItems
-        ListEmptyComponent={<EmptyText text={"No conversation found"} />}
+        ListEmptyComponent={<EmptyText text={'No conversation found'} />}
         onEndReachedThreshold={0.5}
         keyExtractor={(item) => item._id}
       />

@@ -36,8 +36,13 @@ import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
 import ReplyMessageBar from '~/features/chat/components/render-message';
 import { useDebounce } from '~/features/chat/hook/use-debounce';
+import { useMinutes, useRecording } from '~/features/chat/hook/use-recording';
 import { useGetUserId } from '~/hooks/useGetUserId';
-import { generateErrorMessage, uploadProfilePicture } from '~/lib/helper';
+import {
+  generateErrorMessage,
+  uploadAudio,
+  uploadProfilePicture,
+} from '~/lib/helper';
 import { convexPushNotificationsHelper } from '~/lib/utils';
 
 type Props = {
@@ -71,6 +76,9 @@ export const ChatComponentNative = ({
   const { user } = useGetUserId();
   const [isTypingLocally, setIsTypingLocally] = useState(false);
   const setTypingState = useMutation(api.message.setTypingState);
+  const recordState = useRecording((state) => state.recorderState);
+  const mins = useMinutes((state) => state.minutes);
+
   const [edit, setEdit] = useState<{
     messageId: Id<'messages'>;
     senderId: Id<'users'>;
@@ -132,10 +140,11 @@ export const ChatComponentNative = ({
               fileUrl: message.fileUrl,
               fileId: message.fileId,
               replyTo: replyMessage?._id,
+              lastMessageType: message.lastMessageType || 'text',
             });
             const body = message.text ? message.text : 'File';
             await convexPushNotificationsHelper(convex, {
-              data: { conversationId, type },
+              data: { loggedInUserId, type },
               body,
               title: user.name!,
               to: otherUserId,
@@ -162,6 +171,27 @@ export const ChatComponentNative = ({
       type,
     ]
   );
+  const onUploadVoiceNote = async () => {
+    try {
+      if (recordState.url && recordState.url.length > 0) {
+        setSending(true);
+        const res = await uploadAudio(generateUploadUrl, recordState.url);
+        const message = {
+          text: '',
+          user: { _id: loggedInUserId },
+          fileId: res?.storageId as Id<'_storage'>,
+          fileType: 'audio' as FileType,
+          audioDuration: mins,
+          lastMessageType: 'audio' as 'audio' | 'file' | 'text',
+        };
+        void onSend([message]);
+      }
+    } catch (error) {
+      console.error('Error uploading voice note:', error);
+    } finally {
+      setSending(false);
+    }
+  };
   const handleFilePick = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
@@ -188,6 +218,7 @@ export const ChatComponentNative = ({
             user: { _id: loggedInUserId },
             fileId: file.id,
             fileType: 'pdf' as FileType,
+            lastMessageType: 'file' as 'audio' | 'file' | 'text',
           };
         });
         void onSend(messages);
@@ -225,6 +256,7 @@ export const ChatComponentNative = ({
             user: { _id: loggedInUserId },
             fileId: file.id,
             fileType: 'image' as FileType,
+            lastMessageType: 'file' as 'audio' | 'file' | 'text',
           };
         });
         await onSend(messages);
@@ -361,6 +393,7 @@ export const ChatComponentNative = ({
         text={text}
         alwaysShowSend
         keyboardShouldPersistTaps="always"
+        // @ts-ignore
         onSend={onSend}
         onInputTextChanged={onInputTextChanged}
         user={{
@@ -371,12 +404,15 @@ export const ChatComponentNative = ({
         )}
         renderMessageImage={RenderMessageImage}
         renderActions={(props) => (
-          <RenderActions onPickDocument={handleFilePick} {...props} />
+          <RenderActions
+            onPickDocument={handleFilePick}
+            onUploadVoiceNote={onUploadVoiceNote}
+            {...props}
+          />
         )}
         renderComposer={(props) => (
           <RenderComposer onPickImage={handleImagePick} {...props} />
         )}
-        bottomOffset={insets.bottom}
         renderAvatar={null}
         maxComposerHeight={100}
         textInputProps={styles.input}

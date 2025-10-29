@@ -2,17 +2,20 @@ import { ErrorBoundaryProps, Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import {
+  CallMissedEvent,
   DeepPartial,
-  LogLevel,
   StreamVideo,
   StreamVideoClient,
   Theme,
 } from '@stream-io/video-react-native-sdk';
 import { ErrorComponent } from '~/components/Ui/ErrorComponent';
 
+import { convexQuery } from '@convex-dev/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useConvex, useMutation } from 'convex/react';
+import { useAudioPlayer } from 'expo-audio';
 import { useEffect } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
 import { colors } from '~/constants/Colors';
@@ -20,7 +23,13 @@ import { useAuth } from '~/context/auth';
 import CallProvider from '~/context/call-provider';
 import { useNotification } from '~/context/notification-context';
 import { api } from '~/convex/_generated/api';
+import { Id } from '~/convex/_generated/dataModel';
 
+type CallEvent = CallMissedEvent & {
+  type: 'call.missed';
+  received_at?: string | Date;
+};
+const audioSource = require('~/assets/sound.wav');
 const apiKey = 'cnvc46pm8uq9';
 
 if (Platform.OS === 'android') {
@@ -31,10 +40,18 @@ export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
 }
 export default function AppLayout() {
   const { user } = useAuth();
+  const player = useAudioPlayer(audioSource);
 
   const { expoPushToken } = useNotification();
   const convex = useConvex();
+  const { data, isPending, isError } = useQuery(
+    convexQuery(
+      api.workspace.getWaitListCount,
+      user?.workerId ? { workerId: user.workerId } : 'skip'
+    )
+  );
   const updateStreamToken = useMutation(api.users.updateStreamToken);
+  const createMissedCall = useMutation(api.users.createMissedCallRecord);
   const person = {
     id: user?._id!,
     name: user?.name,
@@ -58,7 +75,6 @@ export default function AppLayout() {
         }
       );
 
-      console.log('🚀 ~ AppLayout ~ tokenProvider ~ data:', data);
       await updateStreamToken({ streamToken: data.token });
       return data.token;
     } catch (error) {
@@ -70,18 +86,7 @@ export default function AppLayout() {
   const client = StreamVideoClient.getOrCreateInstance({
     apiKey,
     user: person,
-    options: {
-      logger: (logLevel: LogLevel, message: string, ...args: unknown[]) => {
-        console.log(
-          message,
-          'message',
-          logLevel,
-          'level',
-          ...args,
-          'sadjbcjhhv'
-        );
-      },
-    },
+
     tokenProvider,
   });
   useEffect(() => {
@@ -94,6 +99,15 @@ export default function AppLayout() {
         .catch((error) => alert(error));
     }
   }, [convex, expoPushToken]);
+  useEffect(() => {
+    const onPlaySound = () => {
+      player.seekTo(0);
+      player.play();
+    };
+    if (!isError && !isPending && data > 0) {
+      onPlaySound();
+    }
+  }, [data, isPending, isError, player]);
   //@ts-ignore
   const theme: DeepPartial<Theme> = {
     callControls: {
@@ -140,6 +154,16 @@ export default function AppLayout() {
       },
     },
   };
+  useEffect(() => {
+    client.on('call.missed', async (event: CallEvent) => {
+      // Track here, e.g., save to state or DB
+      await createMissedCall({
+        callId: event.call.id,
+        missedAt: Date.now(),
+        userId: event.members[0].user_id as Id<'users'>,
+      });
+    });
+  }, [client, createMissedCall]);
 
   return (
     <StreamVideo client={client} style={theme}>
