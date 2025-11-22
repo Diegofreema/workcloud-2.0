@@ -11,6 +11,7 @@ import {useTheme} from '~/hooks/use-theme';
 import {useQuery} from "convex/react";
 import {api} from "~/convex/_generated/api";
 import {CustomPressable} from "~/components/Ui/CustomPressable";
+import {useGetUserId} from "~/hooks/useGetUserId";
 
 type Props = {
   id?: string;
@@ -20,6 +21,7 @@ type Props = {
 
 export const TopCard = ({ image, name, id }: Props): JSX.Element => {
   const router = useRouter();
+  const {organizationId} = useGetUserId()
   const { theme: darkMode } = useTheme();
   const onEditProfile = () => {
     router.push(`/edit-new?id=${id}`);
@@ -54,7 +56,7 @@ export const TopCard = ({ image, name, id }: Props): JSX.Element => {
             </MyText>
           </Pressable>
         </HStack>
-         <ProCard />
+          {organizationId && <ProCard/>}
       </ThemedView>
     </ThemedView>
   );

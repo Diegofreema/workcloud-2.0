@@ -45,6 +45,7 @@ const VStack = ({
   borderWidth,
   borderColor,
   mx,
+    mb
 }: Props) => {
   return (
     <ThemedView
@@ -65,6 +66,7 @@ const VStack = ({
           borderWidth,
           borderColor,
           marginHorizontal: mx,
+            marginBottom: mb
         },
         style,
       ]}

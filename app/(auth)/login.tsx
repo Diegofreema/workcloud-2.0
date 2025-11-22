@@ -1,6 +1,5 @@
 import { Divider } from '@rneui/themed';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Redirect } from 'expo-router';
 import { useEffect } from 'react';
 import {
   Image,

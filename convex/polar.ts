@@ -1,61 +1,65 @@
-import {Polar} from "@convex-dev/polar";
-import {api, components} from "./_generated/api";
-import {Id} from "./_generated/dataModel";
-import {action, query} from "./_generated/server";
+import { Polar } from '@convex-dev/polar';
+import { api, components } from './_generated/api';
+import { Id } from './_generated/dataModel';
+import { internalAction, query } from './_generated/server';
 
 export const getUserInfo = query({
-    args: {},
-    handler: async (ctx) => {
-        // This would be replaced with an actual auth query,
-        // eg., ctx.auth.getUserIdentity() or getAuthUserId(ctx)
-        const user = await ctx.db.query("users").first();
-        if (!user) {
-            throw new Error("User not found");
-        }
-        return {
-            ...user,
-            email: user.email || ''
-        };
-    },
+  args: {},
+  handler: async (ctx) => {
+    // This would be replaced with an actual auth query,
+    // eg., ctx.auth.getUserIdentity() or getAuthUserId(ctx)
+    const user = await ctx.db.query('users').first();
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return {
+      ...user,
+      email: user.email || '',
+    };
+  },
 });
 
 export const polar = new Polar(components.polar, {
-    products: {
-        businessPlan: "96642f38-6848-4216-874e-3a98013a6bed",
-        businessPlanYearly: "e9736d3f-a248-4f79-9887-f62a62c72001",
-        businessPlanPro: "468591c2-2394-450e-9161-d1579c481753",
-        businessPlanProYearly: "045089e5-603c-48c5-bd78-62c0704609cd",
-        enterprisePlan: "de08942d-b686-42de-b631-53d139b52d71",
-        enterprisePlanYearly: "235688d5-3469-4a46-a7f3-1faa2dffbf8f",
-    },
-    getUserInfo: async (ctx) => {
-        const user: { _id: Id<"users">; email: string } = await ctx.runQuery(
-            api.polar.getUserInfo
-        );
-        console.log(user._id, user.email)
-        return {
-            userId: user._id,
-            email: user.email,
-        };
-    },
+  products: {
+    businessPlan: '96642f38-6848-4216-874e-3a98013a6bed',
+    businessPlanYearly: '1e9ccbce-d011-4372-ad6d-e91faba44cec',
+    businessPlanPro: '41ce08a4-f7fc-4889-8ea4-9c2200fd5ba5',
+    businessPlanProYearly: '7db5ec49-d677-46a4-b087-2d86f80b7406',
+    enterprisePlan: '63b75623-171f-45ea-a9d6-716d5eeb021e',
+    enterprisePlanYearly: 'e51f4fa8-1809-4773-84b4-31cd9345a885',
+  },
+  getUserInfo: async (ctx) => {
+    const user: { _id: Id<'users'>; email: string } = await ctx.runQuery(
+      api.polar.getUserInfo
+    );
 
-    organizationToken: process.env.POLAR_ORGANIZATION_TOKEN,
-    webhookSecret: process.env.POLAR_WEBHOOK_SECRET,
-    server: process.env.POLAR_SERVER,
+    return {
+      userId: user._id,
+      email: user.email,
+    };
+  },
+
+  organizationToken: process.env.POLAR_ORGANIZATION_TOKEN,
+  webhookSecret: process.env.POLAR_WEBHOOK_SECRET,
 });
 
 export const {
-    changeCurrentSubscription,
-    cancelCurrentSubscription,
-    getConfiguredProducts,
-    listAllProducts,
-    generateCheckoutLink,
-    generateCustomerPortalUrl,
+  changeCurrentSubscription,
+  cancelCurrentSubscription,
+  getConfiguredProducts,
+  listAllProducts,
+  generateCheckoutLink,
+  generateCustomerPortalUrl,
 } = polar.api();
 
-export const syncProducts = action({
-    args: {},
-    handler: async (ctx) => {
-        await polar.syncProducts(ctx);
-    },
+export const syncProducts = internalAction({
+  args: {},
+  handler: async (ctx) => {
+    console.log('Running');
+    try {
+      await polar.syncProducts(ctx);
+    } catch (error) {
+      console.log(error);
+    }
+  },
 });

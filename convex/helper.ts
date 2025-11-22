@@ -1,12 +1,23 @@
 type ProductKey =
-    "businessPlan"
-    | "businessPlanYearly"
-    | "businessPlanPro"
-    | "businessPlanProYearly"
-    | "enterprisePlan"
-    | "enterprisePlanYearly"
-    | undefined
+  | 'businessPlan'
+  | 'businessPlanYearly'
+  | 'businessPlanPro'
+  | 'businessPlanProYearly'
+  | 'enterprisePlan'
+  | 'enterprisePlanYearly'
+  | 'businessPlan2'
+  | 'test'
+  | undefined;
 
-export const isPremium = (productKey: ProductKey): boolean => {
-    return productKey === 'businessPlanProYearly' || productKey === 'enterprisePlanYearly' || productKey === 'enterprisePlan' || productKey === 'businessPlan' || productKey === 'businessPlanYearly' || productKey === 'businessPlanPro';
-}
+const PREMIUM_PLANS = new Set<ProductKey>([
+  'businessPlan',
+  'businessPlanYearly',
+  'businessPlanPro',
+  'businessPlanProYearly',
+  'businessPlan2',
+  'enterprisePlan',
+  'enterprisePlanYearly',
+  'test',
+]);
+
+export const isPremium = (key: ProductKey): boolean => PREMIUM_PLANS.has(key);

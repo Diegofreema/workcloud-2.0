@@ -2,7 +2,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { Divider } from '@rneui/themed';
 import { Href, router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { Platform, Pressable } from 'react-native';
+import { Pressable } from 'react-native';
 import { HStack } from '../HStack';
 import { HelpSvg, LockSvg, UserSvg } from '../LockSvg';
 import { MyText } from './MyText';
@@ -12,6 +12,7 @@ import { Check, Trash } from 'lucide-react-native';
 import { View } from 'react-native';
 import { colors } from '~/constants/Colors';
 import { useTheme } from '~/hooks/use-theme';
+import { useGetUserId } from '~/hooks/useGetUserId';
 
 export const OtherLinks = ({
   workerId,
@@ -19,6 +20,7 @@ export const OtherLinks = ({
   workerId?: string;
 }): JSX.Element => {
   const { theme: darkMode } = useTheme();
+  const { organizationId } = useGetUserId();
   const link: string = workerId
     ? `/myWorkerProfile/${workerId}`
     : '/create-worker-profile';
@@ -28,6 +30,7 @@ export const OtherLinks = ({
       mt={20}
       p={20}
       mx={20}
+      mb={20}
       rounded={10}
       borderWidth={1}
       borderColor={colors.gray}
@@ -74,7 +77,7 @@ export const OtherLinks = ({
         title={'Delete account'}
         link={'/delete-account'}
       />
-
+      {organizationId && (
         <Item
           rightIcon={
             <View
@@ -88,13 +91,13 @@ export const OtherLinks = ({
                 alignItems: 'center',
               }}
             >
-              <Check size={30} color={'#0047FF'} />
+              <AntDesign name="setting" size={30} color="#0047FF" />
             </View>
           }
-          title={'Pro plans'}
-          link={'/subcription'}
+          title={'Manage Subscription'}
+          link={'/manage-subscription'}
         />
-
+      )}
     </VStack>
   );
 };

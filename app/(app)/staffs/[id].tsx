@@ -29,11 +29,9 @@ import { useCreateStaffState } from '~/features/staff/hooks/use-create-staff-sta
 import { ProcessorType, StaffType } from '~/features/staff/type';
 import { CustomModal } from '~/features/workspace/components/modal/custom-modal';
 import { useWorkspaceModal } from '~/features/workspace/hooks/use-workspace-modal';
+import { useGetCustomerInfo } from '~/hooks/rc/use-get-customer-info';
 import { useTheme } from '~/hooks/use-theme';
 import { useHandleStaff } from '~/hooks/useHandleStaffs';
-import { useGetCustomerInfo } from '~/hooks/rc/use-get-customer-info';
-import { useGetOfferings } from '~/hooks/rc/use-get-offerings';
-import { ErrorComponent } from '~/components/Ui/ErrorComponent';
 
 const Staffs = () => {
   const { id } = useLocalSearchParams<{ id: Id<'users'> }>();
@@ -46,7 +44,7 @@ const Staffs = () => {
   const [assigning, setAssigning] = useState(false);
   const { getItem, item: staff } = useHandleStaff();
   const { onClose, isOpen, onOpen } = useWorkspaceModal();
-  const { data: customerInfo, isPending, isError } = useGetCustomerInfo();
+  const { loading: fetching, subscription, isPro } = useGetCustomerInfo();
   const [role, setRole] = useState('All');
   const router = useRouter();
   const roles = useQuery(api.staff.getStaffRoles, { bossId: id });
@@ -54,11 +52,7 @@ const Staffs = () => {
   const workspaces = useQuery(api.workspace.freeWorkspaces, { ownerId: id });
   const { theme: darkMode } = useTheme();
   const { onGetData } = useCreateStaffState();
-  const {
-    data: offerings,
-    isPending: isPendingOfferings,
-    isError: isErrorOfferings,
-  } = useGetOfferings();
+
   const addToWorkspace = useMutation(api.workspace.addStaffToWorkspace);
   const createWorkspace = useMutation(api.workspace.createAndAssignWorkspace);
 
@@ -70,10 +64,8 @@ const Staffs = () => {
 
     return data?.filter((worker) => worker.role === role);
   }, [data, role]);
-  if (isError || isErrorOfferings) {
-    return <ErrorComponent refetch={onGetData} text={'Something went wrong'} />;
-  }
-  if (!data || !roles || !workspaces || isPending || isPendingOfferings) {
+
+  if (!data || !roles || !workspaces || fetching) {
     return <LoadingComponent />;
   }
 
@@ -111,42 +103,44 @@ const Staffs = () => {
     }
   };
 
-  // const numberOfStaffs = workers.length;
-  // const isPro = (customerInfo?.activeSubscriptions.length ?? 0) > 0;
+  const numberOfStaffs = workers.length;
 
-  // const isBusinessPlanPro =
-  //   customerInfo?.entitlements.active['Business Plan Pro monthly'];
-  // const isBusinessPlan = offerings?.all['Business Plan'];
-  // const isEnterprisePlan = offerings?.all['Enterprise Plan monthly'];
+  const isBusinessPlanPro =
+    subscription?.productKey === 'businessPlanPro' ||
+    subscription?.productKey === 'businessPlanProYearly';
+
+  const isEnterprisePlan =
+    subscription?.productKey === 'enterprisePlan' ||
+    subscription?.productKey === 'enterprisePlanYearly';
   const onAddNewStaff = () => {
-    // if (numberOfStaffs >= 1 && !isPro) {
-    //   toast.error('Upgrade to pro to add more staff');
-    //   router.push('/subcription');
-    //   return;
-    // }
+    if (numberOfStaffs >= 1 && !isPro) {
+      toast.error('Upgrade to pro to add more staffs');
+
+      return;
+    }
 
     // Pro plan (not Business Pro): 5 staff limit
-    // if (
-    //   numberOfStaffs >= 5 &&
-    //   isPro &&
-    //   !isBusinessPlanPro &&
-    //   !isEnterprisePlan
-    // ) {
-    //   toast.error(
-    //     'You have reached the maximum number of staff for Business plan. Upgrade to Business plan pro or Enterprise plan to add more staff'
-    //   );
-    //   router.push('/subcription');
-    //   return;
-    // }
+    if (
+      numberOfStaffs >= 5 &&
+      isPro &&
+      !isBusinessPlanPro &&
+      !isEnterprisePlan
+    ) {
+      toast.error(
+        'You have reached the maximum number of staff for Business plan. Upgrade to Business plan pro or Enterprise plan to add more staff'
+      );
+
+      return;
+    }
 
     // Business Pro plan: 10 staff limit
-    // if (numberOfStaffs >= 10 && isBusinessPlanPro && !isEnterprisePlan) {
-    //   toast.error(
-    //     'You have reached the maximum number of staff for Business plan pro. Upgrade to Enterprise plan to add more staff'
-    //   );
-    //   router.push('/subcription');
-    //   return;
-    // }
+    if (numberOfStaffs >= 10 && isBusinessPlanPro && !isEnterprisePlan) {
+      toast.error(
+        'You have reached the maximum number of staff for Business plan pro. Upgrade to Enterprise plan to add more staff'
+      );
+
+      return;
+    }
 
     onOpen();
   };

@@ -1,18 +1,23 @@
-import {useMutation} from "convex/react";
-import {useEffect, useState} from "react";
-import {Alert, StyleSheet, TextInput, TouchableOpacity, View,} from "react-native";
-import {toast} from "sonner-native";
-import {ActivitiesType} from "~/constants/types";
-import {api} from "~/convex/_generated/api";
-import {Id} from "~/convex/_generated/dataModel";
-import {generateErrorMessage} from "~/lib/helper";
-import {Button} from "~/features/common/components/Button";
-import {CustomModal} from "~/features/workspace/components/modal/custom-modal";
-import VStack from "./VStack";
-import {Text} from "../Themed";
-import {KeyboardAvoidingView} from "react-native-keyboard-controller";
-import {useAuth} from "~/context/auth";
-import {ActivityTop} from "~/components/activity-top";
+import { useMutation } from 'convex/react';
+import { useEffect, useState } from 'react';
+import {
+  Alert,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { toast } from 'sonner-native';
+import { ActivityTop } from '~/components/activity-top';
+import { ActivitiesType } from '~/constants/types';
+import { api } from '~/convex/_generated/api';
+import { Id } from '~/convex/_generated/dataModel';
+import { Button } from '~/features/common/components/Button';
+import { CustomModal } from '~/features/workspace/components/modal/custom-modal';
+import { generateErrorMessage } from '~/lib/helper';
+import { Text } from '../Themed';
+import VStack from './VStack';
 
 type Props = {
   item: ActivitiesType;
@@ -22,7 +27,6 @@ type Props = {
 export const RenderActivity = ({ item, isProcessor }: Props): JSX.Element => {
   const [updating, setUpdating] = useState(false);
 
-
   const [edit, setEdit] = useState(false);
   const [message, setMessage] = useState(item.text);
   const [sending, setSending] = useState(false);
@@ -31,13 +35,12 @@ export const RenderActivity = ({ item, isProcessor }: Props): JSX.Element => {
   const updateSeenArray = useMutation(api.worker.updateSeenStarred);
   const editStar = useMutation(api.worker.editStarStatus);
   const isSeen = item.seen;
-    console.log({isSeen});
+  console.log({ isSeen });
   useEffect(() => {
-
     if (isProcessor && !isSeen) {
       const onUpdate = async () => {
         await updateSeenArray({ id: item._id });
-          console.log('Called')
+        console.log('Called');
       };
       void onUpdate();
     }
@@ -47,12 +50,12 @@ export const RenderActivity = ({ item, isProcessor }: Props): JSX.Element => {
     setUpdating(true);
     try {
       await updateStar({ id: item._id });
-      toast.success("Success", {
-        description: "Status updated",
+      toast.success('Success', {
+        description: 'Status updated',
       });
     } catch (error) {
-      const errorMessage = generateErrorMessage(error, "Failed to update");
-      toast.error("Error", {
+      const errorMessage = generateErrorMessage(error, 'Failed to update');
+      toast.error('Error', {
         description: errorMessage,
       });
     } finally {
@@ -60,16 +63,16 @@ export const RenderActivity = ({ item, isProcessor }: Props): JSX.Element => {
     }
   };
 
-  const onDelete = async (id: Id<"stars">) => {
+  const onDelete = async (id: Id<'stars'>) => {
     setUpdating(true);
     try {
       await deleteStar({ id });
-      toast.success("Success", {
-        description: "Status updated",
+      toast.success('Success', {
+        description: 'Status updated',
       });
     } catch (error) {
-      const errorMessage = generateErrorMessage(error, "Failed to update");
-      toast.error("Error", {
+      const errorMessage = generateErrorMessage(error, 'Failed to update');
+      toast.error('Error', {
         description: errorMessage,
       });
     } finally {
@@ -77,16 +80,16 @@ export const RenderActivity = ({ item, isProcessor }: Props): JSX.Element => {
     }
   };
   const onAlertDelete = () => {
-    Alert.alert("Delete", "Are you sure you want to delete this?", [
+    Alert.alert('Delete', 'Are you sure you want to delete this?', [
       {
-        text: "Cancel",
+        text: 'Cancel',
         onPress: () => {},
-        style: "cancel",
+        style: 'cancel',
       },
       {
-        text: "Delete",
+        text: 'Delete',
         onPress: () => onDelete(item._id),
-        style: "destructive",
+        style: 'destructive',
       },
     ]);
   };
@@ -95,13 +98,13 @@ export const RenderActivity = ({ item, isProcessor }: Props): JSX.Element => {
     setSending(true);
     try {
       await editStar({ id: item._id, text: message.trim() });
-      toast.success("Success", {
-        description: "Status updated",
+      toast.success('Success', {
+        description: 'Status updated',
       });
       setEdit(false);
     } catch (error) {
-      const errorMessage = generateErrorMessage(error, "Failed to update");
-      toast.error("Error", {
+      const errorMessage = generateErrorMessage(error, 'Failed to update');
+      toast.error('Error', {
         description: errorMessage,
       });
     } finally {
@@ -134,7 +137,7 @@ export const RenderActivity = ({ item, isProcessor }: Props): JSX.Element => {
         title="Edit"
         children={
           <KeyboardAvoidingView
-            behavior={"padding"}
+            behavior={'padding'}
             keyboardVerticalOffset={100}
             style={styles.content}
           >
@@ -185,44 +188,44 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   messageInput: {
-    backgroundColor: "#f8f9fa",
+    backgroundColor: '#f8f9fa',
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: "#007AFF",
+    borderColor: '#007AFF',
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 16,
-    color: "#333",
+    color: '#333',
     height: 80,
-    textAlignVertical: "top",
+    textAlignVertical: 'top',
   },
   buttonContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 15,
   },
   sendButton: {
     flex: 1,
-    backgroundColor: "#e8f2ff",
+    backgroundColor: '#e8f2ff',
     paddingVertical: 14,
     borderRadius: 12,
-    alignItems: "center",
+    alignItems: 'center',
   },
   sendButtonText: {
-    color: "#007AFF",
+    color: '#007AFF',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   saveButton: {
     flex: 1,
-    backgroundColor: "#007AFF",
+    backgroundColor: '#007AFF',
     paddingVertical: 14,
     borderRadius: 12,
-    alignItems: "center",
+    alignItems: 'center',
   },
   saveButtonText: {
-    color: "white",
+    color: 'white',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   content: {},
 });

@@ -35,6 +35,7 @@
     "@legendapp/list": "^1.0.15",
     "@likashefqet/react-native-image-zoom": "^4.3.0",
     "@notifee/react-native": "^9.1.8",
+    "@polar-sh/sdk": "^0.40.2",
     "@react-email/components": "^0.5.1",
     "@react-email/render": "^1.2.1",
     "@react-native-async-storage/async-storage": "2.1.2",

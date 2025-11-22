@@ -1,19 +1,16 @@
 import { usePaginatedQuery } from 'convex/react';
+import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { HeaderNav } from '~/components/HeaderNav';
 import { Container } from '~/components/Ui/Container';
 import { RenderActivities } from '~/components/Ui/render-activities';
 import { api } from '~/convex/_generated/api';
-import { useGetUserId } from '~/hooks/useGetUserId';
-import {useAuth} from "~/context/auth";
-import {useLocalSearchParams} from "expo-router";
-import {Id} from "~/convex/_generated/dataModel";
+import { Id } from '~/convex/_generated/dataModel';
 const ActivitiesScreen = () => {
-
-  const {id} = useLocalSearchParams<{id: Id<'workspaces'>}>()
+  const { id } = useLocalSearchParams<{ id: Id<'workspaces'> }>();
   const { isLoading, loadMore, results, status } = usePaginatedQuery(
     api.worker.getStarred,
-     { id },
+    { id },
     { initialNumItems: 50 }
   );
 

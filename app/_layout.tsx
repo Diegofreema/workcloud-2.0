@@ -1,46 +1,32 @@
-import { ConvexAuthProvider } from '@convex-dev/auth/react';
-import { ConvexQueryClient } from '@convex-dev/react-query';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as Updates from 'expo-updates';
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from '@react-navigation/native';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { KeyboardProvider } from 'react-native-keyboard-controller';
-import { ConvexReactClient } from 'convex/react';
-import { useFonts } from 'expo-font';
+import {DarkTheme, DefaultTheme, ThemeProvider,} from '@react-navigation/native';
+import {KeyboardProvider} from 'react-native-keyboard-controller';
+import {useFonts} from 'expo-font';
 import * as Notifications from 'expo-notifications';
-import { Stack, usePathname } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
+import {Stack, useNavigationContainerRef, usePathname} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import { Appearance, PermissionsAndroid, Platform } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Toaster } from 'sonner-native';
-import { useColorScheme } from '~/hooks/useColorScheme';
+import {useEffect} from 'react';
+import {Appearance, PermissionsAndroid, Platform} from 'react-native';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {Toaster} from 'sonner-native';
+import {useColorScheme} from '~/hooks/useColorScheme';
 // import { Authenticated, Unauthenticated, AuthLoading } from 'convex/react';
-import Purchases, { LOG_LEVEL } from 'react-native-purchases';
 
 import * as Sentry from '@sentry/react-native';
-import { isRunningInExpoGo } from 'expo';
-import { MenuProvider } from 'react-native-popup-menu';
-import { AuthProvider, useAuth } from '~/context/auth';
-import { NotificationProvider } from '~/context/notification-context';
-import { useTheme } from '~/hooks/use-theme';
+import {isRunningInExpoGo} from 'expo';
+import {MenuProvider} from 'react-native-popup-menu';
+import {AuthProvider, useAuth} from '~/context/auth';
+import {NotificationProvider} from '~/context/notification-context';
+import {useTheme} from '~/hooks/use-theme';
 // import { registerTask } from '~/lib/utils';
-import { CustomStatusBar } from '~/components/custom-status-bar';
-import { useNavigationContainerRef } from 'expo-router';
+import {CustomStatusBar} from '~/components/custom-status-bar';
 import Colors from '~/constants/Colors';
+import {Provider} from "~/components/provider";
 // import { registerTask } from "~/lib/utils";
 
-const secureStorage = {
-  getItem: SecureStore.getItemAsync,
-  setItem: SecureStore.setItemAsync,
-  removeItem: SecureStore.deleteItemAsync,
-};
+
 // Construct a new integration instance. This is needed to communicate between the integration and React
 const navigationIntegration = Sentry.reactNavigationIntegration({
   enableTimeToInitialDisplay: !isRunningInExpoGo(),
@@ -55,20 +41,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
-  unsavedChangesWarning: false,
-});
-const convexQueryClient = new ConvexQueryClient(convex);
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      queryKeyHashFn: convexQueryClient.hashFn(),
-      queryFn: convexQueryClient.queryFn(),
-    },
-  },
-});
-convexQueryClient.connect(queryClient);
 // registerTask();
 
 // Sentry.init({
@@ -88,7 +61,7 @@ convexQueryClient.connect(queryClient);
 //   attachScreenshot: true,
 // });
 
-SplashScreen.preventAutoHideAsync();
+void SplashScreen.preventAutoHideAsync();
 
 const InitialRouteLayout = () => {
   const { isAuthenticated } = useAuth();
@@ -106,16 +79,9 @@ const InitialRouteLayout = () => {
         console.log(error);
       }
     }
-    onFetchUpdateAsync();
+   void onFetchUpdateAsync();
   }, []);
-  useEffect(() => {
-    Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
 
-    if (Platform.OS === 'android') {
-      Purchases.configure({ apiKey: 'goog_kfJJOEyOEYaFzJOAbwQmakouvfl' });
-    }
-    // OR: if building for Amazon, be sure to follow the installation instructions then:
-  }, []);
 
   return (
     <KeyboardProvider>
@@ -184,17 +150,12 @@ export function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <ConvexAuthProvider
-        client={convex}
-        storage={
-          Platform.OS === 'android' || Platform.OS === 'ios'
-            ? secureStorage
-            : undefined
-        }
-      >
+      <Provider>
+
+
         <NotificationProvider>
           <AuthProvider>
-            <QueryClientProvider client={queryClient}>
+
               <GestureHandlerRootView style={{ flex: 1 }}>
                 <SafeAreaView
                   style={{
@@ -210,10 +171,10 @@ export function RootLayout() {
                   <Toaster />
                 </SafeAreaView>
               </GestureHandlerRootView>
-            </QueryClientProvider>
+
           </AuthProvider>
         </NotificationProvider>
-      </ConvexAuthProvider>
+      </Provider>
     </ThemeProvider>
   );
 }
