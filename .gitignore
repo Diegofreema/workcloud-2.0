@@ -44,3 +44,6 @@ test-notification-d20d7-firebase-adminsdk-1iwx3-a764da5c73android
 
 /google-services.json
 /GoogleService-Info.plist
+# Ignore service account JSON keys (Firebase Admin / GCP)
+*-firebase-adminsdk-*.json
+test-notification-d20d7-firebase-adminsdk-*.json
