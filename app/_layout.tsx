@@ -1,31 +1,34 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as Updates from 'expo-updates';
-import {DarkTheme, DefaultTheme, ThemeProvider,} from '@react-navigation/native';
-import {KeyboardProvider} from 'react-native-keyboard-controller';
-import {useFonts} from 'expo-font';
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from '@react-navigation/native';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { useFonts } from 'expo-font';
 import * as Notifications from 'expo-notifications';
-import {Stack, useNavigationContainerRef, usePathname} from 'expo-router';
+import { Stack, useNavigationContainerRef, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import {useEffect} from 'react';
-import {Appearance, PermissionsAndroid, Platform} from 'react-native';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {Toaster} from 'sonner-native';
-import {useColorScheme} from '~/hooks/useColorScheme';
+import { useEffect } from 'react';
+import { Appearance, PermissionsAndroid, Platform } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Toaster } from 'sonner-native';
+import { useColorScheme } from '~/hooks/useColorScheme';
 // import { Authenticated, Unauthenticated, AuthLoading } from 'convex/react';
 
 import * as Sentry from '@sentry/react-native';
-import {isRunningInExpoGo} from 'expo';
-import {MenuProvider} from 'react-native-popup-menu';
-import {AuthProvider, useAuth} from '~/context/auth';
-import {NotificationProvider} from '~/context/notification-context';
-import {useTheme} from '~/hooks/use-theme';
+import { isRunningInExpoGo } from 'expo';
+import { MenuProvider } from 'react-native-popup-menu';
+import { AuthProvider, useAuth } from '~/context/auth';
+import { NotificationProvider } from '~/context/notification-context';
+import { useTheme } from '~/hooks/use-theme';
 // import { registerTask } from '~/lib/utils';
-import {CustomStatusBar} from '~/components/custom-status-bar';
+import { CustomStatusBar } from '~/components/custom-status-bar';
 import Colors from '~/constants/Colors';
-import {Provider} from "~/components/provider";
+import { Provider } from '~/components/provider';
 // import { registerTask } from "~/lib/utils";
-
 
 // Construct a new integration instance. This is needed to communicate between the integration and React
 const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -40,7 +43,6 @@ Notifications.setNotificationHandler({
     priority: Notifications.AndroidNotificationPriority.HIGH,
   }),
 });
-
 
 // registerTask();
 
@@ -79,9 +81,8 @@ const InitialRouteLayout = () => {
         console.log(error);
       }
     }
-   void onFetchUpdateAsync();
+    void onFetchUpdateAsync();
   }, []);
-
 
   return (
     <KeyboardProvider>
@@ -151,27 +152,23 @@ export function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Provider>
-
-
         <NotificationProvider>
           <AuthProvider>
-
-              <GestureHandlerRootView style={{ flex: 1 }}>
-                <SafeAreaView
-                  style={{
-                    flex: 1,
-                    backgroundColor: Colors[colorScheme ?? 'light'].background,
-                  }}
-                  // edges={['left', 'top', 'right']}
-                >
-                  <MenuProvider>
-                    <CustomStatusBar />
-                    <InitialRouteLayout />
-                  </MenuProvider>
-                  <Toaster />
-                </SafeAreaView>
-              </GestureHandlerRootView>
-
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <SafeAreaView
+                style={{
+                  flex: 1,
+                  backgroundColor: Colors[colorScheme ?? 'light'].background,
+                }}
+                // edges={['left', 'top', 'right']}
+              >
+                <MenuProvider>
+                  <CustomStatusBar />
+                  <InitialRouteLayout />
+                </MenuProvider>
+                <Toaster />
+              </SafeAreaView>
+            </GestureHandlerRootView>
           </AuthProvider>
         </NotificationProvider>
       </Provider>

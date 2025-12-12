@@ -1,27 +1,33 @@
-import { useAuthActions } from '@convex-dev/auth/react';
-import { makeRedirectUri } from 'expo-auth-session';
-import { openAuthSessionAsync } from 'expo-web-browser';
-import { Platform, View } from 'react-native';
+import { useState } from 'react';
+import { View } from 'react-native';
+import { toast } from 'sonner-native';
 import { useAuth } from '~/context/auth';
 import { Button } from '~/features/common/components/Button';
-
-const redirectTo = makeRedirectUri();
+import { authClient } from '~/lib/auth-client';
 
 export function SignIn() {
-  const { signIn } = useAuthActions();
-  const { user } = useAuth();
-  const loading = user === undefined;
+  const [loading, setLoading] = useState(false);
+
   const handleSignIn = async (provider: 'google' | 'apple') => {
-    const { redirect } = await signIn(provider, { redirectTo });
-    if (Platform.OS === 'web') {
-      return;
-    }
-    const result = await openAuthSessionAsync(redirect!.toString(), redirectTo);
-    if (result.type === 'success') {
-      const { url } = result;
-      const code = new URL(url).searchParams.get('code')!;
-      await signIn('google', { code });
-    }
+    await authClient.signIn.social({
+      provider,
+      callbackURL: '/',
+      fetchOptions: {
+        onRequest: () => setLoading(true),
+        onSuccess: () => {
+          toast.success('Success', {
+            description: 'You have successfully signed in',
+          });
+          setLoading(false);
+        },
+        onError: ({ error }) => {
+          toast.error('Error', {
+            description: error.message,
+          });
+          setLoading(false);
+        },
+      },
+    });
   };
   return (
     <View style={{ gap: 15 }}>

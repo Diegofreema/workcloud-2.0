@@ -1,59 +1,114 @@
-import { convexAuth } from '@convex-dev/auth/server';
-import Google from '@auth/core/providers/google';
-import Apple from '@auth/core/providers/apple';
-
-import { MutationCtx } from './_generated/server';
-import { findUserByEmail } from './users';
-import { internal } from './_generated/api';
-export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
-  providers: [
-    Google,
-    Apple({
-      profile: (appleInfo) => {
-        const name = appleInfo.user
-          ? `${appleInfo.user.name.firstName} ${appleInfo.user.name.lastName}`
-          : undefined;
-        return {
-          id: appleInfo.sub,
-          name: name,
-          email: appleInfo.email,
-        };
-      },
-    }),
-  ],
-  callbacks: {
-    // `args.type` is one of "oauth" | "email" | "phone" | "credentials" | "verification"
-    // `args.provider` is the currently used provider config
-    async createOrUpdateUser(ctx: MutationCtx, args) {
-      console.log({ args: args.profile });
-      if (args.existingUserId) {
-        // Optionally merge updated fields into the existing user object here
-        return args.existingUserId;
-      }
-
-      // Implement your own account linking logic:
-      const existingUser = await findUserByEmail(
-        ctx,
-        args.profile.email as string
-      );
-
-      if (existingUser) return existingUser._id;
-
-      // Implement your own user creation:
-      const userId = ctx.db.insert('users', {
-        email: args.profile.email as string,
-        name: args.profile.name as string,
-        image: args.profile.picture as string,
-        emailVerificationTime: args.profile.emailVerificationTime as number,
-        phoneNumber: args.profile.phone as string,
-      });
-
-      await ctx.scheduler.runAfter(0, internal.sendEmails.sendWelcomeEmail, {
-        name: args.profile.name as string,
-        email: args.profile.email as string,
-      });
-
-      return userId;
+import { createClient, type GenericCtx } from '@convex-dev/better-auth';
+import { convex } from '@convex-dev/better-auth/plugins';
+import { betterAuth } from 'better-auth';
+import { expo } from '@better-auth/expo';
+import { components } from './_generated/api';
+import { DataModel } from './_generated/dataModel';
+import { query } from './_generated/server';
+import authSchema from './betterAuth/schema';
+// The component client has methods needed for integrating Convex with Better Auth,
+// as well as helper methods for general use.
+export const authComponent = createClient<DataModel, typeof authSchema>(
+  components.betterAuth,
+  {
+    local: {
+      schema: authSchema,
     },
+  }
+);
+
+export const createAuth = (
+  ctx: GenericCtx<DataModel>,
+  { optionsOnly } = { optionsOnly: false }
+) => {
+  return betterAuth({
+    // disable logging when createAuth is called just to generate options.
+    // this is not required, but there's a lot of noise in logs without it.
+    logger: {
+      disabled: optionsOnly,
+    },
+    trustedOrigins: [
+      'workcloud://',
+      'https://appleid.apple.com',
+      ...(process.env.NODE_ENV === 'development'
+        ? [
+            'exp://*/*', // Trust all Expo development URLs
+            'exp://10.0.0.*:*/*', // Trust 10.0.0.x IP range
+            'exp://192.168.*.*:*/*', // Trust 192.168.x.x IP range
+            'exp://172.*.*.*:*/*', // Trust 172.x.x.x IP range
+            'exp://localhost:*/*', // Trust localhost
+          ]
+        : []),
+    ],
+    database: authComponent.adapter(ctx),
+
+    socialProviders: {
+      google: {
+        clientId: process.env.AUTH_GOOGLE_ID!,
+        clientSecret: process.env.AUTH_GOOGLE_SECRET!,
+      },
+      apple: {
+        clientId: process.env.AUTH_APPLE_ID!,
+        clientSecret: process.env.AUTH_APPLE_SECRET!,
+      },
+    },
+    plugins: [
+      // The Expo and Convex plugins are required
+      expo(),
+      convex(),
+    ],
+    user: {
+      additionalFields: {
+        storageId: {
+          type: 'string',
+          required: false,
+          defaultValue: '',
+        },
+        organizationId: {
+          type: 'string',
+          required: false,
+          defaultValue: '',
+        },
+        workerId: {
+          type: 'string',
+          required: false,
+          defaultValue: '',
+        },
+        pushToken: {
+          type: 'string',
+          required: false,
+          defaultValue: '',
+        },
+        streamToken: {
+          type: 'string',
+          required: false,
+          defaultValue: '',
+        },
+        isOnline: {
+          type: 'boolean',
+          required: false,
+          defaultValue: false,
+        },
+        lastSeen: {
+          type: 'string',
+          required: false,
+          defaultValue: '',
+        },
+        date_of_birth: {
+          type: 'string',
+          required: false,
+          defaultValue: '',
+        },
+      },
+    },
+  });
+};
+
+// Example function for getting the current user
+// Feel free to edit, omit, etc.
+export const getCurrentUser = query({
+  args: {},
+  handler: async (ctx) => {
+    return authComponent.getAuthUser(ctx);
   },
 });

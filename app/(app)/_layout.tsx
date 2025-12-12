@@ -24,6 +24,7 @@ import CallProvider from '~/context/call-provider';
 import { useNotification } from '~/context/notification-context';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
+import { authClient } from '~/lib/auth-client';
 
 type CallEvent = CallMissedEvent & {
   type: 'call.missed';
@@ -50,10 +51,10 @@ export default function AppLayout() {
       user?.workerId ? { workerId: user.workerId } : 'skip'
     )
   );
-  const updateStreamToken = useMutation(api.users.updateStreamToken);
+
   const createMissedCall = useMutation(api.users.createMissedCallRecord);
   const person = {
-    id: user?._id!,
+    id: user?.id!,
     name: user?.name,
     image: user?.image!,
   };
@@ -71,11 +72,13 @@ export default function AppLayout() {
           name: user?.name,
           email: user?.email,
           image: user?.image,
-          id: user?._id,
+          id: user?.id,
         }
       );
 
-      await updateStreamToken({ streamToken: data.token });
+      await authClient.updateUser({
+        streamToken: data.token,
+      });
       return data.token;
     } catch (error) {
       console.error('error', error);
@@ -86,7 +89,6 @@ export default function AppLayout() {
   const client = StreamVideoClient.getOrCreateInstance({
     apiKey,
     user: person,
-
     tokenProvider,
   });
   useEffect(() => {

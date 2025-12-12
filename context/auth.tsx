@@ -1,38 +1,57 @@
-import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
-
-import { useMutation, useQuery } from 'convex/react';
-import { api } from '~/convex/_generated/api';
-import { Doc } from '~/convex/_generated/dataModel';
 import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { authClient } from '~/lib/auth-client';
 import { useNotification } from './notification-context';
+import { Id } from '~/convex/_generated/dataModel';
 
-WebBrowser.maybeCompleteAuthSession();
-
+type User = {
+  createdAt: Date;
+  date_of_birth?: string | null;
+  email: string;
+  emailVerified: boolean;
+  id: string;
+  image: string | null;
+  isOnline?: boolean | null;
+  lastSeen?: string | null;
+  name: string;
+  organizationId?: Id<'organizations'> | null;
+  pushToken?: string | null;
+  storageId?: Id<'_storage'> | null;
+  streamToken?: string | null;
+  updatedAt: Date;
+  workerId?: Id<'workers'> | null;
+};
 const AuthContext = React.createContext({
-  user: null as Doc<'users'> | null | undefined,
+  user: undefined as User | undefined,
   isAuthenticated: false,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const user = useQuery(api.users.getUser, {});
+  const { data: session, isPending } = authClient.useSession();
 
   const { expoPushToken } = useNotification();
-  const updatePushToken = useMutation(api.users.updatePushToken);
-  const isAuthenticated = !!user;
-  const isLoading = user === undefined;
+
+  const isAuthenticated = !!session?.user;
+  const user = session?.user;
+  console.log({ user });
+
   React.useEffect(() => {
-    if (expoPushToken) {
-      updatePushToken({ pushToken: expoPushToken });
+    if (expoPushToken && !user?.pushToken) {
+      const onUpdate = async () => {
+        await authClient.updateUser({
+          pushToken: expoPushToken,
+        });
+      };
+      void onUpdate();
     }
-  }, [expoPushToken, updatePushToken]);
-  if (isLoading) {
+  }, [expoPushToken, user]);
+  if (isPending) {
     return <LoadingComponent />;
   }
   return (
     <AuthContext.Provider
       value={{
-        user,
+        user: user as User,
         isAuthenticated,
       }}
     >
