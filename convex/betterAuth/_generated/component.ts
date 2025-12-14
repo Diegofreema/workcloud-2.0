@@ -1031,4 +1031,81 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         Name
       >;
     };
+    auth: {
+      deleteUser: FunctionReference<
+        "mutation",
+        "internal",
+        { userId: string },
+        null | {
+          _creationTime: number;
+          _id: string;
+          createdAt: number;
+          date_of_birth?: null | string;
+          email: string;
+          emailVerified: boolean;
+          image?: null | string;
+          isOnline?: null | boolean;
+          lastSeen?: null | string;
+          name: string;
+          organizationId?: null | string;
+          pushToken?: null | string;
+          storageId?: null | string;
+          streamToken?: null | string;
+          updatedAt: number;
+          userId?: null | string;
+          workerId?: null | string;
+        },
+        Name
+      >;
+      getUser: FunctionReference<
+        "query",
+        "internal",
+        { userId: string },
+        null | {
+          _creationTime: number;
+          _id: string;
+          createdAt: number;
+          date_of_birth?: null | string;
+          email: string;
+          emailVerified: boolean;
+          image?: null | string;
+          isOnline?: null | boolean;
+          lastSeen?: null | string;
+          name: string;
+          organizationId?: null | string;
+          pushToken?: null | string;
+          storageId?: null | string;
+          streamToken?: null | string;
+          updatedAt: number;
+          userId?: null | string;
+          workerId?: null | string;
+        },
+        Name
+      >;
+      updateUser: FunctionReference<
+        "mutation",
+        "internal",
+        { organizationId?: string; userId: string; workerId?: string },
+        null | {
+          _creationTime: number;
+          _id: string;
+          createdAt: number;
+          date_of_birth?: null | string;
+          email: string;
+          emailVerified: boolean;
+          image?: null | string;
+          isOnline?: null | boolean;
+          lastSeen?: null | string;
+          name: string;
+          organizationId?: null | string;
+          pushToken?: null | string;
+          storageId?: null | string;
+          streamToken?: null | string;
+          updatedAt: number;
+          userId?: null | string;
+          workerId?: null | string;
+        },
+        Name
+      >;
+    };
   };

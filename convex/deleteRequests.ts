@@ -1,7 +1,7 @@
-import { getAuthUserId } from '@convex-dev/auth/server';
-import { mutation, query } from './_generated/server';
-import { ConvexError, v } from 'convex/values';
 import { filter } from 'convex-helpers/server/filter';
+import { ConvexError, v } from 'convex/values';
+import { mutation, query } from './_generated/server';
+import { getUserByIdHelper } from './users';
 
 export const createDeletionRequest = mutation({
   args: {
@@ -9,19 +9,20 @@ export const createDeletionRequest = mutation({
     feedback: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
+    const userIdentity = await ctx.auth.getUserIdentity();
+    if (!userIdentity) {
       throw new ConvexError({ message: 'Unauthorized' });
     }
+    const userId = userIdentity.subject;
 
-    const user = await ctx.db.get(userId);
+    const user = await getUserByIdHelper(ctx, userId);
     if (!user) {
       throw new ConvexError({ message: 'User not found' });
     }
     // Check if user already has a pending deletion request
     const existingRequest = await ctx.db
       .query('deletionRequests')
-      .withIndex('by_user', (q) => q.eq('userId', userId))
+      .withIndex('by_user', (q) => q.eq('userId', user._id))
       .filter((q) => q.eq(q.field('status'), 'pending'))
       .first();
 
@@ -32,7 +33,7 @@ export const createDeletionRequest = mutation({
     }
 
     const deletionRequestId = await ctx.db.insert('deletionRequests', {
-      userId: userId,
+      userId: user._id,
       reason: args.reason,
       feedback: args.feedback,
       requestedAt: Date.now(),
@@ -68,7 +69,7 @@ export const deleteUserAccount = mutation({
     if (!deletionRequest) {
       throw new ConvexError({ message: 'Deletion request not found' });
     }
-    const userToDelete = await ctx.db.get(args.userId);
+    const userToDelete = await getUserByIdHelper(ctx, args.userId);
     if (!userToDelete) {
       throw new ConvexError({ message: 'User not found' });
     }

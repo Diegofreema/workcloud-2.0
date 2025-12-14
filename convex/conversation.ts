@@ -8,8 +8,7 @@ import { Id } from './_generated/dataModel';
 import { getMemberHelper } from './member';
 import { messageHelper, messageReactions } from './message';
 import { getImageUrl } from './organisation';
-import { getLoggedInUser, getUserByUserId, getWorkerProfile } from './users';
-import { getAuthUserId } from '@convex-dev/auth/server';
+import { getLoggedInUser, getUserByIdHelper, getWorkerProfile } from './users';
 
 export const getConversations = query({
   args: {
@@ -200,7 +199,7 @@ export const getGroupMember = query({
   args: { memberIds: v.array(v.id('users')) },
   handler: async (ctx, args) => {
     const members = args.memberIds.map(async (id) => {
-      const user = await getUserByUserId(ctx, id);
+      const user = await getUserByIdHelper(ctx, id);
       const worker = await getWorkerProfile(ctx, id);
 
       return {
@@ -260,7 +259,7 @@ export const getGroupMessages = query({
       .paginate(args.paginationOpts);
     const page = await Promise.all(
       messages.page.map(async (m) => {
-        const sender = await getUserByUserId(ctx, m.senderId);
+        const sender = await getUserByIdHelper(ctx, m.senderId);
         const reactions = await messageReactions(ctx, m._id);
         let reply;
         if (m.replyTo) {
@@ -295,7 +294,7 @@ export const getMessages = query({
       .paginate(args.paginationOpts);
     const page = await Promise.all(
       messages.page.map(async (m) => {
-        const sender = await getUserByUserId(ctx, m.senderId);
+        const sender = await getUserByIdHelper(ctx, m.senderId);
         const reactions = await messageReactions(ctx, m._id);
         let reply;
         if (m.replyTo) {
@@ -384,31 +383,31 @@ export const createGroupConversation = mutation({
     imageId: v.optional(v.id('_storage')),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
       throw new ConvexError('You are not authorized');
     }
     let imageUrl = '';
     if (args.imageId) {
       imageUrl = (await ctx.storage.getUrl(args.imageId)) as string;
     }
-    const user = await ctx.db.get(userId);
+    const user = await getUserByIdHelper(ctx, identity.subject);
     if (!user) {
       throw new ConvexError('You are not authorized');
     }
     const id = await ctx.db.insert('conversations', {
       name: args.name,
       type: 'group',
-      participants: [userId, ...args.otherUsers],
+      participants: [user._id, ...args.otherUsers],
       description: args.description,
-      lastMessage: `${args.name} was created by`,
+      lastMessage: `${args.name} was created by ${user.name}`,
       participantNames: [],
       lastMessageTime: new Date().getTime(),
       imageId: args.imageId,
       imageUrl,
-      creatorId: userId,
+      creatorId: user._id,
     });
-    const members = [userId, ...args.otherUsers];
+    const members = [user._id, ...args.otherUsers];
     for (const member of members) {
       await ctx.db.insert('members', {
         conversationId: id,
@@ -518,7 +517,7 @@ export const fetchWorkersThatAreNotInGroup = query({
 
     return await Promise.all(
       workersNotInGroup.map(async (worker) => {
-        const user = await getUserByUserId(ctx, worker.userId);
+        const user = await getUserByIdHelper(ctx, worker.userId);
         return {
           ...user,
           role: worker.role,
@@ -633,8 +632,8 @@ export const createConversation = async (
   otherUserId: Id<'users'>,
   type: 'single' | 'processor'
 ) => {
-  const me = await ctx.db.get(loggedInUserId);
-  const otherUser = await ctx.db.get(otherUserId);
+  const me = await getUserByIdHelper(ctx, loggedInUserId);
+  const otherUser = await getUserByIdHelper(ctx, otherUserId);
   if (!me || !otherUser) {
     throw new ConvexError('User not found');
   }
@@ -653,10 +652,7 @@ export const createConversation = async (
   }
 };
 
-export const getConversationIamIn = async (
-  ctx: QueryCtx,
-  userId: Id<'users'>
-) => {
+export const getConversationIamIn = async (ctx: QueryCtx, userId: string) => {
   return filter(
     ctx.db.query('conversations').withIndex('by_id'),
     (conversation) => conversation.participants.includes(userId)

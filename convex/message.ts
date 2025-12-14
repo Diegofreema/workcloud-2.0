@@ -1,7 +1,7 @@
-import { mutation, MutationCtx, query, QueryCtx } from './_generated/server';
 import { ConvexError, v } from 'convex/values';
 import { Id } from './_generated/dataModel';
-import { getUserByUserId } from './users';
+import { mutation, MutationCtx, query, QueryCtx } from './_generated/server';
+import { getUserByIdHelper } from './users';
 
 export const reactToMessage = mutation({
   args: {
@@ -127,7 +127,7 @@ export const messageHelper = async (
   const message = await ctx.db.get(messageId);
   if (!message) return;
 
-  const sender = await getUserByUserId(ctx, message?.senderId);
+  const sender = await getUserByIdHelper(ctx, message?.senderId);
 
   return {
     fileType: message.fileType,
@@ -258,7 +258,7 @@ export const getMembersInConversation = query({
     if (!conversation) return [];
 
     const members = conversation.participants.map(async (m) => {
-      const user = await ctx.db.get(m);
+      const user = await getUserByIdHelper(ctx, m);
 
       return user?._id;
     });

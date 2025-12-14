@@ -1,10 +1,6 @@
-import { useQuery } from "convex/react";
-import { api } from "~/convex/_generated/api";
-import { Id } from "~/convex/_generated/dataModel";
+import { useQuery } from 'convex/react';
+import { api } from '~/convex/_generated/api';
 
-type Props = {
-  ownerId?: Id<"users">;
-};
-export const useConnections = ({ ownerId }: Props) => {
+export const useConnections = () => {
   return useQuery(api.connection.getUserConnections);
 };

@@ -1,29 +1,30 @@
-import { getAuthUserId } from '@convex-dev/auth/server';
 import { PushNotifications } from '@convex-dev/expo-push-notifications';
 import { ConvexError, v } from 'convex/values';
 import { api, components, internal } from './_generated/api.js';
 import { internalAction } from './_generated/server';
 import { mutation, query } from './_generated/server.js';
-
-export type Email = string & { __isEmail: true };
-
+import { getUserByIdHelper } from './users.js';
 const pushNotifications = new PushNotifications(components.pushNotifications);
 
 export const recordPushNotificationToken = mutation({
   args: { token: v.string() },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return null;
+    }
+    const user = await getUserByIdHelper(ctx, identity.subject);
+    if (!user) {
       return null;
     }
     // Record push notification tokens
     await pushNotifications.recordToken(ctx, {
-      userId: userId,
+      userId: user._id,
       pushToken: args.token,
     });
     // Query the push notification status for a user
     const status = await pushNotifications.getStatusForUser(ctx, {
-      userId: userId,
+      userId: user._id,
     });
     if (!status.hasToken) {
       throw new ConvexError('Failed to record token');
@@ -52,7 +53,7 @@ export const sendPushNotification = mutation({
 });
 
 export const getNotificationStatus = query({
-  args: { id: v.string() },
+  args: { id: v.id('users') },
   handler: async (ctx, args) => {
     const notification = await pushNotifications.getNotification(ctx, args);
     return notification?.state;

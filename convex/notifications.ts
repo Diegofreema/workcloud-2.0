@@ -1,9 +1,8 @@
 import { v } from 'convex/values';
 
-import { internalMutation, mutation, query } from './_generated/server';
 import { paginationOptsValidator } from 'convex/server';
-import { getLoggedInUser } from './users';
-import { Id } from './_generated/dataModel';
+import { internalMutation, mutation, query } from './_generated/server';
+import { getLoggedInUser, getUserByIdHelper } from './users';
 
 export const getNotifications = query({
   args: {
@@ -14,7 +13,7 @@ export const getNotifications = query({
 
     const notifications = await ctx.db
       .query('notifications')
-      .withIndex('by_user_id', (q) => q.eq('userId', user?._id as Id<'users'>))
+      .withIndex('by_user_id', (q) => q.eq('userId', user?._id!))
       .order('desc')
       .paginate(args.paginationOpts);
 
@@ -23,7 +22,7 @@ export const getNotifications = query({
         let image = '';
         if (n.reviewId) {
           const review = await ctx.db.get(n.reviewId);
-          const user = await ctx.db.get(review?.userId!);
+          const user = await getUserByIdHelper(ctx, review?.userId!);
           if (user) {
             image = user.image as string;
           }

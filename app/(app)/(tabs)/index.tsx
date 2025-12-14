@@ -3,6 +3,7 @@ import { OrganizationModal } from '~/components/OrganizationModal';
 import { Container } from '~/components/Ui/Container';
 import { ErrorComponent } from '~/components/Ui/ErrorComponent';
 import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { useAuth } from '~/context/auth';
 import { useConnections } from '~/features/common/api/use-connection';
 import { useUserData } from '~/features/home/api/user-data';
 import { Header } from '~/features/home/components/Header';
@@ -16,15 +17,14 @@ export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
 }
 
 export default function TabOneScreen() {
-  const userData = useUserData();
-  const connections = useConnections({ ownerId: userData?._id });
+  const { user } = useAuth();
+  const connections = useConnections();
 
-  const showModal =
-    !!userData && !userData?.organizationId && !userData?.workerId;
+  const showModal = !!user && !user?.organizationId && !user?.workerId;
 
   useOrganizationModalHook({ showModal });
 
-  if (userData === undefined || connections === undefined) {
+  if (connections === undefined) {
     return <LoadingComponent />;
   }
 
@@ -35,9 +35,9 @@ export default function TabOneScreen() {
       <OrganizationModal />
       <Header />
       <ProfileHeader
-        id={userData?._id!}
-        avatar={userData?.image!}
-        name={userData?.name as string}
+        id={user?.id!}
+        avatar={user?.image!}
+        name={user?.name as string}
       />
       <HomeBody data={firstTen} headerText={headerText} />
     </Container>

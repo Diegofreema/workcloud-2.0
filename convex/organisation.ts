@@ -1,7 +1,7 @@
 import { ConvexError, v } from 'convex/values';
 import { Id } from './_generated/dataModel';
 import { mutation, query, QueryCtx } from './_generated/server';
-import { getLoggedInUser, getUserByUserId, getUserForWorker } from './users';
+import { getLoggedInUser, getUserByIdHelper, getUserForWorker } from './users';
 import { internal } from './_generated/api';
 
 export const getServicePoints = query({
@@ -165,7 +165,7 @@ export const getOrganizationWithOwnerAndWorkspaces = query({
     if (!result) return null;
 
     const [owner, workspaces] = await Promise.all([
-      getUserByOwnerId(ctx, result.ownerId),
+      getUserByIdHelper(ctx, result.ownerId),
       getWorkspacesByOrganizationId(ctx, result._id),
     ]);
 
@@ -192,7 +192,7 @@ export const getPostsByOrganizationId = query({
 });
 export const getTopSearches = query({
   args: {
-    userId: v.id('users'),
+    userId: v.string(),
   },
   handler: async (ctx, args) => {
     const res = await ctx.db
@@ -215,7 +215,7 @@ export const getTopSearches = query({
 export const getOrganisationsByServicePointsSearchQuery = query({
   args: {
     query: v.optional(v.string()),
-    ownerId: v.id('users'),
+    ownerId: v.string(),
   },
   handler: async (ctx, { query, ownerId }) => {
     if (!query) return [];
@@ -398,8 +398,9 @@ export const createOrganization = mutation({
       throw new ConvexError('Failed to create organization');
     }
     await ctx.db.patch(user._id, {
-      organizationId: organizationId,
+      organizationId,
     });
+
     await ctx.scheduler.runAfter(0, internal.sendEmails.sendNewOrgEmail, {
       name: user.name as string,
       email: user.email as string,
@@ -494,7 +495,7 @@ export const deletePosts = mutation({
 export const handleFollow = mutation({
   args: {
     organizationId: v.id('organizations'),
-    userId: v.id('users'),
+    userId: v.string(),
   },
   handler: async (ctx, { organizationId, userId }) => {
     const organization = await ctx.db.get(organizationId);
@@ -513,13 +514,6 @@ export const handleFollow = mutation({
   },
 });
 // helpers
-
-export const getUserByOwnerId = async (ctx: QueryCtx, ownerId: Id<'users'>) => {
-  const result = await ctx.db.get(ownerId);
-  if (!result) return null;
-
-  return result;
-};
 
 export const getWorkspacesByOrganizationId = async (
   ctx: QueryCtx,
@@ -610,7 +604,7 @@ export const getWorkspaceWithWorkerAndUserProfile = async (
 
   return await Promise.all(
     workers.map(async (worker) => {
-      const user = await getUserByUserId(ctx, worker?.userId!);
+      const user = await getUserByIdHelper(ctx, worker?.userId!);
       const workspace = await getWorkspaceByWorkerWorkspaceId(
         ctx,
         worker?.workspaceId!
@@ -670,10 +664,10 @@ export const getTeamMembers = query({
       .withIndex('by_org_id', (q) => q.eq('organizationId', organization._id))
       .collect();
 
-    const boss = await getUserByUserId(ctx, organization.ownerId);
+    const boss = await getUserByIdHelper(ctx, organization.ownerId);
     const workersWithProfiles = await Promise.all(
       workers.map(async (worker) => {
-        const user = await getUserByUserId(ctx, worker.userId);
+        const user = await getUserByIdHelper(ctx, worker.userId);
         return {
           ...worker,
           user,
