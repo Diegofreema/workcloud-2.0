@@ -1,6 +1,8 @@
 import { convexQuery } from '@convex-dev/react-query';
 import { FontAwesome } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
 
 import { useQuery } from '@tanstack/react-query';
 import { useMutation } from 'convex/react';
@@ -126,7 +128,7 @@ const Edit = () => {
         });
       } else {
         await updateOrganization({
-          avatar: data?.avatar!,
+          avatar: data?.avatar as string,
           end: values.endTime,
           name: values.organizationName,
           start: values.startTime,
@@ -184,7 +186,11 @@ const Edit = () => {
       setValue('category', cat);
     }
   }, [cat, setValue]);
-  const onChange = (event: any, selectedDate: any, type: string) => {
+  const onChange = (
+    event: DateTimePickerEvent,
+    selectedDate: Date,
+    type: string
+  ) => {
     const currentDate = selectedDate;
     if (type === 'startTime') {
       setShow(false);
@@ -429,7 +435,7 @@ const Edit = () => {
                   mode="time"
                   is24Hour
                   onChange={(event, selectedDate) =>
-                    onChange(event, selectedDate, 'startTime')
+                    onChange(event, selectedDate as Date, 'startTime')
                   }
                 />
               )}
@@ -449,7 +455,7 @@ const Edit = () => {
                   mode="time"
                   is24Hour
                   onChange={(event, selectedDate) =>
-                    onChange(event, selectedDate, 'endTime')
+                    onChange(event, selectedDate as Date, 'endTime')
                   }
                 />
               )}

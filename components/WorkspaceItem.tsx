@@ -1,21 +1,21 @@
-import { Pressable } from "react-native";
+import { Pressable } from 'react-native';
 
-import { MyText } from "./Ui/MyText";
+import { MyText } from './Ui/MyText';
 
-import { Organization } from "~/constants/types";
-import { Avatar } from "~/features/common/components/avatar";
+import { FunctionReturnType } from 'convex/server';
+import { api } from '~/convex/_generated/api';
+import { Avatar } from '~/features/common/components/avatar';
 
-export const WorkspaceItem = ({
-  item,
-  onPress,
-}: {
-  item: Organization;
+type Props = {
+  item: FunctionReturnType<typeof api.organisation.getOrganisationsOrNull>;
   onPress?: () => void;
-}) => {
+};
+
+export const WorkspaceItem = ({ item, onPress }: Props) => {
   return (
     <Pressable
       onPress={onPress}
-      style={{ flexDirection: "row", gap: 10, alignItems: "center" }}
+      style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}
     >
       {item?.avatar && <Avatar url={item.avatar!} />}
       <MyText
@@ -23,7 +23,7 @@ export const WorkspaceItem = ({
         style={{
           fontSize: 12,
 
-          textTransform: "capitalize",
+          textTransform: 'capitalize',
         }}
       >
         {item?.name}

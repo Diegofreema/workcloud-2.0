@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Text } from '@rneui/themed';
 import { useMutation } from 'convex/react';
 import { useRouter } from 'expo-router';

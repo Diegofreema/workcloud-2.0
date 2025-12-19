@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { ErrorBoundaryProps, Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -54,9 +55,9 @@ export default function AppLayout() {
 
   const createMissedCall = useMutation(api.users.createMissedCallRecord);
   const person = {
-    id: user?.id!,
+    id: user?.id as string,
     name: user?.name,
-    image: user?.image!,
+    image: user?.image as string,
   };
   const tokenProvider = async () => {
     const values = JSON.stringify({

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Avatar } from '@rneui/themed';
 import { useMutation, useQuery } from 'convex/react';
 import {
@@ -152,13 +153,13 @@ const OrganizationItem = ({
       onPress={onPress}
     >
       <HStack alignItems="center" gap={10}>
-        <Avatar rounded source={{ uri: item?.avatar! }} size={50} />
+        <Avatar rounded source={{ uri: item?.avatar as string }} size={50} />
         <VStack>
           <MyText poppins="Bold" fontSize={14}>
-            {item?.name}
+            {item?.name as string}
           </MyText>
           <MyText poppins="Medium" fontSize={12}>
-            {item?.description}
+            {item?.description as string}
           </MyText>
         </VStack>
       </HStack>

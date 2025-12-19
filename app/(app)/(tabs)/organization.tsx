@@ -69,7 +69,6 @@ const Organization = () => {
         </MyText>
 
         {workspace?._id ? (
-          // @ts-ignore
           <WorkspaceComponent item={workspace} />
         ) : (
           <EmptyText text="No assigned workspace yet" />

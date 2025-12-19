@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { convexQuery } from '@convex-dev/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { useConvex, useMutation } from 'convex/react';
@@ -67,7 +68,7 @@ const CompleteRequest = () => {
         salary: salary.toString().trim(),
         qualities: qualities.trim(),
         responsibility: responsibility.trim(),
-        from: orgData?.ownerId!,
+        from: orgData?.ownerId as Id<'users'>,
         to: data?.user?._id,
       });
       await convexPushNotificationsHelper(convex, {
@@ -94,7 +95,7 @@ const CompleteRequest = () => {
     }
   }, [finalRole, setValue]);
   if (isError || isRefetchError || isPaused || orgError) {
-    return <ErrorComponent refetch={refetch} text={error?.message!} />;
+    return <ErrorComponent refetch={refetch} text={error?.message as string} />;
   }
 
   if (isPending || orgPending) {
@@ -112,7 +113,7 @@ const CompleteRequest = () => {
       >
         <View style={{ marginVertical: 10 }}>
           <UserPreview
-            imageUrl={data?.user?.image!}
+            imageUrl={data?.user?.image}
             name={data?.user?.name}
             roleText={data?.worker?.role}
             workPlace={data?.organization?.name}

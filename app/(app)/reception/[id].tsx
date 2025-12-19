@@ -106,7 +106,7 @@ const Reception = () => {
           rightComponent={<ReceptionRightHeader />}
         />
         <HStack gap={10} alignItems="center" my={10}>
-          <Avatar rounded source={{ uri: data?.avatar! }} size={50} />
+          <Avatar rounded source={{ uri: data?.avatar as string }} size={50} />
           <VStack>
             <MyText poppins="Medium" style={{ color: colors.nine }}>
               Opening hours:
@@ -268,10 +268,13 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
         joinedAt: format(Date.now(), 'dd/MM/yyyy, HH:mm:ss'),
       });
       await convexPushNotificationsHelper(convex, {
-        title: storedUser?.name!,
+        title: storedUser?.name as string,
         body: 'is waiting in your looby',
         to: item.user?._id,
-        data: { workkspaceId: item?.workspace?._id!, type: 'workspace' },
+        data: {
+          workkspaceId: item?.workspace?._id as Id<'workspaces'>,
+          type: 'workspace',
+        },
       });
 
       if (waitlistId) {
@@ -306,7 +309,11 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
       onPress={handlePress}
     >
       <VStack alignItems="center" justifyContent="center" gap={2}>
-        <Avatar rounded source={{ uri: item?.user?.image! }} size={50} />
+        <Avatar
+          rounded
+          source={{ uri: item?.user?.image as string }}
+          size={50}
+        />
         <MyText poppins="Medium" fontSize={11} style={{ textAlign: 'center' }}>
           {item?.role}
         </MyText>

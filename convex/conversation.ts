@@ -21,7 +21,7 @@ export const getConversations = query({
         .query('conversations')
         .withIndex('type', (q) => q.eq('type', args.type)),
       (conversation) =>
-        conversation.participants.includes(me?._id!) &&
+        conversation.participants.includes(me?._id as Id<'users'>) &&
         conversation.lastMessage !== undefined
     )
       .order('desc')
@@ -35,7 +35,7 @@ export const getConversationsSingleSearch = query({
   handler: async (ctx, args) => {
     const me = await getLoggedInUser(ctx, 'query');
     if (!me) {
-      throw new ConvexError('Unable to fetch data');
+      throw new ConvexError({ message: 'Unable to fetch data' });
     }
 
     return filter(
@@ -134,6 +134,7 @@ export const getUnreadAllMessages = query({
   },
 });
 export const getUnreadProcessorMessages = query({
+  args: {},
   handler: async (ctx, args) => {
     const me = await getLoggedInUser(ctx, 'query');
     if (!me) return 0;
@@ -196,11 +197,12 @@ export const getGroup = query({
 });
 
 export const getGroupMember = query({
-  args: { memberIds: v.array(v.id('users')) },
+  args: { memberIds: v.array(v.string()) },
   handler: async (ctx, args) => {
     const members = args.memberIds.map(async (id) => {
       const user = await getUserByIdHelper(ctx, id);
-      const worker = await getWorkerProfile(ctx, id);
+
+      const worker = await getWorkerProfile(ctx, user?._id as Id<'users'>);
 
       return {
         ...user,
@@ -230,10 +232,19 @@ export const getGroupConversationThatIAmIn = query({
 export const getGroupMessages = query({
   args: {
     conversationId: v.id('conversations'),
-    loggedInUserId: v.id('users'),
+
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError({ message: 'Unauthorized' });
+    }
+    const user = await getUserByIdHelper(ctx, identity.subject);
+    if (!user) {
+      throw new ConvexError({ message: 'User not found' });
+    }
+
     const members = await ctx.db
       .query('members')
       .withIndex('by_conversation_id', (q) =>
@@ -242,10 +253,10 @@ export const getGroupMessages = query({
       .collect();
 
     const currentMember = members.find(
-      (member) => member.memberId === args.loggedInUserId
+      (member) => member.memberId === user._id
     );
     if (!currentMember) {
-      throw new ConvexError('Member not found');
+      throw new ConvexError({ message: 'Member not found' });
     }
     const messages = await ctx.db
       .query('messages')

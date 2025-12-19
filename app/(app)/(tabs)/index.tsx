@@ -5,7 +5,6 @@ import { ErrorComponent } from '~/components/Ui/ErrorComponent';
 import { LoadingComponent } from '~/components/Ui/LoadingComponent';
 import { useAuth } from '~/context/auth';
 import { useConnections } from '~/features/common/api/use-connection';
-import { useUserData } from '~/features/home/api/user-data';
 import { Header } from '~/features/home/components/Header';
 import { HomeBody } from '~/features/home/components/home-body';
 import { ProfileHeader } from '~/features/home/components/ProfileHeader';
@@ -35,8 +34,8 @@ export default function TabOneScreen() {
       <OrganizationModal />
       <Header />
       <ProfileHeader
-        id={user?.id!}
-        avatar={user?.image!}
+        id={user?.id as string}
+        avatar={user?.image as string}
         name={user?.name as string}
       />
       <HomeBody data={firstTen} headerText={headerText} />

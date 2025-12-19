@@ -28,13 +28,13 @@ export const GroupInfo = () => {
   }
   const data =
     groupMembers
-      ?.filter((member) => member._id !== group?.creatorId)
+      ?.filter((member) => member?._id !== group?.creatorId)
       .map((item) => ({
-        name: item.name!,
-        image: item.image!,
-        id: item._id!,
-        role: item.role!,
-        _id: item.workerId!,
+        name: item?.name as string,
+        image: item?.image as string,
+        id: item?._id as Id<'users'>,
+        role: item?.role as string,
+        _id: item?.workerId as Id<'workers'>,
         workspace: null,
       })) ?? [];
 

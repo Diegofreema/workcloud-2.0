@@ -6,7 +6,7 @@ import { getUserByIdHelper } from './users';
 export const reactToMessage = mutation({
   args: {
     messageId: v.id('messages'),
-    senderId: v.id('users'),
+
     emoji: v.union(
       v.literal('LIKE'),
       v.literal('SAD'),
@@ -17,6 +17,14 @@ export const reactToMessage = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError({ message: 'Unauthorized' });
+    }
+    const user = await getUserByIdHelper(ctx, identity.subject);
+    if (!user) {
+      throw new ConvexError({ message: 'User not found' });
+    }
     const messageToReactTo = await ctx.db.get(args.messageId);
     if (!messageToReactTo) {
       throw new ConvexError('Message not found');
@@ -25,7 +33,7 @@ export const reactToMessage = mutation({
     const reactionExists = await ctx.db
       .query('reactions')
       .withIndex('by_sender_message_id', (q) =>
-        q.eq('message_id', args.messageId).eq('user_id', args.senderId)
+        q.eq('message_id', args.messageId).eq('user_id', user._id)
       )
       .first();
 
@@ -42,18 +50,25 @@ export const reactToMessage = mutation({
     await ctx.db.insert('reactions', {
       emoji: args.emoji,
       message_id: args.messageId,
-      user_id: args.senderId,
+      user_id: user._id,
     });
   },
 });
 
 export const deleteMessage = mutation({
   args: {
-    sender_id: v.id('users'),
     message_id: v.id('messages'),
   },
   handler: async (ctx, args) => {
-    await deleteMessageHelpFn(ctx, args.message_id, args.sender_id);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError({ message: 'Unauthorized' });
+    }
+    const user = await getUserByIdHelper(ctx, identity.subject);
+    if (!user) {
+      throw new ConvexError({ message: 'User not found' });
+    }
+    await deleteMessageHelpFn(ctx, args.message_id, user._id);
   },
 });
 
@@ -66,14 +81,14 @@ export const deleteMessageHelpFn = async (
 ) => {
   const messageToDelete = await ctx.db.get(message_id);
   if (!messageToDelete) {
-    throw new ConvexError('Message not found');
+    throw new ConvexError({ message: 'Message not found' });
   }
   const room = await ctx.db.get(messageToDelete.conversationId);
   if (!room) {
-    throw new ConvexError('Room not found');
+    throw new ConvexError({ message: 'Room not found' });
   }
   if (messageToDelete.senderId !== logged_in_user) {
-    throw new ConvexError('Unauthorized');
+    throw new ConvexError({ message: 'Unauthorized' });
   }
   if (messageToDelete.fileId) {
     await ctx.storage.delete(messageToDelete.fileId);
@@ -145,7 +160,7 @@ export const sendMessage = mutation({
   args: {
     conversationId: v.id('conversations'),
     content: v.string(),
-    senderId: v.id('users'),
+
     fileType: v.optional(
       v.union(v.literal('image'), v.literal('pdf'), v.literal('audio'))
     ),
@@ -161,9 +176,17 @@ export const sendMessage = mutation({
     ),
   },
   handler: async (ctx, { lastMessageType, ...args }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError({ message: 'Unable to send message' });
+    }
+    const user = await getUserByIdHelper(ctx, identity.subject);
+    if (!user) {
+      throw new ConvexError({ message: 'Unable to send message' });
+    }
     const room = await ctx.db.get(args.conversationId);
     if (!room) {
-      throw new ConvexError('Conversation not found');
+      throw new ConvexError({ message: 'Conversation not found' });
     }
 
     let file_url;
@@ -174,7 +197,8 @@ export const sendMessage = mutation({
     await ctx.db.insert('messages', {
       ...args,
       fileUrl: file_url,
-      seenId: [args.senderId],
+      seenId: [user._id],
+      senderId: user._id,
     });
 
     await ctx.db.patch(room._id, {
@@ -189,15 +213,24 @@ export const editMessage = mutation({
   args: {
     text: v.string(),
     message_id: v.id('messages'),
-    sender_id: v.id('users'),
   },
   handler: async (ctx, args) => {
-    const messageToEdit = await ctx.db.get(args.message_id);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError({ message: 'Unable to fetch data' });
+    }
+    const user = await getUserByIdHelper(ctx, identity.subject);
+    if (!user) {
+      throw new ConvexError({ message: 'Unable to fetch data' });
+    }
+    const messageToEdit = await ctx.db.get('messages', args.message_id);
     if (!messageToEdit) {
       throw new ConvexError('Message not found');
     }
-    if (messageToEdit.senderId !== args.sender_id) {
-      throw new ConvexError('You are not authorized to edit this text');
+    if (messageToEdit.senderId !== user._id) {
+      throw new ConvexError({
+        message: 'You are not authorized to edit this text',
+      });
     }
     await ctx.db.patch(messageToEdit._id, {
       content: args.text,
@@ -208,14 +241,22 @@ export const editMessage = mutation({
 export const setTypingState = mutation({
   args: {
     conversationId: v.id('conversations'),
-    userId: v.id('users'),
+
     isTyping: v.boolean(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError({ message: 'Unable to fetch data' });
+    }
+    const user = await getUserByIdHelper(ctx, identity.subject);
+    if (!user) {
+      throw new ConvexError({ message: 'Unable to fetch data' });
+    }
     const existing = await ctx.db
       .query('typingStates')
       .withIndex('by_conversationId_userId', (q) =>
-        q.eq('conversationId', args.conversationId).eq('userId', args.userId)
+        q.eq('conversationId', args.conversationId).eq('userId', user._id)
       )
       .first();
 
@@ -226,7 +267,7 @@ export const setTypingState = mutation({
     } else {
       await ctx.db.insert('typingStates', {
         conversationId: args.conversationId,
-        userId: args.userId,
+        userId: user._id,
         isTyping: args.isTyping,
       });
     }

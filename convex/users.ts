@@ -21,6 +21,7 @@ export const getAllUsers = query({
   },
 });
 export const getUser = query({
+  args: {},
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -140,6 +141,7 @@ export const createToken = internalMutation({
 // });
 
 export const getUserByClerkId = query({
+  args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -151,7 +153,7 @@ export const getUserByClerkId = query({
     }
     let workProfile;
     if (user?.workerId) {
-      workProfile = await ctx.db.get(user?.workerId!);
+      workProfile = await ctx.db.get('workers', user?.workerId);
     }
 
     return {
@@ -162,10 +164,10 @@ export const getUserByClerkId = query({
 });
 export const getUserById = query({
   args: {
-    id: v.id('users'),
+    id: v.string(),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.id);
+    return await getUserByIdHelper(ctx, args.id);
   },
 });
 
@@ -209,8 +211,11 @@ export const updateUserById = mutation({
   },
 });
 
-export const generateUploadUrl = mutation(async (ctx) => {
-  return await ctx.storage.generateUploadUrl();
+export const generateUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.storage.generateUploadUrl();
+  },
 });
 
 export const updateImage = mutation({
@@ -265,6 +270,7 @@ export const updateWorkerProfile = mutation({
   },
 });
 export const getWorkerProfileWithUser = query({
+  args: {},
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) return null;
@@ -281,7 +287,10 @@ export const getWorkerProfileWithUser = query({
     // Fetch user
 
     // Fetch and process organization
-    const organization = await getOrganisations(ctx, worker?.organizationId!);
+    const organization = await getOrganisations(
+      ctx,
+      worker?.organizationId as Id<'organizations'>
+    );
 
     // Process user image
 
@@ -414,14 +423,17 @@ export const markMissedCallsAsSeen = mutation({
 });
 
 export const getMissedCalls = query({
-  args: {
-    userId: v.id('users'),
-  },
+  args: {},
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return 0;
+
+    const user = await getUserByIdHelper(ctx, identity.subject);
+    if (!user) return 0;
     const calls = await ctx.db
       .query('missedCalls')
       .withIndex('by_user_id', (q) =>
-        q.eq('userId', args.userId).eq('seen', false)
+        q.eq('userId', user._id).eq('seen', false)
       )
       .collect();
     // unique calls by callId

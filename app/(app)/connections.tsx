@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { EvilIcons } from '@expo/vector-icons';
 import { useQuery } from 'convex/react';
 import React from 'react';

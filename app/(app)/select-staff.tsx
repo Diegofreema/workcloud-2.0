@@ -49,22 +49,22 @@ const SelectStaff = () => {
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
         data={staffs}
         renderItem={({ item }) => {
-          const fullName = item?.user?.name!;
+          const fullName = item?.user?.name as string;
           const { worker, user } = item;
           return (
             <UserPreviewWithBio
-              workerId={worker?._id!}
+              workerId={worker?._id as Id<'workers'>}
               id={user?._id as Id<'users'>}
-              imageUrl={item?.user?.image!}
+              imageUrl={item?.user?.image as string}
               name={fullName}
-              bio={worker.experience!}
+              bio={worker.experience as string}
               skills={worker.skills!}
               onPress={() =>
                 onSelectStaff({
-                  id: worker?._id!,
+                  id: worker?._id as Id<'workers'>,
                   name: fullName,
-                  image: user?.image!,
-                  role: worker.role!,
+                  image: user?.image as string,
+                  role: worker.role as string,
                 })
               }
             />

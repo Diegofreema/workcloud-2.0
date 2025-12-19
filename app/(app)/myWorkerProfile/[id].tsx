@@ -99,10 +99,10 @@ const Profile = () => {
           }}
         >
           <UserPreview
-            imageUrl={data?.user.image!}
+            imageUrl={data?.user.image as string}
             name={data?.user?.name}
             roleText={data?.role}
-            workPlace={data?.organization?.name!}
+            workPlace={data?.organization?.name as string}
             personal
           />
         </View>

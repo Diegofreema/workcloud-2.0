@@ -7,7 +7,6 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { fontFamily } from '~/constants';
 import Colors, { colors } from '~/constants/Colors';
-import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
 import { useUnreadMessageCount } from '~/features/common/hook/use-unread-message-count';
 import { useColorScheme } from '~/hooks/useColorScheme';
@@ -26,12 +25,8 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const count = useUnreadMessageCount();
-  const { user } = useAuth();
-  const userId = user?._id;
-  const missedCall = useQuery(
-    api.users.getMissedCalls,
-    userId ? { userId } : 'skip'
-  );
+
+  const missedCall = useQuery(api.users.getMissedCalls);
   const missedCallCount = missedCall === undefined ? 0 : missedCall;
   return (
     <>

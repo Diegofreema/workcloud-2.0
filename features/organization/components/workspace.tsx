@@ -1,26 +1,30 @@
-import { Pressable, View } from "react-native";
-import { WorkSpace } from "~/constants/types";
-import { toast } from "sonner-native";
-import { Href, router } from "expo-router";
-import { HStack } from "~/components/HStack";
-import { Avatar } from "@rneui/themed";
-import VStack from "~/components/Ui/VStack";
-import { MyText } from "~/components/Ui/MyText";
-import { colors } from "~/constants/Colors";
-import { FontAwesome } from "@expo/vector-icons";
-import React from "react";
-import { capitaliseFirstLetter } from "~/lib/helper";
+import { FontAwesome } from '@expo/vector-icons';
+import { Avatar } from '@rneui/themed';
+import { FunctionReturnType } from 'convex/server';
+import { Href, router } from 'expo-router';
+import React from 'react';
+import { Pressable, View } from 'react-native';
+import { toast } from 'sonner-native';
+import { HStack } from '~/components/HStack';
+import { MyText } from '~/components/Ui/MyText';
+import VStack from '~/components/Ui/VStack';
+import { colors } from '~/constants/Colors';
+import { api } from '~/convex/_generated/api';
+import { capitaliseFirstLetter } from '~/lib/helper';
 
-export const WorkspaceComponent = ({ item }: { item: WorkSpace }) => {
-  const isProcessor = item.role === "processor";
+type Props = {
+  item: FunctionReturnType<typeof api.workspace.getUserWorkspaceOrNull>;
+};
+export const WorkspaceComponent = ({ item }: Props) => {
+  const isProcessor = item?.role === 'processor';
   const path: Href = isProcessor
-    ? `/processors/workspace/${item.workerId}`
+    ? `/processors/workspace/${item?.workerId}`
     : `/wk/${item?._id}`;
 
   const handlePress = () => {
     if (item?.locked) {
-      toast("This workspace is locked", {
-        description: "Please wait till the admin unlocks it",
+      toast('This workspace is locked', {
+        description: 'Please wait till the admin unlocks it',
       });
       return;
     }
@@ -31,13 +35,13 @@ export const WorkspaceComponent = ({ item }: { item: WorkSpace }) => {
     <Pressable
       onPress={handlePress}
       style={{
-        width: "100%",
-        flexDirection: "row",
-        justifyContent: "space-between",
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
       }}
     >
       <HStack gap={10} alignItems="center">
-        <Avatar rounded source={{ uri: item.image! }} size={50} />
+        <Avatar rounded source={{ uri: item?.image as string }} size={50} />
         <VStack>
           <MyText poppins="Bold" style={{ fontSize: 13 }}>
             {capitaliseFirstLetter(item?.role)}
@@ -50,7 +54,7 @@ export const WorkspaceComponent = ({ item }: { item: WorkSpace }) => {
                   : colors.closeBackgroundColor,
                 paddingHorizontal: 2,
                 borderRadius: 3,
-                alignItems: "center",
+                alignItems: 'center',
               }}
             >
               <MyText
@@ -61,7 +65,7 @@ export const WorkspaceComponent = ({ item }: { item: WorkSpace }) => {
                     : colors.closeTextColor,
                 }}
               >
-                {item?.active ? "Active" : "Not active"}
+                {item?.active ? 'Active' : 'Not active'}
               </MyText>
             </View>
           )}

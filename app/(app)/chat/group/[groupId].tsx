@@ -16,7 +16,7 @@ import { useMarkRead } from '~/hooks/useMarkRead';
 const GroupChatScreen = () => {
   const { groupId } = useLocalSearchParams<{ groupId: Id<'conversations'> }>();
   const { user } = useAuth();
-  const loggedInUserId = user?._id;
+  const loggedInUserId = user?.id;
   const group = useQuery(api.conversation.getGroup, { groupId });
   const {
     status,
@@ -25,10 +25,9 @@ const GroupChatScreen = () => {
     isLoading,
   } = usePaginatedQuery(
     api.conversation.getGroupMessages,
-    group && loggedInUserId
+    group
       ? {
-          conversationId: group?._id!,
-          loggedInUserId,
+          conversationId: group?._id,
         }
       : 'skip',
     { initialNumItems: 100 }
@@ -71,8 +70,8 @@ const GroupChatScreen = () => {
         />
       </HStack>
       <ChatGroupComponent
-        conversationId={group?._id!}
-        createdAt={group?._creationTime!}
+        conversationId={group?._id}
+        createdAt={group?._creationTime}
         loggedInUserId={loggedInUserId!}
         data={data || []}
         status={status}

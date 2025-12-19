@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { EvilIcons } from '@expo/vector-icons';
 import { useConvex, useMutation, useQuery } from 'convex/react';
 import { Image } from 'expo-image';
@@ -29,7 +30,7 @@ import { convexPushNotificationsHelper } from '~/lib/utils';
 
 type SubProps = {
   name: any;
-  text: any;
+  text: string;
   website?: boolean;
 };
 
@@ -128,8 +129,8 @@ const Overview = () => {
   return (
     <Container>
       <HeaderNav
-        title={organization?.name!}
-        subTitle={organization?.category}
+        title={organization?.name as string}
+        subTitle={organization?.category as string}
       />
 
       <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
@@ -144,7 +145,7 @@ const Overview = () => {
             <Image
               style={{ width: 70, height: 70, borderRadius: 50 }}
               contentFit="cover"
-              source={{ uri: organization?.avatar! }}
+              source={{ uri: organization?.avatar as string }}
               placeholder={require('../../../assets/images.png')}
             />
             <View>
@@ -248,9 +249,19 @@ const Overview = () => {
             marginTop: 15,
           }}
         >
-          <OrganizationItems name="envelope" text={organization?.email} />
-          <OrganizationItems name="location" text={organization?.location} />
-          <OrganizationItems name="link" text={organization?.website} website />
+          <OrganizationItems
+            name="envelope"
+            text={organization?.email as string}
+          />
+          <OrganizationItems
+            name="location"
+            text={organization?.location as string}
+          />
+          <OrganizationItems
+            name="link"
+            text={organization?.website as string}
+            website
+          />
           <Text
             style={{
               fontFamily: 'PoppinsBold',

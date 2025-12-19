@@ -1,4 +1,3 @@
-import { Doc } from '@convex-dev/auth/server';
 import { convexQuery } from '@convex-dev/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
@@ -10,12 +9,11 @@ import { Container } from '~/components/Ui/Container';
 import { ErrorComponent } from '~/components/Ui/ErrorComponent';
 import { LoadingComponent } from '~/components/Ui/LoadingComponent';
 import { api } from '~/convex/_generated/api';
-import { Id } from '~/convex/_generated/dataModel';
 
 const Edit = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data, isPending, isError, refetch } = useQuery(
-    convexQuery(api.users.getUserById, { id: id as Id<'users'> })
+    convexQuery(api.users.getUserById, { id: id })
   );
 
   if (isError) {
@@ -25,13 +23,13 @@ const Edit = () => {
   if (isPending) {
     return <LoadingComponent />;
   }
-
+  if (data === null) return null;
   return (
     <>
       <CompleteDialog text="Changes saved successfully" />
       <Container>
         <HeaderNav title="Edit Profile" />
-        <ProfileUpdateForm person={data as Doc<'users'>} />
+        <ProfileUpdateForm person={data} />
       </Container>
     </>
   );

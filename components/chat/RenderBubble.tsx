@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useRef, useState } from 'react';
 import { BubbleProps } from 'react-native-gifted-chat';
 import * as Linking from 'expo-linking';
@@ -48,7 +49,7 @@ type Props = BubbleProps<IMessage> & {
   onCopy: (text: string) => void;
   onEdit: (value: EditType2) => void;
   onDelete: (messageId: Id<'messages'>) => void;
-  loggedInUserId: Id<'users'>;
+  loggedInUserId: string;
 };
 
 function LeftAction(prog: SharedValue<number>, dragX: SharedValue<number>) {
@@ -123,13 +124,14 @@ export const RenderBubble = ({
 
   const isSent = currentMessage.user._id === loggedInUserId;
 
-  const handleEmojiSelect = async (emoji: string) => {
+  const handleEmojiSelect = async (
+    emoji: 'LIKE' | 'SAD' | 'LOVE' | 'WOW' | 'ANGRY' | 'LAUGH'
+  ) => {
     console.log('Pressed');
     try {
       await onReactToMessage({
         messageId: currentMessage._id as Id<'messages'>,
-        emoji: emoji as any,
-        senderId: loggedInUserId as Id<'users'>,
+        emoji,
       });
     } catch (error) {
       console.error('Error adding reaction:', error);

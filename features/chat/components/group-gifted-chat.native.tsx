@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useConvex, useMutation, useQuery } from 'convex/react';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -46,7 +48,7 @@ import { convexPushNotificationsHelper } from '~/lib/utils';
 import { useMinutes, useRecording } from '../hook/use-recording';
 
 type Props = {
-  loggedInUserId: Id<'users'>;
+  loggedInUserId: string;
 
   conversationId: Id<'conversations'>;
   data: DataType[];
@@ -92,7 +94,7 @@ export const ChatGroupComponent = ({
   });
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
   const updateTypingState = useDebounce((isTyping: boolean) => {
-    void setTypingState({ conversationId, userId: loggedInUserId, isTyping });
+    void setTypingState({ conversationId, isTyping });
   }, 300);
   const [edit, setEdit] = useState<{
     messageId: Id<'messages'>;
@@ -119,11 +121,10 @@ export const ChatGroupComponent = ({
           setProcessing(true);
           await editMessage({
             message_id: edit.messageId,
-            sender_id: loggedInUserId,
             text,
           });
           setEdit(null);
-          setEditText(null);
+          setText('');
         } else {
           if (replyMessage) {
             setReplyMessage(null);
@@ -132,7 +133,6 @@ export const ChatGroupComponent = ({
             await sendMessage({
               content: message.text,
               conversationId,
-              senderId: loggedInUserId,
               fileType: message.fileType,
               fileUrl: message.fileUrl,
               fileId: message.fileId,
@@ -161,7 +161,7 @@ export const ChatGroupComponent = ({
     },
     [
       conversationId,
-      loggedInUserId,
+
       sendMessage,
       replyMessage,
       editMessage,
@@ -211,7 +211,7 @@ export const ChatGroupComponent = ({
   };
   const handleImagePick = async () => {
     try {
-      let result = await ImagePicker.launchImageLibraryAsync({
+      const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         quality: 0.5,
         allowsMultipleSelection: true,
@@ -329,7 +329,6 @@ export const ChatGroupComponent = ({
             try {
               deleteMessage({
                 message_id: messageId,
-                sender_id: loggedInUserId,
               });
               toast.success('Message deleted');
             } catch (e) {
@@ -342,7 +341,7 @@ export const ChatGroupComponent = ({
         },
       ]);
     },
-    [loggedInUserId, deleteMessage]
+    [deleteMessage]
   );
   const onUploadVoiceNote = async () => {
     try {

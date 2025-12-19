@@ -419,7 +419,7 @@ const saveFile = async (
             console.log('Asset Created:', asset);
 
             const albumName = 'MyAppImages';
-            let album = await MediaLibrary.getAlbumAsync(albumName);
+            const album = await MediaLibrary.getAlbumAsync(albumName);
 
             if (album == null) {
                 await MediaLibrary.createAlbumAsync(albumName, asset, false);

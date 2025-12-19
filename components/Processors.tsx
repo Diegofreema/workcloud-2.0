@@ -1,11 +1,12 @@
-import { FlatList } from "react-native";
+import { FunctionReturnType } from 'convex/server';
+import { FlatList } from 'react-native';
 
-import { EmptyText } from "~/components/EmptyText";
-import { Processor } from "~/components/Processor";
-import { ProcessorType } from "~/constants/types";
+import { EmptyText } from '~/components/EmptyText';
+import { Processor } from '~/components/Processor';
+import { api } from '~/convex/_generated/api';
 
 type Props = {
-  processor: ProcessorType[];
+  processor: FunctionReturnType<typeof api.worker.getProcessors>;
 };
 
 export const Processors = ({ processor }: Props) => {

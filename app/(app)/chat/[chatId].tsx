@@ -21,7 +21,7 @@ const SingleChat = () => {
   }>();
 
   const { user } = useAuth();
-  const loggedInUserId = user?._id;
+  const loggedInUserId = user?.id;
   const { data: conversationData, isPending } = useTanstackQuery(
     convexQuery(api.conversation.getSingleConversationWithMessages, {
       otherUserId: userToChat,
@@ -36,7 +36,7 @@ const SingleChat = () => {
   } = usePaginatedQuery(
     api.conversation.getMessages,
     {
-      conversationId: conversationData?._id!,
+      conversationId: conversationData?._id,
     },
     { initialNumItems: 100 }
   );
@@ -53,14 +53,17 @@ const SingleChat = () => {
 
   return (
     <Container noPadding>
-      <ChatHeader name={otherUser?.name!} imageUrl={otherUser?.image!} />
+      <ChatHeader
+        name={otherUser?.name as string}
+        imageUrl={otherUser?.image as string}
+      />
       <ChatComponentNative
-        conversationId={conversationData?._id!}
+        conversationId={conversationData?._id as Id<'conversations'>}
         otherUserId={userToChat}
-        otherUserName={otherUser?.name!}
-        pushToken={otherUser?.pushToken}
-        createdAt={conversationData?._creationTime!}
-        loggedInUserId={loggedInUserId!}
+        otherUserName={otherUser?.name as string}
+        pushToken={otherUser?.pushToken as string}
+        createdAt={conversationData?._creationTime as number}
+        loggedInUserId={loggedInUserId as string}
         data={data || []}
         status={status}
         loadMore={loadMore}

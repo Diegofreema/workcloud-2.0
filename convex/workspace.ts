@@ -47,6 +47,7 @@ const organisationByWorkSpaceId = async (
 };
 
 export const getRoles = query({
+  args: {},
   handler: async (ctx) => {
     return await ctx.db.query('roles').collect();
   },

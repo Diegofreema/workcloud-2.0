@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useConvex, useMutation, useQuery } from 'convex/react';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -11,7 +13,6 @@ import {
   View,
 } from 'react-native';
 import { GiftedChat, SystemMessage } from 'react-native-gifted-chat';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Clipboard from 'expo-clipboard';
 import { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -46,7 +47,7 @@ import {
 import { convexPushNotificationsHelper } from '~/lib/utils';
 
 type Props = {
-  loggedInUserId: Id<'users'>;
+  loggedInUserId: string;
   otherUserId: Id<'users'>;
   conversationId: Id<'conversations'>;
   data: DataType[];
@@ -91,7 +92,7 @@ export const ChatComponentNative = ({
         }
       : 'skip'
   );
-  const insets = useSafeAreaInsets();
+
   const [replyMessage, setReplyMessage] = useState<IMessage | null>(null);
   const [processing, setProcessing] = useState(false);
   const convex = useConvex();
@@ -99,7 +100,7 @@ export const ChatComponentNative = ({
   const editMessage = useMutation(api.message.editMessage);
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
   const updateTypingState = useDebounce((isTyping: boolean) => {
-    void setTypingState({ conversationId, userId: loggedInUserId, isTyping });
+    void setTypingState({ conversationId, isTyping });
   }, 300);
 
   // Handle text input changes
@@ -122,7 +123,7 @@ export const ChatComponentNative = ({
           setProcessing(true);
           await editMessage({
             message_id: edit.messageId,
-            sender_id: loggedInUserId,
+
             text,
           });
           setEdit(null);
@@ -135,7 +136,7 @@ export const ChatComponentNative = ({
             await sendMessage({
               content: message.text,
               conversationId,
-              senderId: loggedInUserId,
+
               fileType: message.fileType,
               fileUrl: message.fileUrl,
               fileId: message.fileId,
@@ -231,7 +232,7 @@ export const ChatComponentNative = ({
   };
   const handleImagePick = async () => {
     try {
-      let result = await ImagePicker.launchImageLibraryAsync({
+      const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         quality: 0.5,
         allowsMultipleSelection: true,
@@ -349,7 +350,6 @@ export const ChatComponentNative = ({
             try {
               deleteMessage({
                 message_id: messageId,
-                sender_id: loggedInUserId,
               });
               toast.success('Message deleted');
             } catch (e) {
@@ -362,7 +362,7 @@ export const ChatComponentNative = ({
         },
       ]);
     },
-    [loggedInUserId, deleteMessage]
+    [deleteMessage]
   );
   const onEdit = useCallback(
     async ({ textToEdit, messageId, senderId, senderName }: EditType2) => {

@@ -35,7 +35,7 @@ const ProcessorSingleChat = () => {
   } = usePaginatedQuery(
     api.conversation.getMessages,
     {
-      conversationId: conversationData?._id!,
+      conversationId: conversationData?._id,
     },
     { initialNumItems: 100 }
   );
@@ -52,12 +52,15 @@ const ProcessorSingleChat = () => {
 
   return (
     <Container noPadding>
-      <ChatHeader name={otherUser?.name!} imageUrl={otherUser?.image!} />
+      <ChatHeader
+        name={otherUser?.name as string}
+        imageUrl={otherUser?.image as string}
+      />
       <ChatComponentNative
-        conversationId={conversationData?._id!}
+        conversationId={conversationData?._id as Id<'conversations'>}
         otherUserId={userToChat}
-        otherUserName={otherUser?.name!}
-        createdAt={conversationData?._creationTime!}
+        otherUserName={otherUser?.name as string}
+        createdAt={conversationData?._creationTime as number}
         loggedInUserId={loggedInUserId!}
         data={data || []}
         status={status}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { BottomSheet, Divider } from '@rneui/themed';
 import { useMutation, useQuery } from 'convex/react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -85,10 +86,10 @@ const Staffs = () => {
     setAssigning(true);
     try {
       await createWorkspace({
-        organizationId: staff?.organizationId!,
+        organizationId: staff?.organizationId as Id<'organizations'>,
         ownerId: id,
         type: 'front',
-        role: staff?.role!,
+        role: staff?.role as string,
         workerId: staff?._id,
       });
       onHideBottom();
@@ -184,7 +185,10 @@ const Staffs = () => {
     setLoading(true);
     if (!workspaceId) return;
     try {
-      await addToWorkspace({ workspaceId, workerId: staff?._id! });
+      await addToWorkspace({
+        workspaceId,
+        workerId: staff?._id as Id<'workers'>,
+      });
       toast.success('Success', {
         description: 'Staff added successfully',
       });
@@ -214,10 +218,10 @@ const Staffs = () => {
   ];
   const workersData = workers.map(
     ({ user, role, organizationId, workspace, workspaceId, _id }) => ({
-      id: user?._id!,
-      name: user?.name!,
-      image: user?.image!,
-      role: role!,
+      id: user?._id as Id<'users'>,
+      name: user?.name as string,
+      image: user?.image as string,
+      role: role as string,
       organizationId,
       workspace,
       workspaceId,
@@ -272,7 +276,7 @@ const Staffs = () => {
         onBottomOpen={onBottomOpen}
         isVisible={isVisible}
         setIsVisible={setIsVisible}
-        userId={staff?.id!}
+        userId={staff?.id as Id<'users'>}
         // @ts-ignore
         array={array}
         bossId={id}

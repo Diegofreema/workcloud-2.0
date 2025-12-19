@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { EvilIcons } from '@expo/vector-icons';
 import { useQuery } from 'convex/react';
 
