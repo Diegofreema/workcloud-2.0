@@ -11,11 +11,12 @@ export const ChatWrapper = ({ children }: PropsWithChildren) => {
   const { user } = useAuth();
 
   const setUnreadCount = useUnread((state) => state.getUnread);
+  console.log({ user });
 
   const client = useCreateChatClient({
     apiKey,
     userData: {
-      id: user?._id as string,
+      id: user?.id as string,
       name: user?.name,
       image: user?.image ?? undefined,
     },
@@ -23,10 +24,10 @@ export const ChatWrapper = ({ children }: PropsWithChildren) => {
   });
 
   useEffect(() => {
-    if (client && user?._id) {
+    if (client && user?.id) {
       const onFetchUnreadCount = async () => {
         try {
-          const response = await client.getUnreadCount(user._id);
+          const response = await client.getUnreadCount(user.id);
           setUnreadCount(response.total_unread_count);
         } catch (err) {
           console.log('getUnreadCount error', err);
@@ -34,7 +35,7 @@ export const ChatWrapper = ({ children }: PropsWithChildren) => {
       };
       void onFetchUnreadCount();
     }
-  }, [user?._id, setUnreadCount, client]);
+  }, [user?.id, setUnreadCount, client]);
   useEffect(() => {
     const listener = client?.on((e) => {
       if (e.total_unread_count !== undefined) {

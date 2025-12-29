@@ -22,7 +22,7 @@ type CallEvent = CallMissedEvent & {
 export const VideoProvider = ({ children }: PropsWithChildren) => {
   const { user } = useAuth();
   const person = {
-    id: user?._id!,
+    id: user?.id!,
     name: user?.name,
     image: user?.image!,
   };

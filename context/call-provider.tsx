@@ -10,7 +10,6 @@ export default function CallProvider({ children }: PropsWithChildren) {
   const {
     data: { workspaceId },
   } = useCallStore();
-  console.log({ workspaceId });
 
   const pathname = usePathname();
 

@@ -9,7 +9,6 @@ import { useEffect } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
 import { ChatWrapper } from '~/components/providers/ChatWrapper';
 import { VideoProvider } from '~/components/providers/video-provider';
-import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
 
 const audioSource = require('~/assets/sound.wav');
@@ -21,14 +20,10 @@ export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
   return <ErrorComponent refetch={retry} text={error.message} />;
 }
 export default function AppLayout() {
-  const { user } = useAuth();
   const player = useAudioPlayer(audioSource);
 
   const { data, isPending, isError } = useQuery(
-    convexQuery(
-      api.workspace.getWaitListCount,
-      user?.workerId ? { workerId: user.workerId } : 'skip'
-    )
+    convexQuery(api.workspace.getWaitListCount, {})
   );
 
   useEffect(() => {

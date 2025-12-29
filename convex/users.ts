@@ -57,23 +57,6 @@ export const getSubscriptions = query({
   },
 });
 
-export const createUser = internalMutation({
-  args: {
-    email: v.string(),
-    clerkId: v.string(),
-    imageUrl: v.optional(v.string()),
-    name: v.string(),
-    isOnline: v.boolean(),
-  },
-  handler: async (ctx, args) => {
-    const id = await ctx.db.insert('users', {
-      ...args,
-    });
-    console.log('User created');
-    await ctx.scheduler.runAfter(0, internal.users.createStreamToken, { id });
-  },
-});
-
 export const updatePushToken = mutation({
   args: {
     pushToken: v.optional(v.string()),
@@ -133,11 +116,12 @@ export const createToken = internalMutation({
 
 export const getUserByClerkId = query({
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
       return null;
     }
-    const user = await ctx.db.get(userId);
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) return null;
     let workProfile;
     if (user?.workerId) {
       workProfile = await ctx.db.get(user?.workerId!);
@@ -347,9 +331,11 @@ export const updateStreamToken = mutation({
     streamToken: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-    return await ctx.db.patch(userId, {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) return null;
+    return await ctx.db.patch(user._id, {
       streamToken: args.streamToken,
     });
   },
@@ -453,4 +439,14 @@ export const getMissedCallByCallId = query({
 
 export const getUserImage = async (ctx: QueryCtx, imageId: Id<'_storage'>) => {
   return await ctx.storage.getUrl(imageId);
+};
+
+export const getAuthUserBySubject = async (
+  ctx: QueryCtx | MutationCtx,
+  id: string
+) => {
+  return await ctx.db
+    .query('users')
+    .withIndex('by_user_id', (q) => q.eq('userId', id))
+    .first();
 };

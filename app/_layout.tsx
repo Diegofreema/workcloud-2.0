@@ -67,6 +67,7 @@ void SplashScreen.preventAutoHideAsync();
 
 const InitialRouteLayout = () => {
   const { isAuthenticated } = useAuth();
+
   useEffect(() => {
     async function onFetchUpdateAsync() {
       try {

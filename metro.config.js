@@ -1,7 +1,7 @@
 // This replaces `const { getDefaultConfig } = require('expo/metro-config');`
-const { getSentryExpoConfig } = require("@sentry/react-native/metro");
+const { getSentryExpoConfig } = require('@sentry/react-native/metro');
 
 // This replaces `const config = getDefaultConfig(__dirname);`
 const config = getSentryExpoConfig(__dirname);
-
+config.resolver.unstable_enablePackageExports = true;
 module.exports = config;

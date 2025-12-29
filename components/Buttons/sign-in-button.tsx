@@ -1,58 +1,31 @@
-import { useAuthActions } from '@convex-dev/auth/react';
-import { useMutation } from 'convex/react';
-import { makeRedirectUri } from 'expo-auth-session';
-import { openAuthSessionAsync } from 'expo-web-browser';
+import { useState } from 'react';
 import { Platform, View } from 'react-native';
-import { useAuth } from '~/context/auth';
-import { api } from '~/convex/_generated/api';
+import { toast } from 'sonner-native';
 import { Button } from '~/features/common/components/Button';
-
-const redirectTo = makeRedirectUri();
+import { authClient } from '~/lib/auth-client';
 
 export function SignIn() {
-  const { signIn } = useAuthActions();
-  const { user } = useAuth();
-  const updateStreamToken = useMutation(api.users.updateStreamToken);
-  //  const tokenProvider = async () => {
-  //     const values = JSON.stringify({
-  //       ...person,
-  //       email: user?.email,
-  //     });
-  //     await AsyncStorage.setItem('person', JSON.stringify(person));
-  //     await AsyncStorage.setItem('body', values);
-  //     try {
-  //       const { data } = await axios.post(
-  //         `https://workcloud-web.vercel.app/token`,
-  //         {
-  //           name: user?.name,
-  //           email: user?.email,
-  //           image: user?.image,
-  //           id: user?._id,
-  //         }
-  //       );
+  const [loading, setLoading] = useState(false);
 
-  //       await updateStreamToken({ streamToken: data.token });
-  //       return data.token;
-  //     } catch (error) {
-  //       console.error('error', error);
-  //       throw new Error('Failed to fetch user data');
-  //     }
-  //   };
-  const loading = user === undefined;
   const handleSignIn = async (provider: 'google' | 'apple') => {
-    const { redirect } = await signIn(provider, { redirectTo });
-    if (Platform.OS === 'web') {
-      return;
-    }
-    const result = await openAuthSessionAsync(redirect!.toString(), redirectTo);
-    if (result.type === 'success') {
-      const { url } = result;
-      const code = new URL(url).searchParams.get('code')!;
-      await signIn('google', { code });
-    }
+    await authClient.signIn.social({
+      provider,
+      callbackURL: '/',
+      fetchOptions: {
+        onRequest: () => setLoading(true),
+        onSuccess: async () => {
+          setLoading(false);
+        },
+        onError: ({ error }) => {
+          toast.error(error.message || error.statusText);
+          setLoading(false);
+        },
+      },
+    });
   };
   return (
     <View style={{ gap: 15 }}>
+      {/* {Platform.OS === 'android' && ( */}
       <Button
         title={'Sign in with Google'}
         loadingTitle={'Signing in...'}
@@ -60,8 +33,9 @@ export function SignIn() {
         loading={loading}
         disabled={loading}
       />
+      {/* )} */}
 
-      {/* {Platform.OS === 'ios' && (
+      {Platform.OS === 'ios' && (
         <Button
           title={'Continue'}
           loadingTitle={'Signing in...'}
@@ -69,7 +43,7 @@ export function SignIn() {
           loading={loading}
           disabled={loading}
         />
-      )} */}
+      )}
     </View>
   );
 }
