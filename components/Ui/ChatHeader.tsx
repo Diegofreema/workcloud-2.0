@@ -1,50 +1,38 @@
-import { Avatar } from '@rneui/themed';
 import { router } from 'expo-router';
-import { ChevronLeft } from 'lucide-react-native';
-import { TouchableOpacity, useColorScheme } from 'react-native';
+import React from 'react';
 
-import { ReactNode } from 'react';
-import { HStack } from '~/components/HStack';
-import { MyText } from '~/components/Ui/MyText';
-import Colors from '~/constants/Colors';
+import { Channel as ChannelType } from 'stream-chat';
+import { CustomPressable } from './CustomPressable';
+import { useAuth } from '~/context/auth';
+import { colors } from '~/constants/Colors';
+import { Avatar } from '~/features/common/components/avatar';
+import { StyleSheet } from 'react-native';
+import { ArrowLeft } from 'lucide-react-native';
 
 type Props = {
-  imageUrl: string;
-  name: string;
-  rightContent?: ReactNode;
+  channel: ChannelType;
 };
 
-export const ChatHeader = ({ imageUrl, name, rightContent }: Props) => {
-  const onPress = () => {
-    router.back();
-  };
-  const colorScheme = useColorScheme();
-  const color = Colors[colorScheme ?? 'light'].text;
+export const ChatHeader = ({ channel }: Props) => {
+  const { user } = useAuth();
 
+  const otherMember = Object.values(channel.state.members).find(
+    (member) => member.user?.id !== user?._id
+  );
+  const image = otherMember?.user?.image as string;
   return (
-    <HStack
-      alignItems={'center'}
-      justifyContent={'space-between'}
-      style={{ paddingRight: 10 }}
-    >
-      <HStack alignItems="center" gap={10} bg="transparent" py={15} px={2}>
-        <TouchableOpacity onPress={onPress} activeOpacity={0.6}>
-          <ChevronLeft color={color} size={40} style={{ marginRight: -10 }} />
-        </TouchableOpacity>
-        <Avatar
-          rounded
-          source={{ uri: imageUrl }}
-          imageProps={{
-            defaultSource: require('../../assets/images/boy.png'),
-            resizeMode: 'cover',
-          }}
-          size={60}
-        />
-        <MyText poppins="Medium" fontSize={20}>
-          {name}
-        </MyText>
-      </HStack>
-      {rightContent}
-    </HStack>
+    <CustomPressable style={styles.header} onPress={() => router.back()}>
+      <ArrowLeft size={30} color={colors.black} />
+      <Avatar url={image as string} size={50} />
+    </CustomPressable>
   );
 };
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    gap: 5,
+    alignItems: 'center',
+    paddingHorizontal: 5,
+  },
+});

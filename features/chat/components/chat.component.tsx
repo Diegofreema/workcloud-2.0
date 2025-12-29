@@ -1,64 +1,46 @@
-import { useQuery } from 'convex/react';
-import { useState } from 'react';
-import Animated, { SlideInLeft } from 'react-native-reanimated';
-import { useDebounce } from 'use-debounce';
-import { ChatPreviewSkeleton } from '~/components/ChatPreviewSkeleton';
-import { constantStyles } from '~/constants/styles';
-import { api } from '~/convex/_generated/api';
-import { useGetConversationType } from '~/features/chat/api/use-get-conversation-type';
-import { RenderChats } from '~/features/chat/components/render-single-chats';
-import { SearchComponent } from '~/features/common/components/SearchComponent';
+import { useRouter } from 'expo-router';
+import React, { useMemo } from 'react';
+import { Channel as ChannelType } from 'stream-chat';
+import { ChannelList } from 'stream-chat-expo';
+import { useAppChatContext } from '~/components/providers/chat-context';
+import { Container } from '~/components/Ui/Container';
+import { useAuth } from '~/context/auth';
+import { CustomListItem } from './custom-list-item';
+import { MessageEmpty } from './message-empty';
 
 export const ChatComponent = () => {
-  const [value, setValue] = useState('');
-
-  const [query] = useDebounce(value, 500);
-
-  const queryData = useGetConversationType({
-    type: 'single',
-  });
-  const searchQuery = useQuery(api.conversation.getConversationsSingleSearch, {
-    query,
-  });
-  if (searchQuery === undefined || queryData === undefined)
-    return (
-      <Animated.View
-        key={'group'}
-        entering={SlideInLeft}
-        style={constantStyles.full}
-      >
-        <SearchComponent
-          show={false}
-          placeholder={'Search messages...'}
-          value={value}
-          setValue={setValue}
-          showArrow={false}
-        />
-        <ChatPreviewSkeleton length={4} />
-      </Animated.View>
-    );
-  const safeData = searchQuery || [];
-
-  const sortedResults =
-    queryData?.sort(
-      (a, b) => (b?.lastMessageTime || 0) - (a.lastMessageTime || 0)
-    ) || [];
-  const data = query ? safeData : sortedResults;
+  const { user } = useAuth();
+  const router = useRouter();
+  const { setChannel } = useAppChatContext();
+  const id = user?._id!;
+  const filters = useMemo(
+    () => ({
+      members: { $in: [id] },
+      type: 'messaging',
+    }),
+    [id]
+  );
+  const sort = { last_updated: -1 } as any;
+  const options = {
+    state: true,
+    watch: true,
+  };
+  const onPress = (channel: ChannelType) => {
+    setChannel(channel);
+    router.push(`/chat/${channel.cid}`);
+  };
 
   return (
-    <Animated.View key={'single'} entering={SlideInLeft} style={{ flex: 1 }}>
-      <SearchComponent
-        show={false}
-        placeholder={'Search messages...'}
-        value={value}
-        setValue={setValue}
-        showArrow={false}
+    <Container>
+      <ChannelList
+        filters={filters}
+        options={options}
+        sort={sort}
+        onSelect={onPress}
+        numberOfSkeletons={20}
+        Preview={CustomListItem}
+        EmptyStateIndicator={MessageEmpty}
       />
-      {query && searchQuery === undefined ? (
-        <ChatPreviewSkeleton length={4} />
-      ) : (
-        <RenderChats chats={data} />
-      )}
-    </Animated.View>
+    </Container>
   );
 };

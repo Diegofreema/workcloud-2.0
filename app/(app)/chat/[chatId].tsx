@@ -1,74 +1,97 @@
-import { convexQuery } from '@convex-dev/react-query';
-import { useQuery as useTanstackQuery } from '@tanstack/react-query';
-import { usePaginatedQuery, useQuery } from 'convex/react';
-import { useLocalSearchParams } from 'expo-router';
+import { View, Text } from 'react-native';
 import React from 'react';
-
-import { ChatComponentNative } from '~/components/Ui/ChatComponent.native';
-import { ChatHeader } from '~/components/Ui/ChatHeader';
-import ChatSkeleton from '~/components/Ui/ChatSkeleton';
+import { useAppChatContext } from '~/components/providers/chat-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useHeaderHeight } from '@react-navigation/elements';
+import { StatusBar } from 'react-native';
 import { Container } from '~/components/Ui/Container';
-import { useAuth } from '~/context/auth';
-import { api } from '~/convex/_generated/api';
-import { Id } from '~/convex/_generated/dataModel';
-import { useCreateConvo } from '~/hooks/useCreateConvo';
-import { useMarkRead } from '~/hooks/useMarkRead';
+import { StyleSheet } from 'react-native';
+import { colors } from '~/constants/Colors';
+import { CustomPressable } from '~/components/Ui/CustomPressable';
+import {
+  Channel,
+  MessageInput,
+  MessageList,
+  SendButtonProps,
+  useMessageInputContext,
+} from 'stream-chat-expo';
+import { Send } from 'lucide-react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { ChatHeader } from '~/components/Ui/ChatHeader';
+type Props = {};
 
-const SingleChat = () => {
-  const { chatId: userToChat, type } = useLocalSearchParams<{
-    chatId: Id<'users'>;
-    type: 'single' | 'processor';
-  }>();
-
-  const { user } = useAuth();
-  const loggedInUserId = user?._id;
-  const { data: conversationData, isPending } = useTanstackQuery(
-    convexQuery(api.conversation.getSingleConversationWithMessages, {
-      otherUserId: userToChat,
-      type,
-    })
-  );
-  const {
-    status,
-    loadMore,
-    results: data,
-    isLoading,
-  } = usePaginatedQuery(
-    api.conversation.getMessages,
-    {
-      conversationId: conversationData?._id!,
-    },
-    { initialNumItems: 100 }
-  );
-  const loading = useCreateConvo({
-    conversationData: conversationData!,
-    id: userToChat!,
-    type,
-  });
-  useMarkRead({
-    conversationData: conversationData!,
-  });
-  const otherUser = useQuery(api.users.getUserById, { id: userToChat });
-  if (otherUser === undefined || isPending || loading) return <ChatSkeleton />;
-
+const ChannelScreen = (props: Props) => {
+  const { channel } = useAppChatContext();
+  const headerHeight = useHeaderHeight() + (StatusBar.currentHeight ?? 0);
+  const { bottom } = useSafeAreaInsets();
+  if (!channel) return null;
   return (
-    <Container noPadding>
-      <ChatHeader name={otherUser?.name!} imageUrl={otherUser?.image!} />
-      <ChatComponentNative
-        conversationId={conversationData?._id!}
-        otherUserId={userToChat}
-        otherUserName={otherUser?.name!}
-        pushToken={otherUser?.pushToken}
-        createdAt={conversationData?._creationTime!}
-        loggedInUserId={loggedInUserId!}
-        data={data || []}
-        status={status}
-        loadMore={loadMore}
-        type={type}
-        isLoading={isLoading}
-      />
+    <Container>
+      <Channel
+        channel={channel}
+        hasCameraPicker={false}
+        hasCommands={false}
+        hasFilePicker={false}
+        SendButton={SendButton}
+        EmptyStateIndicator={EmptyStateIndicator}
+        LoadingErrorIndicator={() => (
+          <Text>Error loading messages for this chat</Text>
+        )}
+        MessageError={() => <Text>Error loading messages for this chat</Text>}
+      >
+        <View style={{ marginBottom: bottom, flex: 1 }}>
+          <ChatHeader channel={channel} />
+          <MessageList />
+          <KeyboardAvoidingView
+            behavior={'translate-with-padding'}
+            keyboardVerticalOffset={headerHeight}
+          >
+            <MessageInput />
+          </KeyboardAvoidingView>
+        </View>
+      </Channel>
     </Container>
   );
 };
 
-export default SingleChat;
+export default ChannelScreen;
+
+export const SendButton = (props: SendButtonProps) => {
+  const { disabled } = props;
+  const { sendMessage } = useMessageInputContext();
+  const onPress = () => {
+    sendMessage && sendMessage();
+  };
+  return (
+    <CustomPressable style={styles.send} onPress={onPress} disable={disabled}>
+      <Send size={25} fill={colors.white} color={colors.white} />
+    </CustomPressable>
+  );
+};
+
+const EmptyStateIndicator = () => {
+  return (
+    <Container>
+      <View style={styles.empty}>
+        <Text>No messages yet</Text>
+        <Text>Your messages will be found here!</Text>
+      </View>
+    </Container>
+  );
+};
+const styles = StyleSheet.create({
+  send: {
+    backgroundColor: colors.buttonBlue,
+    padding: 5,
+    borderRadius: 30,
+    height: 50,
+    width: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  empty: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

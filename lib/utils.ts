@@ -61,3 +61,39 @@ export function getArticle(word: string) {
 
   return vowels.includes(firstLetter) ? 'an' : 'a';
 }
+export type Reaction = {
+  type: 'like' | 'love' | 'haha' | 'sad' | 'wow';
+};
+export const trimText = (text: string, maxLength: number) => {
+  if (text.length > maxLength) {
+    return text.substring(0, maxLength - 3) + '...';
+  }
+  return text;
+};
+
+export const renderReaction = (
+  reaction?: Reaction,
+  userId?: string,
+  reactUserId?: string,
+  reactUserName?: string
+) => {
+  const isMyReaction = userId === reactUserId;
+  if (!reaction) return '';
+
+  if (reaction.type === 'like') {
+    return `${isMyReaction ? 'You reacted 👍 to ' : `${reactUserName} reacted 👍 to `}`;
+  }
+  if (reaction.type === 'love') {
+    return `${isMyReaction ? 'You reacted ❤️ to ' : `${reactUserName} reacted ❤️ to `}`;
+  }
+  if (reaction.type === 'haha') {
+    return `${isMyReaction ? 'You reacted 😂 to ' : `${reactUserName} reacted 😂 to `}`;
+  }
+  if (reaction.type === 'sad') {
+    return `${isMyReaction ? 'You reacted 😢 to ' : `${reactUserName} reacted 😢 to `}`;
+  }
+  if (reaction.type === 'wow') {
+    return `${isMyReaction ? 'You reacted 😲 to ' : `${reactUserName} reacted 😲 to `}`;
+  }
+  return '';
+};

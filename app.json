@@ -22,37 +22,13 @@
         "UIBackgroundModes": ["audio"]
       },
       "googleServicesFile": "./GoogleService-Info.plist"
-      // "entitlements": {
-      //   "aps-environment": "production"
-      // }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/appIcon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO",
-        "android.permission.BLUETOOTH",
-        "android.permission.BLUETOOTH_CONNECT",
-        "android.permission.BLUETOOTH_ADMIN",
-        "android.permission.WAKE_LOCK",
-        "android.permission.POST_NOTIFICATIONS",
-        "android.permission.FOREGROUND_SERVICE",
-        "android.permission.FOREGROUND_SERVICE_CAMERA",
-        "android.permission.FOREGROUND_SERVICE_MICROPHONE",
-        "android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE",
-        "android.permission.FOREGROUND_SERVICE_DATA_SYNC",
-        "android.permission.USE_FULL_SCREEN_INTENT",
-        "android.permission.BIND_TELECOM_CONNECTION_SERVICE",
-        "android.permission.READ_PHONE_STATE",
-        "android.permission.CALL_PHONE",
-        "android.permission.ACCESS_NETWORK_STATE",
-        "android.permission.INTERNET",
-        "android.permission.MODIFY_AUDIO_SETTINGS",
-        "android.permission.SYSTEM_ALERT_WINDOW"
-      ],
+
       "package": "com.workcloud.app",
       "edgeToEdgeEnabled": true,
       "googleServicesFile": "./google-services.json"
@@ -129,8 +105,7 @@
             ]
           },
           "ios": {
-            "deploymentTarget": "15.1",
-            "useFrameworks": "static"
+            "deploymentTarget": "15.1"
           }
         }
       ],
@@ -140,11 +115,34 @@
           "iosPermissions": ["Camera", "Microphone"]
         }
       ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "$(PRODUCT_NAME) would like to use your camera to share image in a message.",
+          "photoPermission": "$(PRODUCT_NAME) would like to use your photo library to share image in a message."
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "$(PRODUCT_NAME) would like access to your photo gallery to share image in a message.",
+          "savePhotosPermission": "$(PRODUCT_NAME) would like to save photos to your photo gallery after downloading from a message."
+        }
+      ],
       "expo-font",
       "expo-web-browser",
       "expo-background-task",
       "expo-secure-store",
-      "expo-audio"
+      "expo-audio",
+      "@react-native-community/datetimepicker",
+      "@sentry/react-native",
+      [
+        "expo-video",
+        {
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

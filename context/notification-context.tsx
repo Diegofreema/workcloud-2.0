@@ -8,6 +8,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { api } from '~/convex/_generated/api';
 
 import { registerForPushNotificationsAsync } from '~/utils/registerPushNotification';
 
@@ -39,6 +40,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   children,
 }) => {
   const [expoPushToken, setExpoPushToken] = useState<string | undefined>('');
+  const [uploading, setUploading] = useState<boolean>(false);
 
   const [notification, setNotification] =
     useState<Notifications.Notification | null>(null);
@@ -49,6 +51,11 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     registerForPushNotificationsAsync().then(
       (token) => {
         setExpoPushToken(token);
+        if (token) {
+          convex.mutation(api.pushNotification.recordPushNotificationToken, {
+            token,
+          });
+        }
       },
       (error) => setError(error)
     );

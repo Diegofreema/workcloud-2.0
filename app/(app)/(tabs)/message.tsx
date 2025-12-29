@@ -13,6 +13,7 @@ import { UnreadProcessorMessage } from '~/components/processor-unread-message-ba
 import { Container } from '~/components/Ui/Container';
 import { colors } from '~/constants/Colors';
 import { api } from '~/convex/_generated/api';
+import { ChannelList } from '~/features/chat/components/channel-list';
 import { ChatComponent } from '~/features/chat/components/chat.component';
 import { GroupChats } from '~/features/chat/components/group-chats';
 import { IconBtn } from '~/features/common/components/icon-btn';
@@ -21,11 +22,9 @@ import { TabsHeader } from '~/features/common/components/tabs-header';
 import { Title } from '~/features/common/components/title';
 import { useUnreadProcessorMessageCount } from '~/features/common/hook/use-unread-message-count';
 
-const Components = [ChatComponent, GroupChats];
 const MessageScreen = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const unreadProcessorMessagesCount = useUnreadProcessorMessageCount();
-  const ActiveComponents = Components[selectedIndex];
 
   const staffs = useQuery(api.organisation.getStaffsByBossId);
 
@@ -65,7 +64,7 @@ const MessageScreen = () => {
             onSelectIndex={(index) => setSelectedIndex(index)}
           />
         </HStack>
-        <ActiveComponents />
+        <ChannelList />
 
         {staffCount > 0 && (
           <IconBtn
