@@ -18,6 +18,7 @@ import { colors } from '~/constants/Colors';
 import { api } from '~/convex/_generated/api';
 import { DisplayStaffList } from '~/features/staff/components/display-staff-list';
 import { useStaffStore } from '~/features/staff/store/staff-store';
+import { useMessage } from '~/hooks/use-message';
 import { capitaliseFirstLetter, uploadProfilePicture } from '~/lib/helper';
 
 type FormData = {
@@ -28,11 +29,12 @@ type FormData = {
 
 export const NewGroupForm = () => {
   const router = useRouter();
-
+  const { onCreateGroupChannel } = useMessage();
   const clearStaffs = useStaffStore((state) => state.clear);
   const staffs = useStaffStore((state) => state.staffs);
-  const createGroup = useMutation(api.conversation.createGroupConversation);
+
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
+  const getImage = useMutation(api.users.getImage);
   const {
     control,
     handleSubmit,
@@ -51,13 +53,15 @@ export const NewGroupForm = () => {
     console.log('Form submitted:', data);
     try {
       const res = await uploadProfilePicture(generateUploadUrl, data.image);
-      const groupId = await createGroup({
-        name: capitaliseFirstLetter(data.groupName),
-        imageId: res?.storageId,
-        otherUsers: staffs.map((s) => s.id),
-        description: data.description,
-      });
-      router.replace(`/chat/group/${groupId}`);
+      const imageUrl = await getImage({ imageId: res?.storageId! });
+
+      await onCreateGroupChannel(
+        staffs.map((s) => s.id),
+        capitaliseFirstLetter(data.groupName),
+        imageUrl,
+        data.description
+      );
+
       clearStaffs();
       reset();
       toast.success('Success', {
@@ -75,8 +79,7 @@ export const NewGroupForm = () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
+      quality: 0.5,
     });
     if (!result.canceled && result.assets && result.assets.length > 0) {
       setValue('image', result.assets[0].uri);
@@ -127,7 +130,10 @@ export const NewGroupForm = () => {
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              style={[styles.input, { height: 150, padding: 5 }]}
+              style={[
+                styles.input,
+                { height: 150, padding: 5, textAlignVertical: 'top' },
+              ]}
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}

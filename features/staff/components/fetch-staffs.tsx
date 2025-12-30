@@ -9,9 +9,10 @@ export const FetchStaffs = () => {
   const data = staffs.map((item) => ({
     name: item?.user?.name!,
     image: item?.user?.image!,
-    id: item?.user?._id!,
+    id: item?.user?.userId!,
     role: item.role!,
     workspace: item.workspace,
   }));
+  // @ts-ignore
   return <RenderStaffs data={data} />;
 };

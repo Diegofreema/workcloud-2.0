@@ -37,6 +37,7 @@ const ChannelScreen = () => {
           <Text>Error loading messages for this chat</Text>
         )}
         MessageError={() => <Text>Error loading messages for this chat</Text>}
+        audioRecordingEnabled
       >
         <View style={{ marginBottom: bottom, flex: 1 }}>
           <ChatHeader channel={channel} />

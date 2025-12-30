@@ -21,6 +21,7 @@ import { Button } from '~/features/common/components/Button';
 import { useTheme } from '~/hooks/use-theme';
 import { createWorkerSchema, CreateWorkerSchemaType } from '~/schema';
 import { ScrollView } from 'react-native-gesture-handler';
+import { KeyboardAvoidingViewWithScroll } from '~/features/common/components/key-board-aware-scroll-view';
 
 const max = 150;
 const genders = [
@@ -82,12 +83,8 @@ const CreateProfile = () => {
 
   return (
     <Container>
-      <KeyboardAwareScrollView
-        // style={{ flex: 1 }}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 50 }}
-        ScrollViewComponent={ScrollView}
-        bottomOffset={50}
+      <KeyboardAvoidingViewWithScroll
+      // style={{ flex: 1 }}
       >
         <AuthHeader />
         <View style={{ marginBottom: 10 }} />
@@ -200,10 +197,11 @@ const CreateProfile = () => {
               onPress={handleSubmit(onSubmit)}
               loadingTitle={'Submitting...'}
               loading={isSubmitting}
+              disabled={isSubmitting}
             />
           </View>
         </View>
-      </KeyboardAwareScrollView>
+      </KeyboardAvoidingViewWithScroll>
     </Container>
   );
 };

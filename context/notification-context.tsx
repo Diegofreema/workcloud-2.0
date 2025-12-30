@@ -45,17 +45,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   const [notification, setNotification] =
     useState<Notifications.Notification | null>(null);
   const [error, setError] = useState<Error | null>(null);
-  const convex = useConvex();
+
   const router = useRouter();
   useEffect(() => {
     registerForPushNotificationsAsync().then(
       (token) => {
         setExpoPushToken(token);
-        if (token) {
-          convex.mutation(api.pushNotification.recordPushNotificationToken, {
-            token,
-          });
-        }
       },
       (error) => setError(error)
     );
@@ -91,7 +86,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       notificationListener.remove();
       responseListener.remove();
     };
-  }, [router, convex]);
+  }, [router]);
 
   return (
     <NotificationContext.Provider

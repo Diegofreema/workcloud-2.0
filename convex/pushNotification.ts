@@ -4,6 +4,7 @@ import { ConvexError, v } from 'convex/values';
 import { api, components, internal } from './_generated/api.js';
 import { internalAction } from './_generated/server';
 import { mutation, query } from './_generated/server.js';
+import { getAuthUserBySubject } from './users.js';
 
 export type Email = string & { __isEmail: true };
 
@@ -12,21 +13,22 @@ const pushNotifications = new PushNotifications(components.pushNotifications);
 export const recordPushNotificationToken = mutation({
   args: { token: v.string() },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return null;
-    }
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) return null;
+
     // Record push notification tokens
     await pushNotifications.recordToken(ctx, {
-      userId: userId,
+      userId: user._id,
       pushToken: args.token,
     });
     // Query the push notification status for a user
     const status = await pushNotifications.getStatusForUser(ctx, {
-      userId: userId,
+      userId: user._id,
     });
     if (!status.hasToken) {
-      throw new ConvexError('Failed to record token');
+      throw new ConvexError({ message: 'Failed to record token' });
     }
   },
 });

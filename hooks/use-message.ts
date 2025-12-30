@@ -21,8 +21,28 @@ export const useMessage = () => {
     setChannel(channel);
     router.push(`/chat/${channel.cid}`);
   };
+  const onCreateGroupChannel = async (
+    members: string[],
+    name: string,
+    image?: string,
+    description?: string
+  ) => {
+    if (!user) return;
+    const channel = client.channel('messaging', '1', {
+      members: [user?.id, ...members],
+      filter_tags: ['group'],
+      name,
+      image,
+      custom_data: { description },
+    });
+
+    await channel.watch({ presence: true });
+    setChannel(channel);
+    router.push(`/chat/${channel.cid}`);
+  };
 
   return {
     onMessage,
+    onCreateGroupChannel,
   };
 };

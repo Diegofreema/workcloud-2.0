@@ -2,21 +2,29 @@ import { ConvexError, v } from 'convex/values';
 
 import { mutation, query } from './_generated/server';
 import { getOrganizationByOwnerId } from './organisation';
-import { getLoggedInUser, getUserByUserId, getWorkerProfile } from './users';
+import {
+  getAuthUserBySubject,
+  getLoggedInUser,
+  getUserByUserId,
+  getWorkerProfile,
+} from './users';
 import { internal } from './_generated/api';
 
 export const getPendingRequestsAsBoolean = query({
   args: {
-    from: v.id('users'),
     to: v.optional(v.id('users')),
   },
   handler: async (ctx, args) => {
-    if (!args.from || !args.to) return null;
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) return null;
+    if (!args.to) return null;
     return await ctx.db
       .query('requests')
       .filter((q) =>
         q.and(
-          q.eq(q.field('from'), args.from),
+          q.eq(q.field('from'), user._id),
           q.eq(q.field('to'), args.to),
           q.eq(q.field('status'), 'pending')
         )

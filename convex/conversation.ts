@@ -376,6 +376,7 @@ export const createSingleConversation = mutation({
     await createConversation(ctx, me?._id, args.otherUserId, args.type);
   },
 });
+
 export const createGroupConversation = mutation({
   args: {
     otherUsers: v.array(v.id('users')),
@@ -472,18 +473,22 @@ export const createMessages = mutation({
 export const addMembers = mutation({
   args: {
     members: v.array(v.id('users')),
-    loggedInUserId: v.id('users'),
+
     groupId: v.id('conversations'),
   },
   handler: async (ctx, args) => {
+    const identity = await getLoggedInUser(ctx, 'mutation');
+    if (!identity) {
+      throw new ConvexError({ message: 'You are not authorized' });
+    }
     const group = await ctx.db.get(args.groupId);
 
     if (!group) {
-      throw new ConvexError('Group not found');
+      throw new ConvexError({ message: 'Group not found' });
     }
-    const user = await ctx.db.get(args.loggedInUserId);
-    if (group.creatorId !== args.loggedInUserId || !user) {
-      throw new ConvexError('You are not authorized');
+    const user = await ctx.db.get(identity._id);
+    if (group.creatorId !== identity._id || !user) {
+      throw new ConvexError({ message: 'You are not authorized' });
     }
 
     await ctx.db.patch(group._id, {
@@ -501,12 +506,16 @@ export const addMembers = mutation({
 export const fetchWorkersThatAreNotInGroup = query({
   args: {
     groupId: v.id('conversations'),
-    loggedInUserId: v.id('users'),
   },
   handler: async (ctx, args) => {
+    const identity = await getLoggedInUser(ctx, 'query');
+    if (!identity) {
+      return [];
+    }
+
     const workers = await ctx.db
       .query('workers')
-      .withIndex('boss_Id', (q) => q.eq('bossId', args.loggedInUserId))
+      .withIndex('boss_Id', (q) => q.eq('bossId', identity._id))
       .collect();
     if (!workers) return [];
     const group = await ctx.db.get(args.groupId);

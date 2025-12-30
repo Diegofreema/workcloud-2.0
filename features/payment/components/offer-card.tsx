@@ -44,7 +44,7 @@ export const OfferingCard = ({
         `https://www.workcloud-backend.xyz/api/checkout`,
         {
           id: product.id,
-          userId: user?._id,
+          userId: user?.id,
         }
       );
 

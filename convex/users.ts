@@ -62,16 +62,17 @@ export const updatePushToken = mutation({
     pushToken: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return;
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError({ message: 'Unauthorized' });
     }
-    const user = await ctx.db.get(userId);
-    if (user) {
-      await ctx.db.patch(user._id, {
-        pushToken: args.pushToken,
-      });
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) {
+      throw new ConvexError({ message: 'User not found' });
     }
+    await ctx.db.patch(user._id, {
+      pushToken: args.pushToken,
+    });
   },
 });
 export const createStreamToken = internalAction({
@@ -144,6 +145,19 @@ export const getUserById = query({
     return await getAuthUserBySubject(ctx, identity.subject);
   },
 });
+export const getUserById2 = query({
+  args: {
+    id: v.id('users'),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return null;
+    }
+
+    return await ctx.db.get('users', args.id);
+  },
+});
 
 export const getOrganisations = async (
   ctx: QueryCtx,
@@ -187,6 +201,16 @@ export const updateUserById = mutation({
 
 export const generateUploadUrl = mutation(async (ctx) => {
   return await ctx.storage.generateUploadUrl();
+});
+export const getImage = mutation({
+  args: {
+    imageId: v.id('_storage'),
+  },
+  handler: async (ctx, args) => {
+    const image = await ctx.storage.getUrl(args.imageId);
+    if (!image) return '';
+    return image;
+  },
 });
 
 export const updateImage = mutation({

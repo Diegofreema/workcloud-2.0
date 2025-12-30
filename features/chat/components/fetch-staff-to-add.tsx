@@ -19,10 +19,9 @@ export const FetchStaffToAdd = () => {
   const addStaffs = useMutation(api.conversation.addMembers);
   const router = useRouter();
   const { staffs: workers, clear } = useStaffStore();
-  const staffs = useQuery(
-    api.conversation.fetchWorkersThatAreNotInGroup,
-    id ? { groupId, loggedInUserId: id } : 'skip'
-  );
+  const staffs = useQuery(api.conversation.fetchWorkersThatAreNotInGroup, {
+    groupId,
+  });
 
   if (staffs === undefined) {
     return <LoadingComponent />;
@@ -41,7 +40,6 @@ export const FetchStaffToAdd = () => {
       setLoading(true);
       await addStaffs({
         groupId,
-        loggedInUserId: id!,
         members: workers.map((w) => w.id),
       });
       toast.success('Staffs added to group');

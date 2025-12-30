@@ -19,16 +19,15 @@ import { UserPreview } from '~/components/Ui/UserPreview';
 import VStack from '~/components/Ui/VStack';
 import { colors } from '~/constants/Colors';
 import { Id } from '~/convex/_generated/dataModel';
+import { useWorkerActions } from '~/features/staff/hooks/use-worker-actions';
 import { useTheme } from '~/hooks/use-theme';
 import { useGetUserId } from '~/hooks/useGetUserId';
-import { useWorkerActions } from '~/features/staff/hooks/use-worker-actions';
-import { useAuth } from '~/context/auth';
 
 const Profile = () => {
   const { profileId } = useLocalSearchParams<{ profileId: Id<'workers'> }>();
 
-  const { user } = useAuth();
-  const { id } = useGetUserId();
+  // const { user } = useAuth();
+  const { user } = useGetUserId();
   const { theme: darkMode } = useTheme();
 
   const {
@@ -39,14 +38,14 @@ const Profile = () => {
     cancelling,
     handleRequest,
     onMessage,
-  } = useWorkerActions({ profileId, id: id! });
+  } = useWorkerActions({ profileId });
 
   if (isPending) {
     return <LoadingComponent />;
   }
 
   const showRequestBtn =
-    data?.worker.bossId !== user?._id && pendingData?.status === 'pending';
+    data?.worker.bossId !== user?.id && pendingData?.status === 'pending';
   const onAlertCancel = async () => {
     Alert.alert(
       'Cancel Request',

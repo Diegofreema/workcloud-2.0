@@ -163,13 +163,13 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
     data: toData,
     isError: toError,
     isPending: toPending,
-  } = useQuery(convexQuery(api.users.getUserById, to ? { id: to } : 'skip'));
+  } = useQuery(convexQuery(api.users.getUserById2, to ? { id: to } : 'skip'));
   const {
     data: fromData,
     isError: fromError,
     isPending: fromPending,
   } = useQuery(
-    convexQuery(api.users.getUserById, from ? { id: from } : 'skip')
+    convexQuery(api.users.getUserById2, from ? { id: from } : 'skip')
   );
 
   if (toError || fromError) {
@@ -180,7 +180,7 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
     return null;
   }
   const acceptRequest = async () => {
-    if (!user?._id || isPending || isError || !organisation?._id) return;
+    if (!user?.id || isPending || isError || !organisation?._id) return;
     setAccepting(true);
     try {
       if (isEmployed) {

@@ -37,6 +37,9 @@ const CompleteRequest = () => {
   const router = useRouter();
   const { data, isPaused, isPending, isError, refetch, isRefetchError, error } =
     useQuery(convexQuery(api.worker.getSingleWorkerProfile, { id }));
+
+  console.log({ user: data?.user?._id });
+
   const {
     data: orgData,
     isPending: orgPending,
@@ -100,7 +103,6 @@ const CompleteRequest = () => {
   if (isPending || orgPending) {
     return <LoadingComponent />;
   }
-  console.log({ errors });
 
   return (
     <Container>
@@ -158,14 +160,6 @@ const CompleteRequest = () => {
             textarea
           />
 
-          {/* <CustomInput
-            label="Salary"
-            name={'salary'}
-            control={control}
-            errors={errors}
-            placeholder="Type a salary in naira"
-            keyboardType="numeric"
-          /> */}
           <VStack>
             <MyText poppins="Bold" style={{ fontFamily: 'NunitoBold' }}>
               Salary
@@ -202,6 +196,7 @@ const CompleteRequest = () => {
           onPress={handleSubmit(onSubmit)}
           loadingTitle={'Sending...'}
           loading={isSubmitting}
+          disabled={isSubmitting}
           style={{ marginTop: 20 }}
         />
       </KeyboardAwareScrollView>

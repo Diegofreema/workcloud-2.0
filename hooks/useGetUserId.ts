@@ -10,11 +10,12 @@ export const useGetUserId = () => {
   const user = {
     image: data?.image,
     name: data?.name,
+    id: data?._id,
   };
 
   const isLoading = data === undefined;
   return {
-    id: storedUser?._id!,
+    id: storedUser?.id!,
     organizationId: data?.organizationId,
     worker: data?.workerId,
     bossId: data?.worker?.bossId,

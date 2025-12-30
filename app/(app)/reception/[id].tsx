@@ -48,7 +48,9 @@ export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {
 
 const Reception = () => {
   const { id } = useLocalSearchParams<{ id: Id<'organizations'> }>();
-  const { id: from } = useGetUserId();
+  const {
+    user: { id: from },
+  } = useGetUserId();
   const { theme: darkMode } = useTheme();
   const data = useQuery(api.organisation.getOrganisationsWithPostAndWorkers, {
     id,
@@ -247,7 +249,8 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
   const { onMessage: handleMessage } = useMessage();
   const { user: storedUser } = useAuth();
   // const { client } = useChatContext();
-  const { id: customerId } = useGetUserId();
+  const { user } = useGetUserId();
+  const customerId = user.id;
   const handleWaitlist = useMutation(api.workspace.handleWaitlist);
   const { setId } = useWaitlistId();
   const { workspace } = item;

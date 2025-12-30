@@ -1,7 +1,7 @@
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
 
-import { useMutation, useQuery } from 'convex/react';
+import { useConvex, useMutation, useQuery } from 'convex/react';
 import { api } from '~/convex/_generated/api';
 
 import { LoadingComponent } from '~/components/Ui/LoadingComponent';
@@ -24,6 +24,7 @@ const AuthContext = React.createContext({
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: session, isPending } = authClient.useSession();
+
   const [isUpdating, setIsUpdating] = React.useState(false);
   const person = {
     name: session?.user?.name || '',
@@ -33,6 +34,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
   const user = session?.user;
   const { expoPushToken } = useNotification();
+  const convex = useConvex();
   const updatePushToken = useMutation(api.users.updatePushToken);
   const updateStreamToken = useMutation(api.users.updateStreamToken);
   const tokenProvider = React.useCallback(async () => {
@@ -60,14 +62,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setIsUpdating(false);
     }
   }, [person, updateStreamToken]);
-  const isAuthenticated = !!session?.session && !!session?.user.streamToken;
-
-  const isLoading = isPending || isUpdating;
+  const isAuthenticated = !!session?.session;
+  const noStreamToken = isAuthenticated && !user?.streamToken;
+  const isLoading = isPending || isUpdating || noStreamToken;
   React.useEffect(() => {
-    if (expoPushToken) {
+    if (expoPushToken && session?.session) {
       updatePushToken({ pushToken: expoPushToken });
+      convex.mutation(api.pushNotification.recordPushNotificationToken, {
+        token: expoPushToken,
+      });
     }
-  }, [expoPushToken, updatePushToken]);
+  }, [expoPushToken, updatePushToken, convex]);
   React.useEffect(() => {
     if (isAuthenticated && person?.id && !user?.streamToken) {
       tokenProvider();

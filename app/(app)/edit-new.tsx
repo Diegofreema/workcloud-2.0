@@ -31,7 +31,7 @@ const Edit = () => {
       <CompleteDialog text="Changes saved successfully" />
       <Container>
         <HeaderNav title="Edit Profile" />
-        <ProfileUpdateForm person={data as Doc<'users'>} />
+        <ProfileUpdateForm person={data} />
       </Container>
     </>
   );

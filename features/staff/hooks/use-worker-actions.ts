@@ -8,10 +8,9 @@ import { useRouter } from 'expo-router';
 import { useMessage } from '~/hooks/use-message';
 
 type Props = {
-  id: Id<'users'>;
   profileId: Id<'workers'>;
 };
-export const useWorkerActions = ({ id, profileId }: Props) => {
+export const useWorkerActions = ({ profileId }: Props) => {
   const [cancelling, setCancelling] = useState(false);
   const router = useRouter();
   const { onMessage: handleMessage } = useMessage();
@@ -24,7 +23,6 @@ export const useWorkerActions = ({ id, profileId }: Props) => {
     api.request.getPendingRequestsAsBoolean,
     data?.user
       ? {
-          from: id,
           to: data?.user._id,
         }
       : 'skip'

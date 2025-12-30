@@ -20,8 +20,12 @@ import { uploadProfilePicture } from '~/lib/helper';
 import { profileUpdateSchema, ProfileUpdateSchemaType } from '~/schema';
 import { Avatar } from '../Ui/Avatar';
 import { useTheme } from '~/hooks/use-theme';
+import { FunctionReturnType } from 'convex/server';
 
-export const ProfileUpdateForm = ({ person }: { person: Doc<'users'> }) => {
+type Props = {
+  person: FunctionReturnType<typeof api.users.getUserById>;
+};
+export const ProfileUpdateForm = ({ person }: Props) => {
   const updateUser = useMutation(api.users.updateUserById);
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
   // const updateImage = useMutation(api.users.updateImage);
@@ -38,12 +42,15 @@ export const ProfileUpdateForm = ({ person }: { person: Doc<'users'> }) => {
       firstName: person?.name?.split(' ')[0] || '',
       lastName: person?.name?.split(' ')[1] || '',
       phoneNumber: person?.phoneNumber || '',
-      avatar: person.image || '',
+      avatar: person?.image || '',
     },
     resolver: zodResolver(profileUpdateSchema),
   });
 
   const onSubmit = async (values: ProfileUpdateSchemaType) => {
+    if (!person?._id) {
+      return null;
+    }
     const { firstName, lastName, phoneNumber } = values;
 
     const name = `${firstName} ${lastName}`;
@@ -57,14 +64,14 @@ export const ProfileUpdateForm = ({ person }: { person: Doc<'users'> }) => {
         await updateUser({
           name,
           phoneNumber,
-          _id: person._id,
+          _id: person?._id,
           imageUrl: res.storageId,
         });
       } else {
         await updateUser({
           name,
           phoneNumber,
-          _id: person._id,
+          _id: person?._id,
         });
       }
       reset();

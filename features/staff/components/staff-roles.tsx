@@ -1,9 +1,9 @@
-import { FlatList, StyleSheet } from "react-native";
-import { MyText } from "~/components/Ui/MyText";
-import React from "react";
-import { colors } from "~/constants/Colors";
-import { CustomPressable } from "~/components/Ui/CustomPressable";
-import { capitaliseFirstLetter } from "~/lib/helper";
+import { FlatList, StyleSheet } from 'react-native';
+import { MyText } from '~/components/Ui/MyText';
+import React from 'react';
+import { colors } from '~/constants/Colors';
+import { CustomPressable } from '~/components/Ui/CustomPressable';
+import { capitaliseFirstLetter } from '~/lib/helper';
 
 type Props = {
   roles: string[];
@@ -11,12 +11,13 @@ type Props = {
   role: string;
 };
 export const StaffRoles = ({ roles, setRole, role }: Props) => {
+  const uniquesRoles = [...new Set(roles)];
   return (
     <FlatList
       horizontal
       style={{ marginBottom: 10 }}
       showsHorizontalScrollIndicator={false}
-      data={["All", ...roles]}
+      data={['All', ...uniquesRoles]}
       contentContainerStyle={{ gap: 20 }}
       renderItem={({ item }) => (
         <CustomPressable
@@ -24,7 +25,7 @@ export const StaffRoles = ({ roles, setRole, role }: Props) => {
           onPress={() => setRole(item)}
         >
           <MyText
-            style={{ color: role === item ? "white" : "black" }}
+            style={{ color: role === item ? 'white' : 'black' }}
             poppins="Medium"
             fontSize={13}
           >

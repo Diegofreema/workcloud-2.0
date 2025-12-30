@@ -37,6 +37,7 @@ import {
   CreateOrganizationSchemaType,
 } from '~/schema';
 import { Trash } from 'lucide-react-native';
+import { KeyboardAvoidingViewWithScroll } from '~/features/common/components/key-board-aware-scroll-view';
 
 const CreateWorkSpace = () => {
   const [startTime, setStartTime] = useState(new Date(1598051730000));
@@ -164,11 +165,7 @@ const CreateWorkSpace = () => {
   };
   return (
     <Container>
-      <ScrollView
-        style={[{ flex: 1 }]}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingVertical: 20, flexGrow: 1 }}
-      >
+      <KeyboardAvoidingViewWithScroll>
         <AuthHeader />
         <View style={{ marginBottom: 20 }} />
 
@@ -395,7 +392,7 @@ const CreateWorkSpace = () => {
             />
           </View>
         </View>
-      </ScrollView>
+      </KeyboardAvoidingViewWithScroll>
     </Container>
   );
 };
