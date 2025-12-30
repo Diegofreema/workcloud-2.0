@@ -24,13 +24,15 @@ const ChannelScreen = () => {
   const headerHeight = useHeaderHeight() + (StatusBar.currentHeight ?? 0);
   const { bottom } = useSafeAreaInsets();
   if (!channel) return null;
+  // console.log(channel.state.members);
+
   return (
     <Container>
       <Channel
         channel={channel}
-        hasCameraPicker={false}
+        hasCameraPicker={true}
         hasCommands={false}
-        hasFilePicker={false}
+        hasFilePicker={true}
         SendButton={SendButton}
         EmptyStateIndicator={EmptyStateIndicator}
         LoadingErrorIndicator={() => (

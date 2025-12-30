@@ -13,12 +13,11 @@ import Colors from '~/constants/Colors';
 import { FontAwesome } from '@expo/vector-icons';
 
 export const CustomListItem = (props: ChannelPreviewMessengerProps) => {
-  const { unread, latestMessagePreview } = props;
+  const { unread } = props;
   const backgroundColor = unread ? '#e6f7ff' : '#fff';
   const { user } = useAuth();
   const colorScheme = useColorScheme();
   const text = Colors[colorScheme ?? 'light'].text;
-  console.log(latestMessagePreview.previews);
 
   const renderMessage = (latestMessagePreview: LatestMessagePreview) => {
     if (latestMessagePreview.messageObject?.attachments?.[0].type === 'image') {

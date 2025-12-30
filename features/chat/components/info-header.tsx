@@ -2,30 +2,33 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { RFPercentage } from 'react-native-responsive-fontsize';
-import { Doc } from '~/convex/_generated/dataModel';
-import { Avatar } from '~/features/common/components/avatar';
-import { colors } from '~/constants/Colors';
+import { Channel as ChannelType } from 'stream-chat';
+import { useChannelPreviewDisplayAvatar } from 'stream-chat-expo';
 import { MyText } from '~/components/Ui/MyText';
-
+import { colors } from '~/constants/Colors';
+import { Avatar } from '~/features/common/components/avatar';
 type Props = {
-  data: Doc<'conversations'>;
   count: number;
+  channel: ChannelType;
 };
 
-export const RoomInfoTop = ({ data, count }: Props) => {
+export const RoomInfoTop = ({ count, channel }: Props) => {
   const memberText = count > 1 ? 'members' : 'member';
+  const { image, name } = useChannelPreviewDisplayAvatar(channel);
+  const description = channel.data?.custom_data?.description as string;
+
   return (
     <View style={{ gap: 10 }}>
       <View style={styles.container}>
         <View style={{ width: 100, height: 100 }}>
-          <Avatar url={data.imageUrl!} size={100} />
+          <Avatar url={image!} size={100} />
         </View>
         <MyText
           poppins={'Bold'}
           fontSize={30}
           style={[styles.name, { textAlign: 'center' }]}
         >
-          {data.name!}
+          {name}
         </MyText>
         <MyText
           poppins={'Medium'}
@@ -36,9 +39,9 @@ export const RoomInfoTop = ({ data, count }: Props) => {
         </MyText>
       </View>
 
-      {data.description && (
+      {description && (
         <MyText poppins={'Medium'} fontSize={25} style={[styles.description]}>
-          {data.description}
+          {description}
         </MyText>
       )}
       <MyText poppins={'Light'} fontSize={20} style={[styles.name]}>
