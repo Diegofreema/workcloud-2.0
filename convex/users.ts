@@ -134,11 +134,14 @@ export const getUserByClerkId = query({
   },
 });
 export const getUserById = query({
-  args: {
-    id: v.id('users'),
-  },
+  args: {},
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.id);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return null;
+    }
+
+    return await getAuthUserBySubject(ctx, identity.subject);
   },
 });
 
@@ -308,15 +311,15 @@ export const getLoggedInUser = async (
   ctx: QueryCtx | MutationCtx,
   type: 'query' | 'mutation'
 ) => {
-  const userId = await getAuthUserId(ctx);
+  const identity = await ctx.auth.getUserIdentity();
 
-  if (type === 'query' && !userId) return null;
-  if (type === 'mutation' && !userId) {
-    throw new ConvexError('Unauthorized');
+  if (type === 'query' && !identity) return null;
+  if (type === 'mutation' && !identity) {
+    throw new ConvexError({ message: 'Unauthorized' });
   }
 
-  if (!userId) return null;
-  return await ctx.db.get(userId);
+  if (!identity) return null;
+  return await getAuthUserBySubject(ctx, identity.subject);
 };
 
 export const findUserByEmail = async (ctx: MutationCtx, email: string) => {
@@ -421,14 +424,17 @@ export const getMissedCalls = query({
 });
 export const getMissedCallByCallId = query({
   args: {
-    userId: v.id('users'),
     callId: v.string(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return false;
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) return false;
     const call = await ctx.db
       .query('missedCalls')
       .withIndex('by_call_id_user_id', (q) =>
-        q.eq('callId', args.callId).eq('userId', args.userId)
+        q.eq('callId', args.callId).eq('userId', user._id)
       )
       .first();
     // unique calls by callId

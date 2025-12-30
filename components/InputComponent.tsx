@@ -61,7 +61,7 @@ export const CustomInput = ({
   };
   return (
     <View style={{ gap: 10 }}>
-      <MyText poppins="Bold" style={{ fontFamily: 'NunitoBold' }}>
+      <MyText poppins="Bold" style={{ fontFamily: 'NunitoBold' }} fontSize={15}>
         {label}
       </MyText>
       <KeyboardAvoidingView

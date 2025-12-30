@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setIsUpdating(false);
     }
   }, [person, updateStreamToken]);
-  const isAuthenticated = !!session?.session;
+  const isAuthenticated = !!session?.session && !!session?.user.streamToken;
 
   const isLoading = isPending || isUpdating;
   React.useEffect(() => {

@@ -1,5 +1,5 @@
 import { useQuery } from 'convex/react';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { Mail } from 'lucide-react-native';
 import { FlatList, useColorScheme, View } from 'react-native';
 import Colors from '~/constants/Colors';
@@ -7,6 +7,7 @@ import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
 import { Avatar } from '~/features/common/components/avatar';
+import { useMessage } from '~/hooks/use-message';
 import { EmptyText } from './EmptyText';
 import { HStack } from './HStack';
 import { CustomPressable } from './Ui/CustomPressable';
@@ -78,11 +79,12 @@ const Member = ({ user, isAdmin }: Props) => {
   const colorScheme = useColorScheme();
   const color = Colors[colorScheme ?? 'light'].text;
   const { user: loggedInUser } = useAuth();
+  const { onMessage } = useMessage();
   const onChat = () => {
-    router.push(`/chat/${user.id}?type=single`);
+    onMessage(user.id, 'single');
   };
 
-  const isLoggedInUser = loggedInUser?._id === user.id;
+  const isLoggedInUser = loggedInUser?.id === user.id;
   return (
     <HStack justifyContent={'space-between'} alignItems={'center'}>
       <HStack alignItems={'center'} gap={4}>

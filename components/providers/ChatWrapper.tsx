@@ -11,7 +11,6 @@ export const ChatWrapper = ({ children }: PropsWithChildren) => {
   const { user } = useAuth();
 
   const setUnreadCount = useUnread((state) => state.getUnread);
-  console.log({ user });
 
   const client = useCreateChatClient({
     apiKey,

@@ -97,3 +97,7 @@ export const renderReaction = (
   }
   return '';
 };
+
+export const changeFirstLetterToUpperCase = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};

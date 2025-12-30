@@ -236,14 +236,24 @@ export const createWorkspace = mutation({
 });
 export const existLobby = mutation({
   args: {
-    customerId: v.id('users'),
     workspaceId: v.id('workspaces'),
+    customerToRemove: v.optional(v.id('users')),
   },
-  handler: async (ctx, { customerId, workspaceId }) => {
+  handler: async (ctx, { workspaceId, customerToRemove }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError({ message: 'User not authenticated' });
+    }
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) {
+      throw new ConvexError({ message: 'User not authenticated' });
+    }
+
+    const id = customerToRemove || user._id;
     const waitlist = await ctx.db
       .query('waitlists')
       .withIndex('by_customer_id_workspace_id', (q) =>
-        q.eq('workspaceId', workspaceId).eq('customerId', customerId)
+        q.eq('workspaceId', workspaceId).eq('customerId', id)
       )
       .first();
     if (waitlist) {
@@ -255,25 +265,30 @@ export const handleAttendance = mutation({
   args: {
     signOutAt: v.optional(v.string()),
     signInAt: v.optional(v.string()),
-    workerId: v.id('users'),
+
     today: v.string(),
     workspaceId: v.optional(v.id('workspaces')),
   },
-  handler: async (
-    ctx,
-    { workerId, signOutAt, signInAt, today, workspaceId }
-  ) => {
+  handler: async (ctx, { signOutAt, signInAt, today, workspaceId }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError({ message: 'User not authenticated' });
+    }
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) {
+      throw new ConvexError({ message: 'User not authenticated' });
+    }
     const findTodayAttendance = await ctx.db
       .query('attendance')
       .withIndex('worker_id_date', (q) =>
-        q.eq('workerId', workerId).eq('date', today)
+        q.eq('workerId', user._id).eq('date', today)
       )
       .first();
 
     if (!findTodayAttendance && signInAt) {
       await ctx.db.insert('attendance', {
         signInAt,
-        workerId,
+        workerId: user._id,
         date: today,
       });
     }
@@ -290,13 +305,20 @@ export const handleAttendance = mutation({
 });
 export const checkIfWorkerSignedInToday = query({
   args: {
-    workerId: v.id('users'),
     today: v.string(),
   },
-  handler: async (ctx, { workerId, today }) => {
+  handler: async (ctx, { today }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError({ message: 'User not authenticated' });
+    }
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) {
+      throw new ConvexError({ message: 'User not found' });
+    }
     const todayAttendance = await ctx.db
       .query('attendance')
-      .withIndex('worker_id_date', (q) => q.eq('workerId', workerId))
+      .withIndex('worker_id_date', (q) => q.eq('workerId', user._id))
       .filter((q) => q.eq(q.field('date'), today))
       .first();
 

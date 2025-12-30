@@ -36,6 +36,7 @@ import { WorkerWithWorkspace } from '~/constants/types';
 import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
+import { useMessage } from '~/hooks/use-message';
 import { useTheme } from '~/hooks/use-theme';
 import { useGetUserId } from '~/hooks/useGetUserId';
 import { useWaitlistId } from '~/hooks/useWaitlistId';
@@ -243,7 +244,7 @@ const Representatives = ({ data }: { data: WorkerWithWorkspace[] }) => {
 const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
   const router = useRouter();
   const convex = useConvex();
-
+  const { onMessage: handleMessage } = useMessage();
   const { user: storedUser } = useAuth();
   // const { client } = useChatContext();
   const { id: customerId } = useGetUserId();
@@ -290,7 +291,8 @@ const RepresentativeItem = ({ item }: { item: WorkerWithWorkspace }) => {
   };
 
   const onMessage = async () => {
-    router.push(`/chat/${item.user?._id}?type=single`);
+    if (!item.user?.userId) return;
+    handleMessage(item.user?.userId, 'single');
   };
 
   return (

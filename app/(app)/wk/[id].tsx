@@ -35,7 +35,7 @@ const Work = () => {
   const [showMenu, setShowMenu] = useState(false);
 
   const { user } = useAuth();
-  const loggedInUser = user?._id;
+  const loggedInUser = user?.id;
   const client = useStreamVideoClient();
   const [leaving, setLeaving] = useState(false);
   const [addingToCall, setAddingToCall] = useState(false);
@@ -43,6 +43,7 @@ const Work = () => {
   const [customerToRemove, setCustomerToRemove] = useState<Id<'users'> | null>(
     null
   );
+
   const getData = useCallStore((state) => state.getData);
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -54,10 +55,7 @@ const Work = () => {
   const data = useQuery(api.workspace.getWorkspaceWithWaitingList, {
     workspaceId: id,
   });
-  const processorCount = useQuery(
-    api.processors.getProcessorThroughUser,
-    loggedInUser ? { userId: loggedInUser } : 'skip'
-  );
+  const processorCount = useQuery(api.processors.getProcessorThroughUser);
 
   const leaveLobby = useMutation(api.workspace.existLobby);
   const handleAttendance = useMutation(api.workspace.handleAttendance);
@@ -65,7 +63,6 @@ const Work = () => {
   const checkIfSignedInToday = useQuery(
     api.workspace.checkIfWorkerSignedInToday,
     {
-      workerId: loggedInUser!,
       today,
     }
   );
@@ -126,7 +123,7 @@ const Work = () => {
     setLeaving(true);
     if (!customerToRemove) return;
     try {
-      await leaveLobby({ customerId: customerToRemove!, workspaceId: id });
+      await leaveLobby({ customerToRemove, workspaceId: id });
     } catch (error) {
       console.log(error);
       toast.error('Failed to remove from lobby', {
@@ -143,7 +140,7 @@ const Work = () => {
     setLeaving(true);
 
     try {
-      await leaveLobby({ customerId: loggedInUser!, workspaceId: id });
+      await leaveLobby({ workspaceId: id });
       toast.success('You have left the lobby', {
         description: 'Hope to see you back soon!',
       });
@@ -173,14 +170,12 @@ const Work = () => {
     try {
       if (hasSignedInToday) {
         await handleAttendance({
-          workerId: loggedInUser,
           today,
           signOutAt: format(new Date(), 'HH:mm:ss'),
           workspaceId: data?.workspace?._id,
         });
       } else {
         await handleAttendance({
-          workerId: loggedInUser,
           today,
           signInAt: format(new Date(), 'HH:mm:ss'),
         });
@@ -206,7 +201,7 @@ const Work = () => {
     nextUser: Id<'waitlists'>,
     customerId: Id<'users'>
   ) => {
-    if (!client || data?.worker?._id !== user?._id) return;
+    if (!client || data?.worker?._id !== user?.id) return;
     setAddingToCall(true);
     try {
       const callId = Crypto.randomUUID();
@@ -219,7 +214,7 @@ const Work = () => {
         data: {
           members: [
             {
-              user_id: user?._id!,
+              user_id: user?.id!,
               custom: { convexId: loggedInUser, currentUser },
             },
             {

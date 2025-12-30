@@ -9,6 +9,7 @@ import React, {
   useState,
 } from 'react';
 import { api } from '~/convex/_generated/api';
+import { useMessage } from '~/hooks/use-message';
 
 import { registerForPushNotificationsAsync } from '~/utils/registerPushNotification';
 
@@ -40,7 +41,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   children,
 }) => {
   const [expoPushToken, setExpoPushToken] = useState<string | undefined>('');
-  const [uploading, setUploading] = useState<boolean>(false);
 
   const [notification, setNotification] =
     useState<Notifications.Notification | null>(null);
@@ -68,15 +68,15 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     const responseListener =
       Notifications.addNotificationResponseReceivedListener((response) => {
         const data = response.notification.request.content.data;
-        if (data.type === 'single') {
-          router.push(`/chat/${data.loggedInUserId}?type=single`);
-        }
-        if (data.type === 'group') {
-          router.push(`/chat/group/${data.conversationId}`);
-        }
-        if (data.type === 'processor') {
-          router.push(`/chat/${data.loggedInUserId}?type=single`);
-        }
+        // if (data.type === 'single') {
+        //   onMessage(data.loggedInUserId as string, 'single');
+        // }
+        // if (data.type === 'group') {
+        //   onMessage(data.conversationId as string, 'group');
+        // }
+        // if (data.type === 'processor') {
+        //   onMessage(data.loggedInUserId as string, 'processor');
+        // }
         if (data.type === 'notification') {
           router.push('/notification');
         }

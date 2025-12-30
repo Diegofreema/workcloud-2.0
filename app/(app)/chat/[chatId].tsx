@@ -18,9 +18,8 @@ import {
 import { Send } from 'lucide-react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { ChatHeader } from '~/components/Ui/ChatHeader';
-type Props = {};
 
-const ChannelScreen = (props: Props) => {
+const ChannelScreen = () => {
   const { channel } = useAppChatContext();
   const headerHeight = useHeaderHeight() + (StatusBar.currentHeight ?? 0);
   const { bottom } = useSafeAreaInsets();

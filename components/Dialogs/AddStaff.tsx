@@ -17,6 +17,7 @@ import { useTheme } from '~/hooks/use-theme';
 import { useAddStaff } from '~/hooks/useAddStaff';
 import { useHandleStaff } from '~/hooks/useHandleStaffs';
 import { useRemoveUser } from '~/hooks/useRemoveUser';
+import { useMessage } from '~/hooks/use-message';
 
 const roles = [{ role: 'Add new staff' }];
 export const AddStaff = () => {
@@ -123,7 +124,7 @@ export const Menu = ({
   const toggleWorkspace = useMutation(api.workspace.toggleWorkspace);
   const router = useRouter();
   // const { client } = useChatContext();
-
+  const { onMessage } = useMessage();
   const { item } = useHandleStaff();
   const { theme: darkMode } = useTheme();
   const onClose = () => {
@@ -142,7 +143,7 @@ export const Menu = ({
   const onSendMessage = async () => {
     onClose();
 
-    router.push(`/chat/${userId}?type=single`);
+    onMessage(userId, 'single');
   };
 
   const onUnlockWorkspace = async () => {

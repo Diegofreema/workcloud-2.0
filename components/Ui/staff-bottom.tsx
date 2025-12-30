@@ -14,6 +14,7 @@ import { MyText } from './MyText';
 import { useRemoveUser } from '~/hooks/useRemoveUser';
 import { useHandleStaff } from '~/hooks/useHandleStaffs';
 import { useRouter } from 'expo-router';
+import { useMessage } from '~/hooks/use-message';
 
 type Props = {
   isVisible: boolean;
@@ -37,7 +38,7 @@ export const StaffBottomSheet = ({
   const toggleWorkspace = useMutation(api.workspace.toggleWorkspace);
   const router = useRouter();
   // const { client } = useChatContext();
-
+  const { onMessage } = useMessage();
   const { item } = useHandleStaff();
   const { theme: darkMode } = useTheme();
   const onClose = () => {
@@ -56,7 +57,7 @@ export const StaffBottomSheet = ({
   const onSendMessage = async () => {
     onClose();
 
-    router.push(`/chat/${userId}?type=single`);
+    onMessage(userId, 'single');
   };
 
   const onUnlockWorkspace = async () => {

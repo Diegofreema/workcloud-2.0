@@ -14,6 +14,7 @@ import Colors, { colors } from '~/constants/Colors';
 import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
 import { Avatar } from '~/features/common/components/avatar';
+import { useMessage } from '~/hooks/use-message';
 import { formatMessageTime } from '~/lib/helper';
 type Props = {
   videoCall: Call;
@@ -21,27 +22,26 @@ type Props = {
 export const VideoCall = ({ videoCall }: Props) => {
   const { user } = useAuth();
   const colorScheme = useColorScheme();
+  const { onMessage } = useMessage();
   const color = Colors[colorScheme ?? 'light'].text;
   const loggedInCallUser = videoCall.state.members.find(
-    (m) => m.user_id !== user?._id
+    (m) => m.user_id !== user?.id
   )!;
   const missedCall = useQuery(
     api.users.getMissedCallByCallId,
-    user?._id
-      ? {
-          callId: videoCall.id,
-          userId: user?._id,
-        }
-      : 'skip'
+
+    {
+      callId: videoCall.id,
+    }
   );
 
   const { user: call_user } = loggedInCallUser;
-  const callIsCreatedByMe = videoCall.state.createdBy?.id === user?._id;
+  const callIsCreatedByMe = videoCall.state.createdBy?.id === user?.id;
 
   const client = useStreamVideoClient();
 
   const onChat = () => {
-    router.push(`/chat/${call_user?.id}?type=single`);
+    onMessage(call_user?.id, 'single');
   };
 
   const onVideoCall = async () => {
@@ -53,7 +53,7 @@ export const VideoCall = ({ videoCall }: Props) => {
       // notify: true,
       data: {
         members: [
-          { user_id: user?._id!, custom: { convexId: user?._id } },
+          { user_id: user?.id!, custom: { convexId: user?.id } },
           { user_id: call_user?.id, custom: { convexId: call_user?.id } },
         ],
       },

@@ -2,12 +2,13 @@ import { Text } from '@rneui/themed';
 import { useMutation } from 'convex/react';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { toast } from 'sonner-native';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { AuthHeader } from '~/components/AuthHeader';
 import { AuthTitle } from '~/components/AuthTitle';
 import { CustomInput } from '~/components/InputComponent';
@@ -19,6 +20,7 @@ import { api } from '~/convex/_generated/api';
 import { Button } from '~/features/common/components/Button';
 import { useTheme } from '~/hooks/use-theme';
 import { createWorkerSchema, CreateWorkerSchemaType } from '~/schema';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const max = 150;
 const genders = [
@@ -80,10 +82,12 @@ const CreateProfile = () => {
 
   return (
     <Container>
-      <ScrollView
-        style={{ flex: 1 }}
+      <KeyboardAwareScrollView
+        // style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 50 }}
+        ScrollViewComponent={ScrollView}
+        bottomOffset={50}
       >
         <AuthHeader />
         <View style={{ marginBottom: 10 }} />
@@ -149,23 +153,20 @@ const CreateProfile = () => {
               multiline
             />
 
-            <View style={{ marginHorizontal: 10 }}>
-              <Text
-                style={{
-                  color: darkMode === 'dark' ? colors.white : colors.black,
-                  fontWeight: 'bold',
-                  fontSize: 15,
-                  marginBottom: 10,
-                }}
+            <View>
+              <MyText
+                poppins="Bold"
+                style={{ fontFamily: 'NunitoBold' }}
+                fontSize={15}
               >
                 Gender
-              </Text>
+              </MyText>
 
               <SelectList
                 search={false}
                 boxStyles={{
                   ...styles2.border,
-                  justifyContent: 'flex-start',
+                  justifyContent: 'space-between',
                   width: '100%',
                   alignItems: 'center',
                 }}
@@ -202,7 +203,7 @@ const CreateProfile = () => {
             />
           </View>
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </Container>
   );
 };
