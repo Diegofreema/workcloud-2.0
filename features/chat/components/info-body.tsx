@@ -1,53 +1,57 @@
-import { ProcessorType } from "~/features/staff/type";
-
-import { StyleSheet, View } from "react-native";
-import { LegendList } from "@legendapp/list";
-import { HStack } from "~/components/HStack";
-import { UserPreview } from "~/components/Ui/UserPreview";
-import { capitaliseFirstLetter, generateErrorMessage } from "~/lib/helper";
-import { EmptyText } from "~/components/EmptyText";
-import React, { useState } from "react";
-import { CustomPressable } from "~/components/Ui/CustomPressable";
-import { MyText } from "~/components/Ui/MyText";
-import { colors } from "~/constants/Colors";
-import { Id } from "~/convex/_generated/dataModel";
-import { CustomModal } from "~/components/Dialogs/CustomModal";
-import { useMutation } from "convex/react";
-import { api } from "~/convex/_generated/api";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { router, useLocalSearchParams, useRouter } from "expo-router";
-import { toast } from "sonner-native";
-import { useCloseGroup } from "~/features/chat/hook/use-close-group";
-
+import { LegendList } from '@legendapp/list';
+import { router, useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
+import { toast } from 'sonner-native';
+import { ChannelMemberResponse, Channel as ChannelType } from 'stream-chat';
+import { CustomModal } from '~/components/Dialogs/CustomModal';
+import { EmptyText } from '~/components/EmptyText';
+import { HStack } from '~/components/HStack';
+import { CustomPressable } from '~/components/Ui/CustomPressable';
+import { MyText } from '~/components/Ui/MyText';
+import { UserPreview } from '~/components/Ui/UserPreview';
+import { colors } from '~/constants/Colors';
+import { Id } from '~/convex/_generated/dataModel';
+import { useCloseGroup } from '~/features/chat/hook/use-close-group';
+import { useGetUserId } from '~/hooks/useGetUserId';
+import { capitaliseFirstLetter, generateErrorMessage } from '~/lib/helper';
 type Props = {
-  data: ProcessorType[];
+  members: ChannelMemberResponse[];
+  channel: ChannelType;
 };
 
-export const RenderInfoStaffs = ({ data }: Props) => {
-  const [userId, setUserId] = useState<Id<"users"> | null>(null);
+export const RenderInfoStaffs = ({ members, channel }: Props) => {
+  const data = members
+    .sort((a, b) => {
+      if (a.role === 'owner' && b.role !== 'owner') return -1;
+      if (a.role !== 'owner' && b.role === 'owner') return 1;
+      return 0;
+    })
+    .map((item) => ({
+      name: item.user?.name as string,
+      image: item.user?.image!,
+      id: item.user_id!,
+      role: item.role === 'owner' ? 'Admin' : item.role,
+    }));
+  const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const setOpen = useCloseGroup((state) => state.setIsOpen);
   const open = useCloseGroup((state) => state.isOpen);
-  const { groupId } = useLocalSearchParams<{ groupId: Id<"conversations"> }>();
+
   const { id } = useGetUserId();
-  const removeStaffsFromConversation = useMutation(
-    api.conversation.removeStaffsFromConversation,
-  );
-  const closeGroup = useMutation(api.conversation.closeGroup);
-  const onPress = async () => {
-    if (!id || !userId) return;
+
+  const onRemoveStaff = async (id: string) => {
+    const userToRemove = data.find((item) => item.id === id);
     setLoading(true);
     try {
-      await removeStaffsFromConversation({
-        conversationId: groupId,
-        loggedInUserId: id,
-        userToRemoveId: userId,
+      await channel.removeMembers([id], {
+        text: `${userToRemove?.name} has been removed by the admin`,
       });
-      toast.success("Staffs removed from conversation");
+      toast.success('Staffs removed from conversation');
     } catch (e) {
       const errorMessage = generateErrorMessage(
         e,
-        "Failed to remove staffs from conversation",
+        'Failed to remove staffs from conversation'
       );
       toast.error(errorMessage);
     } finally {
@@ -58,31 +62,53 @@ export const RenderInfoStaffs = ({ data }: Props) => {
   const onCloseGroup = async () => {
     setLoading(true);
     try {
-      await closeGroup({
-        groupId,
-        loggedInUser: id!,
-      });
-      toast.success("Group has been closed");
-      router.replace("/message");
+      // await closeGroup({
+      //   groupId,
+      //   loggedInUser: id!,
+      // });
+      toast.success('Group has been closed');
+      router.replace('/message');
     } catch (e) {
-      const errorMessage = generateErrorMessage(e, "Failed to close group");
+      const errorMessage = generateErrorMessage(e, 'Failed to close group');
       toast.error(errorMessage);
     } finally {
       setOpen(false);
       setLoading(false);
     }
   };
+  const loggedInUserIsAdmin =
+    data.find((item) => item.id === id)?.role === 'owner';
+  const onAlertRemoveStaff = (id: string) => {
+    if (!loggedInUserIsAdmin) return;
+    Alert.alert(
+      'Remove staff',
+      'Are you sure you want to remove this staff?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: () => onRemoveStaff(id),
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   return (
     <View style={{ flex: 1, marginTop: 20 }}>
-      <CustomModal
-        title={"Remove staff"}
+      {/* <CustomModal
+        title={'Remove staff'}
         onClose={() => setUserId(null)}
         isOpen={!!userId}
         onPress={onPress}
         isLoading={loading}
-      />
+      /> */}
       <CustomModal
-        title={"Close group"}
+        title={'Close group'}
         onClose={() => setOpen(false)}
         isOpen={open}
         onPress={onCloseGroup}
@@ -101,12 +127,16 @@ export const RenderInfoStaffs = ({ data }: Props) => {
               name={item?.name}
               subText={capitaliseFirstLetter(item?.role)}
             />
-            <ActionButton onPress={() => setUserId(item.id)} />
+            {loggedInUserIsAdmin && item.role !== 'Admin' && (
+              <ActionButton onPress={() => onAlertRemoveStaff(item.id)} />
+            )}
           </HStack>
         )}
         ListEmptyComponent={() => <EmptyText text="No members found" />}
-        ListFooterComponent={FooterButtons}
-        ListFooterComponentStyle={{ marginTop: "auto" }}
+        ListFooterComponent={() => (
+          <FooterButtons loggedInUserIsAdmin={loggedInUserIsAdmin} />
+        )}
+        ListFooterComponentStyle={{ marginTop: 'auto' }}
         style={{ flex: 1 }}
         recycleItems
       />
@@ -117,26 +147,32 @@ export const RenderInfoStaffs = ({ data }: Props) => {
 const ActionButton = ({ onPress }: { onPress: () => void }) => {
   return (
     <CustomPressable onPress={onPress}>
-      <MyText poppins={"Medium"} style={{ color: colors.closeTextColor }}>
+      <MyText poppins={'Medium'} style={{ color: colors.closeTextColor }}>
         Remove Staff
       </MyText>
     </CustomPressable>
   );
 };
 
-const FooterButtons = () => {
-  const { groupId } = useLocalSearchParams<{ groupId: Id<"conversations"> }>();
+type FooterProps = {
+  loggedInUserIsAdmin: boolean;
+};
+
+const FooterButtons = ({ loggedInUserIsAdmin }: FooterProps) => {
+  const { groupId } = useLocalSearchParams<{ groupId: Id<'conversations'> }>();
   const setOpen = useCloseGroup((state) => state.setIsOpen);
   const router = useRouter();
   const onAdd = () => {
     router.push(`/add-staff?groupId=${groupId}`);
   };
 
+  if (!loggedInUserIsAdmin) return null;
+
   return (
-    <HStack mt={"auto"} gap={5}>
+    <HStack mt={'auto'} gap={5}>
       <CustomPressable onPress={onAdd} style={[styles.btn, styles.add]}>
         <MyText
-          poppins={"Medium"}
+          poppins={'Medium'}
           fontSize={15}
           style={{ color: colors.white }}
         >
@@ -148,7 +184,7 @@ const FooterButtons = () => {
         style={[styles.btn, styles.close]}
       >
         <MyText
-          poppins={"Medium"}
+          poppins={'Medium'}
           fontSize={15}
           style={{ color: colors.white }}
         >
@@ -164,8 +200,8 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 5,
     height: 45,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   close: {
     backgroundColor: colors.closeTextColor,
