@@ -59,6 +59,7 @@ export const RenderInfoStaffs = ({ members, channel }: Props) => {
   const onCloseGroup = async () => {
     setLoading(true);
     try {
+      await channel.delete({ hard_delete: true });
       toast.success('Group has been closed');
       router.replace('/message');
     } catch (e) {

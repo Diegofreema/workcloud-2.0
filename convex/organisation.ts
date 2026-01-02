@@ -1,5 +1,5 @@
 import { ConvexError, v } from 'convex/values';
-import { Id } from './_generated/dataModel';
+import { Doc, Id } from './_generated/dataModel';
 import { mutation, query, QueryCtx } from './_generated/server';
 import { getLoggedInUser, getUserByUserId, getUserForWorker } from './users';
 import { internal } from './_generated/api';
@@ -542,14 +542,26 @@ export const getOrganizationByOrganizationId = async (
   organizationId: Id<'organizations'>
 ) => {
   const res = await ctx.db.get(organizationId);
-  if (!res) return null;
-  if (res.avatar.startsWith('https')) return res;
+  if (!res) {
+    throw new ConvexError({ message: 'Organization not found' });
+  }
+  const owner = await getUserByOwnerId(ctx, res.ownerId!);
+  if (!owner) {
+    throw new ConvexError({ message: 'Owner not found' });
+  }
+  if (res.avatar.startsWith('https'))
+    return {
+      ...res,
+      owner,
+    };
   const organizationAvatar = await ctx.storage.getUrl(
     res.avatar as Id<'_storage'>
   );
+
   return {
     ...res,
     avatar: organizationAvatar,
+    owner,
   };
 };
 export const getOrganizationByServicePointOrganizationId = async (

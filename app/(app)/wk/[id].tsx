@@ -74,7 +74,9 @@ const Work = () => {
     () => data?.workspace.locked || false,
     [data?.workspace.locked]
   );
-  const isWorker = data?.worker?._id === loggedInUser;
+  const isWorker =
+    data?.worker?._id === loggedInUser ||
+    data?.organization?.owner?.userId === loggedInUser;
   useGetWaitlistIdForCustomer({ isWorker, waitlistId: customerWaitlistId });
   const isActive = useMemo(() => {
     if (!data || !data?.workspace?.active) return false;
