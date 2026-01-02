@@ -13,22 +13,27 @@ import Colors from '~/constants/Colors';
 import { FontAwesome } from '@expo/vector-icons';
 
 export const CustomListItem = (props: ChannelPreviewMessengerProps) => {
-  const { unread } = props;
+  const { unread, latestMessagePreview } = props;
   const backgroundColor = unread ? '#e6f7ff' : '#fff';
   const { user } = useAuth();
   const colorScheme = useColorScheme();
   const text = Colors[colorScheme ?? 'light'].text;
 
   const renderMessage = (latestMessagePreview: LatestMessagePreview) => {
-    if (latestMessagePreview.messageObject?.attachments?.[0].type === 'image') {
+    if (latestMessagePreview.messageObject?.type === 'system') {
+      return trimText(latestMessagePreview.messageObject?.text || '', 35);
+    }
+    if (
+      latestMessagePreview.messageObject?.attachments?.[0]?.type === 'image'
+    ) {
       return <ImageIcon color={text} size={15} />;
     }
 
-    if (latestMessagePreview.messageObject?.attachments?.[0].type === 'file') {
+    if (latestMessagePreview.messageObject?.attachments?.[0]?.type === 'file') {
       return <File color={text} size={15} />;
     }
     if (
-      latestMessagePreview.messageObject?.attachments?.[0].type ===
+      latestMessagePreview.messageObject?.attachments?.[0]?.type ===
       'voiceRecording'
     ) {
       const durationRaw =
@@ -56,31 +61,35 @@ export const CustomListItem = (props: ChannelPreviewMessengerProps) => {
 
     return (
       trimText(latestMessagePreview.messageObject?.text || '', 20) ||
-      latestMessagePreview.previews[0].text
+      latestMessagePreview.previews[0]?.text
     );
   };
   return (
     <View style={{ backgroundColor }}>
       <ChannelPreviewMessenger
         {...props}
-        PreviewMessage={({ latestMessagePreview }) => (
-          <View>
-            <MyText poppins="Light" fontSize={16}>
-              {latestMessagePreview.messageObject?.latest_reactions?.[0]
-                ? renderReaction(
-                    latestMessagePreview.messageObject
-                      ?.latest_reactions?.[0] as Reaction,
-                    user?.id,
-                    latestMessagePreview.messageObject?.user?.id,
-                    latestMessagePreview.messageObject?.user?.name?.split(
-                      ' '
-                    )[0]
-                  )
-                : ''}
-              {renderMessage(latestMessagePreview)}
-            </MyText>
-          </View>
-        )}
+        PreviewMessage={({ latestMessagePreview }) => {
+          const isSystem =
+            latestMessagePreview.messageObject?.type === 'system';
+          return (
+            <View>
+              <MyText poppins="Light" fontSize={isSystem ? 12 : 16}>
+                {latestMessagePreview.messageObject?.latest_reactions?.[0]
+                  ? renderReaction(
+                      latestMessagePreview.messageObject
+                        ?.latest_reactions?.[0] as Reaction,
+                      user?.id,
+                      latestMessagePreview.messageObject?.user?.id,
+                      latestMessagePreview.messageObject?.user?.name?.split(
+                        ' '
+                      )[0]
+                    )
+                  : ''}
+                {renderMessage(latestMessagePreview)}
+              </MyText>
+            </View>
+          );
+        }}
         PreviewUnreadCount={ChannelPreviewCount}
       />
     </View>

@@ -11,37 +11,43 @@ import { useStaffStore } from '~/features/staff/store/staff-store';
 import { useState } from 'react';
 import { toast } from 'sonner-native';
 import { generateErrorMessage } from '~/lib/helper';
+import { useAppChatContext } from '~/components/providers/chat-context';
 
 export const FetchStaffToAdd = () => {
-  const { groupId } = useLocalSearchParams<{ groupId: Id<'conversations'> }>();
-  const { id } = useGetUserId();
   const [loading, setLoading] = useState(false);
-  const addStaffs = useMutation(api.conversation.addMembers);
+  const { channel } = useAppChatContext();
   const router = useRouter();
   const { staffs: workers, clear } = useStaffStore();
-  const staffs = useQuery(api.conversation.fetchWorkersThatAreNotInGroup, {
-    groupId,
-  });
+  const data = useQuery(api.organisation.getStaffsByBossId);
+  const members = Object.values(channel?.state.members || {});
 
-  if (staffs === undefined) {
+  if (data === undefined) {
     return <LoadingComponent />;
   }
+  console.log({ workers });
 
-  const data = staffs?.map((item) => ({
-    name: item.name!,
-    image: item.image!,
-    id: item._id!,
-    role: item.role!,
-    workspace: null,
-  }));
+  const staffs = data
+    ?.filter(
+      (item) => !members.some((member) => member.user_id === item.user?.userId)
+    )
+    .map((item) => ({
+      name: item.user?.name as string,
+      image: item.user?.image as string,
+      id: item.user?.userId as string,
+      role: item.role!,
+      workspace: null,
+    }));
 
   const onAdd = async () => {
     try {
       setLoading(true);
-      await addStaffs({
-        groupId,
-        members: workers.map((w) => w.id),
-      });
+      await Promise.all(
+        workers.map(async (item) => {
+          await channel?.addMembers([item.id], {
+            text: `Admin added ${item.name.split(' ')[0]}`,
+          });
+        })
+      );
       toast.success('Staffs added to group');
       clear();
       router.back();
@@ -55,7 +61,7 @@ export const FetchStaffToAdd = () => {
   const disable = workers.length === 0 || loading;
   return (
     <View style={{ flex: 1 }}>
-      <RenderStaffs data={data} />
+      <RenderStaffs data={staffs} />
       <Button
         title={'Add to group'}
         onPress={onAdd}

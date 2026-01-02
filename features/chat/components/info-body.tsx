@@ -33,10 +33,8 @@ export const RenderInfoStaffs = ({ members, channel }: Props) => {
       id: item.user_id!,
       role: item.role === 'owner' ? 'Admin' : item.role,
     }));
-  const [userId, setUserId] = useState<string | null>(null);
+
   const [loading, setLoading] = useState(false);
-  const setOpen = useCloseGroup((state) => state.setIsOpen);
-  const open = useCloseGroup((state) => state.isOpen);
 
   const { id } = useGetUserId();
 
@@ -45,7 +43,7 @@ export const RenderInfoStaffs = ({ members, channel }: Props) => {
     setLoading(true);
     try {
       await channel.removeMembers([id], {
-        text: `${userToRemove?.name} has been removed by the admin`,
+        text: `${userToRemove?.name?.split(' ')[0]} has been removed by the admin`,
       });
       toast.success('Staffs removed from conversation');
     } catch (e) {
@@ -55,29 +53,22 @@ export const RenderInfoStaffs = ({ members, channel }: Props) => {
       );
       toast.error(errorMessage);
     } finally {
-      setUserId(null);
       setLoading(false);
     }
   };
   const onCloseGroup = async () => {
     setLoading(true);
     try {
-      // await closeGroup({
-      //   groupId,
-      //   loggedInUser: id!,
-      // });
       toast.success('Group has been closed');
       router.replace('/message');
     } catch (e) {
       const errorMessage = generateErrorMessage(e, 'Failed to close group');
       toast.error(errorMessage);
     } finally {
-      setOpen(false);
       setLoading(false);
     }
   };
-  const loggedInUserIsAdmin =
-    data.find((item) => item.id === id)?.role === 'owner';
+  const loggedInUserIsAdmin = channel.state.members[id]?.role === 'owner';
   const onAlertRemoveStaff = (id: string) => {
     if (!loggedInUserIsAdmin) return;
     Alert.alert(
@@ -98,22 +89,27 @@ export const RenderInfoStaffs = ({ members, channel }: Props) => {
     );
   };
 
+  const onAlertCloseGroup = () => {
+    Alert.alert(
+      'Close group',
+      'Are you sure you want to close this group?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Close',
+          style: 'destructive',
+          onPress: onCloseGroup,
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   return (
     <View style={{ flex: 1, marginTop: 20 }}>
-      {/* <CustomModal
-        title={'Remove staff'}
-        onClose={() => setUserId(null)}
-        isOpen={!!userId}
-        onPress={onPress}
-        isLoading={loading}
-      /> */}
-      <CustomModal
-        title={'Close group'}
-        onClose={() => setOpen(false)}
-        isOpen={open}
-        onPress={onCloseGroup}
-        isLoading={loading}
-      />
       <LegendList
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: 15, flexGrow: 1 }}
@@ -134,7 +130,11 @@ export const RenderInfoStaffs = ({ members, channel }: Props) => {
         )}
         ListEmptyComponent={() => <EmptyText text="No members found" />}
         ListFooterComponent={() => (
-          <FooterButtons loggedInUserIsAdmin={loggedInUserIsAdmin} />
+          <FooterButtons
+            loggedInUserIsAdmin={loggedInUserIsAdmin}
+            onCloseGroup={onAlertCloseGroup}
+            disabled={loading}
+          />
         )}
         ListFooterComponentStyle={{ marginTop: 'auto' }}
         style={{ flex: 1 }}
@@ -156,11 +156,17 @@ const ActionButton = ({ onPress }: { onPress: () => void }) => {
 
 type FooterProps = {
   loggedInUserIsAdmin: boolean;
+  onCloseGroup: () => void;
+  disabled: boolean;
 };
 
-const FooterButtons = ({ loggedInUserIsAdmin }: FooterProps) => {
+const FooterButtons = ({
+  loggedInUserIsAdmin,
+  onCloseGroup,
+  disabled,
+}: FooterProps) => {
   const { groupId } = useLocalSearchParams<{ groupId: Id<'conversations'> }>();
-  const setOpen = useCloseGroup((state) => state.setIsOpen);
+
   const router = useRouter();
   const onAdd = () => {
     router.push(`/add-staff?groupId=${groupId}`);
@@ -180,8 +186,9 @@ const FooterButtons = ({ loggedInUserIsAdmin }: FooterProps) => {
         </MyText>
       </CustomPressable>
       <CustomPressable
-        onPress={() => setOpen(true)}
+        onPress={onCloseGroup}
         style={[styles.btn, styles.close]}
+        disable={disabled}
       >
         <MyText
           poppins={'Medium'}

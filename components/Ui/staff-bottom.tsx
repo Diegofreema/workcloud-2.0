@@ -25,7 +25,7 @@ type Props = {
   )[];
   onBottomOpen: () => void;
   bossId: Id<'users'>;
-  userId: Id<'users'>;
+  userId: Id<'users'> | string;
 };
 export const StaffBottomSheet = ({
   isVisible,
