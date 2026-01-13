@@ -5,12 +5,18 @@ import { View } from 'react-native';
 import { EmptyText } from '~/components/EmptyText';
 import { UserPreview } from '~/components/Ui/UserPreview';
 import { ProcessorType } from '~/features/staff/type';
+import { useMessage } from '~/hooks/use-message';
 
 type Props = {
   data: ProcessorType[];
 };
 
 export const RenderProcessors = ({ data }: Props) => {
+  const { onMessage } = useMessage();
+
+  const onHandleMessage = async (id: string) => {
+    await onMessage(id, 'processor');
+  };
   return (
     <View style={{ flex: 1 }}>
       <LegendList
@@ -20,7 +26,7 @@ export const RenderProcessors = ({ data }: Props) => {
           <UserPreview
             imageUrl={item.image}
             name={item.name}
-            onPress={() => router.push(`/chat/${item?.id}?type=processor`)}
+            onPress={() => onHandleMessage(item?.id)}
             id={item?.id}
             roleText={item.role}
           />

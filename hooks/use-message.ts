@@ -12,9 +12,13 @@ export const useMessage = () => {
     type: 'single' | 'group' | 'processor'
   ) => {
     if (!user) return;
-    const channel = client.channel('messaging', {
-      members: [user?.id, userToChat],
+    const base = [user?.id, userToChat].sort().join('-');
+    const baseMax = Math.max(1, 64 - 1 - type.length);
+    const channelId = `${base.slice(0, baseMax)}-${type}`;
+
+    const channel = client.channel('messaging', channelId, {
       filter_tags: [type],
+      members: [user?.id, userToChat],
     });
 
     await channel.watch({ presence: true });

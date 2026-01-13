@@ -1,9 +1,12 @@
-import { View, Text } from 'react-native';
-import React from 'react';
-import { ChannelList as Channels } from 'stream-chat-expo';
 import { useRouter } from 'expo-router';
+import React from 'react';
+import {
+  ChannelFilters,
+  ChannelSort,
+  Channel as ChannelType,
+} from 'stream-chat';
+import { ChannelList as Channels } from 'stream-chat-expo';
 import { useAppChatContext } from '~/components/providers/chat-context';
-import { ChannelFilters, Channel as ChannelType } from 'stream-chat';
 import { CustomListItem } from './custom-list-item';
 import { MessageEmpty } from './message-empty';
 type Props = {
@@ -14,10 +17,14 @@ export const ChannelList = ({ filters }: Props) => {
   const router = useRouter();
   const { setChannel } = useAppChatContext();
   const onPress = (channel: ChannelType) => {
+    console.log('channel pressed');
+
     setChannel(channel);
+    console.log(channel.cid);
+
     router.push(`/chat/${channel.cid}`);
   };
-  const sort = { last_updated: -1 } as any;
+  const sort = { last_updated: -1 } as ChannelSort;
   const options = {
     state: true,
     watch: true,

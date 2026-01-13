@@ -20,7 +20,11 @@ import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
 import { useDecline } from '~/hooks/useDecline';
 import { useOpen } from '~/hooks/useOpen';
-import { convexPushNotificationsHelper, getArticle } from '~/lib/utils';
+import {
+  changeFirstLetterToUpperCase,
+  convexPushNotificationsHelper,
+  getArticle,
+} from '~/lib/utils';
 
 type PreviewWorker = {
   name?: string;
@@ -84,7 +88,8 @@ export const UserPreview = ({
           )}
           {roleText && (
             <MyText poppins="Medium" fontSize={14}>
-              {roleText} {workPlace && `at ${workPlace}`}
+              {changeFirstLetterToUpperCase(roleText)}{' '}
+              {workPlace && `at ${workPlace}`}
             </MyText>
           )}
 

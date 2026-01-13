@@ -28,14 +28,29 @@ export const getProcessorThroughUser = query({
       .withIndex('by_org_id', (q) =>
         q.eq('organizationId', worker.organizationId)
       )
-      .filter((q) => q.eq(q.field('type'), 'processor'))
+      .filter((q) =>
+        q.and(
+          q.eq(q.field('type'), 'processor'),
+          q.neq(q.field('userId'), userData._id)
+        )
+      )
       .collect();
 
-    const processorsWithProfile = processors.map(async (p) => {
-      return await getUserProfileByWorkerId(ctx, p._id);
-    });
+    const processorsWithProfile = await Promise.all(
+      processors.map(async (p) => {
+        const user = await ctx.db.get(p.userId);
+        if (!user) {
+          throw new ConvexError({ message: 'Processor user not found' });
+        }
+        const { _id, ...rest } = user;
+        return {
+          ...p,
+          ...rest,
+        };
+      })
+    );
 
-    return await Promise.all(processorsWithProfile);
+    return processorsWithProfile;
   },
 });
 

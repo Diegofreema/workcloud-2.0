@@ -1,17 +1,20 @@
+import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { ChatPreviewSkeleton } from '~/components/ChatPreviewSkeleton';
+import { ChannelFilters, Channel as ChannelType } from 'stream-chat';
+import { useAppChatContext } from '~/components/providers/chat-context';
 import { useAuth } from '~/context/auth';
-import { useGetConversationType } from '~/features/chat/api/use-get-conversation-type';
 import { ChannelList } from '~/features/chat/components/channel-list';
-import { RenderChats } from '~/features/chat/components/render-single-chats';
 import { SearchComponent } from '~/features/common/components/SearchComponent';
 import { Title } from '~/features/common/components/title';
-import { ChannelFilters } from 'stream-chat';
 export const FetchMessages = () => {
   const { user } = useAuth();
   const id = user?.id!;
-
+  const { setChannel } = useAppChatContext();
+  const onPress = (channel: ChannelType) => {
+    setChannel(channel);
+    router.push(`/chat/${channel.cid}`);
+  };
   const [value, setValue] = useState('');
   const filters: ChannelFilters = useMemo(
     () => ({
@@ -22,6 +25,7 @@ export const FetchMessages = () => {
     }),
     [id, value]
   );
+  console.log({ value });
 
   return (
     <View style={{ flex: 1, marginTop: 20, gap: 10 }}>
