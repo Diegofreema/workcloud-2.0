@@ -11,7 +11,6 @@ import { LoadingComponent } from '~/components/Ui/LoadingComponent';
 import { api } from '~/convex/_generated/api';
 
 const Edit = () => {
-  const { id } = useLocalSearchParams<{ id: string }>();
   const { data, isPending, isError, refetch } = useQuery(
     convexQuery(api.users.getUserById, {}),
   );

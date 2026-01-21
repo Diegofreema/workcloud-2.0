@@ -69,7 +69,7 @@ export const Worker = {
   gender: v.string(),
   email: v.string(),
   type: v.optional(
-    v.union(v.literal('processor'), v.literal('front'), v.literal('personal'))
+    v.union(v.literal('processor'), v.literal('front'), v.literal('personal')),
   ),
   attendingTo: v.optional(v.id('waitlists')),
 };
@@ -92,7 +92,7 @@ export const Request = {
     v.literal('pending'),
     v.literal('accepted'),
     v.literal('declined'),
-    v.literal('cancelled')
+    v.literal('cancelled'),
   ),
 };
 export const Workspace = {
@@ -110,7 +110,7 @@ export const Workspace = {
   type: v.union(
     v.literal('personal'),
     v.literal('processor'),
-    v.literal('front')
+    v.literal('front'),
   ),
 };
 export const Connection = {
@@ -126,7 +126,7 @@ export const WaitList = {
   type: v.union(
     v.literal('waiting'),
     v.literal('next'),
-    v.literal('attending')
+    v.literal('attending'),
   ),
 };
 
@@ -141,14 +141,14 @@ export const Conversation = {
   name: v.optional(v.string()),
   lastMessage: v.optional(v.string()),
   lastMessageType: v.optional(
-    v.union(v.literal('audio'), v.literal('file'), v.literal('text'))
+    v.union(v.literal('audio'), v.literal('file'), v.literal('text')),
   ),
   participants: v.array(v.id('users')),
   lastMessageTime: v.optional(v.number()),
   lastMessageSenderId: v.optional(v.id('users')),
   participantNames: v.array(v.string()),
   type: v.optional(
-    v.union(v.literal('single'), v.literal('processor'), v.literal('group'))
+    v.union(v.literal('single'), v.literal('processor'), v.literal('group')),
   ),
   description: v.optional(v.string()),
   imageUrl: v.optional(v.string()),
@@ -162,6 +162,7 @@ export const Notification = {
   seen: v.boolean(),
   requestId: v.optional(v.id('organizations')),
   reviewId: v.optional(v.id('reviews')),
+  imageUrl: v.optional(v.string()),
 };
 
 export const Message = {
@@ -170,7 +171,7 @@ export const Message = {
   isEdited: v.optional(v.boolean()),
   content: v.string(),
   fileType: v.optional(
-    v.union(v.literal('image'), v.literal('pdf'), v.literal('audio'))
+    v.union(v.literal('image'), v.literal('pdf'), v.literal('audio')),
   ),
   seenId: v.array(v.id('users')),
   fileId: v.optional(v.id('_storage')),
@@ -188,7 +189,7 @@ export const DeleteAccount = {
   status: v.union(
     v.literal('pending'),
     v.literal('processed'),
-    v.literal('cancelled')
+    v.literal('cancelled'),
   ),
 };
 
@@ -216,7 +217,7 @@ export const Reaction = {
     v.literal('LOVE'),
     v.literal('WOW'),
     v.literal('ANGRY'),
-    v.literal('LAUGH')
+    v.literal('LAUGH'),
   ),
 };
 const missedCall = {

@@ -27,19 +27,20 @@ export const getNotifications = query({
           if (user) {
             image = user.image as string;
           }
-        }
-        if (n.requestId) {
+        } else if (n.requestId) {
           const org = await ctx.db.get(n.requestId);
           if (org) {
             image = org.avatar as string;
           }
+        } else {
+          image = n.imageUrl as string;
         }
 
         return {
           ...n,
           image,
         };
-      })
+      }),
     );
 
     return {
@@ -50,7 +51,7 @@ export const getNotifications = query({
 });
 
 export const getUnreadNotificationCount = query({
-  handler: async (ctx, args) => {
+  handler: async (ctx) => {
     const user = await getLoggedInUser(ctx, 'query');
     if (!user) return 0;
     const notifications = await ctx.db
@@ -90,7 +91,7 @@ export const markNotificationAsRead = mutation({
     const notifications = await ctx.db
       .query('notifications')
       .withIndex('by_user_id_seen', (q) =>
-        q.eq('userId', user._id).eq('seen', false)
+        q.eq('userId', user._id).eq('seen', false),
       )
       .collect();
     for (const notificationId of notifications) {

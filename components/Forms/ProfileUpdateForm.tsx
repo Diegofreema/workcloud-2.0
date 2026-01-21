@@ -21,12 +21,15 @@ import { profileUpdateSchema, ProfileUpdateSchemaType } from '~/schema';
 import { Avatar } from '../Ui/Avatar';
 import { useTheme } from '~/hooks/use-theme';
 import { FunctionReturnType } from 'convex/server';
+import { useChatContext } from 'stream-chat-expo';
 
 type Props = {
   person: FunctionReturnType<typeof api.users.getUserById>;
 };
 export const ProfileUpdateForm = ({ person }: Props) => {
   const updateUser = useMutation(api.users.updateUserById);
+  const { client } = useChatContext();
+
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
   // const updateImage = useMutation(api.users.updateImage);
   const [selectedImage, setSelectedImage] =
@@ -58,7 +61,7 @@ export const ProfileUpdateForm = ({ person }: Props) => {
       if (selectedImage) {
         const res = await uploadProfilePicture(
           generateUploadUrl,
-          selectedImage.uri
+          selectedImage.uri,
         );
         if (!res?.storageId) return;
         await updateUser({
@@ -67,12 +70,31 @@ export const ProfileUpdateForm = ({ person }: Props) => {
           _id: person?._id,
           imageUrl: res.storageId,
         });
+        const update = {
+          id: person?.userId,
+          set: {
+            name,
+            image: res.storageId,
+          },
+        };
+
+        const response = await client.partialUpdateUser(update);
+        console.log(response, 'response');
       } else {
         await updateUser({
           name,
           phoneNumber,
           _id: person?._id,
         });
+        const update = {
+          id: person?.userId,
+          set: {
+            name,
+          },
+        };
+
+        const response = await client.partialUpdateUser(update);
+        console.log(response, 'response');
       }
       reset();
       router.back();

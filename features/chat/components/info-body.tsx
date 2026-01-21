@@ -49,7 +49,7 @@ export const RenderInfoStaffs = ({ members, channel }: Props) => {
     } catch (e) {
       const errorMessage = generateErrorMessage(
         e,
-        'Failed to remove staffs from conversation'
+        'Failed to remove staffs from conversation',
       );
       toast.error(errorMessage);
     } finally {
@@ -59,10 +59,12 @@ export const RenderInfoStaffs = ({ members, channel }: Props) => {
   const onCloseGroup = async () => {
     setLoading(true);
     try {
-      await channel.delete({ hard_delete: true });
+      await channel.delete();
       toast.success('Group has been closed');
       router.replace('/message');
     } catch (e) {
+      console.log(e);
+
       const errorMessage = generateErrorMessage(e, 'Failed to close group');
       toast.error(errorMessage);
     } finally {
@@ -86,7 +88,7 @@ export const RenderInfoStaffs = ({ members, channel }: Props) => {
           onPress: () => onRemoveStaff(id),
         },
       ],
-      { cancelable: true }
+      { cancelable: true },
     );
   };
 
@@ -105,7 +107,7 @@ export const RenderInfoStaffs = ({ members, channel }: Props) => {
           onPress: onCloseGroup,
         },
       ],
-      { cancelable: true }
+      { cancelable: true },
     );
   };
 

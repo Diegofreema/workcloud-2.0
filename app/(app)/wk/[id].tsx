@@ -26,6 +26,7 @@ import { useCallStore } from '~/features/calls/hook/useCallStore';
 import { Button } from '~/features/common/components/Button';
 import { LoadingModal } from '~/features/common/components/loading-modal';
 import { MessageBtn } from '~/features/common/components/message-btn';
+import { useGetUserId } from '~/hooks/useGetUserId';
 import { useGetWaitlistIdForCustomer } from '~/hooks/useGetWorkspaceIdForCustomer';
 import { generateErrorMessage } from '~/lib/helper';
 const today = format(new Date(), 'dd-MM-yyyy');
@@ -35,13 +36,14 @@ const Work = () => {
   const [showMenu, setShowMenu] = useState(false);
 
   const { user } = useAuth();
+  const { user: user2 } = useGetUserId();
   const loggedInUser = user?.id;
   const client = useStreamVideoClient();
   const [leaving, setLeaving] = useState(false);
   const [addingToCall, setAddingToCall] = useState(false);
   const [customerLeaving, setCustomerLeaving] = useState(false);
   const [customerToRemove, setCustomerToRemove] = useState<Id<'users'> | null>(
-    null
+    null,
   );
 
   const getData = useCallStore((state) => state.getData);
@@ -64,15 +66,15 @@ const Work = () => {
     api.workspace.checkIfWorkerSignedInToday,
     {
       today,
-    }
+    },
   );
 
   const customerWaitlistId = data?.waitlist?.find(
-    (w) => w?.customerId === loggedInUser
+    (w) => w?.customerId === loggedInUser,
   )?._id;
   const isLocked = useMemo(
     () => data?.workspace.locked || false,
-    [data?.workspace.locked]
+    [data?.workspace.locked],
   );
   const isWorker =
     data?.worker?._id === loggedInUser ||
@@ -88,9 +90,9 @@ const Work = () => {
   }, [data]);
 
   const isInWaitList = useMemo(() => {
-    if (!data) return true;
-    return !!data.waitlist.find((w) => w?.customerId === loggedInUser);
-  }, [data, loggedInUser]);
+    if (!data || !user2) return true;
+    return !!data.waitlist.find((w) => w?.customerId === user2.id);
+  }, [data, user2]);
 
   const onLongPress = useCallback(
     (id: Id<'users'>) => {
@@ -99,17 +101,11 @@ const Work = () => {
       setCustomerToRemove(id);
       setShowMenu(true);
     },
-    [isWorker]
+    [isWorker],
   );
   const onHideWaitList = useCallback(() => {
     setShowMenu(false);
   }, []);
-  if (isLocked) {
-    return <Redirect href="/?locked=locked" />;
-  }
-  if (!isWorker && !isInWaitList && !customerLeaving) {
-    return <Redirect href="/?removed=removed" />;
-  }
   if (
     data === undefined ||
     checkIfSignedInToday === undefined ||
@@ -117,6 +113,14 @@ const Work = () => {
   ) {
     return <LoadingComponent />;
   }
+  if (isLocked) {
+    return <Redirect href="/?locked=locked" />;
+  }
+
+  if (!isWorker && !isInWaitList && !customerLeaving) {
+    return <Redirect href="/?removed=removed" />;
+  }
+
   const modalText = customerLeaving ? 'Exit lobby' : 'Remove from lobby';
   const hasSignedInToday = checkIfSignedInToday.signedInToday;
   const hasSignedOutToday = checkIfSignedInToday.signedOutToday;
@@ -196,14 +200,14 @@ const Work = () => {
   };
 
   const sortedWaitlist = waitlist.sort(
-    (a, b) => a?._creationTime - b?._creationTime
+    (a, b) => a?._creationTime - b?._creationTime,
   );
   const onAddToCall = async (
     currentUser: Id<'waitlists'>,
     nextUser: Id<'waitlists'>,
-    customerId: Id<'users'>
+    customerId: string,
   ) => {
-    if (!client || data?.worker?._id !== user?.id) return;
+    if (!client || data?.worker?._id !== user2?.id) return;
     setAddingToCall(true);
     try {
       const callId = Crypto.randomUUID();
@@ -257,6 +261,8 @@ const Work = () => {
         }
       });
     } catch (error) {
+      console.log(error);
+
       const errorMessage = generateErrorMessage(error, 'Something went wrong');
       toast.error("Something went wrong couldn't add to call", {
         description: errorMessage,

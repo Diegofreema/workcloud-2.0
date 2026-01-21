@@ -18,6 +18,7 @@ import { CustomModal } from '~/features/workspace/components/modal/custom-modal'
 import { generateErrorMessage } from '~/lib/helper';
 import { Text } from '../Themed';
 import VStack from './VStack';
+import { useUpdateStarred } from '~/hooks/use-update-starred';
 
 type Props = {
   item: ActivitiesType;
@@ -32,19 +33,11 @@ export const RenderActivity = ({ item, isProcessor }: Props): JSX.Element => {
   const [sending, setSending] = useState(false);
   const updateStar = useMutation(api.worker.updateStarStatus);
   const deleteStar = useMutation(api.worker.deleteStarStatus);
-  const updateSeenArray = useMutation(api.worker.updateSeenStarred);
+
   const editStar = useMutation(api.worker.editStarStatus);
   const isSeen = item.seen;
-  console.log({ isSeen });
-  useEffect(() => {
-    if (isProcessor && !isSeen) {
-      const onUpdate = async () => {
-        await updateSeenArray({ id: item._id });
-        console.log('Called');
-      };
-      void onUpdate();
-    }
-  }, [isProcessor, updateSeenArray, item._id, isSeen]);
+
+  useUpdateStarred({ isProcessor, isSeen, id: item._id });
   const onUpdate = async () => {
     if (!isProcessor) return;
     setUpdating(true);
@@ -129,6 +122,8 @@ export const RenderActivity = ({ item, isProcessor }: Props): JSX.Element => {
         message={item.text}
         onUpdate={onUpdate}
         updating={updating}
+        owner={item.owner}
+        assignedTo={item.assignedToProfile}
       />
 
       <CustomModal

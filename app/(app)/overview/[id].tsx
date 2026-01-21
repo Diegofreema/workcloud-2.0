@@ -85,7 +85,6 @@ const Overview = () => {
   const convex = useConvex();
   const { user } = useAuth();
   const {
-    id: loggedInUser,
     user: { id: loggedInUserId },
   } = useGetUserId();
   const { theme: darkMode } = useTheme();

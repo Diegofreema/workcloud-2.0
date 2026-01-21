@@ -9,7 +9,6 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -23,12 +22,14 @@ import { AuthHeader } from '~/components/AuthHeader';
 import { AuthTitle } from '~/components/AuthTitle';
 import { CustomInput } from '~/components/InputComponent';
 
+import { Trash } from 'lucide-react-native';
 import { Subtitle } from '~/components/Subtitle';
 import { Container } from '~/components/Ui/Container';
 import { MyText } from '~/components/Ui/MyText';
 import { days } from '~/constants';
 import { colors } from '~/constants/Colors';
 import { api } from '~/convex/_generated/api';
+import { KeyboardAvoidingViewWithScroll } from '~/features/common/components/key-board-aware-scroll-view';
 import { useTheme } from '~/hooks/use-theme';
 import { useGetCat } from '~/hooks/useGetCat';
 import { generateErrorMessage, uploadProfilePicture } from '~/lib/helper';
@@ -36,8 +37,6 @@ import {
   createOrganizationSchema,
   CreateOrganizationSchemaType,
 } from '~/schema';
-import { Trash } from 'lucide-react-native';
-import { KeyboardAvoidingViewWithScroll } from '~/features/common/components/key-board-aware-scroll-view';
 
 const CreateWorkSpace = () => {
   const [startTime, setStartTime] = useState(new Date(1598051730000));
@@ -82,7 +81,7 @@ const CreateWorkSpace = () => {
     try {
       const res = await uploadProfilePicture(
         generateUploadUrl,
-        selectedImage?.uri
+        selectedImage?.uri,
       );
       if (!res?.storageId) {
         toast.error('Something went wrong', {
@@ -111,7 +110,7 @@ const CreateWorkSpace = () => {
     } catch (e) {
       const errorMessage = generateErrorMessage(
         e,
-        'Failed to create organization'
+        'Failed to create organization',
       );
       toast.error('Something went wrong', {
         description: errorMessage,
@@ -262,7 +261,7 @@ const CreateWorkSpace = () => {
               label="Email"
               keyboardType="email-address"
             />
-            <View style={{ marginHorizontal: 10, gap: 15 }}>
+            <View style={{ gap: 15 }}>
               <MyText
                 fontSize={15}
                 poppins="Medium"
@@ -285,6 +284,8 @@ const CreateWorkSpace = () => {
                   borderWidth: 0,
                   width: '100%',
                   paddingRight: 10,
+                  color: darkMode === 'dark' ? 'white' : 'black',
+                  paddingHorizontal: 5,
                 }}
                 fontFamily="PoppinsMedium"
                 setSelected={(value: string) => setValue('startDay', value)}
@@ -312,6 +313,8 @@ const CreateWorkSpace = () => {
                   textAlign: 'left',
                   fontSize: 14,
                   width: '100%',
+                  color: darkMode === 'dark' ? 'white' : 'black',
+                  paddingHorizontal: 5,
                 }}
                 fontFamily="PoppinsMedium"
                 setSelected={(value: string) => setValue('endDay', value)}
@@ -333,13 +336,13 @@ const CreateWorkSpace = () => {
               >
                 Opening And Closing Time
               </MyText>
-              <View style={{ gap: 10, marginHorizontal: 10 }}>
+              <View style={{ gap: 10 }}>
                 <>
                   <Pressable onPress={showMode} style={styles2.border}>
-                    <Text>
+                    <MyText poppins="Medium" fontSize={15}>
                       {' '}
                       {`${format(startTime, 'HH:mm') || ' Opening Time'}`}{' '}
-                    </Text>
+                    </MyText>
                   </Pressable>
 
                   {show && (
@@ -360,10 +363,10 @@ const CreateWorkSpace = () => {
                 </>
                 <>
                   <Pressable onPress={showMode2} style={styles2.border}>
-                    <Text>
+                    <MyText poppins="Medium" fontSize={15}>
                       {' '}
                       {`${format(endTime, 'HH:mm') || ' Closing Time'}`}{' '}
-                    </Text>
+                    </MyText>
                   </Pressable>
 
                   {show2 && (

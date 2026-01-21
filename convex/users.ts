@@ -392,13 +392,15 @@ export const getUsersWithTokens = query({
 export const createMissedCallRecord = mutation({
   args: {
     callId: v.string(),
-    userId: v.id('users'),
+    userId: v.string(),
     missedAt: v.number(),
   },
   handler: async (ctx, args) => {
+    const user = await getAuthUserBySubject(ctx, args.userId);
+    if (!user) return null;
     await ctx.db.insert('missedCalls', {
       callId: args.callId,
-      userId: args.userId,
+      userId: user._id,
       missedAt: args.missedAt,
       seen: false,
     });

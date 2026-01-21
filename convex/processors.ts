@@ -4,6 +4,7 @@ import { getUserProfileByWorkerId } from './servicePoints';
 import { getAuthUserId } from '@convex-dev/auth/server';
 import { getAuthUserBySubject, getUserImage, getWorkerProfile } from './users';
 import { ctx } from 'expo-router/_ctx';
+import { api } from './_generated/api';
 
 // export const getProcessorsByUserId = query({
 //   args: {
@@ -26,13 +27,13 @@ export const getProcessorThroughUser = query({
     const processors = await ctx.db
       .query('workers')
       .withIndex('by_org_id', (q) =>
-        q.eq('organizationId', worker.organizationId)
+        q.eq('organizationId', worker.organizationId),
       )
       .filter((q) =>
         q.and(
           q.eq(q.field('type'), 'processor'),
-          q.neq(q.field('userId'), userData._id)
-        )
+          q.neq(q.field('userId'), userData._id),
+        ),
       )
       .collect();
 
@@ -47,7 +48,7 @@ export const getProcessorThroughUser = query({
           ...p,
           ...rest,
         };
-      })
+      }),
     );
 
     return processorsWithProfile;
@@ -82,7 +83,7 @@ export const getProcessorsThroughWorkpaceId = query({
     const processors = await ctx.db
       .query('workers')
       .withIndex('boss_Id', (q) =>
-        q.eq('bossId', organisation.ownerId).eq('type', 'processor')
+        q.eq('bossId', organisation.ownerId).eq('type', 'processor'),
       )
       .collect();
     const processorsWithDetails = processors.map(async (processor) => {
@@ -106,22 +107,49 @@ export const assignProcessorStarred = mutation({
     if (!userId) {
       throw new ConvexError({ message: 'Unauthorized' });
     }
-    const worker = await ctx.db
-      .query('workers')
-      .withIndex('userId', (q) =>
-        q.eq('userId', args.id).eq('type', 'processor')
-      )
-      .first();
-    if (!worker) {
-      throw new ConvexError({ message: 'Worker not found' });
-    }
-    const starred = await ctx.db.get(args.starId);
+
+    const [worker, starred] = await Promise.all([
+      ctx.db
+        .query('workers')
+        .withIndex('userId', (q) =>
+          q.eq('userId', args.id).eq('type', 'processor'),
+        )
+        .first(),
+      ctx.db.get(args.starId),
+    ]);
+
     if (!starred) {
       throw new ConvexError({ message: 'Starred Identity not found' });
     }
+    if (!worker) {
+      throw new ConvexError({ message: 'Worker not found' });
+    }
+    const workerProfile = await getUserProfileByWorkerId(ctx, worker._id);
 
+    if (!workerProfile) {
+      throw new ConvexError({ message: 'Worker Profile not found' });
+    }
     await ctx.db.patch(starred._id, {
       assignedTo: args.id,
+    });
+    await ctx.db.insert('notifications', {
+      userId: worker.userId,
+      title: 'Starred Identity',
+      message:
+        'You have been assigned a starred identity by ' + workerProfile.name,
+      seen: false,
+      imageUrl: workerProfile.image,
+    });
+
+    await ctx.scheduler.runAfter(0, api.pushNotification.sendPushNotification, {
+      to: worker.userId,
+      title: 'Starred Identity',
+      body:
+        'You have been assigned a starred identity by ' + workerProfile.name,
+      data: {
+        type: 'starred',
+        id: starred._id.toString(),
+      },
     });
   },
 });

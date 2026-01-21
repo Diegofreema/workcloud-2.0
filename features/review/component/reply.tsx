@@ -48,13 +48,12 @@ export const Reply = ({ isOwner, reviewId }: Props) => {
             setDeleting(true);
             await deleteReply({
               replyId: reply.id,
-              userId: id,
             });
             toast.success('Reply deleted');
           } catch (error) {
             const errorMessage = generateErrorMessage(
               error,
-              'Failed to delete reply'
+              'Failed to delete reply',
             );
             toast.error('Something went wrong', {
               description: errorMessage,
@@ -74,13 +73,11 @@ export const Reply = ({ isOwner, reviewId }: Props) => {
         await editReply({
           replyId: reply?.id!,
           newReply: value,
-          userId: id!,
         });
       } else {
         await addReply({
           reply: value,
           reviewId,
-          from: id!,
         });
       }
       toast.success('Success');

@@ -2,7 +2,7 @@ import { paginationOptsValidator } from 'convex/server';
 import { ConvexError, v } from 'convex/values';
 
 import { mutation, query } from './_generated/server';
-import { getUserByUserId } from './users';
+import { getAuthUserBySubject, getUserByUserId } from './users';
 import { internal } from './_generated/api';
 
 // mutation
@@ -62,10 +62,17 @@ export const addReview = mutation({
 export const addReply = mutation({
   args: {
     reviewId: v.id('reviews'),
-    from: v.id('users'),
     reply: v.string(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError({ message: 'You are not authorized' });
+    }
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) {
+      throw new ConvexError({ message: 'User not found' });
+    }
     const review = await ctx.db.get(args.reviewId);
     if (!review) {
       throw new ConvexError('Review not found');
@@ -79,6 +86,7 @@ export const addReply = mutation({
 
     await ctx.db.insert('replies', {
       ...args,
+      from: user._id,
     });
     const title = `${organization.name}'s admin replied to your review`;
     await ctx.runMutation(internal.notifications.createNotification, {
@@ -105,14 +113,22 @@ export const addReply = mutation({
   },
 });
 export const deleteReply = mutation({
-  args: { replyId: v.id('replies'), userId: v.id('users') },
+  args: { replyId: v.id('replies') },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError({ message: 'You are not authorized' });
+    }
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) {
+      throw new ConvexError({ message: 'User not found' });
+    }
     const reply = await ctx.db.get(args.replyId);
     if (!reply) {
-      throw new ConvexError('Reply not found');
+      throw new ConvexError({ message: 'Reply not found' });
     }
-    if (reply.from !== args.userId) {
-      throw new ConvexError('You are not authorized');
+    if (reply.from !== user._id) {
+      throw new ConvexError({ message: 'You are not authorized' });
     }
 
     await ctx.db.delete(reply._id);
@@ -121,16 +137,23 @@ export const deleteReply = mutation({
 export const editReply = mutation({
   args: {
     replyId: v.id('replies'),
-    userId: v.id('users'),
     newReply: v.string(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError({ message: 'You are not authorized' });
+    }
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) {
+      throw new ConvexError({ message: 'User not found' });
+    }
     const reply = await ctx.db.get(args.replyId);
     if (!reply) {
-      throw new ConvexError('Reply not found');
+      throw new ConvexError({ message: 'Reply not foun d' });
     }
-    if (reply.from !== args.userId) {
-      throw new ConvexError('You are not authorized');
+    if (reply.from !== user._id) {
+      throw new ConvexError({ message: 'You are not authorized' });
     }
 
     await ctx.db.patch(reply._id, {

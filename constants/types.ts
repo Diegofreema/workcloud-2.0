@@ -574,7 +574,7 @@ export const emojiType = v.union(
   v.literal('LOVE'),
   v.literal('WOW'),
   v.literal('ANGRY'),
-  v.literal('LAUGH')
+  v.literal('LAUGH'),
 );
 export type EmojiType = Infer<typeof emojiType>;
 
@@ -595,4 +595,6 @@ export type InfoType = {
 
 export type ActivitiesType = Doc<'stars'> & {
   user: Doc<'users'>;
+  owner: Doc<'users'>;
+  assignedToProfile?: Doc<'users'> | null;
 };

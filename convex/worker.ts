@@ -1,7 +1,7 @@
 import { ConvexError, v } from 'convex/values';
 
 import { Id } from './_generated/dataModel';
-import { mutation, query } from './_generated/server';
+import { mutation, query, QueryCtx } from './_generated/server';
 import {
   getAuthUserBySubject,
   getLoggedInUser,
@@ -250,7 +250,14 @@ export const getStarred = query({
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError({ message: 'Unauthorized' });
+    }
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) {
+      throw new ConvexError({ message: 'Unauthorized' });
+    }
     let stars;
     if (args.id) {
       const workspace = await ctx.db.get(args.id);
@@ -263,12 +270,9 @@ export const getStarred = query({
         .order('desc')
         .paginate(args.paginationOpts);
     } else {
-      if (!userId) {
-        throw new ConvexError({ message: 'Unauthorised' });
-      }
       stars = await ctx.db
         .query('stars')
-        .withIndex('by_assignee_id', (q) => q.eq('assignedTo', userId))
+        .withIndex('by_assignee_id', (q) => q.eq('assignedTo', user._id))
         .order('desc')
         .paginate(args.paginationOpts);
     }
@@ -276,9 +280,15 @@ export const getStarred = query({
     const page = await Promise.all(
       stars.page.map(async (star) => {
         const user = await ctx.db.get(star.customerId);
+        const assignedToProfile = star.assignedTo
+          ? await ctx.db.get(star.assignedTo)
+          : null;
+        const owner = await getOwner(ctx, star.workspaceId);
         return {
           ...star,
           user: user!,
+          assignedToProfile,
+          owner,
         };
       }),
     );
@@ -294,11 +304,15 @@ export const getStarredProcessor = query({
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-
-    if (!userId) {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
       throw new ConvexError({ message: 'Unauthorised' });
     }
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) {
+      throw new ConvexError({ message: 'Unauthorised' });
+    }
+    const userId = user._id;
     const stars = await ctx.db
       .query('stars')
       .withIndex('by_assignee_id', (q) => q.eq('assignedTo', userId))
@@ -308,9 +322,11 @@ export const getStarredProcessor = query({
     const page = await Promise.all(
       stars.page.map(async (star) => {
         const user = await ctx.db.get(star.customerId);
+        const owner = await getOwner(ctx, star.workspaceId);
         return {
           ...star,
           user: user!,
+          owner,
         };
       }),
     );
@@ -407,10 +423,15 @@ export const updateSeenStarred = mutation({
     id: v.id('stars'),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new ConvexError('Unauthorized');
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new ConvexError({ message: 'Unauthorized' });
     }
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) {
+      throw new ConvexError({ message: 'Unauthorized' });
+    }
+    const userId = user._id;
 
     const worker = await ctx.db
       .query('workers')
@@ -432,3 +453,27 @@ export const updateSeenStarred = mutation({
     }
   },
 });
+
+// helpers
+
+const getOwner = async (ctx: QueryCtx, id: Id<'workspaces'>) => {
+  const workspace = await ctx.db.get('workspaces', id);
+  if (!workspace) {
+    throw new ConvexError({ message: 'Workspace not found' });
+  }
+  if (!workspace.workerId) {
+    throw new ConvexError({ message: 'Worker not found' });
+  }
+
+  const worker = await ctx.db.get('workers', workspace.workerId);
+  if (!worker) {
+    throw new ConvexError({ message: 'Worker not found' });
+  }
+
+  const user = await ctx.db.get('users', worker.userId);
+  if (!user) {
+    throw new ConvexError({ message: 'User not found' });
+  }
+
+  return user;
+};

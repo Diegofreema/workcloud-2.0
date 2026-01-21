@@ -18,7 +18,7 @@ type WaitlistsProps = {
   onAddToCall: (
     currentUser: Id<'waitlists'>,
     nextUser: Id<'waitlists'>,
-    customerId: Id<'users'>
+    customerId: string,
   ) => void;
   isLoading: boolean;
 };
@@ -30,14 +30,14 @@ export const Waitlists = ({
   isLoading,
 }: WaitlistsProps) => {
   const { theme: darkMode } = useTheme();
-  const getIdsToUpdate = (id: Id<'waitlists'>, customerId: Id<'users'>) => {
+  const getIdsToUpdate = (id: Id<'waitlists'>, customerId: string) => {
     const userToAttendTo = waitlists.findIndex((user) => user._id === id);
     if (userToAttendTo === -1) return;
     const isNextUser = waitlists[userToAttendTo + 1]?._id;
     onAddToCall(id, isNextUser, customerId);
   };
   const usersToAttendTo = waitlists.filter(
-    (u) => u.type === 'attending' || u.type === 'next'
+    (u) => u.type === 'attending' || u.type === 'next',
   );
   const filteredWaitlists = waitlists.filter((u) => u.type === 'waiting');
 

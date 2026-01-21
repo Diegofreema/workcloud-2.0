@@ -1,4 +1,3 @@
-import { useConvex } from 'convex/react';
 import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import React, {
@@ -8,8 +7,6 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { api } from '~/convex/_generated/api';
-import { useMessage } from '~/hooks/use-message';
 
 import { registerForPushNotificationsAsync } from '~/utils/registerPushNotification';
 
@@ -20,14 +17,14 @@ interface NotificationContextType {
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const useNotification = () => {
   const context = useContext(NotificationContext);
   if (context === undefined) {
     throw new Error(
-      'useNotification must be used within a NotificationProvider'
+      'useNotification must be used within a NotificationProvider',
     );
   }
   return context;
@@ -52,12 +49,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       (token) => {
         setExpoPushToken(token);
       },
-      (error) => setError(error)
+      (error) => setError(error),
     );
     const notificationListener = Notifications.addNotificationReceivedListener(
       (notification) => {
         setNotification(notification);
-      }
+      },
     );
 
     const responseListener =
@@ -69,15 +66,16 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         // if (data.type === 'group') {
         //   onMessage(data.conversationId as string, 'group');
         // }
-        // if (data.type === 'processor') {
-        //   onMessage(data.loggedInUserId as string, 'processor');
-        // }
+        // ! to fix route later
+        if (data.type === 'starred') {
+          router.push(`/orgs/starred?orgId=${data.orgId}`);
+        }
         if (data.type === 'notification') {
           router.push('/notification');
         }
         if (data.type === 'review') {
           router.push(
-            `/orgs/reviews/review?reviewId=${data.reviewId}&owner=true&orgId=${data.orgId}`
+            `/orgs/reviews/review?reviewId=${data.reviewId}&owner=true&orgId=${data.orgId}`,
           );
         }
       });

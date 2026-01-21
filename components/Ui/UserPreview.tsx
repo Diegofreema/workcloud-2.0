@@ -83,7 +83,9 @@ export const UserPreview = ({
           )}
           {subText && (
             <MyText poppins="Medium" fontSize={14}>
-              {subText === true ? 'pending' : subText}
+              {subText === true
+                ? 'pending'
+                : changeFirstLetterToUpperCase(subText)}
             </MyText>
           )}
           {roleText && (
@@ -156,7 +158,7 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
     isPending,
     isError,
   } = useQuery(
-    convexQuery(api.worker.checkIfWorkerIsEmployed, { id: item.request.to })
+    convexQuery(api.worker.checkIfWorkerIsEmployed, { id: item.request.to }),
   );
   const {
     request: { qualities, role, salary, responsibility, to, _id, from, status },
@@ -174,7 +176,7 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
     isError: fromError,
     isPending: fromPending,
   } = useQuery(
-    convexQuery(api.users.getUserById2, from ? { id: from } : 'skip')
+    convexQuery(api.users.getUserById2, from ? { id: from } : 'skip'),
   );
 
   if (toError || fromError) {
