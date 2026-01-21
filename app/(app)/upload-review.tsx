@@ -21,7 +21,7 @@ import { X } from 'lucide-react-native';
 const UploadReview = () => {
   const { theme: darkMode } = useTheme();
   const textColor = Colors[darkMode].text;
-  const { id: userId } = useGetUserId();
+  const { user } = useGetUserId();
   const { id } = useLocalSearchParams<{ id: Id<'organizations'> }>();
   const [value, setValue] = useState('');
   const [rating, setRating] = useState(3);
@@ -35,12 +35,13 @@ const UploadReview = () => {
     router.dismiss();
   };
   const onSubmit = async () => {
+    if (!user || !user.id) return;
     setSending(true);
     try {
       await addReview({
         rating,
         text: value,
-        userId: userId!,
+        userId: user.id,
         organizationId: id,
       });
       handleClose();

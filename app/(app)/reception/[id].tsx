@@ -36,6 +36,7 @@ import { WorkerWithWorkspace } from '~/constants/types';
 import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
+import { useHandleConnection } from '~/hooks/use-handle-connection';
 import { useMessage } from '~/hooks/use-message';
 import { useTheme } from '~/hooks/use-theme';
 import { useGetUserId } from '~/hooks/useGetUserId';
@@ -56,8 +57,6 @@ const Reception = () => {
     id,
   });
 
-  const handleConnection = useMutation(api.connection.handleConnection);
-
   const { width } = useWindowDimensions();
   const isWorker = useMemo(() => {
     if (!data) return false;
@@ -68,28 +67,14 @@ const Reception = () => {
     if (!data) return true;
     return data?.ownerId === from;
   }, [data, from]);
-  // ? useEffect for creating connections
-  useEffect(() => {
-    if (!id || !from || isBoss || isWorker) return;
 
-    const onConnect = async () => {
-      try {
-        await handleConnection({
-          connectedAt: format(Date.now(), 'dd/MM/yyyy, HH:mm:ss'),
-          from,
-          to: id,
-        });
-      } catch (e) {
-        console.error('Connection error:', e);
-      }
-    };
+  useHandleConnection({ id, from, isBoss, isWorker });
 
-    onConnect().catch(console.log);
-  }, [id, isBoss, isWorker, from, handleConnection]);
-
-  if (!data) {
+  if (data === undefined) {
     return <LoadingComponent />;
   }
+
+  console.log(data?.workers?.map((w) => w.userId));
 
   const day1 = data?.workDays?.split('-')[0] || '';
   const day2 = data?.workDays?.split('-')[1] || '';

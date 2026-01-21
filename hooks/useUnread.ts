@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 type State = {
   unread: number;
@@ -6,6 +6,10 @@ type State = {
 };
 
 export const useUnread = create<State>((set) => ({
+  unread: 0,
+  getUnread: (value: number) => set({ unread: value }),
+}));
+export const useUnreadProcessor = create<State>((set) => ({
   unread: 0,
   getUnread: (value: number) => set({ unread: value }),
 }));

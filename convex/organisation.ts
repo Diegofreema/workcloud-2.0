@@ -21,7 +21,7 @@ export const getServicePoints = query({
       const servicePoints = await ctx.db
         .query('servicePoints')
         .withIndex('by_organisation_id', (q) =>
-          q.eq('organizationId', organisation._id)
+          q.eq('organizationId', organisation._id),
         )
         .collect();
       if (servicePoints.length === 0) {
@@ -32,7 +32,7 @@ export const getServicePoints = query({
       return servicePoints[randomIndex];
     });
     return (await Promise.all(servicePointsPromises)).filter(
-      (point) => point !== null
+      (point) => point !== null,
     );
   },
 });
@@ -86,7 +86,9 @@ export const getOrganisationsWithPostAndWorkers = query({
   handler: async (ctx, args) => {
     const orgs = await ctx.db.get(args.id);
 
-    if (!orgs) return null;
+    if (!orgs) {
+      throw new ConvexError({ message: 'Organization not found' });
+    }
     const posts = await getPosts(ctx, args.id);
     const workers = await getWorkspaceWithWorkerAndUserProfile(ctx, orgs._id);
 
@@ -104,13 +106,13 @@ export const getOrganisationWithServicePoints = query({
   handler: async (ctx, { organizationId }) => {
     const organization = await getOrganizationByOrganizationId(
       ctx,
-      organizationId
+      organizationId,
     );
 
     const servicePoints = await ctx.db
       .query('servicePoints')
       .withIndex('by_organisation_id', (q) =>
-        q.eq('organizationId', organizationId)
+        q.eq('organizationId', organizationId),
       )
       .collect();
 
@@ -134,7 +136,7 @@ export const getOrganisationById = query({
 
     const imageUrl = await getImageUrl(
       ctx,
-      organisation.avatar as Id<'_storage'>
+      organisation.avatar as Id<'_storage'>,
     );
     return {
       ...organisation,
@@ -185,7 +187,7 @@ export const getPostsByOrganizationId = query({
     return await ctx.db
       .query('posts')
       .withIndex('by_org_id', (q) =>
-        q.eq('organizationId', args.organizationId)
+        q.eq('organizationId', args.organizationId),
       )
       .collect();
   },
@@ -228,9 +230,9 @@ export const getOrganisationsByServicePointsSearchQuery = query({
       servicePoints?.map(async (s) => {
         return await getOrganizationByServicePointOrganizationId(
           ctx,
-          s.organizationId
+          s.organizationId,
         );
-      })
+      }),
     );
 
     return organisation.filter((org) => org?.ownerId !== ownerId) || [];
@@ -253,9 +255,9 @@ export const getOrganisationsByServicePointsSearchQueryName = query({
       servicePoints?.map(async (s) => {
         return await getOrganizationByServicePointOrganizationId(
           ctx,
-          s.organizationId
+          s.organizationId,
         );
-      })
+      }),
     );
 
     return organisation.filter((org) => org?.ownerId !== ownerId) || [];
@@ -302,11 +304,11 @@ export const getStaffsByBossId = query({
         const userProfile = await getUserForWorker(ctx, worker.userId);
         const organization = await getOrganizationByOrganizationId(
           ctx,
-          worker.organizationId!
+          worker.organizationId!,
         );
         const workspace = await getWorkspaceByWorkerWorkspaceId(
           ctx,
-          worker.workspaceId!
+          worker.workspaceId!,
         );
 
         return {
@@ -315,7 +317,7 @@ export const getStaffsByBossId = query({
           organization,
           workspace,
         };
-      })
+      }),
     );
   },
 });
@@ -330,8 +332,8 @@ export const getStaffsByBossIdNotHavingServicePoint = query({
         q.and(
           q.eq(q.field('bossId'), args.bossId),
           q.neq(q.field('userId'), args.bossId),
-          q.eq(q.field('servicePointId'), undefined)
-        )
+          q.eq(q.field('servicePointId'), undefined),
+        ),
       )
       .collect();
     return await Promise.all(
@@ -339,11 +341,11 @@ export const getStaffsByBossIdNotHavingServicePoint = query({
         const userProfile = await getUserForWorker(ctx, worker.userId);
         const organization = await getOrganizationByOrganizationId(
           ctx,
-          worker.organizationId!
+          worker.organizationId!,
         );
         const workspace = await getWorkspaceByWorkerWorkspaceId(
           ctx,
-          worker.workspaceId!
+          worker.workspaceId!,
         );
 
         return {
@@ -352,7 +354,7 @@ export const getStaffsByBossIdNotHavingServicePoint = query({
           organization,
           workspace,
         };
-      })
+      }),
     );
   },
 });
@@ -530,12 +532,12 @@ export const getUserByOwnerId = async (ctx: QueryCtx, ownerId: Id<'users'>) => {
 
 export const getWorkspacesByOrganizationId = async (
   ctx: QueryCtx,
-  organizationId: Id<'organizations'>
+  organizationId: Id<'organizations'>,
 ) => {
   return await ctx.db
     .query('workspaces')
     .withIndex('personal', (q) =>
-      q.eq('organizationId', organizationId).eq('type', 'personal')
+      q.eq('organizationId', organizationId).eq('type', 'personal'),
     )
     .first();
 };
@@ -546,7 +548,7 @@ export const getImageUrl = async (ctx: QueryCtx, storageId: Id<'_storage'>) => {
 
 export const getOrganizationByOrganizationId = async (
   ctx: QueryCtx,
-  organizationId: Id<'organizations'>
+  organizationId: Id<'organizations'>,
 ) => {
   const res = await ctx.db.get(organizationId);
   if (!res) {
@@ -562,7 +564,7 @@ export const getOrganizationByOrganizationId = async (
       owner,
     };
   const organizationAvatar = await ctx.storage.getUrl(
-    res.avatar as Id<'_storage'>
+    res.avatar as Id<'_storage'>,
   );
 
   return {
@@ -573,7 +575,7 @@ export const getOrganizationByOrganizationId = async (
 };
 export const getOrganizationByServicePointOrganizationId = async (
   ctx: QueryCtx,
-  organizationId: Id<'organizations'>
+  organizationId: Id<'organizations'>,
 ) => {
   const res = await ctx.db.get(organizationId);
   if (!res) return null;
@@ -589,7 +591,7 @@ export const getOrganizationByServicePointOrganizationId = async (
 
 export const getOrganizationByOwnerId = async (
   ctx: QueryCtx,
-  id: Id<'users'>
+  id: Id<'users'>,
 ) => {
   const res = await ctx.db
     .query('organizations')
@@ -602,7 +604,7 @@ export const getOrganizationByOwnerId = async (
 
 export const getWorkspaceByWorkerWorkspaceId = async (
   ctx: QueryCtx,
-  workspaceId: Id<'workspaces'>
+  workspaceId: Id<'workspaces'>,
 ) => {
   if (!workspaceId) return null;
   return await ctx.db.get(workspaceId);
@@ -620,7 +622,7 @@ export const getPosts = async (ctx: QueryCtx, orgsId: Id<'organizations'>) => {
 
 export const getWorkspaceWithWorkerAndUserProfile = async (
   ctx: QueryCtx,
-  orgsId: Id<'organizations'>
+  orgsId: Id<'organizations'>,
 ) => {
   const workers = await ctx.db
     .query('workers')
@@ -632,14 +634,14 @@ export const getWorkspaceWithWorkerAndUserProfile = async (
       const user = await getUserByUserId(ctx, worker?.userId!);
       const workspace = await getWorkspaceByWorkerWorkspaceId(
         ctx,
-        worker?.workspaceId!
+        worker?.workspaceId!,
       );
       return {
         ...worker,
         user,
         workspace,
       };
-    })
+    }),
   );
 };
 
@@ -697,7 +699,7 @@ export const getTeamMembers = query({
           ...worker,
           user,
         };
-      })
+      }),
     );
 
     return {

@@ -3,6 +3,7 @@ import { ConvexError, v } from 'convex/values';
 import { Id } from './_generated/dataModel';
 import { mutation, query } from './_generated/server';
 import {
+  getAuthUserBySubject,
   getLoggedInUser,
   getOrganisationWithoutImageByWorker,
   getUserByUserId,
@@ -227,11 +228,13 @@ export const resignFromOrganization = mutation({
 
 export const getWorkerRole = query({
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) return null;
     const worker = await ctx.db
       .query('workers')
-      .withIndex('userId', (q) => q.eq('userId', userId))
+      .withIndex('userId', (q) => q.eq('userId', user._id))
       .first();
     if (!worker) return null;
     return {

@@ -1,4 +1,4 @@
-import { PropsWithChildren, useEffect } from 'react';
+import { PropsWithChildren, useEffect, useMemo } from 'react';
 import {
   Chat,
   DeepPartial,
@@ -8,10 +8,11 @@ import {
 } from 'stream-chat-expo';
 import { useAuth } from '~/context/auth';
 import { useTheme } from '~/hooks/use-theme';
-import { useUnread } from '~/hooks/useUnread';
+import { useUnread, useUnreadProcessor } from '~/hooks/useUnread';
 import { LoadingComponent } from '../Ui/LoadingComponent';
 import { ChatContext } from './chat-context';
 import { colors } from '~/constants/Colors';
+import { ChannelFilters } from 'stream-chat';
 
 const apiKey = 'cnvc46pm8uq9';
 
@@ -20,6 +21,9 @@ export const ChatWrapper = ({ children }: PropsWithChildren) => {
 
   const { theme: darkMode } = useTheme();
   const setUnreadCount = useUnread((state) => state.getUnread);
+  const setUnreadProcessorCount = useUnreadProcessor(
+    (state) => state.getUnread,
+  );
 
   const client = useCreateChatClient({
     apiKey,
@@ -36,6 +40,16 @@ export const ChatWrapper = ({ children }: PropsWithChildren) => {
       const onFetchUnreadCount = async () => {
         try {
           const response = await client.getUnreadCount(user.id);
+          const channels = await client.queryChannels({
+            members: { $in: [user?.id] },
+            type: 'messaging',
+            filter_tags: { $eq: ['processor'] },
+          });
+          const unreadCount = channels.reduce((acc, channel) => {
+            return acc + channel.countUnread();
+          }, 0);
+          setUnreadProcessorCount(unreadCount);
+
           setUnreadCount(response.total_unread_count);
         } catch (err) {
           console.log('getUnreadCount error', err);
@@ -43,11 +57,22 @@ export const ChatWrapper = ({ children }: PropsWithChildren) => {
       };
       void onFetchUnreadCount();
     }
-  }, [user?.id, setUnreadCount, client]);
+  }, [user?.id, setUnreadCount, setUnreadProcessorCount, client]);
   useEffect(() => {
-    const listener = client?.on((e) => {
+    const listener = client?.on(async (e) => {
       if (e.total_unread_count !== undefined) {
         setUnreadCount(e.total_unread_count);
+        if (user?.id) {
+          const channels = await client.queryChannels({
+            members: { $in: [user?.id] },
+            type: 'messaging',
+            filter_tags: { $eq: ['processor'] },
+          });
+          const unreadCount = channels.reduce((acc, channel) => {
+            return acc + channel.countUnread();
+          }, 0);
+          setUnreadProcessorCount(unreadCount);
+        }
       }
     });
 
@@ -56,7 +81,7 @@ export const ChatWrapper = ({ children }: PropsWithChildren) => {
         listener.unsubscribe();
       }
     };
-  }, [setUnreadCount, client]);
+  }, [setUnreadCount, setUnreadProcessorCount, user?.id, client]);
 
   if (!client) {
     return <LoadingComponent />;

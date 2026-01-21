@@ -10,9 +10,16 @@ import { PermissionsAndroid, Platform } from 'react-native';
 import { ChatWrapper } from '~/components/providers/ChatWrapper';
 import { VideoProvider } from '~/components/providers/video-provider';
 import { api } from '~/convex/_generated/api';
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from 'react-native-reanimated';
 
 const audioSource = require('~/assets/sound.wav');
-
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false, // Reanimated runs in strict mode by default
+});
 if (Platform.OS === 'android') {
   PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
 }
@@ -23,7 +30,7 @@ export default function AppLayout() {
   const player = useAudioPlayer(audioSource);
 
   const { data, isPending, isError } = useQuery(
-    convexQuery(api.workspace.getWaitListCount, {})
+    convexQuery(api.workspace.getWaitListCount, {}),
   );
 
   useEffect(() => {
@@ -49,6 +56,8 @@ export default function AppLayout() {
               options={{
                 presentation: 'modal',
                 headerShown: false,
+                animation:
+                  Platform.OS === 'ios' ? 'default' : 'slide_from_bottom',
               }}
             />
           </Stack>

@@ -20,11 +20,15 @@ import { IconBtn } from '~/features/common/components/icon-btn';
 import { SearchComponent } from '~/features/common/components/SearchComponent';
 import { TabsSelectorString } from '~/features/common/components/tabs';
 import { useUnreadProcessorMessageCount } from '~/features/common/hook/use-unread-message-count';
+import { useUnreadProcessor } from '~/hooks/useUnread';
 export const Messages = () => {
   const { user } = useAuth();
   const id = user?.id!;
   const [type, setType] = useState<string>('single');
   const [value, setValue] = useState('');
+  const unreadProcessorMessagesCount = useUnreadProcessor(
+    (state) => state.unread,
+  );
   const filters: ChannelFilters = useMemo(
     () => ({
       members: { $in: [id] },
@@ -32,10 +36,8 @@ export const Messages = () => {
       filter_tags: { $eq: [type] },
       'member.user.name': value ? { $autocomplete: value } : undefined,
     }),
-    [id, type, value]
+    [id, type, value],
   );
-
-  const unreadProcessorMessagesCount = useUnreadProcessorMessageCount();
 
   const staffs = useQuery(api.organisation.getStaffsByBossId);
 
@@ -59,15 +61,14 @@ export const Messages = () => {
       .direction(Directions.LEFT)
       .onEnd(() => {
         runOnJS(onSwipeRight)();
-      })
+      }),
   );
 
   return (
     <GestureDetector gesture={swipe}>
       <Container>
-        {unreadProcessorMessagesCount > 0 && (
-          <UnreadProcessorMessage unreadCount={unreadProcessorMessagesCount} />
-        )}
+        <UnreadProcessorMessage unreadCount={unreadProcessorMessagesCount} />
+
         <SearchComponent
           show={false}
           placeholder={'Search messages...'}
