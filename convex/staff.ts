@@ -3,6 +3,7 @@ import { v } from 'convex/values';
 import { mutation, query, QueryCtx } from './_generated/server';
 import { filter } from 'convex-helpers/server/filter';
 import { Id } from './_generated/dataModel';
+import { getAuthUserBySubject } from './users';
 
 export const getStaffRoles = query({
   args: {
@@ -34,14 +35,13 @@ export const createStaffRole = mutation({
 export const searchStaffsToEmploy = query({
   args: {
     query: v.string(),
-    loggedInUserId: v.id('users'),
   },
   handler: async (ctx, args) => {
-    const users = await getUserWithSearchQuery(
-      ctx,
-      args.query,
-      args.loggedInUserId
-    );
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) return [];
+    const users = await getUserWithSearchQuery(ctx, args.query, user._id);
     const workers = users.map(async (user) => {
       const worker = await getWorkersThatAreNotWorking(ctx, user.workerId);
 
@@ -62,19 +62,19 @@ export const searchStaffsToEmploy = query({
 const getUserWithSearchQuery = async (
   ctx: QueryCtx,
   query: string,
-  loggedInUser: Id<'users'>
+  loggedInUser: Id<'users'>,
 ) => {
   return filter(
     ctx.db
       .query('users')
       .withSearchIndex('name', (q) => q.search('name', query)),
-    (user) => user.workerId !== undefined && user._id !== loggedInUser
+    (user) => user.workerId !== undefined && user._id !== loggedInUser,
   ).collect();
 };
 
 export const getWorkersThatAreNotWorking = async (
   ctx: QueryCtx,
-  workerId?: Id<'workers'>
+  workerId?: Id<'workers'>,
 ) => {
   if (!workerId) return null;
   const worker = await ctx.db.get(workerId);

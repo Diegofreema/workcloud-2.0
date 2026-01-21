@@ -84,7 +84,10 @@ const Overview = () => {
   const [following, setFollowing] = useState(false);
   const convex = useConvex();
   const { user } = useAuth();
-  const { id: loggedInUser } = useGetUserId();
+  const {
+    id: loggedInUser,
+    user: { id: loggedInUserId },
+  } = useGetUserId();
   const { theme: darkMode } = useTheme();
 
   const { width } = useWindowDimensions();
@@ -96,13 +99,13 @@ const Overview = () => {
     return <LoadingComponent />;
   }
   const isFollowing =
-    data?.organization?.followers?.includes(loggedInUser!) ?? false;
+    data?.organization?.followers?.includes(loggedInUserId!) ?? false;
 
   const onHandleFollow = async () => {
-    if (!data?.organization?.ownerId) return;
+    if (!data?.organization?.ownerId || !loggedInUserId) return;
     setFollowing(true);
     try {
-      await handleFollow({ organizationId: id, userId: loggedInUser! });
+      await handleFollow({ organizationId: id, userId: loggedInUserId });
       await convexPushNotificationsHelper(convex, {
         data: {},
         body: `${user?.name} has ${isFollowing ? 'left' : 'joined'} your organization`,

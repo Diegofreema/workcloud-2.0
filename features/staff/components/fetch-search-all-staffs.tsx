@@ -1,28 +1,22 @@
-import { View } from "react-native";
-import { SearchComponent } from "~/features/common/components/SearchComponent";
-import { useSearch } from "~/features/common/hook/use-search";
-import { useQuery } from "convex/react";
-import { api } from "~/convex/_generated/api";
-import { useGetUserId } from "~/hooks/useGetUserId";
-import { LoadingComponent } from "~/components/Ui/LoadingComponent";
-import { RenderStaffs } from "~/features/staff/components/render-search-all-staffs";
-import { WorkerData } from "~/features/staff/type";
+import { useQuery } from 'convex/react';
+import { View } from 'react-native';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
+import { api } from '~/convex/_generated/api';
+import { SearchComponent } from '~/features/common/components/SearchComponent';
+import { useSearch } from '~/features/common/hook/use-search';
+import { RenderStaffs } from '~/features/staff/components/render-search-all-staffs';
+import { WorkerData } from '~/features/staff/type';
 
 export const FetchSearchAllStaffs = () => {
   const { value, setValue, query } = useSearch();
-  const { id } = useGetUserId();
-
-  const workersData = useQuery(
-    api.staff.searchStaffsToEmploy,
-    id ? { query, loggedInUserId: id } : "skip",
-  );
+  const workersData = useQuery(api.staff.searchStaffsToEmploy, { query });
 
   if (workersData === undefined) {
     return (
       <View style={{ flex: 1 }}>
         <SearchComponent
           value={value}
-          placeholder={"Search staffs..."}
+          placeholder={'Search staffs...'}
           setValue={setValue}
           show={true}
         />
@@ -36,11 +30,11 @@ export const FetchSearchAllStaffs = () => {
     <View>
       <SearchComponent
         value={value}
-        placeholder={"Search staffs..."}
+        placeholder={'Search staffs...'}
         setValue={setValue}
         show={true}
       />
-      <RenderStaffs data={data} emptyText={"No staff found"} />
+      <RenderStaffs data={data} emptyText={'No staff found'} />
     </View>
   );
 };
