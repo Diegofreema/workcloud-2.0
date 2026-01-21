@@ -37,7 +37,7 @@ type Props = {
 
 export const convexPushNotificationsHelper = async (
   convex: ConvexReactClient,
-  { body, data, title, to }: Props
+  { body, data, title, to }: Props,
 ) => {
   try {
     return await convex.mutation(api.pushNotification.sendPushNotification, {
@@ -75,7 +75,7 @@ export const renderReaction = (
   reaction?: Reaction,
   userId?: string,
   reactUserId?: string,
-  reactUserName?: string
+  reactUserName?: string,
 ) => {
   const isMyReaction = userId === reactUserId;
   if (!reaction) return '';
@@ -100,4 +100,14 @@ export const renderReaction = (
 
 export const changeFirstLetterToUpperCase = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export const generateRandomString = (length: number = 20) => {
+  const characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
 };

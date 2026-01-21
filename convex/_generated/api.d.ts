@@ -15,6 +15,7 @@ import type * as connection from "../connection.js";
 import type * as conversation from "../conversation.js";
 import type * as crons from "../crons.js";
 import type * as deleteRequests from "../deleteRequests.js";
+import type * as email_newOrganisationCreated from "../email/newOrganisationCreated.js";
 import type * as email_newOrganizationEmail from "../email/newOrganizationEmail.js";
 import type * as email_welcomeEmail from "../email/welcomeEmail.js";
 import type * as externalFuntions from "../externalFuntions.js";
@@ -52,6 +53,7 @@ declare const fullApi: ApiFromModules<{
   conversation: typeof conversation;
   crons: typeof crons;
   deleteRequests: typeof deleteRequests;
+  "email/newOrganisationCreated": typeof email_newOrganisationCreated;
   "email/newOrganizationEmail": typeof email_newOrganizationEmail;
   "email/welcomeEmail": typeof email_welcomeEmail;
   externalFuntions: typeof externalFuntions;

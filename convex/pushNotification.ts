@@ -8,7 +8,9 @@ import { getAuthUserBySubject } from './users.js';
 
 export type Email = string & { __isEmail: true };
 
-const pushNotifications = new PushNotifications(components.pushNotifications);
+export const pushNotifications = new PushNotifications(
+  components.pushNotifications
+);
 
 export const recordPushNotificationToken = mutation({
   args: { token: v.string() },

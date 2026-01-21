@@ -7,6 +7,7 @@ import { components, internal } from './_generated/api';
 import { internalAction } from './_generated/server';
 import WorkcloudAdminEmailTemplate from './email/newOrganizationEmail';
 import WelcomeEmail from './email/welcomeEmail';
+import NewOrganizationCreatedEmail from './email/newOrganisationCreated';
 
 export const resend: Resend = new Resend(components.resend, {
   testMode: false,
@@ -44,6 +45,34 @@ export const sendNewOrgEmail = internalAction({
       from: 'Support <workcloud@workcloud-backend.xyz>',
       to: args.email,
       subject: 'Hi there',
+      html,
+    });
+  },
+});
+export const sendNewOrgEmailToOthers = internalAction({
+  args: {
+    name: v.string(),
+    email: v.string(),
+    image: v.string(),
+    description: v.string(),
+    address: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const html = await pretty(
+      await render(
+        <NewOrganizationCreatedEmail
+          orgName={args.name}
+          imageUrl={args.image}
+          description={args.description}
+          address={args.address}
+          email={args.email}
+        />
+      )
+    );
+    await resend.sendEmail(ctx, {
+      from: 'Support <workcloud@workcloud-backend.xyz>',
+      to: args.email,
+      subject: 'New Organization created',
       html,
     });
   },

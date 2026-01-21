@@ -41,7 +41,12 @@ export const SearchComponent = ({
   return (
     <View style={[styles.containerStyle, { borderColor: color }]}>
       {!value && showArrow && (
-        <AntDesign name="arrowleft" size={24} color={color} onPress={onPress} />
+        <AntDesign
+          name="arrow-left"
+          size={24}
+          color={color}
+          onPress={onPress}
+        />
       )}
       <TextInput
         value={value}

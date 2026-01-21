@@ -404,9 +404,16 @@ export const createOrganization = mutation({
       name: user.name as string,
       email: user.email as string,
     });
-    await ctx.scheduler.runAfter(0, internal.pushNotification.sendToAllUsers, {
+    await ctx.scheduler.runAfter(0, internal.users.sendNotice, {
       orgId: organizationId,
-      message: `New organization "${args.name}" created!`,
+      address: args.location,
+      email: args.email,
+      description: args.description,
+      name: args.name,
+      imageUrl: avatar || '',
+      cursor: null,
+      numItems: 400,
+      userId: user._id,
     });
   },
 });

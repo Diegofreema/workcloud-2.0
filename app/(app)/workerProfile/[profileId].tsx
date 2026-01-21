@@ -45,26 +45,8 @@ const Profile = () => {
   }
 
   const showRequestBtn =
-    data?.worker.bossId !== user?.id && pendingData?.status === 'pending';
-  const onAlertCancel = async () => {
-    Alert.alert(
-      'Cancel Request',
-      'Are you sure you want to cancel the request?',
-      [
-        {
-          text: 'No',
-          style: 'cancel',
-        },
-        {
-          text: 'Yes',
-          onPress: async () => {
-            await handleRequest();
-          },
-        },
-      ],
-      { cancelable: true }
-    );
-  };
+    data?.worker.bossId !== user?.id && pendingData?.status !== 'pending';
+
   return (
     <Container>
       <ScrollView>
@@ -83,7 +65,7 @@ const Profile = () => {
         <HStack gap={20} mt={20} mb={5}>
           {showRequestBtn && (
             <Button
-              onPress={onAlertCancel}
+              onPress={handleRequest}
               loading={cancelling}
               titleStyle={{ fontFamily: 'PoppinsMedium', fontSize: 12 }}
               buttonStyle={{

@@ -33,8 +33,8 @@ export const NewGroupForm = () => {
   const clearStaffs = useStaffStore((state) => state.clear);
   const staffs = useStaffStore((state) => state.staffs);
 
-  const generateUploadUrl = useMutation(api.users.generateUploadUrl);
-  const getImage = useMutation(api.users.getImage);
+  // const generateUploadUrl = useMutation(api.users.generateUploadUrl);
+  // const getImage = useMutation(api.users.getImage);
   const {
     control,
     handleSubmit,
@@ -50,17 +50,16 @@ export const NewGroupForm = () => {
   });
 
   const onSubmit = async (data: FormData) => {
-    console.log('Form submitted:', data);
     try {
-      const res = await uploadProfilePicture(generateUploadUrl, data.image);
-      const imageUrl = await getImage({ imageId: res?.storageId! });
+      // const res = await uploadProfilePicture(generateUploadUrl, data.image);
+      // const imageUrl = await getImage({ imageId: res?.storageId! });
 
-      await onCreateGroupChannel(
-        staffs.map((s) => s.id),
-        capitaliseFirstLetter(data.groupName),
-        imageUrl,
-        data.description
-      );
+      await onCreateGroupChannel({
+        members: staffs.map((s) => s.id),
+        name: capitaliseFirstLetter(data.groupName),
+        image: data.image,
+        description: data.description,
+      });
 
       clearStaffs();
       reset();

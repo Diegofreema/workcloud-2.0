@@ -13,6 +13,7 @@ import { HStack } from './HStack';
 import { CustomPressable } from './Ui/CustomPressable';
 import { MyText } from './Ui/MyText';
 import VStack from './Ui/VStack';
+import { changeFirstLetterToUpperCase } from '~/lib/utils';
 
 export const FetchTeamMembers = (): JSX.Element => {
   const { workspaceId } = useLocalSearchParams<{
@@ -29,7 +30,7 @@ export const FetchTeamMembers = (): JSX.Element => {
   }
 
   const members = teams?.workers.filter(
-    (member) => member.userId !== teams?.boss?._id
+    (member) => member.userId !== teams?.boss?._id,
   );
 
   return (
@@ -41,7 +42,7 @@ export const FetchTeamMembers = (): JSX.Element => {
             user={{
               name: teams?.boss?.name || 'No Boss',
               image: teams?.boss?.image || null,
-              id: teams?.boss?._id as Id<'users'>,
+              id: teams?.boss?.userId || '',
             }}
             isAdmin
           />
@@ -55,7 +56,7 @@ export const FetchTeamMembers = (): JSX.Element => {
             user={{
               name: item?.user?.name || 'No Name',
               image: item?.user?.image || null,
-              id: item?.user?._id as Id<'users'>,
+              id: item?.user?.userId || '',
               role: item?.role || 'N/A',
             }}
           />
@@ -69,7 +70,7 @@ type Props = {
   user: {
     name: string | null;
     image: string | null;
-    id: Id<'users'>;
+    id: string;
     role?: string;
   };
   isAdmin?: boolean;
@@ -80,16 +81,17 @@ const Member = ({ user, isAdmin }: Props) => {
   const color = Colors[colorScheme ?? 'light'].text;
   const { user: loggedInUser } = useAuth();
   const { onMessage } = useMessage();
+  const type = user.role === 'processor' ? 'processor' : 'single';
   const onChat = () => {
-    onMessage(user.id, 'single');
+    onMessage(user.id, type);
   };
 
   const isLoggedInUser = loggedInUser?.id === user.id;
+
   return (
     <HStack justifyContent={'space-between'} alignItems={'center'}>
       <HStack alignItems={'center'} gap={4}>
         <Avatar url={user.image!} size={50} />
-
         <VStack>
           <MyText poppins={'Medium'} fontSize={14}>
             {user.name}
@@ -100,7 +102,7 @@ const Member = ({ user, isAdmin }: Props) => {
             fontSize={14}
             style={{ color: isAdmin ? 'green' : color }}
           >
-            {user.role || 'Admin'}
+            {changeFirstLetterToUpperCase(user.role || 'Admin')}
           </MyText>
         </VStack>
       </HStack>

@@ -57,12 +57,6 @@ export const FetchProcessorDetails = ({ profileData }: Props) => {
           imageUrl={profileData?.image!}
           size={80}
         />
-        <Button
-          title="Resign"
-          onPress={() => setIsOpen(true)}
-          disabled={isResigning}
-          style={{ backgroundColor: colors.closeTextColor }}
-        />
       </View>
     </>
   );

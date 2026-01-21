@@ -7,10 +7,9 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { fontFamily } from '~/constants';
 import Colors, { colors } from '~/constants/Colors';
-import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
-import { useUnreadMessageCount } from '~/features/common/hook/use-unread-message-count';
 import { useColorScheme } from '~/hooks/useColorScheme';
+import { useUnread } from '~/hooks/useUnread';
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -25,13 +24,9 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const count = useUnreadMessageCount();
-  const { user } = useAuth();
-  const userId = user?._id;
-  const missedCall = useQuery(
-    api.users.getMissedCalls,
-    userId ? { userId } : 'skip'
-  );
+  const count = useUnread((state) => state.unread);
+
+  const missedCall = useQuery(api.users.getMissedCalls);
   const missedCallCount = missedCall === undefined ? 0 : missedCall;
   return (
     <>

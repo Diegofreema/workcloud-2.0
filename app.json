@@ -21,6 +21,9 @@
         "ITSAppUsesNonExemptEncryption": false,
         "UIBackgroundModes": ["audio"]
       },
+      "entitlements": {
+        "aps-environment": "production"
+      },
       "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
@@ -70,8 +73,7 @@
           "microphonePermission": "$(PRODUCT_NAME) requires microphone access in order to capture and transmit audio"
         }
       ],
-      "@react-native-firebase/app",
-      "@react-native-firebase/messaging",
+
       [
         "expo-splash-screen",
         {
@@ -105,7 +107,11 @@
             ]
           },
           "ios": {
-            "deploymentTarget": "15.1"
+            "forceStaticLinking": [
+              "RNFBApp",
+              "RNFBMessaging",
+              "stream-react-native-webrtc"
+            ]
           }
         }
       ],

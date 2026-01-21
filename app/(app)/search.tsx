@@ -31,25 +31,25 @@ const Search = () => {
   const [value, setValue] = useState('');
   const [val] = useDebounce(value, 500);
   const { query } = useGlobalSearchParams<{ query: string }>();
-  const { id } = useGetUserId();
+  const { id, user } = useGetUserId();
   useEffect(() => {
     setValue(query);
   }, [query]);
 
-  const topSearch = useQuery(api.organisation.getTopSearches, { userId: id! });
+  const topSearch = useQuery(
+    api.organisation.getTopSearches,
+    user.id ? { userId: user.id } : 'skip',
+  );
 
   const searchesByServicePointName = useQuery(
     api.organisation.getOrganisationsByServicePointsSearchQueryName,
-    {
-      query: val,
-      ownerId: id!,
-    }
+    user.id ? { query: val, ownerId: user.id } : 'skip',
   );
   const servicePoints = useQuery(api.organisation.getServicePoints);
-  const data = useQuery(api.organisation.getOrganisationsBySearchQuery, {
-    query: val,
-    ownerId: id!,
-  });
+  const data = useQuery(
+    api.organisation.getOrganisationsBySearchQuery,
+    user.id ? { query: val, ownerId: user.id } : 'skip',
+  );
   const addSuggestionToDb = useMutation(api.suggestions.addToSuggestions);
   const suggestions = useQuery(api.suggestions.getSuggestions, {
     query: value,

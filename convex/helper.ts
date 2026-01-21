@@ -1,3 +1,5 @@
+import { internalMutation, MutationCtx } from './_generated/server';
+import { query } from './betterAuth/_generated/server';
 type ProductKey =
   | 'businessPlan'
   | 'businessPlanYearly'
@@ -21,3 +23,9 @@ const PREMIUM_PLANS = new Set<ProductKey>([
 ]);
 
 export const isPremium = (key: ProductKey): boolean => PREMIUM_PLANS.has(key);
+
+export const sendEmailAndPushNotificationsToEveryone = async (
+  ctx: MutationCtx
+) => {
+  const users = await ctx.db.query('users');
+};

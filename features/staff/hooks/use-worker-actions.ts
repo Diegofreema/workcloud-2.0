@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { toast } from 'sonner-native';
 import { useRouter } from 'expo-router';
 import { useMessage } from '~/hooks/use-message';
+import { Alert } from 'react-native';
 
 type Props = {
   profileId: Id<'workers'>;
@@ -16,7 +17,7 @@ export const useWorkerActions = ({ profileId }: Props) => {
   const { onMessage: handleMessage } = useMessage();
   const data = useQuery(
     api.worker.getSingleWorkerProfile,
-    profileId ? { id: profileId } : 'skip'
+    profileId ? { id: profileId } : 'skip',
   );
 
   const pendingData = useQuery(
@@ -25,7 +26,7 @@ export const useWorkerActions = ({ profileId }: Props) => {
       ? {
           to: data?.user._id,
         }
-      : 'skip'
+      : 'skip',
   );
 
   const cancelPendingRequest = useMutation(api.request.cancelPendingRequests);
@@ -56,7 +57,26 @@ export const useWorkerActions = ({ profileId }: Props) => {
       return;
     }
 
-    await cancelRequest();
+    await onHandleCancel();
+  };
+  const onHandleCancel = async () => {
+    Alert.alert(
+      'Cancel Request',
+      'Are you sure you want to cancel the request?',
+      [
+        {
+          text: 'No',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: async () => {
+            await cancelRequest();
+          },
+        },
+      ],
+      { cancelable: true },
+    );
   };
   return {
     data,

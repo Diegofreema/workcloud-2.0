@@ -7,8 +7,6 @@ import { authClient } from '~/lib/auth-client';
 
 export function SignIn() {
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
-  console.log({ user });
 
   const handleSignIn = async (provider: 'google' | 'apple') => {
     await authClient.signIn.social({

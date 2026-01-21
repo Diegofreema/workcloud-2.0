@@ -1,23 +1,20 @@
-import { useStreamVideoClient } from "@stream-io/video-react-bindings";
-import { useAuth } from "~/context/auth";
-import { useQuery } from "@tanstack/react-query";
+import { useStreamVideoClient } from '@stream-io/video-react-bindings';
+import { useAuth } from '~/context/auth';
+import { useQuery } from '@tanstack/react-query';
 
 export const useFetchCalls = () => {
   const client = useStreamVideoClient();
   const { user } = useAuth();
-
+  const id = user?.id;
   return useQuery({
-    queryKey: ["calls"],
+    queryKey: ['calls'],
     queryFn: async () => {
-      if (!client || !user) return [];
+      if (!client || !id) return [];
       const { calls } = await client.queryCalls({
         filter_conditions: {
-          $or: [
-            { created_by_user: user._id },
-            { members: { $in: [user._id] } },
-          ],
+          $or: [{ created_by_user: id }, { members: { $in: [id] } }],
         },
-        sort: [{ field: "created_at", direction: -1 }],
+        sort: [{ field: 'created_at', direction: -1 }],
         limit: 50,
         watch: true,
       });
@@ -31,7 +28,7 @@ export const useFetchCall = (callId: string) => {
   const client = useStreamVideoClient();
 
   return useQuery({
-    queryKey: ["call"],
+    queryKey: ['call'],
     queryFn: async () => {
       if (!client) return null;
       const { calls } = await client.queryCalls({

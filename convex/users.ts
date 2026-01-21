@@ -13,6 +13,7 @@ import {
 } from './_generated/server';
 import { polar } from './polar';
 import { isPremium } from './helper';
+import { pushNotifications } from './pushNotification';
 
 export const getAllUsers = query({
   args: {},
@@ -161,7 +162,7 @@ export const getUserById2 = query({
 
 export const getOrganisations = async (
   ctx: QueryCtx,
-  organizationId: Id<'organizations'>
+  organizationId: Id<'organizations'>,
 ) => {
   if (!organizationId) return null;
   return await ctx.db.get(organizationId);
@@ -309,7 +310,7 @@ export const getUserByUserId = async (ctx: QueryCtx, userId?: Id<'users'>) => {
 
 export const getUserByWorkerId = async (
   ctx: QueryCtx,
-  workerId: Id<'workers'>
+  workerId: Id<'workers'>,
 ) => {
   const user = await ctx.db
     .query('users')
@@ -321,7 +322,7 @@ export const getUserByWorkerId = async (
 
 export const getOrganisationWithoutImageByWorker = async (
   ctx: QueryCtx,
-  organizationId: Id<'organizations'>
+  organizationId: Id<'organizations'>,
 ) => {
   if (!organizationId) return null;
   return await ctx.db.get(organizationId);
@@ -333,7 +334,7 @@ const helperToGetUser = async (ctx: QueryCtx, user: Doc<'users'>) => {
 
 export const getLoggedInUser = async (
   ctx: QueryCtx | MutationCtx,
-  type: 'query' | 'mutation'
+  type: 'query' | 'mutation',
 ) => {
   const identity = await ctx.auth.getUserIdentity();
 
@@ -381,8 +382,8 @@ export const getUsersWithTokens = query({
         q.and(
           q.neq(q.field('pushToken'), null),
           q.neq(q.field('pushToken'), ''),
-          q.neq(q.field('pushToken'), undefined)
-        )
+          q.neq(q.field('pushToken'), undefined),
+        ),
       )
       .paginate({ cursor, numItems });
   },
@@ -412,7 +413,7 @@ export const markMissedCallsAsSeen = mutation({
     const missedCalls = await ctx.db
       .query('missedCalls')
       .withIndex('by_user_id', (q) =>
-        q.eq('userId', args.userId).eq('seen', false)
+        q.eq('userId', args.userId).eq('seen', false),
       )
       .collect();
 
@@ -423,14 +424,16 @@ export const markMissedCallsAsSeen = mutation({
 });
 
 export const getMissedCalls = query({
-  args: {
-    userId: v.id('users'),
-  },
+  args: {},
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return 0;
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) return 0;
     const calls = await ctx.db
       .query('missedCalls')
       .withIndex('by_user_id', (q) =>
-        q.eq('userId', args.userId).eq('seen', false)
+        q.eq('userId', user._id).eq('seen', false),
       )
       .collect();
     // unique calls by callId
@@ -458,7 +461,7 @@ export const getMissedCallByCallId = query({
     const call = await ctx.db
       .query('missedCalls')
       .withIndex('by_call_id_user_id', (q) =>
-        q.eq('callId', args.callId).eq('userId', user._id)
+        q.eq('callId', args.callId).eq('userId', user._id),
       )
       .first();
     // unique calls by callId
@@ -473,10 +476,65 @@ export const getUserImage = async (ctx: QueryCtx, imageId: Id<'_storage'>) => {
 
 export const getAuthUserBySubject = async (
   ctx: QueryCtx | MutationCtx,
-  id: string
+  id: string,
 ) => {
   return await ctx.db
     .query('users')
     .withIndex('by_user_id', (q) => q.eq('userId', id))
     .first();
 };
+
+export const sendNotice = internalMutation({
+  args: {
+    cursor: v.union(v.string(), v.null()),
+    numItems: v.number(),
+    userId: v.id('users'),
+    name: v.string(),
+    orgId: v.id('organizations'),
+
+    imageUrl: v.string(),
+    description: v.string(),
+    address: v.string(),
+    email: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const data = await ctx.db
+      .query('users')
+      .filter((q) => q.neq(q.field('_id'), args.userId))
+      .paginate({ cursor: args.cursor, numItems: args.numItems });
+    const { page, isDone, continueCursor } = data;
+    for (const doc of page) {
+      await pushNotifications.sendPushNotification(ctx, {
+        userId: doc._id,
+        notification: {
+          title: 'New Organization Alert',
+          body: `New organization "${args.name}" created!`,
+          data: { orgId: args.orgId }, // Custom data for deep links
+        },
+      });
+      await ctx.scheduler.runAfter(
+        0,
+        internal.sendEmails.sendNewOrgEmailToOthers,
+        {
+          name: args.name,
+          image: args.imageUrl,
+          description: args.description,
+          address: args.address,
+          email: args.email,
+        },
+      );
+    }
+    if (!isDone)
+      await ctx.scheduler.runAfter(0, internal.users.sendNotice, {
+        cursor: continueCursor,
+        numItems: args.numItems,
+        userId: args.userId,
+        name: args.name,
+        orgId: args.orgId,
+        email: args.email,
+        description: args.description,
+        imageUrl: args.imageUrl,
+        address: args.address,
+      });
+  },
+});

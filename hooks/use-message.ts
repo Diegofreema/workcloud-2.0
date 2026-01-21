@@ -2,6 +2,14 @@ import { router } from 'expo-router';
 import { useChatContext } from 'stream-chat-expo';
 import { useAppChatContext } from '~/components/providers/chat-context';
 import { useAuth } from '~/context/auth';
+import { generateRandomString } from '~/lib/utils';
+
+type CreateGroupChannelProps = {
+  members: string[];
+  name: string;
+  image?: string;
+  description?: string;
+};
 
 export const useMessage = () => {
   const { user } = useAuth();
@@ -9,7 +17,7 @@ export const useMessage = () => {
   const { client } = useChatContext();
   const onMessage = async (
     userToChat: string,
-    type: 'single' | 'group' | 'processor'
+    type: 'single' | 'group' | 'processor',
   ) => {
     if (!user) return;
     const base = [user?.id, userToChat].sort().join('-');
@@ -25,16 +33,20 @@ export const useMessage = () => {
     setChannel(channel);
     router.push(`/chat/${channel.cid}`);
   };
-  const onCreateGroupChannel = async (
-    members: string[],
-    name: string,
-    image?: string,
-    description?: string
-  ) => {
+  const onCreateGroupChannel = async ({
+    members,
+    name,
+    image,
+    description,
+  }: CreateGroupChannelProps) => {
+    const type = 'group';
+    const base = [generateRandomString(20), ...members].sort().join('-');
+    const baseMax = Math.max(1, 64 - 1 - type.length);
+    const channelId = `${base.slice(0, baseMax)}-${type}`;
     if (!user) return;
-    const channel = client.channel('messaging', '1', {
+    const channel = client.channel('messaging', channelId, {
       members: [user?.id, ...members],
-      filter_tags: ['group'],
+      filter_tags: [type],
       name,
       image,
       custom_data: { description },

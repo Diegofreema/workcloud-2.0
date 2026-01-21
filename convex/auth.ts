@@ -22,8 +22,6 @@ export const authComponent = createClient<DataModel, typeof authSchema>(
     triggers: {
       user: {
         onCreate: async (ctx, doc) => {
-          console.log('User created', doc);
-
           await ctx.db.insert('users', {
             userId: doc._id,
             name: doc.name,

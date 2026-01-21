@@ -68,7 +68,7 @@ const RightComponent = () => {
       style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
     >
       <AntDesign
-        name="pluscircleo"
+        name="plus-circle"
         size={24}
         color={darkMode === 'dark' ? 'white' : 'black'}
       />

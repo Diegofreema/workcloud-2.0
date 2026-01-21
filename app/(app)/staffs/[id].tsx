@@ -113,34 +113,34 @@ const Staffs = () => {
     subscription?.productKey === 'enterprisePlan' ||
     subscription?.productKey === 'enterprisePlanYearly';
   const onAddNewStaff = () => {
-    if (numberOfStaffs >= 1 && !isPro) {
-      toast.error('Upgrade to pro to add more staffs');
+    // if (numberOfStaffs >= 1 && !isPro) {
+    //   toast.error('Upgrade to pro to add more staffs');
 
-      return;
-    }
+    //   return;
+    // }
 
-    // Pro plan (not Business Pro): 5 staff limit
-    if (
-      numberOfStaffs >= 5 &&
-      isPro &&
-      !isBusinessPlanPro &&
-      !isEnterprisePlan
-    ) {
-      toast.error(
-        'You have reached the maximum number of staff for Business plan. Upgrade to Business plan pro or Enterprise plan to add more staff'
-      );
+    // // Pro plan (not Business Pro): 5 staff limit
+    // if (
+    //   numberOfStaffs >= 5 &&
+    //   isPro &&
+    //   !isBusinessPlanPro &&
+    //   !isEnterprisePlan
+    // ) {
+    //   toast.error(
+    //     'You have reached the maximum number of staff for Business plan. Upgrade to Business plan pro or Enterprise plan to add more staff'
+    //   );
 
-      return;
-    }
+    //   return;
+    // }
 
-    // Business Pro plan: 10 staff limit
-    if (numberOfStaffs >= 10 && isBusinessPlanPro && !isEnterprisePlan) {
-      toast.error(
-        'You have reached the maximum number of staff for Business plan pro. Upgrade to Enterprise plan to add more staff'
-      );
+    // // Business Pro plan: 10 staff limit
+    // if (numberOfStaffs >= 10 && isBusinessPlanPro && !isEnterprisePlan) {
+    //   toast.error(
+    //     'You have reached the maximum number of staff for Business plan pro. Upgrade to Enterprise plan to add more staff'
+    //   );
 
-      return;
-    }
+    //   return;
+    // }
 
     onOpen();
   };
@@ -222,7 +222,7 @@ const Staffs = () => {
       workspace,
       workspaceId,
       _id,
-    })
+    }),
   );
 
   return (

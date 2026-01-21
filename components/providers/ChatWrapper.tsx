@@ -1,15 +1,24 @@
 import { PropsWithChildren, useEffect } from 'react';
-import { Chat, OverlayProvider, useCreateChatClient } from 'stream-chat-expo';
+import {
+  Chat,
+  DeepPartial,
+  OverlayProvider,
+  Theme,
+  useCreateChatClient,
+} from 'stream-chat-expo';
 import { useAuth } from '~/context/auth';
+import { useTheme } from '~/hooks/use-theme';
 import { useUnread } from '~/hooks/useUnread';
 import { LoadingComponent } from '../Ui/LoadingComponent';
 import { ChatContext } from './chat-context';
+import { colors } from '~/constants/Colors';
 
 const apiKey = 'cnvc46pm8uq9';
 
 export const ChatWrapper = ({ children }: PropsWithChildren) => {
   const { user } = useAuth();
 
+  const { theme: darkMode } = useTheme();
   const setUnreadCount = useUnread((state) => state.getUnread);
 
   const client = useCreateChatClient({
@@ -53,10 +62,33 @@ export const ChatWrapper = ({ children }: PropsWithChildren) => {
     return <LoadingComponent />;
   }
 
-  const chatTheme = {
+  const chatTheme: DeepPartial<Theme> = {
     channelPreview: {
       container: {
-        backgroundColor: 'transparent',
+        backgroundColor: darkMode === 'dark' ? colors.lightDark : colors.white,
+      },
+      title: {
+        color: darkMode === 'dark' ? colors.white : colors.black,
+      },
+    },
+    channelListMessenger: {
+      flatListContent: {
+        backgroundColor: darkMode === 'dark' ? 'black' : 'white',
+      },
+    },
+    messageList: {
+      container: {
+        backgroundColor: darkMode === 'dark' ? 'black' : 'white',
+      },
+    },
+    channelListSkeleton: {
+      gradientStart: {
+        stopColor: darkMode === 'dark' ? 'black' : 'white',
+        stopOpacity: 0.5,
+      },
+      gradientStop: {
+        stopColor: darkMode === 'dark' ? 'black' : 'white',
+        stopOpacity: 0.5,
       },
     },
   };

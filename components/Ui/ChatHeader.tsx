@@ -15,6 +15,7 @@ import { CustomPressable } from './CustomPressable';
 import { router } from 'expo-router';
 import { ArrowLeft, MoreVertical } from 'lucide-react-native';
 import { useAppChatContext } from '../providers/chat-context';
+import { MyText } from './MyText';
 export interface SuperAvatarProps {
   channel: ChannelType;
   isSelected?: boolean;
@@ -44,7 +45,12 @@ export const ChatHeader = ({
         <CustomPressable onPress={onBack}>
           <ArrowLeft size={25} color={text} />
         </CustomPressable>
-        <Avatar image={image} name={name} size={50} />
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <Avatar image={image} name={name} size={50} />
+          <MyText poppins="Medium" fontSize={15}>
+            {name}
+          </MyText>
+        </View>
       </View>
       {isSelected && (
         <View style={styles.checkWrap}>
