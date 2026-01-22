@@ -408,14 +408,21 @@ export const createMissedCallRecord = mutation({
 });
 
 export const markMissedCallsAsSeen = mutation({
-  args: {
-    userId: v.id('users'),
-  },
-  handler: async (ctx, args) => {
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return;
+    }
+
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+    if (!user) {
+      return;
+    }
     const missedCalls = await ctx.db
       .query('missedCalls')
       .withIndex('by_user_id', (q) =>
-        q.eq('userId', args.userId).eq('seen', false),
+        q.eq('userId', user?._id).eq('seen', false),
       )
       .collect();
 

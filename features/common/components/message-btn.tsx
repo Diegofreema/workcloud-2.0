@@ -7,13 +7,14 @@ import { HStack } from '~/components/HStack';
 import { CustomPressable } from '~/components/Ui/CustomPressable';
 import { colors } from '~/constants/Colors';
 import { useUnreadMessageCount } from '~/features/common/hook/use-unread-message-count';
+import { useUnread } from '~/hooks/useUnread';
 
 type Props = {
   isProcessor?: boolean;
   workspaceId?: string;
 };
 export const MessageBtn = ({ isProcessor, workspaceId }: Props) => {
-  const count = useUnreadMessageCount();
+  const count = useUnread((state) => state.unread);
   const onPress = () => {
     if (isProcessor) {
       router.push(
