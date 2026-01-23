@@ -343,22 +343,28 @@ export const updateStarStatus = mutation({
     id: v.id('stars'),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new ConvexError('Unauthorized');
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new ConvexError({ message: 'Unauthorized' });
     }
 
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+
+    if (!user) {
+      throw new ConvexError({ message: 'Unauthorized' });
+    }
     const worker = await ctx.db
       .query('workers')
-      .withIndex('userId', (q) => q.eq('userId', userId))
+      .withIndex('userId', (q) => q.eq('userId', user._id))
       .first();
     if (!worker) {
-      throw new ConvexError('Unauthorized');
+      throw new ConvexError({ message: 'Unauthorized' });
     }
 
     const star = await ctx.db.get(args.id);
     if (!star) {
-      throw new ConvexError('Issue not found');
+      throw new ConvexError({ message: 'Issue not found' });
     }
     await ctx.db.patch(star._id, {
       status: star.status === 'resolved' ? 'unresolved' : 'resolved',
@@ -370,14 +376,21 @@ export const deleteStarStatus = mutation({
     id: v.id('stars'),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new ConvexError('Unauthorized');
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new ConvexError({ message: 'Unauthorized' });
+    }
+
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+
+    if (!user) {
+      throw new ConvexError({ message: 'Unauthorized' });
     }
 
     const worker = await ctx.db
       .query('workers')
-      .withIndex('userId', (q) => q.eq('userId', userId))
+      .withIndex('userId', (q) => q.eq('userId', user._id))
       .first();
     if (!worker) {
       throw new ConvexError('Unauthorized');
@@ -396,14 +409,21 @@ export const editStarStatus = mutation({
     text: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new ConvexError('Unauthorized');
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new ConvexError({ message: 'Unauthorized' });
+    }
+
+    const user = await getAuthUserBySubject(ctx, identity.subject);
+
+    if (!user) {
+      throw new ConvexError({ message: 'Unauthorized' });
     }
 
     const worker = await ctx.db
       .query('workers')
-      .withIndex('userId', (q) => q.eq('userId', userId))
+      .withIndex('userId', (q) => q.eq('userId', user._id))
       .first();
     if (!worker) {
       throw new ConvexError('Unauthorized');

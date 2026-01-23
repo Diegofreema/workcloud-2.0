@@ -191,6 +191,8 @@ export const updateUserById = mutation({
         image: img!,
         storageId: args.imageUrl,
       });
+      const image = await ctx.storage.getUrl(args.imageUrl);
+      return image;
     } else {
       await ctx.db.patch(args._id, {
         name: args.name,

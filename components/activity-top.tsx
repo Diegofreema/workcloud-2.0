@@ -53,6 +53,7 @@ export const ActivityTop = ({
       : colors.grayText;
   const colorScheme = useColorScheme();
   const backgroundColor = Colors[colorScheme ?? 'light'].background;
+  const iconColor = Colors[colorScheme ?? 'light'].text;
   const onPress = () => {
     router.push('/starred-identity');
   };
@@ -93,7 +94,7 @@ export const ActivityTop = ({
               onPress={onEdit}
               style={[styles.pressable, { backgroundColor }]}
             >
-              <PencilLineIcon />
+              <PencilLineIcon color={iconColor} />
             </CustomPressable>
             <CustomPressable
               onPress={onDelete}

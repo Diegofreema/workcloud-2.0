@@ -35,14 +35,23 @@ export const ServicePointAction = ({
           />
         </Pressable>
       }
+      style={{
+        boxShadow: '2px 2px 5px rgba(0,0,0,0.5)',
+      }}
     >
-      <MenuItem onPress={handleDelete}>
+      <MenuItem
+        onPress={handleDelete}
+        style={{ backgroundColor: darkMode === 'dark' ? 'black' : 'white' }}
+      >
         <MyText poppins="Medium" fontSize={14}>
           Delete
         </MyText>
       </MenuItem>
       <MenuDivider />
-      <MenuItem onPress={handleEdit}>
+      <MenuItem
+        onPress={handleEdit}
+        style={{ backgroundColor: darkMode === 'dark' ? 'black' : 'white' }}
+      >
         <MyText poppins="Medium" fontSize={14}>
           Edit
         </MyText>

@@ -22,6 +22,7 @@ import { Avatar } from '../Ui/Avatar';
 import { useTheme } from '~/hooks/use-theme';
 import { FunctionReturnType } from 'convex/server';
 import { useChatContext } from 'stream-chat-expo';
+import { authClient } from '~/lib/auth-client';
 
 type Props = {
   person: FunctionReturnType<typeof api.users.getUserById>;
@@ -64,7 +65,7 @@ export const ProfileUpdateForm = ({ person }: Props) => {
           selectedImage.uri,
         );
         if (!res?.storageId) return;
-        await updateUser({
+        const image = await updateUser({
           name,
           phoneNumber,
           _id: person?._id,
@@ -74,12 +75,15 @@ export const ProfileUpdateForm = ({ person }: Props) => {
           id: person?.userId,
           set: {
             name,
-            image: res.storageId,
+            image: image || '',
           },
         };
 
-        const response = await client.partialUpdateUser(update);
-        console.log(response, 'response');
+        await client.partialUpdateUser(update);
+        await authClient.updateUser({
+          name,
+          image: image || '',
+        });
       } else {
         await updateUser({
           name,
@@ -93,9 +97,12 @@ export const ProfileUpdateForm = ({ person }: Props) => {
           },
         };
 
-        const response = await client.partialUpdateUser(update);
-        console.log(response, 'response');
+        await client.partialUpdateUser(update);
+        await authClient.updateUser({
+          name,
+        });
       }
+      toast.success('Profile updated successfully');
       reset();
       router.back();
     } catch (error: any) {
@@ -111,7 +118,6 @@ export const ProfileUpdateForm = ({ person }: Props) => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
-
       quality: 0.5,
     });
     if (!result.canceled) {

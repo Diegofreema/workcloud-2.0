@@ -6,7 +6,6 @@ import { StyleSheet, View } from 'react-native';
 import { HStack } from '~/components/HStack';
 import { CustomPressable } from '~/components/Ui/CustomPressable';
 import { colors } from '~/constants/Colors';
-import { useUnreadMessageCount } from '~/features/common/hook/use-unread-message-count';
 import { useUnread } from '~/hooks/useUnread';
 
 type Props = {
