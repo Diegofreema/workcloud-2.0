@@ -71,6 +71,14 @@ export const createNotification = internalMutation({
     title: v.string(),
     requestId: v.optional(v.id('organizations')),
     reviewId: v.optional(v.id('reviews')),
+    type: v.union(
+      v.literal('request'),
+      v.literal('review'),
+      v.literal('task'),
+      v.literal('organization'),
+      v.literal('joined'),
+      v.literal('normal'),
+    ),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert('notifications', {
@@ -80,7 +88,7 @@ export const createNotification = internalMutation({
       requestId: args.requestId,
       reviewId: args.reviewId,
       seen: false,
-      type: 'request',
+      type: args.type,
     });
   },
 });

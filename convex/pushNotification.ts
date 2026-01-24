@@ -1,4 +1,3 @@
-import { getAuthUserId } from '@convex-dev/auth/server';
 import { PushNotifications } from '@convex-dev/expo-push-notifications';
 import { ConvexError, v } from 'convex/values';
 import { api, components, internal } from './_generated/api.js';
@@ -9,7 +8,7 @@ import { getAuthUserBySubject } from './users.js';
 export type Email = string & { __isEmail: true };
 
 export const pushNotifications = new PushNotifications(
-  components.pushNotifications
+  components.pushNotifications,
 );
 
 export const recordPushNotificationToken = mutation({
@@ -129,7 +128,7 @@ export const sendToAllUsers = internalAction({
             orgId,
             message,
             cursor,
-          }
+          },
         );
         console.log('Chaining to next action for remaining users');
         return; // Exit to avoid timeout

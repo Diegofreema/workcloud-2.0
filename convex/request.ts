@@ -26,8 +26,8 @@ export const getPendingRequestsAsBoolean = query({
         q.and(
           q.eq(q.field('from'), user._id),
           q.eq(q.field('to'), args.to),
-          q.eq(q.field('status'), 'pending')
-        )
+          q.eq(q.field('status'), 'pending'),
+        ),
       )
       .first();
   },
@@ -42,8 +42,8 @@ export const getPendingStaffsWithoutOrganization = query({
       .filter((q) =>
         q.and(
           q.eq(q.field('from'), user._id),
-          q.eq(q.field('status'), 'pending')
-        )
+          q.eq(q.field('status'), 'pending'),
+        ),
       )
       .collect();
 
@@ -56,7 +56,7 @@ export const getPendingStaffsWithoutOrganization = query({
           user,
           worker,
         };
-      })
+      }),
     );
   },
 });
@@ -78,7 +78,7 @@ export const getPendingRequestsWithOrganization = query({
           request: r,
           organisation,
         };
-      })
+      }),
     );
   },
 });
@@ -111,7 +111,7 @@ export const createRequest = mutation({
   handler: async (ctx, args) => {
     const getOrganization = await getOrganizationByOwnerId(ctx, args.from);
     if (!getOrganization) {
-      throw new Error('No organization found');
+      throw new ConvexError({ message: 'Organization not found' });
     }
     await ctx.db.insert('requests', {
       ...args,
@@ -123,6 +123,7 @@ export const createRequest = mutation({
       message: `You have a new job offer from ${getOrganization.name}`,
       userId: args.to,
       requestId: getOrganization._id,
+      type: 'request',
     });
   },
 });

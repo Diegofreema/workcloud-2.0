@@ -1,5 +1,8 @@
 import { ConvexError, v } from 'convex/values';
 
+import { filter } from 'convex-helpers/server/filter';
+import { paginationOptsValidator } from 'convex/server';
+import { User } from '../constants/types';
 import { Id } from './_generated/dataModel';
 import { mutation, query, QueryCtx } from './_generated/server';
 import {
@@ -9,10 +12,6 @@ import {
   getUserByUserId,
   getUserByWorkerId,
 } from './users';
-import { User } from '../constants/types';
-import { filter } from 'convex-helpers/server/filter';
-import { getAuthUserId } from '@convex-dev/auth/server';
-import { paginationOptsValidator } from 'convex/server';
 
 export const getAllOtherWorkers = query({
   handler: async (ctx, args) => {

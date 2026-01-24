@@ -13,6 +13,7 @@ import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
 import { Button } from '~/features/common/components/Button';
 import Card from '~/features/common/components/card';
+import { useGetUserId } from '~/hooks/useGetUserId';
 
 type OfferingCardProps = {
   product: FunctionReturnType<typeof api.polar.listAllProducts>[number];
@@ -29,7 +30,8 @@ export const OfferingCard = ({
   isMonthly,
 }: OfferingCardProps) => {
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
+
+  const { user } = useGetUserId();
   const billingInterval = isMonthly ? 'month' : 'year';
   const colorScheme = useColorScheme();
   const color = Colors[colorScheme ?? 'light'].text;
@@ -45,7 +47,7 @@ export const OfferingCard = ({
         {
           id: product.id,
           userId: user?.id,
-        }
+        },
       );
 
       //
@@ -121,7 +123,7 @@ function formatAmount(amount: number, currency: string) {
 type Interval = 'month' | 'year';
 function getPrice(
   product: FunctionReturnType<typeof api.polar.listAllProducts>[number],
-  interval: Interval
+  interval: Interval,
 ) {
   return product.prices?.find((p) => p.recurringInterval === interval);
 }

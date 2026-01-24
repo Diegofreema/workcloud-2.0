@@ -6,16 +6,17 @@ import { LoadingComponent } from '~/components/Ui/LoadingComponent';
 import { MyText } from '~/components/Ui/MyText';
 import { api } from '~/convex/_generated/api';
 import { Notification } from './notification';
+import { EmptyText } from '~/components/EmptyText';
 
 export const FetchNotifications = () => {
   const markedNotificationsAsSeen = useMutation(
-    api.notifications.markNotificationAsRead
+    api.notifications.markNotificationAsRead,
   );
 
   const notifications = usePaginatedQuery(
     api.notifications.getNotifications,
     {},
-    { initialNumItems: 100 }
+    { initialNumItems: 100 },
   );
   useEffect(() => {
     const markAsSeen = async () => {
@@ -50,6 +51,7 @@ export const FetchNotifications = () => {
         }
         recycleItems
         contentContainerStyle={{ gap: 20 }}
+        ListEmptyComponent={<EmptyText text="No notifications" />}
       />
     </View>
   );

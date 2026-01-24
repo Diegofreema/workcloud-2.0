@@ -1,10 +1,12 @@
 import { ConvexError, v } from 'convex/values';
+import { api } from './_generated/api';
 import { mutation, query } from './_generated/server';
 import { getUserProfileByWorkerId } from './servicePoints';
-import { getAuthUserId } from '@convex-dev/auth/server';
-import { getAuthUserBySubject, getUserImage, getWorkerProfile } from './users';
-import { ctx } from 'expo-router/_ctx';
-import { api } from './_generated/api';
+import {
+  getAuthUserBySubject,
+  getLoggedInUser,
+  getWorkerProfile,
+} from './users';
 
 // export const getProcessorsByUserId = query({
 //   args: {
@@ -67,8 +69,8 @@ export const getProcessorDetail = query({
 export const getProcessorsThroughWorkpaceId = query({
   args: { workspaceId: v.id('workspaces') },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
+    const user = await getLoggedInUser(ctx, 'query');
+    if (!user) {
       return [];
     }
 
@@ -103,8 +105,8 @@ export const getProcessorsThroughWorkpaceId = query({
 export const assignProcessorStarred = mutation({
   args: { starId: v.id('stars'), id: v.id('users') },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
+    const user = await getLoggedInUser(ctx, 'mutation');
+    if (!user) {
       throw new ConvexError({ message: 'Unauthorized' });
     }
 

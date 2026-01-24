@@ -1,7 +1,7 @@
-import { getAuthUserId } from '@convex-dev/auth/server';
-import { mutation, query } from './_generated/server';
-import { ConvexError, v } from 'convex/values';
 import { filter } from 'convex-helpers/server/filter';
+import { ConvexError, v } from 'convex/values';
+import { mutation, query } from './_generated/server';
+import { getLoggedInUser } from './users';
 
 export const createDeletionRequest = mutation({
   args: {
@@ -9,15 +9,12 @@ export const createDeletionRequest = mutation({
     feedback: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
+    const user = await getLoggedInUser(ctx, 'mutation');
+    if (!user) {
       throw new ConvexError({ message: 'Unauthorized' });
     }
 
-    const user = await ctx.db.get(userId);
-    if (!user) {
-      throw new ConvexError({ message: 'User not found' });
-    }
+    const userId = user._id;
     // Check if user already has a pending deletion request
     const existingRequest = await ctx.db
       .query('deletionRequests')
@@ -62,7 +59,7 @@ export const deleteUserAccount = mutation({
     const deletionRequest = await ctx.db
       .query('deletionRequests')
       .withIndex('by_user', (q) =>
-        q.eq('userId', args.userId).eq('status', 'pending')
+        q.eq('userId', args.userId).eq('status', 'pending'),
       )
       .first();
     if (!deletionRequest) {
@@ -96,7 +93,7 @@ export const deleteUserAccount = mutation({
     if (userHasAWorkerProfile) {
       if (userHasAWorkerProfile.workspaceId) {
         const userIsAssignedAWorkspace = await ctx.db.get(
-          userHasAWorkerProfile.workspaceId
+          userHasAWorkerProfile.workspaceId,
         );
         if (userIsAssignedAWorkspace) {
           await ctx.db.patch(userIsAssignedAWorkspace._id, {
@@ -108,17 +105,17 @@ export const deleteUserAccount = mutation({
     }
     const userIsInAConversation = await filter(
       ctx.db.query('conversations'),
-      (conversation) => conversation.participants.includes(args.userId)
+      (conversation) => conversation.participants.includes(args.userId),
     ).collect();
 
     if (userIsInAConversation.length > 0) {
       for (const conversation of userIsInAConversation) {
         await ctx.db.patch(conversation._id, {
           participants: conversation.participants.filter(
-            (participant) => participant !== args.userId
+            (participant) => participant !== args.userId,
           ),
           participantNames: conversation.participantNames.filter(
-            (participant) => participant !== userToDelete.name!
+            (participant) => participant !== userToDelete.name!,
           ),
         });
       }
@@ -126,7 +123,7 @@ export const deleteUserAccount = mutation({
     const userIsCreatorOfAnyGroup = await ctx.db
       .query('conversations')
       .withIndex('type', (q) =>
-        q.eq('type', 'group').eq('creatorId', args.userId)
+        q.eq('type', 'group').eq('creatorId', args.userId),
       )
       .collect();
     if (userIsCreatorOfAnyGroup.length > 0) {

@@ -23,7 +23,7 @@ export const getUserWorkspaceOrNull = query({
     if (!res) return null;
     const organization = await organisationByWorkSpaceId(
       ctx,
-      res?.organizationId
+      res?.organizationId,
     );
     const workerProfile = await getUserByWorkerId(ctx, args.workerId);
 
@@ -37,7 +37,7 @@ export const getUserWorkspaceOrNull = query({
 
 const organisationByWorkSpaceId = async (
   ctx: QueryCtx,
-  organizationId: Id<'organizations'>
+  organizationId: Id<'organizations'>,
 ) => {
   const organization = await ctx.db.get(organizationId);
   if (!organization || !organization.avatar) return null;
@@ -45,7 +45,7 @@ const organisationByWorkSpaceId = async (
     return organization;
   }
   const avatar = await ctx.storage.getUrl(
-    organization.avatar as Id<'_storage'>
+    organization.avatar as Id<'_storage'>,
   );
   return {
     ...organization,
@@ -69,8 +69,8 @@ export const freeWorkspaces = query({
       .filter((q) =>
         q.and(
           q.eq(q.field('ownerId'), args.ownerId),
-          q.eq(q.field('workerId'), undefined)
-        )
+          q.eq(q.field('workerId'), undefined),
+        ),
       )
       .collect();
   },
@@ -106,13 +106,13 @@ export const starCustomer = mutation({
     workspaceId: v.id('workspaces'),
   },
   handler: async (ctx, { customerId, workspaceId, text }) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new ConvexError('Unauthorized');
+    const user = await getLoggedInUser(ctx, 'mutation');
+    if (!user) {
+      throw new ConvexError({ message: 'Unauthorized' });
     }
     const workspace = await ctx.db.get(workspaceId);
     if (!workspace) {
-      throw new ConvexError('Workspace not found');
+      throw new ConvexError({ message: 'Workspace not found' });
     }
     return await ctx.db.insert('stars', {
       customerId,
@@ -135,7 +135,7 @@ export const handleWaitlist = mutation({
     const isInWaitlist = await ctx.db
       .query('waitlists')
       .withIndex('by_customer_id_workspace_id', (q) =>
-        q.eq('workspaceId', workspaceId).eq('customerId', customerId)
+        q.eq('workspaceId', workspaceId).eq('customerId', customerId),
       )
       .first();
     if (isInWaitlist) {
@@ -176,7 +176,7 @@ export const createAndAssignWorkspace = mutation({
     type: v.union(
       v.literal('personal'),
       v.literal('processor'),
-      v.literal('front')
+      v.literal('front'),
     ),
     workerId: v.id('workers'),
   },
@@ -253,7 +253,7 @@ export const existLobby = mutation({
     const waitlist = await ctx.db
       .query('waitlists')
       .withIndex('by_customer_id_workspace_id', (q) =>
-        q.eq('workspaceId', workspaceId).eq('customerId', id)
+        q.eq('workspaceId', workspaceId).eq('customerId', id),
       )
       .first();
     if (waitlist) {
@@ -281,7 +281,7 @@ export const handleAttendance = mutation({
     const findTodayAttendance = await ctx.db
       .query('attendance')
       .withIndex('worker_id_date', (q) =>
-        q.eq('workerId', user._id).eq('date', today)
+        q.eq('workerId', user._id).eq('date', today),
       )
       .first();
 
@@ -460,7 +460,7 @@ export const getWaitlist = async ({
   const waitlists = await ctx.db
     .query('waitlists')
     .withIndex('by_customer_id_workspace_id', (q) =>
-      q.eq('workspaceId', workspaceId)
+      q.eq('workspaceId', workspaceId),
     )
     .order('desc')
     .collect();
@@ -500,7 +500,7 @@ export const getWaitListCount = query({
     const waitlistCount = await ctx.db
       .query('waitlists')
       .withIndex('by_customer_id_workspace_id', (q) =>
-        q.eq('workspaceId', worker.workspaceId as Id<'workspaces'>)
+        q.eq('workspaceId', worker.workspaceId as Id<'workspaces'>),
       )
       .order('desc')
       .collect();

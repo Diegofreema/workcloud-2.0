@@ -39,6 +39,7 @@ export const addReview = mutation({
       title: `${reviewer.name} left a review`,
       userId: owner._id,
       reviewId: id,
+      type: 'review',
     });
     if (owner.pushToken) {
       await ctx.scheduler.runAfter(
@@ -94,7 +95,7 @@ export const addReply = mutation({
       title,
       userId: review.userId,
       reviewId: review._id,
-      // reviewId: review._id,
+      type: 'normal',
     });
     if (replyTo.pushToken) {
       await ctx.scheduler.runAfter(

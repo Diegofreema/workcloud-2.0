@@ -506,13 +506,22 @@ export const handleFollow = mutation({
     userId: v.id('users'),
   },
   handler: async (ctx, { organizationId, userId }) => {
-    const organization = await ctx.db.get(organizationId);
-    if (!organization) return;
+    const [organization, user] = await Promise.all([
+      ctx.db.get('organizations', organizationId),
+      ctx.db.get('users', userId),
+    ]);
+    if (!organization || !user) return;
     const isFollowing = organization?.followers?.includes(userId);
     const prevFollowers = organization?.followers || [];
     if (!isFollowing) {
       await ctx.db.patch(organizationId, {
         followers: [...prevFollowers, userId],
+      });
+      await ctx.runMutation(internal.notifications.createNotification, {
+        title: 'New member',
+        message: `${user.name} joined your organization`,
+        userId: organization.ownerId,
+        type: 'normal',
       });
     } else {
       await ctx.db.patch(organizationId, {

@@ -2,15 +2,15 @@ import { Polar } from '@convex-dev/polar';
 import { api, components } from './_generated/api';
 import { Id } from './_generated/dataModel';
 import { internalAction, query } from './_generated/server';
+import { getLoggedInUser } from './users';
+import { ConvexError } from 'convex/values';
 
 export const getUserInfo = query({
   args: {},
   handler: async (ctx) => {
-    // This would be replaced with an actual auth query,
-    // eg., ctx.auth.getUserIdentity() or getAuthUserId(ctx)
-    const user = await ctx.db.query('users').first();
+    const user = await getLoggedInUser(ctx, 'query');
     if (!user) {
-      throw new Error('User not found');
+      throw new ConvexError({ message: 'User not found' });
     }
     return {
       ...user,
@@ -30,7 +30,7 @@ export const polar = new Polar(components.polar, {
   },
   getUserInfo: async (ctx) => {
     const user: { _id: Id<'users'>; email: string } = await ctx.runQuery(
-      api.polar.getUserInfo
+      api.polar.getUserInfo,
     );
 
     return {

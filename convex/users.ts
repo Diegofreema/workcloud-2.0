@@ -1,6 +1,6 @@
 import { ConvexError, v } from 'convex/values';
 
-import { getAuthUserId } from '@convex-dev/auth/server';
+import { filter } from 'convex-helpers/server/filter';
 import { internal } from './_generated/api';
 import { Doc, Id } from './_generated/dataModel';
 import {
@@ -11,10 +11,8 @@ import {
   query,
   QueryCtx,
 } from './_generated/server';
-import { polar } from './polar';
 import { isPremium } from './helper';
-import { pushNotifications } from './pushNotification';
-import { filter } from 'convex-helpers/server/filter';
+import { polar } from './polar';
 
 export const getAllUsers = query({
   args: {},
@@ -22,33 +20,17 @@ export const getAllUsers = query({
     return await ctx.db.query('users').collect();
   },
 });
-export const getUser = query({
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      return null;
-    }
-    const user = await ctx.db.get(userId);
-    if (!user) {
-      return null;
-    }
-
-    return {
-      ...user,
-    };
-  },
-});
 
 export const getSubscriptions = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
+    const user = await getLoggedInUser(ctx, 'query');
+    if (!user) {
       throw new ConvexError({ message: 'Unauthorized' });
     }
 
     const subscription = await polar.getCurrentSubscription(ctx, {
-      userId,
+      userId: user._id,
     });
 
     return {
@@ -527,6 +509,13 @@ export const sendNotice = internalMutation({
       //     data: { orgId: args.orgId }, // Custom data for deep links
       //   },
       // });
+      await ctx.runMutation(internal.notifications.createNotification, {
+        title: 'New Organization Alert',
+        message: `New organization "${args.name}" was created!`,
+        userId: doc._id,
+        requestId: args.orgId,
+        type: 'organization',
+      });
       await ctx.scheduler.runAfter(
         0,
         internal.sendEmails.sendNewOrgEmailToOthers,

@@ -18,7 +18,6 @@ export const Plans = () => {
   if (product === undefined) {
     return <LoadingComponent />;
   }
-  console.log(product);
 
   const arrangedProducts = [
     product.businessPlan,
@@ -29,10 +28,10 @@ export const Plans = () => {
     product.enterprisePlanYearly,
   ].filter((item) => item !== null && item !== undefined);
   const yearlyProducts = arrangedProducts.filter(
-    (item) => item?.recurringInterval === 'year'
+    (item) => item?.recurringInterval === 'year',
   );
   const monthlyProducts = arrangedProducts.filter(
-    (item) => item?.recurringInterval === 'month'
+    (item) => item?.recurringInterval === 'month',
   );
   const productsToShow = isMonthly ? monthlyProducts : yearlyProducts;
 
