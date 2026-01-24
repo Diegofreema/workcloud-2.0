@@ -14,6 +14,7 @@ import {
 import { polar } from './polar';
 import { isPremium } from './helper';
 import { pushNotifications } from './pushNotification';
+import { filter } from 'convex-helpers/server/filter';
 
 export const getAllUsers = query({
   args: {},
@@ -509,20 +510,23 @@ export const sendNotice = internalMutation({
     email: v.string(),
   },
   handler: async (ctx, args) => {
-    const data = await ctx.db
-      .query('users')
-      .filter((q) => q.neq(q.field('_id'), args.userId))
-      .paginate({ cursor: args.cursor, numItems: args.numItems });
+    const data = await filter(
+      ctx.db.query('users'),
+      (user) => user._id !== args.userId,
+    ).paginate({
+      cursor: args.cursor,
+      numItems: args.numItems,
+    });
     const { page, isDone, continueCursor } = data;
     for (const doc of page) {
-      await pushNotifications.sendPushNotification(ctx, {
-        userId: doc._id,
-        notification: {
-          title: 'New Organization Alert',
-          body: `New organization "${args.name}" created!`,
-          data: { orgId: args.orgId }, // Custom data for deep links
-        },
-      });
+      // await pushNotifications.sendPushNotification(ctx, {
+      //   userId: doc._id,
+      //   notification: {
+      //     title: 'New Organization Alert',
+      //     body: `New organization "${args.name}" created!`,
+      //     data: { orgId: args.orgId }, // Custom data for deep links
+      //   },
+      // });
       await ctx.scheduler.runAfter(
         0,
         internal.sendEmails.sendNewOrgEmailToOthers,

@@ -80,6 +80,7 @@ export const createNotification = internalMutation({
       requestId: args.requestId,
       reviewId: args.reviewId,
       seen: false,
+      type: 'request',
     });
   },
 });

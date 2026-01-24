@@ -157,6 +157,7 @@ export const acceptOffer = mutation({
       message: to.name + ' accepted your offer',
       title: 'Offer accepted',
       seen: false,
+      type: 'request',
     });
 
     return from.pushToken;

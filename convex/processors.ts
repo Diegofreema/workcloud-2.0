@@ -139,6 +139,7 @@ export const assignProcessorStarred = mutation({
         'You have been assigned a starred identity by ' + workerProfile.name,
       seen: false,
       imageUrl: workerProfile.image,
+      type: 'task',
     });
 
     await ctx.scheduler.runAfter(0, api.pushNotification.sendPushNotification, {

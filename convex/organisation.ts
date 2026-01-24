@@ -377,14 +377,14 @@ export const createOrganization = mutation({
   handler: async (ctx, args) => {
     const user = await getLoggedInUser(ctx, 'mutation');
     if (!user) {
-      throw new ConvexError('Unauthorized');
+      throw new ConvexError({ message: 'Unauthorized' });
     }
     const organizationExist = await ctx.db
       .query('organizations')
       .withIndex('by_name', (q) => q.eq('name', args.name))
       .first();
     if (organizationExist) {
-      throw new ConvexError('Organization with name exists');
+      throw new ConvexError({ message: 'Organization with name exists' });
     }
     const avatar = await getImageUrl(ctx, args.avatarId);
     const organizationId = await ctx.db.insert('organizations', {
@@ -397,14 +397,14 @@ export const createOrganization = mutation({
       ownerId: user._id,
     });
     if (!organizationId) {
-      throw new ConvexError('Failed to create organization');
+      throw new ConvexError({ message: 'Failed to create organization' });
     }
     await ctx.db.patch(user._id, {
       organizationId: organizationId,
     });
     await ctx.scheduler.runAfter(0, internal.sendEmails.sendNewOrgEmail, {
-      name: user.name as string,
-      email: user.email as string,
+      name: args.name as string,
+      email: args.email as string,
     });
     await ctx.scheduler.runAfter(0, internal.users.sendNotice, {
       orgId: organizationId,

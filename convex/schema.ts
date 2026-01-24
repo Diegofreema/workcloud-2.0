@@ -163,6 +163,14 @@ export const Notification = {
   requestId: v.optional(v.id('organizations')),
   reviewId: v.optional(v.id('reviews')),
   imageUrl: v.optional(v.string()),
+  type: v.union(
+    v.literal('request'),
+    v.literal('review'),
+    v.literal('task'),
+    v.literal('organization'),
+    v.literal('joined'),
+    v.literal('normal'),
+  ),
 };
 
 export const Message = {
