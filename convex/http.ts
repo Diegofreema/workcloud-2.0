@@ -23,18 +23,21 @@ polar.registerRoutes(http, {
     if (event.data.customerCancellationReason) {
       console.log(
         'Customer cancellation reason',
-        event.data.customerCancellationReason
+        event.data.customerCancellationReason,
       );
       console.log(
         'Customer cancellation comment',
-        event.data.customerCancellationComment
+        event.data.customerCancellationComment,
       );
     }
     // This callback is run in an Action, so you could pipe this customer
     // cancellation reason to another service, for example.
   },
   // Other available callbacks:
-  onSubscriptionCreated: undefined,
+  onSubscriptionCreated: async (ctx, event) => {
+    // Handle new subscriptions
+    console.log('Subscription created', event);
+  },
   onProductCreated: undefined,
   onProductUpdated: undefined,
 });

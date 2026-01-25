@@ -1,17 +1,19 @@
-import {router, useRouter} from 'expo-router';
-import {Platform, Pressable, StyleSheet, View} from 'react-native';
+import { router, useRouter } from 'expo-router';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
-import {HStack} from '../HStack';
-import {MyText} from '../Ui/MyText';
-import {UserPreview} from '../Ui/UserPreview';
+import { HStack } from '../HStack';
+import { MyText } from '../Ui/MyText';
+import { UserPreview } from '../Ui/UserPreview';
 
-import {colors} from '~/constants/Colors';
-import {ThemedView} from '../Ui/themed-view';
-import {useTheme} from '~/hooks/use-theme';
-import {useQuery} from "convex/react";
-import {api} from "~/convex/_generated/api";
-import {CustomPressable} from "~/components/Ui/CustomPressable";
-import {useGetUserId} from "~/hooks/useGetUserId";
+import { colors } from '~/constants/Colors';
+import { ThemedView } from '../Ui/themed-view';
+import { useTheme } from '~/hooks/use-theme';
+import { useQuery } from 'convex/react';
+import { api } from '~/convex/_generated/api';
+import { CustomPressable } from '~/components/Ui/CustomPressable';
+import { useGetUserId } from '~/hooks/useGetUserId';
+import { useGetCustomer } from '~/features/payment/hooks/use-get-customer';
+import { format } from 'date-fns';
 
 type Props = {
   id?: string;
@@ -21,7 +23,7 @@ type Props = {
 
 export const TopCard = ({ image, name, id }: Props): JSX.Element => {
   const router = useRouter();
-  const {organizationId} = useGetUserId()
+  const { organizationId } = useGetUserId();
   const { theme: darkMode } = useTheme();
   const onEditProfile = () => {
     router.push(`/edit-new?id=${id}`);
@@ -56,7 +58,7 @@ export const TopCard = ({ image, name, id }: Props): JSX.Element => {
             </MyText>
           </Pressable>
         </HStack>
-          {organizationId && <ProCard/>}
+        {organizationId && <ProCard />}
       </ThemedView>
     </ThemedView>
   );
@@ -92,35 +94,40 @@ const styles = StyleSheet.create({
 });
 
 const ProCard = () => {
-
-  const subscriptionData = useQuery(api.users.getSubscriptions)
-  if (subscriptionData === undefined) {
+  const { data: subscriptionData, isPending, isError } = useGetCustomer();
+  if (isPending) {
     return <></>;
   }
-  const isPro = subscriptionData.isPremium;
+  if (isError) {
+    return <></>;
+  }
 
-    const subscription = subscriptionData?.subscription
-    const onPress = () => {
-        router.push('/subcription');
-        console.log("Pressed")
-    }
-  if (!isPro|| !subscription) {
+  const { customer, subscription: subscriptionInfo } = subscriptionData;
+  const isPro = customer.activeSubscriptions?.length > 0;
+
+  const subscription = customer.activeSubscriptions?.[0];
+  const onPress = () => {
+    router.push('/subcription');
+    console.log('Pressed');
+  };
+  if (!isPro || !subscription) {
     return (
-     <CustomPressable onPress={onPress}>
-         <MyText
-             poppins="Bold"
-             fontSize={15}
-             style={{ marginTop: 10, textAlign: 'center' }}
-         >
-             Upgrade to Pro for more features
-         </MyText>
-     </CustomPressable>
+      <CustomPressable onPress={onPress}>
+        <MyText
+          poppins="Bold"
+          fontSize={15}
+          style={{ marginTop: 10, textAlign: 'center' }}
+        >
+          Upgrade to Pro for more features
+        </MyText>
+      </CustomPressable>
     );
   }
-  const planName = subscriptionData?.subscription?.product.name || 'Free trial';
-  const expiresAt = subscription.endedAt
-  const subscribedAt = subscription.createdAt
-  const period = subscription.currentPeriodEnd || 'N/A';
+
+  const planName = subscriptionInfo.product.name || 'Free trial';
+  const expiresAt = subscriptionInfo?.endsAt;
+  const subscribedAt = subscriptionInfo?.createdAt;
+
   return (
     <View style={{ marginTop: 10, alignItems: 'center', gap: 5 }}>
       <MyText
@@ -130,16 +137,16 @@ const ProCard = () => {
       >
         Plan: {planName}
       </MyText>
-
-      <MyText poppins="LightItalic" fontSize={13}>
-        Expires At: {expiresAt}
-      </MyText>
-      <MyText poppins="LightItalic" fontSize={13}>
-        Subscribed At: {subscribedAt}
-      </MyText>
-      <MyText poppins="LightItalic" fontSize={13}>
-        Billing Period: {period}
-      </MyText>
+      {subscribedAt && (
+        <MyText poppins="LightItalic" fontSize={13}>
+          Subscribed At: {format(subscribedAt, 'PP')}
+        </MyText>
+      )}
+      {expiresAt && (
+        <MyText poppins="LightItalic" fontSize={13}>
+          Expires At: {format(expiresAt, 'PP')}
+        </MyText>
+      )}
     </View>
   );
 };

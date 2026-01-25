@@ -288,30 +288,6 @@ const WorkcloudAdminEmailTemplate = ({ name }: Props) => {
             </Section>
 
             {/* Call to Action */}
-            <Section
-              style={{
-                textAlign: 'center',
-                margin: '30px 0',
-              }}
-            >
-              <Button
-                href="#"
-                style={{
-                  backgroundColor: '#004282',
-                  color: '#ffffff',
-                  padding: '16px 32px',
-                  textDecoration: 'none',
-                  borderRadius: '6px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  border: 'none',
-                  cursor: 'pointer',
-                  display: 'inline-block',
-                }}
-              >
-                🚀 Access Your Dashboard
-              </Button>
-            </Section>
 
             <Hr
               style={{

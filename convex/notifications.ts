@@ -22,13 +22,23 @@ export const getNotifications = query({
       notifications.page.map(async (n) => {
         let image = '';
         if (n.reviewId) {
-          const review = await ctx.db.get(n.reviewId);
-          const user = await ctx.db.get(review?.userId!);
+          const review = await ctx.db.get('reviews', n.reviewId);
+          const user = await ctx.db.get('users', review?.userId!);
           if (user) {
             image = user.image as string;
           }
         } else if (n.requestId) {
-          const org = await ctx.db.get(n.requestId);
+          const org = await ctx.db.get('organizations', n.requestId);
+          if (org) {
+            image = org.avatar as string;
+          }
+        } else if (n.followerId) {
+          const user = await ctx.db.get('users', n.followerId);
+          if (user) {
+            image = user.image as string;
+          }
+        } else if (n.orgId) {
+          const org = await ctx.db.get('organizations', n.orgId);
           if (org) {
             image = org.avatar as string;
           }
@@ -71,6 +81,7 @@ export const createNotification = internalMutation({
     title: v.string(),
     requestId: v.optional(v.id('organizations')),
     reviewId: v.optional(v.id('reviews')),
+    followerId: v.optional(v.id('users')),
     type: v.union(
       v.literal('request'),
       v.literal('review'),
@@ -79,6 +90,7 @@ export const createNotification = internalMutation({
       v.literal('joined'),
       v.literal('normal'),
     ),
+    orgId: v.optional(v.id('organizations')),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert('notifications', {
@@ -87,8 +99,10 @@ export const createNotification = internalMutation({
       title: args.title,
       requestId: args.requestId,
       reviewId: args.reviewId,
+      followerId: args.followerId,
       seen: false,
       type: args.type,
+      orgId: args.orgId,
     });
   },
 });

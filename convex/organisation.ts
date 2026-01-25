@@ -409,13 +409,12 @@ export const createOrganization = mutation({
     await ctx.scheduler.runAfter(0, internal.users.sendNotice, {
       orgId: organizationId,
       address: args.location,
-      email: args.email,
       description: args.description,
       name: args.name,
       imageUrl: avatar || '',
       cursor: null,
       numItems: 400,
-      userId: user._id,
+      loggedInUserId: user._id,
     });
   },
 });
@@ -521,6 +520,7 @@ export const handleFollow = mutation({
         title: 'New member',
         message: `${user.name} joined your organization`,
         userId: organization.ownerId,
+        followerId: userId,
         type: 'normal',
       });
     } else {

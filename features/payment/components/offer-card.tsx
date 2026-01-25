@@ -1,11 +1,11 @@
 import { Checkout } from '@polar-sh/sdk/models/components/checkout.js';
+import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { FunctionReturnType } from 'convex/server';
 import * as WebBrowser from 'expo-web-browser';
 import { useState } from 'react';
 import { StyleSheet, useColorScheme } from 'react-native';
 import { toast } from 'sonner-native';
-import { app_url } from '~/api';
 import { MyText } from '~/components/Ui/MyText';
 import VStack from '~/components/Ui/VStack';
 import Colors, { colors } from '~/constants/Colors';
@@ -13,7 +13,7 @@ import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
 import { Button } from '~/features/common/components/Button';
 import Card from '~/features/common/components/card';
-import { useGetUserId } from '~/hooks/useGetUserId';
+import { baseUrl } from '~/utils/constants';
 
 type OfferingCardProps = {
   product: FunctionReturnType<typeof api.polar.listAllProducts>[number];
@@ -30,8 +30,8 @@ export const OfferingCard = ({
   isMonthly,
 }: OfferingCardProps) => {
   const [loading, setLoading] = useState(false);
-
-  const { user } = useGetUserId();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const billingInterval = isMonthly ? 'month' : 'year';
   const colorScheme = useColorScheme();
   const color = Colors[colorScheme ?? 'light'].text;
@@ -40,19 +40,23 @@ export const OfferingCard = ({
   const onCheckOut = async () => {
     setLoading(true);
     try {
+      // const res =  await generateCheckoutLink({
+      //     origin: '/',
+      //     productIds: [product.id],
+      //     successUrl: '/',
+
+      //   })
       const {
         data: { checkout },
-      } = await axios.post<ReturnType>(
-        `https://www.workcloud-backend.xyz/api/checkout`,
-        {
-          id: product.id,
-          userId: user?.id,
-        },
-      );
+      } = await axios.post<ReturnType>(`${baseUrl}/checkout`, {
+        id: product.id,
+        userId: user?.id,
+      });
 
-      //
       await WebBrowser.openBrowserAsync(checkout.url);
-      console.log('Status', checkout.status);
+      queryClient.invalidateQueries({
+        queryKey: ['customer', user?.id],
+      });
     } catch (e) {
       console.log(JSON.stringify(e, null, 2));
       toast.error('Error', {

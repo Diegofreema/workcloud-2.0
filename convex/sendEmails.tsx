@@ -39,7 +39,7 @@ export const sendNewOrgEmail = internalAction({
   },
   handler: async (ctx, args) => {
     const html = await pretty(
-      await render(<WorkcloudAdminEmailTemplate name={args.name} />)
+      await render(<WorkcloudAdminEmailTemplate name={args.name} />),
     );
     await resend.sendEmail(ctx, {
       from: 'Support <workcloud@workcloud-backend.xyz>',
@@ -66,8 +66,8 @@ export const sendNewOrgEmailToOthers = internalAction({
           description={args.description}
           address={args.address}
           email={args.email}
-        />
-      )
+        />,
+      ),
     );
     await resend.sendEmail(ctx, {
       from: 'Support <workcloud@workcloud-backend.xyz>',

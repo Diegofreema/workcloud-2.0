@@ -17,6 +17,9 @@ export const Notification = ({ notification }: Props) => {
     if (notification.requestId) {
       router.push('/request');
     }
+    if (notification.orgId) {
+      router.push(`/reception/${notification.orgId}`);
+    }
   };
   // if (notification.type === 'organization') {
   //   return <Notice notification={notification} btnTitle="View organization" />;

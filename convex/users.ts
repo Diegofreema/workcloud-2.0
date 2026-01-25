@@ -33,6 +33,8 @@ export const getSubscriptions = query({
       userId: user._id,
     });
 
+    console.log({ subscription });
+
     return {
       subscription,
       isFree: !subscription,
@@ -482,19 +484,17 @@ export const sendNotice = internalMutation({
   args: {
     cursor: v.union(v.string(), v.null()),
     numItems: v.number(),
-    userId: v.id('users'),
+    loggedInUserId: v.id('users'),
     name: v.string(),
     orgId: v.id('organizations'),
-
     imageUrl: v.string(),
     description: v.string(),
     address: v.string(),
-    email: v.string(),
   },
   handler: async (ctx, args) => {
     const data = await filter(
       ctx.db.query('users'),
-      (user) => user._id !== args.userId,
+      (user) => user._id !== args.loggedInUserId,
     ).paginate({
       cursor: args.cursor,
       numItems: args.numItems,
@@ -513,29 +513,32 @@ export const sendNotice = internalMutation({
         title: 'New Organization Alert',
         message: `New organization "${args.name}" was created!`,
         userId: doc._id,
-        requestId: args.orgId,
         type: 'organization',
+        orgId: args.orgId,
       });
-      await ctx.scheduler.runAfter(
-        0,
-        internal.sendEmails.sendNewOrgEmailToOthers,
-        {
-          name: args.name,
-          image: args.imageUrl,
-          description: args.description,
-          address: args.address,
-          email: args.email,
-        },
-      );
+
+      if (doc.email) {
+        await ctx.scheduler.runAfter(
+          0,
+          internal.sendEmails.sendNewOrgEmailToOthers,
+          {
+            name: args.name,
+            image: args.imageUrl,
+            description: args.description,
+            address: args.address,
+            email: doc.email,
+          },
+        );
+      }
     }
     if (!isDone)
       await ctx.scheduler.runAfter(0, internal.users.sendNotice, {
         cursor: continueCursor,
         numItems: args.numItems,
-        userId: args.userId,
+        loggedInUserId: args.loggedInUserId,
         name: args.name,
         orgId: args.orgId,
-        email: args.email,
+
         description: args.description,
         imageUrl: args.imageUrl,
         address: args.address,

@@ -163,6 +163,8 @@ export const Notification = {
   requestId: v.optional(v.id('organizations')),
   reviewId: v.optional(v.id('reviews')),
   imageUrl: v.optional(v.string()),
+  orgId: v.optional(v.id('organizations')),
+  followerId: v.optional(v.id('users')),
   type: v.union(
     v.literal('request'),
     v.literal('review'),

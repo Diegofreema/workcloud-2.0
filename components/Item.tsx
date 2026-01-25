@@ -1,15 +1,16 @@
-import { parse } from "date-fns";
-import { useRouter } from "expo-router";
-import { Pressable, StyleSheet, View } from "react-native";
+import { parse } from 'date-fns';
+import { useRouter } from 'expo-router';
+import { Pressable, StyleSheet, View } from 'react-native';
 
-import { HStack } from "./HStack";
-import { MyText } from "./Ui/MyText";
-import VStack from "./Ui/VStack";
+import { HStack } from './HStack';
+import { MyText } from './Ui/MyText';
+import VStack from './Ui/VStack';
 
-import { Avatar } from "~/components/Ui/Avatar";
-import { colors } from "~/constants/Colors";
-import { Connection } from "~/constants/types";
-import { checkIfOpen, formatDateToNowHelper } from "~/lib/helper";
+import { Avatar } from '~/components/Ui/Avatar';
+import { colors } from '~/constants/Colors';
+import { Connection } from '~/constants/types';
+import { checkIfOpen, formatDateToNowHelper } from '~/lib/helper';
+import { toast } from 'sonner-native';
 
 export const Item = (item: Connection & { isLastItemOnList?: boolean }) => {
   const router = useRouter();
@@ -21,11 +22,17 @@ export const Item = (item: Connection & { isLastItemOnList?: boolean }) => {
   );
 
   const startChannel = async () => {
+    if (!isOpen) {
+      toast.info('Organization is closed', {
+        description: 'Please try again later during the opening hours',
+      });
+      return;
+    }
     router.push(`/reception/${item?.organisation?._id}`);
   };
   const parsedDate = parse(
     item.connectedAt,
-    "dd/MM/yyyy, HH:mm:ss",
+    'dd/MM/yyyy, HH:mm:ss',
     new Date(),
   );
   return (
@@ -47,8 +54,8 @@ export const Item = (item: Connection & { isLastItemOnList?: boolean }) => {
                   backgroundColor: colors.openTextColor,
                   width: 45,
                   borderRadius: 9999,
-                  justifyContent: "center",
-                  alignItems: "center",
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}
               >
                 <MyText
@@ -65,8 +72,8 @@ export const Item = (item: Connection & { isLastItemOnList?: boolean }) => {
                   backgroundColor: colors.closeBackgroundColor,
                   width: 45,
                   borderRadius: 9999,
-                  justifyContent: "center",
-                  alignItems: "center",
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}
               >
                 <MyText

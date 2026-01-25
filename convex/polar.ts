@@ -1,9 +1,9 @@
 import { Polar } from '@convex-dev/polar';
 import { api, components } from './_generated/api';
 import { Id } from './_generated/dataModel';
-import { internalAction, query } from './_generated/server';
+import { action, internalAction, query } from './_generated/server';
 import { getLoggedInUser } from './users';
-import { ConvexError } from 'convex/values';
+import { ConvexError, v } from 'convex/values';
 
 export const getUserInfo = query({
   args: {},
@@ -63,3 +63,20 @@ export const syncProducts = internalAction({
     }
   },
 });
+
+// export const startCheckout = action({
+//   args: {
+//     productIds: v.array(v.string()),
+
+//   },
+//   handler: async (ctx, args) => {
+//     const identity = await ctx.auth.getUserIdentity();
+//     if (!identity) {
+//       throw new ConvexError({ message: 'Unauthorized' });
+//     }
+//    const url = await generateCheckoutLink(ctx, {
+//     productIds: args.productIds,
+
+//    })
+//   }
+// })

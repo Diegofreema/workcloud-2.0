@@ -80,10 +80,6 @@ export const HomeBody = <T,>({ data, headerText }: Props<T>) => {
               friction={2}
               enableTrackpadTwoFingerGesture
               rightThreshold={40}
-              onEnded={() => console.log('ended')}
-              onActivated={() => console.log('activated')}
-              onCancelled={() => console.log('cancelled')}
-              onBegan={() => console.log('began')}
             >
               {/*@ts-ignore*/}
               <Item {...item} isLastItemOnList={isLastItemOnList} />
