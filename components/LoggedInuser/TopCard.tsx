@@ -98,18 +98,28 @@ const ProCard = () => {
   if (isPending) {
     return <></>;
   }
+  const onPress = () => {
+    router.push('/subcription');
+  };
   if (isError) {
-    return <></>;
+    return (
+      <CustomPressable onPress={onPress}>
+        <MyText
+          poppins="Bold"
+          fontSize={15}
+          style={{ marginTop: 10, textAlign: 'center' }}
+        >
+          Upgrade to Pro for more features
+        </MyText>
+      </CustomPressable>
+    );
   }
 
   const { customer, subscription: subscriptionInfo } = subscriptionData;
-  const isPro = customer.activeSubscriptions?.length > 0;
+  const isPro = customer?.activeSubscriptions?.length > 0;
 
-  const subscription = customer.activeSubscriptions?.[0];
-  const onPress = () => {
-    router.push('/subcription');
-    console.log('Pressed');
-  };
+  const subscription = customer?.activeSubscriptions?.[0];
+
   if (!isPro || !subscription) {
     return (
       <CustomPressable onPress={onPress}>
@@ -124,7 +134,7 @@ const ProCard = () => {
     );
   }
 
-  const planName = subscriptionInfo.product.name || 'Free trial';
+  const planName = subscriptionInfo?.product?.name || 'Free trial';
   const expiresAt = subscriptionInfo?.endsAt;
   const subscribedAt = subscriptionInfo?.createdAt;
 

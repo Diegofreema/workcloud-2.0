@@ -32,6 +32,8 @@ import { useWorkspaceModal } from '~/features/workspace/hooks/use-workspace-moda
 import { useGetCustomerInfo } from '~/hooks/rc/use-get-customer-info';
 import { useTheme } from '~/hooks/use-theme';
 import { useHandleStaff } from '~/hooks/useHandleStaffs';
+import { useGetCustomer } from '~/features/payment/hooks/use-get-customer';
+import { customerPlan } from '~/lib/utils';
 
 const Staffs = () => {
   const { id } = useLocalSearchParams<{ id: Id<'users'> }>();
@@ -44,7 +46,12 @@ const Staffs = () => {
   const [assigning, setAssigning] = useState(false);
   const { getItem, item: staff } = useHandleStaff();
   const { onClose, isOpen, onOpen } = useWorkspaceModal();
-  const { loading: fetching, subscription, isPro } = useGetCustomerInfo();
+  const {
+    data: subscriptionData,
+    isPending,
+    isError,
+    error,
+  } = useGetCustomer();
   const [role, setRole] = useState('All');
   const router = useRouter();
   const roles = useQuery(api.staff.getStaffRoles, { bossId: id });
@@ -65,8 +72,11 @@ const Staffs = () => {
     return data?.filter((worker) => worker.role === role);
   }, [data, role]);
 
-  if (!data || !roles || !workspaces || fetching) {
+  if (!data || !roles || !workspaces || isPending) {
     return <LoadingComponent />;
+  }
+  if (isError) {
+    throw new Error(error?.message || 'Something went wrong');
   }
 
   const onShowBottom = () => setShowBottom(true);
@@ -104,14 +114,19 @@ const Staffs = () => {
   };
 
   const numberOfStaffs = workers.length;
+  const { subscription, customer } = subscriptionData;
+  const isBusinessPlanPro = customerPlan({
+    subscription,
+    monthlyPlan: 'businessPlanPro',
+    yearlyPlan: 'businessPlanProYearly',
+  });
 
-  const isBusinessPlanPro =
-    subscription?.productKey === 'businessPlanPro' ||
-    subscription?.productKey === 'businessPlanProYearly';
-
-  const isEnterprisePlan =
-    subscription?.productKey === 'enterprisePlan' ||
-    subscription?.productKey === 'enterprisePlanYearly';
+  const isEnterprisePlan = customerPlan({
+    subscription,
+    monthlyPlan: 'enterprisePlan',
+    yearlyPlan: 'enterprisePlanYearly',
+  });
+  const isPro = customer.activeSubscriptions.length > 0;
   const onAddNewStaff = () => {
     if (numberOfStaffs >= 1 && !isPro) {
       toast.error('Upgrade to pro to add more staffs');

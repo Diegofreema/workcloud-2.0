@@ -38,10 +38,6 @@ export default function SignInScreen() {
       ? ['rgba(0, 0, 0, 0.7)', 'rgba(0, 0, 0, 0.9)', '#000']
       : ['rgba(255, 255, 255, 0.7)', 'rgba(255, 255, 255, 0.9)', '#fff'];
 
-  // if (!isFirstTime && isIos) {
-  //   return <Redirect href={'/sign-in'} />;
-  // }
-
   return (
     <Container>
       <ScrollView

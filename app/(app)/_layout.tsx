@@ -7,13 +7,13 @@ import { useQuery } from '@tanstack/react-query';
 import { useAudioPlayer } from 'expo-audio';
 import { useEffect } from 'react';
 import { PermissionsAndroid, Platform } from 'react-native';
-import { ChatWrapper } from '~/components/providers/ChatWrapper';
-import { VideoProvider } from '~/components/providers/video-provider';
-import { api } from '~/convex/_generated/api';
 import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
 } from 'react-native-reanimated';
+import { ChatWrapper } from '~/components/providers/ChatWrapper';
+import { VideoProvider } from '~/components/providers/video-provider';
+import { api } from '~/convex/_generated/api';
 
 const audioSource = require('~/assets/sound.wav');
 configureReanimatedLogger({

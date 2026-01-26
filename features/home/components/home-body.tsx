@@ -16,6 +16,7 @@ import { useMutation } from 'convex/react';
 import { api } from '~/convex/_generated/api';
 import { toast } from 'sonner-native';
 import { generateErrorMessage } from '~/lib/helper';
+import { useCustomerSession } from '~/features/payment/hooks/use-customer-session';
 
 type Props<T> = {
   headerText: string;
@@ -24,6 +25,7 @@ type Props<T> = {
 
 export const HomeBody = <T,>({ data, headerText }: Props<T>) => {
   const deleteConnection = useMutation(api.connection.deleteConnection);
+
   const [deleting, setDeleting] = useState(false);
   const onAlertDelete = async (item: any) => {
     Alert.alert(

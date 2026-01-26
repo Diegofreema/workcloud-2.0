@@ -9,6 +9,7 @@ import { Header } from '~/features/home/components/Header';
 import { HomeBody } from '~/features/home/components/home-body';
 import { ProfileHeader } from '~/features/home/components/ProfileHeader';
 import { useOrganizationModalHook } from '~/features/home/hooks/use-organization-modal';
+import { useCustomerSession } from '~/features/payment/hooks/use-customer-session';
 import { sliceArray } from '~/lib/helper';
 
 export function ErrorBoundary({ retry, error }: ErrorBoundaryProps) {

@@ -239,7 +239,7 @@ const Work = () => {
         customerName: '',
       });
 
-      client.on('call.accepted', async (event: StreamVideoEvent) => {
+      client.on('call.accepted', async (event) => {
         if (
           event.type === 'call.accepted' &&
           event.call.id === callId &&

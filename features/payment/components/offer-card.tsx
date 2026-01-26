@@ -1,27 +1,17 @@
-import { Checkout } from '@polar-sh/sdk/models/components/checkout.js';
-import { useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import { FunctionReturnType } from 'convex/server';
-import * as WebBrowser from 'expo-web-browser';
-import { useState } from 'react';
 import { StyleSheet, useColorScheme } from 'react-native';
-import { toast } from 'sonner-native';
 import { MyText } from '~/components/Ui/MyText';
 import VStack from '~/components/Ui/VStack';
 import Colors, { colors } from '~/constants/Colors';
-import { useAuth } from '~/context/auth';
 import { api } from '~/convex/_generated/api';
 import { Button } from '~/features/common/components/Button';
 import Card from '~/features/common/components/card';
-import { baseUrl } from '~/utils/constants';
+import { useCheckout } from '../hooks/use-checkout';
 
 type OfferingCardProps = {
   product: FunctionReturnType<typeof api.polar.listAllProducts>[number];
   disabled?: boolean;
   isMonthly: boolean;
-};
-type ReturnType = {
-  checkout: Checkout;
 };
 
 export const OfferingCard = ({
@@ -29,42 +19,15 @@ export const OfferingCard = ({
   disabled,
   isMonthly,
 }: OfferingCardProps) => {
-  const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
+  const { mutate: handleCheckout, isPending: loading } = useCheckout();
   const billingInterval = isMonthly ? 'month' : 'year';
   const colorScheme = useColorScheme();
   const color = Colors[colorScheme ?? 'light'].text;
   const price = getPrice(product, billingInterval);
   const isFree = !price || (price.priceAmount ?? 0) === 0;
-  const onCheckOut = async () => {
-    setLoading(true);
-    try {
-      // const res =  await generateCheckoutLink({
-      //     origin: '/',
-      //     productIds: [product.id],
-      //     successUrl: '/',
 
-      //   })
-      const {
-        data: { checkout },
-      } = await axios.post<ReturnType>(`${baseUrl}/checkout`, {
-        id: product.id,
-        userId: user?.id,
-      });
-
-      await WebBrowser.openBrowserAsync(checkout.url);
-      queryClient.invalidateQueries({
-        queryKey: ['customer', user?.id],
-      });
-    } catch (e) {
-      console.log(JSON.stringify(e, null, 2));
-      toast.error('Error', {
-        description: 'Failed to subscribe',
-      });
-    } finally {
-      setLoading(false);
-    }
+  const onCheckOut = () => {
+    handleCheckout({ productId: product.id });
   };
   return (
     <Card

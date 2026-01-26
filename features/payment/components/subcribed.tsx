@@ -4,7 +4,10 @@ import { MyText } from '~/components/Ui/MyText';
 import VStack from '~/components/Ui/VStack';
 import { colors } from '~/constants/Colors';
 import { Button } from '~/features/common/components/Button';
-import { useCancelSubscription } from '../hooks/use-cancel-subcription';
+
+import { useCancelSubscription } from '../hooks/use-cancel-subscription';
+import { useCustomerSession } from '../hooks/use-customer-session';
+import { CurrentMode } from './current-mode';
 
 type Props = {
   subscriptionInfo: Subscription;
@@ -12,7 +15,14 @@ type Props = {
 export const SubscribedCard = ({ subscriptionInfo }: Props) => {
   const { mutateAsync: cancelSubscription, isPending: loadingCancel } =
     useCancelSubscription();
-  const onCancelSubscription = async () => {};
+  const customerSession = useCustomerSession((state) => state.customerSession);
+
+  const onCancelSubscription = async () => {
+    await cancelSubscription({
+      id: subscriptionInfo.id,
+      token: customerSession?.token as string,
+    });
+  };
 
   const onAlertCancelSubscription = () => {
     Alert.alert(
@@ -41,33 +51,20 @@ export const SubscribedCard = ({ subscriptionInfo }: Props) => {
       gap={5}
     >
       <MyText poppins={'Bold'} fontSize={16} style={{ textAlign: 'center' }}>
-        {subscriptionInfo.product.name ?? 'Subscription'}
+        {subscriptionInfo?.product?.name ?? 'Subscription'}
       </MyText>
-      <MyText
-        poppins={'Light'}
-        fontSize={13}
-        style={{ textAlign: 'center', color: colors.gray10 }}
-      >
-        {subscriptionInfo?.recurringInterval === 'year'
-          ? 'Billed Annually'
-          : 'Billed Monthly'}
-      </MyText>
-      <MyText
-        poppins={'Light'}
-        fontSize={13}
-        style={{ textAlign: 'center', color: colors.gray10 }}
-      >
-        Status: {subscriptionInfo.status ?? 'active'}
-      </MyText>
+      <CurrentMode subscriptionInfo={subscriptionInfo} />
 
-      <Button
-        title={'Cancel Subscription'}
-        onPress={onAlertCancelSubscription}
-        loading={loadingCancel}
-        loadingTitle={'Cancelling...'}
-        style={{ backgroundColor: colors.lightBlueButton }}
-        textStyle={{ color: colors.black }}
-      />
+      {!subscriptionInfo?.canceledAt && (
+        <Button
+          title={'Cancel Subscription'}
+          onPress={onAlertCancelSubscription}
+          loading={loadingCancel}
+          loadingTitle={'Cancelling...'}
+          style={{ backgroundColor: colors.lightBlueButton }}
+          textStyle={{ color: colors.black }}
+        />
+      )}
     </VStack>
   );
 };

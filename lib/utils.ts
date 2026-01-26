@@ -4,6 +4,7 @@ import * as Updates from 'expo-updates';
 import { ConvexReactClient } from 'convex/react';
 import { Id } from '~/convex/_generated/dataModel';
 import { api } from '~/convex/_generated/api';
+import { Subscription } from '@polar-sh/sdk/models/components/subscription.js';
 
 const BACKGROUND_TASK_NAME = 'task-run-expo-update';
 
@@ -110,4 +111,19 @@ export const generateRandomString = (length: number = 20) => {
     result += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   return result;
+};
+
+export const customerPlan = ({
+  subscription,
+  monthlyPlan,
+  yearlyPlan,
+}: {
+  subscription: Subscription;
+  monthlyPlan: string;
+  yearlyPlan: string;
+}) => {
+  return (
+    subscription.product.name === monthlyPlan ||
+    subscription.product.name === yearlyPlan
+  );
 };
