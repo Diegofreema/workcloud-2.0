@@ -32,6 +32,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     image: session?.user?.image || '',
     id: session?.user?.id || '',
   };
+  console.log({ person });
   const user = session?.user;
   const { expoPushToken } = useNotification();
   const convex = useConvex();
@@ -47,7 +48,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const { data } = await axios.post(
         `https://workcloud-web.vercel.app/token`,
-        person
+        person,
       );
 
       await updateStreamToken({ streamToken: data.token });
