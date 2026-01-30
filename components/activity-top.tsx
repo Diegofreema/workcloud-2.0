@@ -106,7 +106,11 @@ export const ActivityTop = ({
         )}
         {isProcessor && (
           <CustomPressable onPress={onUpdate} disable={updating}>
-            {isResolved ? <CircleCheck /> : <Circle />}
+            {isResolved ? (
+              <CircleCheck color={iconColor} />
+            ) : (
+              <Circle color={iconColor} />
+            )}
           </CustomPressable>
         )}
       </HStack>
