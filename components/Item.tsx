@@ -22,12 +22,12 @@ export const Item = (item: Connection & { isLastItemOnList?: boolean }) => {
   );
 
   const startChannel = async () => {
-    // if (!isOpen) {
-    //   toast.info('Organization is closed', {
-    //     description: 'Please try again later during the opening hours',
-    //   });
-    //   return;
-    // }
+    if (!isOpen) {
+      toast.info('Organization is closed', {
+        description: 'Please try again later during the opening hours',
+      });
+      return;
+    }
     router.push(`/reception/${item?.organisation?._id}`);
   };
   const parsedDate = parse(
