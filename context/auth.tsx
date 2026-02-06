@@ -27,13 +27,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: session, isPending } = authClient.useSession();
 
   const [isUpdating, setIsUpdating] = React.useState(false);
-  const person = {
-    name: session?.user?.name || '',
-    email: session?.user?.email || '',
-    image: session?.user?.image || '',
-    id: session?.user?.id || '',
-  };
-  console.log({ person });
+
   const user = session?.user;
   const userId = user?.id || '';
   const userName = user?.name || '';
@@ -63,7 +57,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const { data } = await axios.post(
         `https://workcloud-web.vercel.app/token`,
-        person,,
+        person,
       );
 
       await updateStreamToken({ streamToken: data.token });
