@@ -126,7 +126,7 @@ const Staffs = () => {
     monthlyPlan: 'enterprisePlan',
     yearlyPlan: 'enterprisePlanYearly',
   });
-  const isPro = customer.activeSubscriptions?.length > 0;
+  const isPro = customer?.activeSubscriptions?.length > 0;
   const onAddNewStaff = () => {
     if (numberOfStaffs >= 1 && !isPro) {
       toast.error('Upgrade to pro to add more staffs');
