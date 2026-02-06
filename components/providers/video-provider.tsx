@@ -13,8 +13,8 @@ import {
 } from '@stream-io/video-react-native-sdk';
 import CallProvider from '~/context/call-provider';
 import { api } from '~/convex/_generated/api';
+import { streamApiKey } from '~/utils/constants';
 
-const apiKey = 'cnvc46pm8uq9';
 type CallEvent = CallMissedEvent & {
   type: 'call.missed';
   received_at?: string | Date;
@@ -30,7 +30,7 @@ export const VideoProvider = ({ children }: PropsWithChildren) => {
   const createMissedCall = useMutation(api.users.createMissedCallRecord);
 
   const client = StreamVideoClient.getOrCreateInstance({
-    apiKey,
+    apiKey: streamApiKey as string,
     user: person,
     token: user?.streamToken as string,
   });

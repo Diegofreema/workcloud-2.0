@@ -6,7 +6,6 @@ import { colors } from '~/constants/Colors';
 import { Button } from '~/features/common/components/Button';
 
 import { useCancelSubscription } from '../hooks/use-cancel-subscription';
-import { useCustomerSession } from '../hooks/use-customer-session';
 import { CurrentMode } from './current-mode';
 
 type Props = {
@@ -15,12 +14,10 @@ type Props = {
 export const SubscribedCard = ({ subscriptionInfo }: Props) => {
   const { mutateAsync: cancelSubscription, isPending: loadingCancel } =
     useCancelSubscription();
-  const customerSession = useCustomerSession((state) => state.customerSession);
 
   const onCancelSubscription = async () => {
     await cancelSubscription({
       id: subscriptionInfo.id,
-      token: customerSession?.token as string,
     });
   };
 

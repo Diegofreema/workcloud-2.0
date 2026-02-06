@@ -6,15 +6,13 @@ import {
   Theme,
   useCreateChatClient,
 } from 'stream-chat-expo';
+import { colors } from '~/constants/Colors';
 import { useAuth } from '~/context/auth';
 import { useTheme } from '~/hooks/use-theme';
 import { useUnread, useUnreadProcessor } from '~/hooks/useUnread';
+import { streamApiKey } from '~/utils/constants';
 import { LoadingComponent } from '../Ui/LoadingComponent';
 import { ChatContext } from './chat-context';
-import { colors } from '~/constants/Colors';
-import { ChannelFilters } from 'stream-chat';
-
-const apiKey = 'cnvc46pm8uq9';
 
 export const ChatWrapper = ({ children }: PropsWithChildren) => {
   const { user } = useAuth();
@@ -24,14 +22,24 @@ export const ChatWrapper = ({ children }: PropsWithChildren) => {
   const setUnreadProcessorCount = useUnreadProcessor(
     (state) => state.getUnread,
   );
+  console.log(
+    '🚀 ~ ChatWrapper ~ user?.streamToken:',
+    user?.streamToken,
+    user?.email,
+  );
 
-  const client = useCreateChatClient({
-    apiKey,
-    userData: {
+  const userData = useMemo(
+    () => ({
       id: user?.id as string,
       name: user?.name,
       image: user?.image ?? undefined,
-    },
+    }),
+    [user?.id, user?.name, user?.image],
+  );
+
+  const client = useCreateChatClient({
+    apiKey: streamApiKey as string,
+    userData,
     tokenOrProvider: user?.streamToken,
   });
 

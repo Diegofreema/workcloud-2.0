@@ -77,7 +77,7 @@ const Work = () => {
     [data?.workspace.locked],
   );
   const isWorker =
-    data?.worker?._id === loggedInUser ||
+    data?.worker?.userId === loggedInUser ||
     data?.organization?.owner?.userId === loggedInUser;
   useGetWaitlistIdForCustomer({ isWorker, waitlistId: customerWaitlistId });
   const isActive = useMemo(() => {
@@ -113,6 +113,9 @@ const Work = () => {
   ) {
     return <LoadingComponent />;
   }
+
+  console.log({ isLocked });
+
   if (isLocked) {
     return <Redirect href="/?locked=locked" />;
   }

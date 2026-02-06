@@ -8,6 +8,7 @@ import { MyText } from './Ui/MyText';
 
 import { api } from '~/convex/_generated/api';
 import { useTheme } from '~/hooks/use-theme';
+import { Button } from '~/features/common/components/Button';
 
 export const AddRole = ({
   onNavigate,
@@ -36,6 +37,9 @@ export const AddRole = ({
       setLoading(false);
     }
   };
+
+  console.log(value === '', loading);
+
   return (
     <View style={{ gap: 10, paddingTop: 15 }}>
       <MyText poppins="Medium" fontSize={15}>
@@ -57,16 +61,12 @@ export const AddRole = ({
         value={value}
         onChangeText={setValue}
       />
-      <MyButton
+      <Button
         onPress={onAddRole}
         disabled={value === '' || loading}
         loading={loading}
-        buttonStyle={{ width: '100%' }}
-      >
-        <MyText poppins="Medium" fontSize={15} style={{ color: 'white' }}>
-          Add
-        </MyText>
-      </MyButton>
+        title="Add custom role"
+      />
     </View>
   );
 };

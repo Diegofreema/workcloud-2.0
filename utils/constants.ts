@@ -53,3 +53,4 @@ export const REFRESH_COOKIE_OPTIONS = {
 // 115091837355429288485
 
 export const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
+export const streamApiKey = process.env.EXPO_PUBLIC_STREAM_API_KEY;

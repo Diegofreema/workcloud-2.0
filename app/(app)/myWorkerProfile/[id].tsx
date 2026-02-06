@@ -181,24 +181,12 @@ const Profile = () => {
           </HStack>
         </VStack>
         <View style={{ marginTop: 'auto', gap: 10, marginBottom: 20 }}>
-          <MyButton
+          <Button
             onPress={() =>
               router.push(`/myWorkerProfile/edit/${data.user._id}`)
             }
-            buttonStyle={{
-              width: '100%',
-              borderRadius: 7,
-              marginHorizontal: 10,
-            }}
-          >
-            <MyText
-              poppins="Bold"
-              style={{ color: colors.white }}
-              fontSize={12}
-            >
-              Edit work profile
-            </MyText>
-          </MyButton>
+            title="Edit work profile"
+          />
         </View>
         {data.bossId && (
           <Button

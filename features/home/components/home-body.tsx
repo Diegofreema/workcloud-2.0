@@ -1,22 +1,21 @@
-import { Alert, View } from 'react-native';
 import { LegendList } from '@legendapp/list';
-import { HeadingText } from '~/components/Ui/HeadingText';
-import { Item } from '~/components/Item';
-import { EmptyText } from '~/components/EmptyText';
-import { constantStyles } from '~/constants/styles';
+import { useMutation } from 'convex/react';
+import { Trash } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { Alert, View } from 'react-native';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Animated, {
   SharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated';
-import { Trash } from 'lucide-react-native';
-import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import { colors } from '~/constants/Colors';
-import React, { useState } from 'react';
-import { useMutation } from 'convex/react';
-import { api } from '~/convex/_generated/api';
 import { toast } from 'sonner-native';
+import { EmptyText } from '~/components/EmptyText';
+import { Item } from '~/components/Item';
+import { HeadingText } from '~/components/Ui/HeadingText';
+import { colors } from '~/constants/Colors';
+import { constantStyles } from '~/constants/styles';
+import { api } from '~/convex/_generated/api';
 import { generateErrorMessage } from '~/lib/helper';
-import { useCustomerSession } from '~/features/payment/hooks/use-customer-session';
 
 type Props<T> = {
   headerText: string;

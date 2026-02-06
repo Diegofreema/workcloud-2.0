@@ -24,10 +24,10 @@ export const createSession = async (id: string) => {
     }
   }
 };
-export const cancelSubscription = async (id: string, token: string) => {
+export const cancelSubscription = async (id: string) => {
   try {
     const { data } = await axios.delete<{ subscription: CustomerSubscription }>(
-      `${baseUrl}/customer/cancel-subscription?id=${id}&session=${token}`,
+      `${baseUrl}/customer/cancel-subscription?id=${id}`,
     );
     return data;
   } catch (error) {

@@ -33,7 +33,7 @@ import { useGetCustomerInfo } from '~/hooks/rc/use-get-customer-info';
 import { useTheme } from '~/hooks/use-theme';
 import { useHandleStaff } from '~/hooks/useHandleStaffs';
 import { useGetCustomer } from '~/features/payment/hooks/use-get-customer';
-import { customerPlan } from '~/lib/utils';
+import { changeFirstLetterToUpperCase, customerPlan } from '~/lib/utils';
 
 const Staffs = () => {
   const { id } = useLocalSearchParams<{ id: Id<'users'> }>();
@@ -126,7 +126,7 @@ const Staffs = () => {
     monthlyPlan: 'enterprisePlan',
     yearlyPlan: 'enterprisePlanYearly',
   });
-  const isPro = customer.activeSubscriptions.length > 0;
+  const isPro = customer.activeSubscriptions?.length > 0;
   const onAddNewStaff = () => {
     if (numberOfStaffs >= 1 && !isPro) {
       toast.error('Upgrade to pro to add more staffs');
@@ -336,7 +336,7 @@ const Staffs = () => {
               ]}
             >
               <MyText poppins="Medium" fontSize={20}>
-                {item.role}
+                {changeFirstLetterToUpperCase(item.role)}
               </MyText>
             </Pressable>
           )}

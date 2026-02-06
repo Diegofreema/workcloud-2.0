@@ -1,5 +1,6 @@
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
+import { useMemo, useCallback } from 'react';
 
 import { useConvex, useMutation, useQuery } from 'convex/react';
 import { api } from '~/convex/_generated/api';
@@ -26,28 +27,36 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: session, isPending } = authClient.useSession();
 
   const [isUpdating, setIsUpdating] = React.useState(false);
-  const person = {
-    name: session?.user?.name || '',
-    email: session?.user?.email || '',
-    image: session?.user?.image || '',
-    id: session?.user?.id || '',
-  };
   const user = session?.user;
+  const userId = user?.id || '';
+  const userName = user?.name || '';
+  const userEmail = user?.email || '';
+  const userImage = user?.image || '';
+
+  const person = useMemo(
+    () => ({
+      name: userName,
+      email: userEmail,
+      image: userImage,
+      id: userId,
+    }),
+    [userName, userEmail, userImage, userId],
+  );
+
   const { expoPushToken } = useNotification();
   const convex = useConvex();
   const updatePushToken = useMutation(api.users.updatePushToken);
   const updateStreamToken = useMutation(api.users.updateStreamToken);
-  const tokenProvider = React.useCallback(async () => {
-    const values = JSON.stringify({
-      ...person,
-    });
+
+  const tokenProvider = useCallback(async () => {
+    const values = JSON.stringify(person);
     setIsUpdating(true);
     await AsyncStorage.setItem('person', JSON.stringify(person));
     await AsyncStorage.setItem('body', values);
     try {
       const { data } = await axios.post(
         `https://workcloud-web.vercel.app/token`,
-        person
+        person,
       );
 
       await updateStreamToken({ streamToken: data.token });
@@ -56,15 +65,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
       return data.token;
     } catch (error) {
-      console.error('error', error);
+      console.error('ERROR_TOKEN_PROVIDER', { error });
       throw new Error('Failed to update user data');
     } finally {
       setIsUpdating(false);
     }
   }, [person, updateStreamToken]);
+
   const isAuthenticated = !!session?.session;
-  const noStreamToken = isAuthenticated && !user?.streamToken;
-  const isLoading = isPending || isUpdating || noStreamToken;
+  const isLoading = isPending || isUpdating;
+
   React.useEffect(() => {
     if (expoPushToken && session?.session) {
       updatePushToken({ pushToken: expoPushToken });
@@ -72,12 +82,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         token: expoPushToken,
       });
     }
-  }, [expoPushToken, updatePushToken, convex]);
+  }, [expoPushToken, updatePushToken, convex, session?.session]);
+
+  // Call tokenProvider on every mount when authenticated
   React.useEffect(() => {
-    if (isAuthenticated && person?.id && !user?.streamToken) {
+    if (isAuthenticated && userId) {
       tokenProvider();
     }
-  }, [isAuthenticated, tokenProvider, person?.id, user?.streamToken]);
+  }, []);
 
   if (isLoading) {
     return <LoadingComponent />;

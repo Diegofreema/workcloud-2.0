@@ -123,7 +123,7 @@ export const customerPlan = ({
   yearlyPlan: string;
 }) => {
   return (
-    subscription.product.name === monthlyPlan ||
-    subscription.product.name === yearlyPlan
+    subscription.product?.name === monthlyPlan ||
+    subscription.product?.name === yearlyPlan
   );
 };

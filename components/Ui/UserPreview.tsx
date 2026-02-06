@@ -186,6 +186,9 @@ export const WorkPreview = ({ item }: { item: PendingRequests }) => {
   if (toPending || fromPending) {
     return null;
   }
+
+  console.log({ role });
+
   const acceptRequest = async () => {
     if (!user?.id || isPending || isError || !organisation?._id) return;
     setAccepting(true);

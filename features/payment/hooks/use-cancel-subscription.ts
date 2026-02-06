@@ -6,8 +6,7 @@ export const useCancelSubscription = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, token }: { id: string; token: string }) =>
-      cancelSubscription(id, token),
+    mutationFn: ({ id }: { id: string }) => cancelSubscription(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customer'] });
       toast.success('Subscription cancelled successfully');
