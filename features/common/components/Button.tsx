@@ -1,7 +1,7 @@
-import { MyText } from "~/components/Ui/MyText";
-import { CustomPressable } from "~/components/Ui/CustomPressable";
-import { StyleProp, TextStyle, ViewStyle } from "react-native";
-import { colors } from "~/constants/Colors";
+import { MyText } from '~/components/Ui/MyText';
+import { CustomPressable } from '~/components/Ui/CustomPressable';
+import { StyleProp, TextStyle, ViewStyle } from 'react-native';
+import { colors } from '~/constants/Colors';
 
 type Props = {
   title: string;
@@ -28,18 +28,18 @@ export const Button = ({
       style={[
         {
           backgroundColor: colors.dialPad,
-          height: 45,
-          alignItems: "center",
-          justifyContent: "center",
+          alignItems: 'center',
+          justifyContent: 'center',
           borderRadius: 5,
+          paddingVertical: 15,
         },
         style,
       ]}
     >
       <MyText
-        poppins={"Medium"}
+        poppins={'Medium'}
         fontSize={15}
-        style={[{ color: "white" }, textStyle]}
+        style={[{ color: 'white' }, textStyle]}
       >
         {loading ? loadingTitle : title}
       </MyText>

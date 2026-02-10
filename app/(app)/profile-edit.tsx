@@ -40,6 +40,9 @@ const ProfileEdit = () => {
       fetchOptions: {
         onSuccess: () => {
           StreamVideoRN.onPushLogout();
+          authClient.updateUser({
+            streamToken: undefined,
+          });
           toast.success('Logged out successfully');
           setLoading(false);
         },

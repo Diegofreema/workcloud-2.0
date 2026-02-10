@@ -8,9 +8,8 @@ export function SignIn() {
   const [loading, setLoading] = useState(false);
 
   const handleSignIn = async (provider: 'google' | 'apple') => {
-    const data = await authClient.signIn.social({
+    await authClient.signIn.social({
       provider,
-      callbackURL: '/',
       fetchOptions: {
         onRequest: () => setLoading(true),
         onSuccess: async () => {
@@ -20,12 +19,8 @@ export function SignIn() {
           toast.error(error.message || error.statusText);
           setLoading(false);
         },
-        onResponse: () => {
-          setLoading(false);
-        },
       },
     });
-    console.log({ data });
   };
   return (
     <View style={{ gap: 15 }}>

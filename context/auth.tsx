@@ -12,8 +12,6 @@ import { User } from 'better-auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-WebBrowser.maybeCompleteAuthSession();
-
 type BetterAuthUser = User & {
   userId?: string | null | undefined;
   streamToken?: string | null | undefined;
@@ -64,6 +62,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       await authClient.updateUser({
         streamToken: data.token,
       });
+      console.log('TOKEN_PROVIDER', data.token);
       return data.token;
     } catch (error) {
       console.error('ERROR_TOKEN_PROVIDER', { error });
@@ -87,10 +86,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Call tokenProvider on every mount when authenticated
   React.useEffect(() => {
-    if (isAuthenticated && userId) {
+    if (isAuthenticated) {
       tokenProvider();
     }
-  }, []);
+  }, [isAuthenticated]);
 
   if (isLoading) {
     return <LoadingComponent />;

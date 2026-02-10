@@ -15,7 +15,6 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_aHVnZS1nYXplbGxlLTI5LmNsZXJrLmFjY291bnRzLmRldiQ",
         "EXPO_PUBLIC_CONVEX_URL": "https://giddy-marten-642.convex.cloud",
         "EXPO_PUBLIC_STREAM_API_KEY": "dg8u9pbbgghg",
         "EXPO_PUBLIC_API": "https://www.workcloud-backend.xyz"
@@ -26,9 +25,9 @@
       "autoIncrement": true,
       "channel": "production",
       "env": {
-        "EXPO_PUBLIC_CONVEX_URL": "https://kindred-chihuahua-431.convex.cloud",
-        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_aHVnZS1nYXplbGxlLTI5LmNsZXJrLmFjY291bnRzLmRldiQ",
-        "EXPO_PUBLIC_STREAM_API_KEY": "dg8u9pbbgghg"
+        "EXPO_PUBLIC_CONVEX_URL": "https://giddy-marten-642.convex.cloud",
+        "EXPO_PUBLIC_STREAM_API_KEY": "dg8u9pbbgghg",
+        "EXPO_PUBLIC_API": "https://www.workcloud-backend.xyz"
       }
     }
   },
