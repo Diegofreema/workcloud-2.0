@@ -45,24 +45,19 @@ export default function AppLayout() {
 
   return (
     <VideoProvider>
-      <ChatWrapper>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <Stack
-            screenOptions={{ headerShown: false }}
-            initialRouteName="(tabs)"
-          >
-            <Stack.Screen
-              name="upload-review"
-              options={{
-                presentation: 'modal',
-                headerShown: false,
-                animation:
-                  Platform.OS === 'ios' ? 'default' : 'slide_from_bottom',
-              }}
-            />
-          </Stack>
-        </GestureHandlerRootView>
-      </ChatWrapper>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Stack screenOptions={{ headerShown: false }} initialRouteName="(tabs)">
+          <Stack.Screen
+            name="upload-review"
+            options={{
+              presentation: 'modal',
+              headerShown: false,
+              animation:
+                Platform.OS === 'ios' ? 'default' : 'slide_from_bottom',
+            }}
+          />
+        </Stack>
+      </GestureHandlerRootView>
     </VideoProvider>
   );
 }

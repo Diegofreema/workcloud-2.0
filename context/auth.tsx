@@ -33,8 +33,6 @@ const AuthContext = createContext({
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { data: session } = authClient.useSession();
 
-  const [isUpdating, setIsUpdating] = useState(false);
-
   const user = session?.user;
   const userId = user?.id || '';
   const userName = user?.name || '';
@@ -58,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const tokenProvider = useCallback(async () => {
     const values = JSON.stringify(person);
-    setIsUpdating(true);
+
     await AsyncStorage.setItem('person', JSON.stringify(person));
     await AsyncStorage.setItem('body', values);
     try {
@@ -76,13 +74,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error('ERROR_TOKEN_PROVIDER', { error });
       throw new Error('Failed to update user data');
-    } finally {
-      setIsUpdating(false);
     }
   }, [person, updateStreamToken]);
 
   const isAuthenticated = !!session?.session;
-  const isLoading = isUpdating;
 
   useEffect(() => {
     if (expoPushToken && session?.session) {
@@ -99,10 +94,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       tokenProvider();
     }
   }, [isAuthenticated]);
-
-  if (isLoading) {
-    return <LoadingComponent />;
-  }
 
   return (
     <AuthContext.Provider

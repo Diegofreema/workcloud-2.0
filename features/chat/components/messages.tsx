@@ -19,7 +19,6 @@ import { ChannelList } from '~/features/chat/components/channel-list';
 import { IconBtn } from '~/features/common/components/icon-btn';
 import { SearchComponent } from '~/features/common/components/SearchComponent';
 import { TabsSelectorString } from '~/features/common/components/tabs';
-import { useUnreadProcessorMessageCount } from '~/features/common/hook/use-unread-message-count';
 import { useUnreadProcessor } from '~/hooks/useUnread';
 export const Messages = () => {
   const { user } = useAuth();
