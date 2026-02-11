@@ -13,6 +13,7 @@ import { useUnread, useUnreadProcessor } from '~/hooks/useUnread';
 import { streamApiKey } from '~/utils/constants';
 import { LoadingComponent } from '../Ui/LoadingComponent';
 import { ChatContext } from './chat-context';
+import { Text } from 'react-native';
 
 export const ChatWrapper = ({ children }: PropsWithChildren) => {
   const { user } = useAuth();
@@ -21,11 +22,6 @@ export const ChatWrapper = ({ children }: PropsWithChildren) => {
   const setUnreadCount = useUnread((state) => state.getUnread);
   const setUnreadProcessorCount = useUnreadProcessor(
     (state) => state.getUnread,
-  );
-  console.log(
-    '🚀 ~ ChatWrapper ~ user?.streamToken:',
-    user?.streamToken,
-    user?.email,
   );
 
   const userData = useMemo(

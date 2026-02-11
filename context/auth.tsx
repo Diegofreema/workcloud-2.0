@@ -1,6 +1,14 @@
 import * as WebBrowser from 'expo-web-browser';
-import * as React from 'react';
-import { useMemo, useCallback } from 'react';
+
+import {
+  useMemo,
+  useCallback,
+  useState,
+  useEffect,
+  ReactNode,
+  createContext,
+  useContext,
+} from 'react';
 
 import { useConvex, useMutation, useQuery } from 'convex/react';
 import { api } from '~/convex/_generated/api';
@@ -11,20 +19,21 @@ import { authClient } from '~/lib/auth-client';
 import { User } from 'better-auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { Text } from 'react-native';
 
 type BetterAuthUser = User & {
   userId?: string | null | undefined;
   streamToken?: string | null | undefined;
 };
-const AuthContext = React.createContext({
+const AuthContext = createContext({
   user: undefined as BetterAuthUser | undefined,
   isAuthenticated: false,
 });
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const { data: session, isPending } = authClient.useSession();
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const { data: session } = authClient.useSession();
 
-  const [isUpdating, setIsUpdating] = React.useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const user = session?.user;
   const userId = user?.id || '';
@@ -73,9 +82,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [person, updateStreamToken]);
 
   const isAuthenticated = !!session?.session;
-  const isLoading = isPending || isUpdating;
+  const isLoading = isUpdating;
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (expoPushToken && session?.session) {
       updatePushToken({ pushToken: expoPushToken });
       convex.mutation(api.pushNotification.recordPushNotificationToken, {
@@ -85,7 +94,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [expoPushToken, updatePushToken, convex, session?.session]);
 
   // Call tokenProvider on every mount when authenticated
-  React.useEffect(() => {
+  useEffect(() => {
     if (isAuthenticated) {
       tokenProvider();
     }
@@ -108,7 +117,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const useAuth = () => {
-  const context = React.useContext(AuthContext);
+  const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }

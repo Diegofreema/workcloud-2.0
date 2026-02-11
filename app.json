@@ -19,7 +19,9 @@
         "NSCameraUsageDescription": "This app uses the camera for video calls.",
         "NSMicrophoneUsageDescription": "This app uses the microphone to record audio for video or voice messages.",
         "ITSAppUsesNonExemptEncryption": false,
-        "UIBackgroundModes": ["audio"]
+        "UIBackgroundModes": [
+          "audio"
+        ]
       },
       "entitlements": {
         "aps-environment": "production"
@@ -31,7 +33,6 @@
         "foregroundImage": "./assets/images/appIcon.png",
         "backgroundColor": "#ffffff"
       },
-
       "package": "com.workcloud.app",
       "edgeToEdgeEnabled": true,
       "googleServicesFile": "./google-services.json"
@@ -41,11 +42,15 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png",
       "babel": {
-        "exclude": ["react-native-pdf"]
+        "exclude": [
+          "react-native-pdf"
+        ]
       }
     },
     "plugins": [
-      ["expo-router"],
+      [
+        "expo-router"
+      ],
       [
         "expo-audio",
         {
@@ -73,7 +78,6 @@
           "microphonePermission": "$(PRODUCT_NAME) requires microphone access in order to capture and transmit audio"
         }
       ],
-
       [
         "expo-splash-screen",
         {
@@ -118,7 +122,10 @@
       [
         "react-native-permissions",
         {
-          "iosPermissions": ["Camera", "Microphone"]
+          "iosPermissions": [
+            "Camera",
+            "Microphone"
+          ]
         }
       ],
       [
@@ -148,7 +155,8 @@
           "supportsBackgroundPlayback": true,
           "supportsPictureInPicture": true
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true

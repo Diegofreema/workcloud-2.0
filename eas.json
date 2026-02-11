@@ -7,7 +7,13 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "channel": "development"
+      "channel": "development",
+      "env": {
+        "EXPO_PUBLIC_CONVEX_URL": "https://giddy-marten-642.convex.cloud",
+        "EXPO_PUBLIC_CONVEX_SITE_URL": "https://giddy-marten-642.convex.site",
+        "EXPO_PUBLIC_STREAM_API_KEY": "dg8u9pbbgghg",
+        "EXPO_PUBLIC_API": "https://www.workcloud-backend.xyz"
+      }
     },
     "preview": {
       "distribution": "internal",
@@ -16,6 +22,7 @@
       },
       "env": {
         "EXPO_PUBLIC_CONVEX_URL": "https://giddy-marten-642.convex.cloud",
+        "EXPO_PUBLIC_CONVEX_SITE_URL": "https://giddy-marten-642.convex.site",
         "EXPO_PUBLIC_STREAM_API_KEY": "dg8u9pbbgghg",
         "EXPO_PUBLIC_API": "https://www.workcloud-backend.xyz"
       },
@@ -26,6 +33,7 @@
       "channel": "production",
       "env": {
         "EXPO_PUBLIC_CONVEX_URL": "https://giddy-marten-642.convex.cloud",
+        "EXPO_PUBLIC_CONVEX_SITE_URL": "https://giddy-marten-642.convex.site",
         "EXPO_PUBLIC_STREAM_API_KEY": "dg8u9pbbgghg",
         "EXPO_PUBLIC_API": "https://www.workcloud-backend.xyz"
       }
