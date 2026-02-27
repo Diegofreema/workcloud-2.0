@@ -7,6 +7,9 @@ function handleRegistrationError(errorMessage: string) {
   throw new Error(errorMessage);
 }
 export async function registerForPushNotificationsAsync() {
+  // Push notifications are not supported on web
+  if (Platform.OS === 'web') return;
+
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('default', {
       name: 'default',
@@ -26,7 +29,7 @@ export async function registerForPushNotificationsAsync() {
     }
     if (finalStatus !== 'granted') {
       handleRegistrationError(
-        'Permission not granted to get push token for push notification!'
+        'Permission not granted to get push token for push notification!',
       );
     }
     const projectId =

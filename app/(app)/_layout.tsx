@@ -11,9 +11,10 @@ import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
 } from 'react-native-reanimated';
-import { ChatWrapper } from '~/components/providers/ChatWrapper';
+
 import { VideoProvider } from '~/components/providers/video-provider';
 import { api } from '~/convex/_generated/api';
+import { ChatWrapper } from '~/components/providers/ChatWrapper';
 
 const audioSource = require('~/assets/sound.wav');
 configureReanimatedLogger({
@@ -45,19 +46,24 @@ export default function AppLayout() {
 
   return (
     <VideoProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <Stack screenOptions={{ headerShown: false }} initialRouteName="(tabs)">
-          <Stack.Screen
-            name="upload-review"
-            options={{
-              presentation: 'modal',
-              headerShown: false,
-              animation:
-                Platform.OS === 'ios' ? 'default' : 'slide_from_bottom',
-            }}
-          />
-        </Stack>
-      </GestureHandlerRootView>
+      <ChatWrapper>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <Stack
+            screenOptions={{ headerShown: false }}
+            initialRouteName="(tabs)"
+          >
+            <Stack.Screen
+              name="upload-review"
+              options={{
+                presentation: 'modal',
+                headerShown: false,
+                animation:
+                  Platform.OS === 'ios' ? 'default' : 'slide_from_bottom',
+              }}
+            />
+          </Stack>
+        </GestureHandlerRootView>
+      </ChatWrapper>
     </VideoProvider>
   );
 }

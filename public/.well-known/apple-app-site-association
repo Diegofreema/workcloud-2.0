@@ -1,0 +1,13 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "B9ZTZA299S.com.workcloud.app",
+        "paths": [
+          "/reception/*"
+        ]
+      }
+    ]
+  }
+}

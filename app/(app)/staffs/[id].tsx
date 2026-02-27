@@ -23,16 +23,15 @@ import { StaffBottomSheet } from '~/components/Ui/staff-bottom';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
 import { LoadingModal } from '~/features/common/components/loading-modal';
+import { useGetCustomer } from '~/features/payment/hooks/use-get-customer';
 import { StaffLists } from '~/features/staff/components/staff-lists';
 import { StaffRoles } from '~/features/staff/components/staff-roles';
 import { useCreateStaffState } from '~/features/staff/hooks/use-create-staff-state';
 import { ProcessorType, StaffType } from '~/features/staff/type';
 import { CustomModal } from '~/features/workspace/components/modal/custom-modal';
 import { useWorkspaceModal } from '~/features/workspace/hooks/use-workspace-modal';
-import { useGetCustomerInfo } from '~/hooks/rc/use-get-customer-info';
 import { useTheme } from '~/hooks/use-theme';
 import { useHandleStaff } from '~/hooks/useHandleStaffs';
-import { useGetCustomer } from '~/features/payment/hooks/use-get-customer';
 import { changeFirstLetterToUpperCase, customerPlan } from '~/lib/utils';
 
 const Staffs = () => {

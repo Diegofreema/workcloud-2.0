@@ -18,12 +18,13 @@ import {
 import { Send } from 'lucide-react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { ChatHeader } from '~/components/Ui/ChatHeader';
+import { LoadingComponent } from '~/components/Ui/LoadingComponent';
 
 export const Chat = () => {
   const { channel } = useAppChatContext();
   const headerHeight = useHeaderHeight() + (StatusBar.currentHeight ?? 0);
   const { bottom } = useSafeAreaInsets();
-  if (!channel) return null;
+  if (!channel) return <LoadingComponent />;
   // console.log(channel.state.members);
 
   return (

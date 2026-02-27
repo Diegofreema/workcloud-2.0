@@ -21,6 +21,7 @@ export const useCheckout = () => {
     },
     onError: (error: any) => {
       console.log(JSON.stringify(error, null, 2));
+      console.log({ error });
 
       const errorMessage =
         error?.message ||

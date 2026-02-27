@@ -263,12 +263,12 @@ const Work = () => {
           });
         }
       });
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
 
       const errorMessage = generateErrorMessage(error, 'Something went wrong');
       toast.error("Something went wrong couldn't add to call", {
-        description: errorMessage,
+        description: error.message,
       });
     } finally {
       setAddingToCall(false);

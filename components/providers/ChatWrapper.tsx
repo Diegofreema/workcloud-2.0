@@ -1,4 +1,4 @@
-import { PropsWithChildren, useEffect, useMemo } from 'react';
+import { PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
 import {
   Chat,
   DeepPartial,
@@ -13,7 +13,7 @@ import { useUnread, useUnreadProcessor } from '~/hooks/useUnread';
 import { streamApiKey } from '~/utils/constants';
 import { LoadingComponent } from '../Ui/LoadingComponent';
 import { ChatContext } from './chat-context';
-import { Text } from 'react-native';
+import { tokenProvider } from '~/lib/utils';
 
 export const ChatWrapper = ({ children }: PropsWithChildren) => {
   const { user } = useAuth();
@@ -28,15 +28,22 @@ export const ChatWrapper = ({ children }: PropsWithChildren) => {
     () => ({
       id: user?.id as string,
       name: user?.name,
-      image: user?.image ?? undefined,
+      image: user?.image as string,
     }),
     [user?.id, user?.name, user?.image],
   );
 
+  const tokenProviderCallBack = useCallback(() => {
+    return tokenProvider({
+      email: user?.email,
+      ...userData,
+    });
+  }, [user.email, userData]);
+
   const client = useCreateChatClient({
     apiKey: streamApiKey as string,
     userData,
-    tokenOrProvider: user?.streamToken,
+    tokenOrProvider: tokenProviderCallBack,
   });
 
   useEffect(() => {

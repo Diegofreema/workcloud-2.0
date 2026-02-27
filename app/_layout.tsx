@@ -28,6 +28,7 @@ import { useTheme } from '~/hooks/use-theme';
 import { CustomStatusBar } from '~/components/custom-status-bar';
 import Colors from '~/constants/Colors';
 import { Provider } from '~/components/provider';
+import { useConvex } from 'convex/react';
 // import { registerTask } from "~/lib/utils";
 
 // Construct a new integration instance. This is needed to communicate between the integration and React
@@ -104,7 +105,9 @@ export function RootLayout() {
   const theme = useTheme((state) => state.theme);
 
   useEffect(() => {
-    Appearance.setColorScheme(theme);
+    if (Platform.OS !== 'web') {
+      Appearance.setColorScheme(theme);
+    }
   }, [theme]);
   const pathname = usePathname();
   console.log('🚀 ~ RootLayoutNav ~ pathname:', pathname);

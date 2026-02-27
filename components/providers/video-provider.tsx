@@ -1,18 +1,16 @@
-import { View, Text } from 'react-native';
-import React, { PropsWithChildren, useEffect } from 'react';
-import { useAuth } from '~/context/auth';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useMutation } from 'convex/react';
-import { colors } from '~/constants/Colors';
-import { Id } from '~/convex/_generated/dataModel';
 import {
   CallMissedEvent,
   StreamVideo,
   StreamVideoClient,
 } from '@stream-io/video-react-native-sdk';
+import { useMutation } from 'convex/react';
+import React, { PropsWithChildren, useCallback, useEffect } from 'react';
+import { colors } from '~/constants/Colors';
+import { useAuth } from '~/context/auth';
 import CallProvider from '~/context/call-provider';
 import { api } from '~/convex/_generated/api';
+import { Id } from '~/convex/_generated/dataModel';
+import { tokenProvider } from '~/lib/utils';
 import { streamApiKey } from '~/utils/constants';
 
 type CallEvent = CallMissedEvent & {
@@ -22,17 +20,23 @@ type CallEvent = CallMissedEvent & {
 export const VideoProvider = ({ children }: PropsWithChildren) => {
   const { user } = useAuth();
   const person = {
-    id: user?.id!,
+    id: user?.id,
     name: user?.name,
-    image: user?.image!,
+    image: user?.image as string,
   };
 
   const createMissedCall = useMutation(api.users.createMissedCallRecord);
+  const tokenProviderCallBack = useCallback(() => {
+    return tokenProvider({
+      email: user?.email,
+      ...person,
+    });
+  }, [user.email, person]);
 
   const client = StreamVideoClient.getOrCreateInstance({
     apiKey: streamApiKey as string,
     user: person,
-    token: user?.streamToken as string,
+    tokenProvider: tokenProviderCallBack,
   });
 
   //@ts-ignore

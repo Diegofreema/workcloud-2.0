@@ -5,6 +5,9 @@ import { ConvexReactClient } from 'convex/react';
 import { Id } from '~/convex/_generated/dataModel';
 import { api } from '~/convex/_generated/api';
 import { Subscription } from '@polar-sh/sdk/models/components/subscription.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { authClient } from './auth-client';
 
 const BACKGROUND_TASK_NAME = 'task-run-expo-update';
 
@@ -126,4 +129,31 @@ export const customerPlan = ({
     subscription?.product?.name === monthlyPlan ||
     subscription?.product?.name === yearlyPlan
   );
+};
+
+export const tokenProvider = async (person: {
+  name: string;
+  email: string;
+  image: string;
+  id: string;
+}) => {
+  const values = JSON.stringify(person);
+
+  await AsyncStorage.setItem('person', JSON.stringify(person));
+  await AsyncStorage.setItem('body', values);
+  try {
+    const { data } = await axios.post(
+      `https://workcloud-web.vercel.app/token`,
+      person,
+    );
+
+    await authClient.updateUser({
+      streamToken: data.token,
+    });
+
+    return data.token;
+  } catch (error) {
+    console.error('ERROR_TOKEN_PROVIDER', { error });
+    throw new Error('Failed to update user data');
+  }
 };

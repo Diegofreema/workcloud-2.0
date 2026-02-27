@@ -1,32 +1,24 @@
-import * as WebBrowser from 'expo-web-browser';
-
 import {
-  useMemo,
-  useCallback,
-  useState,
-  useEffect,
   ReactNode,
   createContext,
   useContext,
+  useEffect,
+  useMemo,
 } from 'react';
 
-import { useConvex, useMutation, useQuery } from 'convex/react';
+import { useConvex, useMutation } from 'convex/react';
 import { api } from '~/convex/_generated/api';
 
-import { LoadingComponent } from '~/components/Ui/LoadingComponent';
-import { useNotification } from './notification-context';
-import { authClient } from '~/lib/auth-client';
 import { User } from 'better-auth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import { Text } from 'react-native';
+import { authClient } from '~/lib/auth-client';
+import { useNotification } from './notification-context';
 
 type BetterAuthUser = User & {
   userId?: string | null | undefined;
   streamToken?: string | null | undefined;
 };
 const AuthContext = createContext({
-  user: undefined as BetterAuthUser | undefined,
+  user: {} as BetterAuthUser,
   isAuthenticated: false,
 });
 
@@ -52,30 +44,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { expoPushToken } = useNotification();
   const convex = useConvex();
   const updatePushToken = useMutation(api.users.updatePushToken);
-  const updateStreamToken = useMutation(api.users.updateStreamToken);
-
-  const tokenProvider = useCallback(async () => {
-    const values = JSON.stringify(person);
-
-    await AsyncStorage.setItem('person', JSON.stringify(person));
-    await AsyncStorage.setItem('body', values);
-    try {
-      const { data } = await axios.post(
-        `https://workcloud-web.vercel.app/token`,
-        person,
-      );
-
-      await updateStreamToken({ streamToken: data.token });
-      await authClient.updateUser({
-        streamToken: data.token,
-      });
-      console.log('TOKEN_PROVIDER', data.token);
-      return data.token;
-    } catch (error) {
-      console.error('ERROR_TOKEN_PROVIDER', { error });
-      throw new Error('Failed to update user data');
-    }
-  }, [person, updateStreamToken]);
 
   const isAuthenticated = !!session?.session;
 
@@ -88,17 +56,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [expoPushToken, updatePushToken, convex, session?.session]);
 
-  // Call tokenProvider on every mount when authenticated
-  useEffect(() => {
-    if (isAuthenticated) {
-      tokenProvider();
-    }
-  }, [isAuthenticated]);
-
   return (
     <AuthContext.Provider
       value={{
-        user: session?.user,
+        user: session?.user!,
         isAuthenticated,
       }}
     >

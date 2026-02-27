@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Platform, View } from 'react-native';
 import { toast } from 'sonner-native';
@@ -15,6 +16,7 @@ export function SignIn() {
         onRequest: () => setLoading(true),
         onSuccess: async () => {
           setLoading(false);
+          router.replace('/');
         },
         onError: ({ error }) => {
           toast.error(error.message || error.statusText);
@@ -26,19 +28,19 @@ export function SignIn() {
   };
   return (
     <View style={{ gap: 15 }}>
-      {/* {Platform.OS === 'android' && ( */}
-      <Button
-        title={'Sign in with Google'}
-        loadingTitle={'Signing in...'}
-        onPress={() => handleSignIn('google')}
-        loading={loading}
-        disabled={loading}
-      />
-      {/* )} */}
+      {Platform.OS === 'android' && (
+        <Button
+          title={'Sign in with Google'}
+          loadingTitle={'Signing in...'}
+          onPress={() => handleSignIn('google')}
+          loading={loading}
+          disabled={loading}
+        />
+      )}
 
       {Platform.OS === 'ios' && (
         <Button
-          title={'Continue'}
+          title={'Sign in with Apple'}
           loadingTitle={'Signing in...'}
           onPress={() => handleSignIn('apple')}
           loading={loading}
