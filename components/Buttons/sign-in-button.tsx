@@ -5,7 +5,12 @@ import { toast } from 'sonner-native';
 import { Button } from '~/features/common/components/Button';
 import { authClient } from '~/lib/auth-client';
 
-export function SignIn() {
+type Props = {
+  /** Route to push after successful sign-in. Defaults to '/'. */
+  redirectTo?: string;
+};
+
+export function SignIn({ redirectTo = '/' }: Props) {
   const [loading, setLoading] = useState(false);
 
   const handleSignIn = async (provider: 'google' | 'apple') => {
@@ -16,7 +21,7 @@ export function SignIn() {
         onRequest: () => setLoading(true),
         onSuccess: async () => {
           setLoading(false);
-          router.replace('/');
+          router.replace(redirectTo as any);
         },
         onError: ({ error }) => {
           toast.error(error.message || error.statusText);

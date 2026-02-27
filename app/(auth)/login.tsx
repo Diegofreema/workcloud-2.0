@@ -1,5 +1,6 @@
 import { Divider } from '@rneui/themed';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useLocalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
 import {
   Image,
@@ -19,14 +20,25 @@ import { useTheme } from '~/hooks/use-theme';
 
 export default function SignInScreen() {
   const { height } = useWindowDimensions();
-
   const { theme: darkMode } = useTheme();
-
-  // const { signIn } = useSignIn();
   const { width } = useWindowDimensions();
+  const { redirect, orgId } = useLocalSearchParams<{
+    redirect?: string;
+    orgId?: string;
+  }>();
   const setFirstTimeToFalse = useFirstTime((state) => state.setIsFirstTime);
   const isFirstTime = useFirstTime((state) => state.isFirstTime);
   const isIos = Platform.OS === 'ios';
+
+  // Build the post-login destination.
+  // /reception/:id or /overview/:id (authenticated routes)
+  const redirectTo =
+    redirect && orgId
+      ? redirect === 'reception'
+        ? `/reception/${orgId}`
+        : `/overview/${orgId}`
+      : '/';
+
   useEffect(() => {
     if (isFirstTime && isIos) {
       setFirstTimeToFalse();
@@ -53,14 +65,7 @@ export default function SignInScreen() {
             </Subtitle>
           </View>
           <Divider />
-          <View
-            style={{
-              width: '100%',
-
-              alignItems: 'center',
-              flex: 1,
-            }}
-          >
+          <View style={{ width: '100%', alignItems: 'center', flex: 1 }}>
             <Image
               source={require('~/assets/images/d.png')}
               style={{
@@ -85,7 +90,7 @@ export default function SignInScreen() {
           }}
         >
           <View style={{ marginTop: 'auto', marginBottom: 20 }}>
-            <SignIn />
+            <SignIn redirectTo={redirectTo} />
           </View>
         </LinearGradient>
       </ScrollView>

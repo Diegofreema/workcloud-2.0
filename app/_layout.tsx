@@ -89,6 +89,7 @@ const InitialRouteLayout = () => {
   return (
     <KeyboardProvider>
       <Stack>
+        <Stack.Screen name="(public)" options={{ headerShown: false }} />
         <Stack.Protected guard={isAuthenticated}>
           <Stack.Screen name="(app)" options={{ headerShown: false }} />
         </Stack.Protected>
