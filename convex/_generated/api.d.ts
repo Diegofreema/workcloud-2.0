@@ -19,6 +19,7 @@ import type * as email_newOrganisationCreated from "../email/newOrganisationCrea
 import type * as email_newOrganizationEmail from "../email/newOrganizationEmail.js";
 import type * as email_welcomeEmail from "../email/welcomeEmail.js";
 import type * as externalFuntions from "../externalFuntions.js";
+import type * as guests from "../guests.js";
 import type * as handleEmail from "../handleEmail.js";
 import type * as helper from "../helper.js";
 import type * as http from "../http.js";
@@ -57,6 +58,7 @@ declare const fullApi: ApiFromModules<{
   "email/newOrganizationEmail": typeof email_newOrganizationEmail;
   "email/welcomeEmail": typeof email_welcomeEmail;
   externalFuntions: typeof externalFuntions;
+  guests: typeof guests;
   handleEmail: typeof handleEmail;
   helper: typeof helper;
   http: typeof http;

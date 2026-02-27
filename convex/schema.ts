@@ -236,6 +236,11 @@ const missedCall = {
   missedAt: v.number(),
   seen: v.boolean(),
 };
+
+export const Guest = {
+  userId: v.id('users'),
+  workspaceId: v.id('workspaces'),
+};
 export const ServicePoints = {
   description: v.optional(v.string()),
   externalLink: v.optional(v.string()),
@@ -342,4 +347,7 @@ export default defineSchema({
   missedCalls: defineTable(missedCall)
     .index('by_user_id', ['userId', 'seen'])
     .index('by_call_id_user_id', ['callId', 'userId']),
+  guests: defineTable(Guest)
+    .index('by_workspace_id', ['workspaceId'])
+    .index('by_user_workspace', ['userId', 'workspaceId']),
 });

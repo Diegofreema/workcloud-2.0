@@ -249,15 +249,35 @@ export const existLobby = mutation({
       throw new ConvexError({ message: 'User not authenticated' });
     }
 
+    const isSelfLeaving = !customerToRemove;
     const id = customerToRemove || user._id;
+
     const waitlist = await ctx.db
       .query('waitlists')
       .withIndex('by_customer_id_workspace_id', (q) =>
         q.eq('workspaceId', workspaceId).eq('customerId', id),
       )
       .first();
+
     if (waitlist) {
       await ctx.db.delete(waitlist._id);
+    }
+
+    // Only save as guest when the customer voluntarily leaves (not when removed by worker)
+    if (isSelfLeaving) {
+      const existingGuest = await ctx.db
+        .query('guests')
+        .withIndex('by_user_workspace', (q) =>
+          q.eq('userId', user._id).eq('workspaceId', workspaceId),
+        )
+        .first();
+
+      if (!existingGuest) {
+        await ctx.db.insert('guests', {
+          userId: user._id,
+          workspaceId,
+        });
+      }
     }
   },
 });
